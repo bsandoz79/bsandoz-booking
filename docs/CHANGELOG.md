@@ -19,6 +19,7 @@
 - API detailing : PHPUnit, PHPStan niveau 8 et MakerBundle (dev), scripts `composer test` et `composer stan`.
 - Kit back : tests complets de `Money` (zéro, immuabilité, multiplication, pourcentage arrondi au centime supérieur, minimum, égalité, format français).
 - Kit back : tests de `TimeRange` (durée, bornes invalides, chevauchement symétrique avec bornes exclues, inclusion).
+- Kit back : horloge figée `FrozenClock` (UTC, déplaçable) pour les tests, et tests de `SystemClock` / `FrozenClock` (48 tests back au total).
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
