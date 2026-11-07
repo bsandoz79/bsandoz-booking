@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bsandoz\Core\Tests\Unit\Http;
 
 use Bsandoz\Core\Shared\Domain\DomainError;
+use Bsandoz\Core\Shared\Domain\NonAuthentifie;
 use Bsandoz\Core\Shared\Domain\NotFound;
 use Bsandoz\Core\Shared\Infrastructure\Http\InvalidRequest;
 use Bsandoz\Core\Shared\Infrastructure\Http\ProblemJsonListener;
@@ -30,6 +31,7 @@ final class ProblemJsonListenerTest extends TestCase
     public static function exceptions(): iterable
     {
         yield 'introuvable' => [new NotFound('Prestation introuvable.'), 404, 'Prestation introuvable.'];
+        yield 'non authentifié' => [new NonAuthentifie('E-mail ou mot de passe incorrect.'), 401, 'E-mail ou mot de passe incorrect.'];
         yield 'règle métier' => [new DomainError('Option indisponible.'), 422, 'Option indisponible.'];
         yield 'requête invalide' => [new InvalidRequest('« prestationId » est obligatoire.'), 400, '« prestationId » est obligatoire.'];
     }

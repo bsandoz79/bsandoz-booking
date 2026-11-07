@@ -51,6 +51,7 @@
 - Réservation : jeton « gérer mon rendez-vous » émis par `ReserverCreneau` (réutilisable jusqu'à la fin du rendez-vous, renvoyé dans `ReservationCreee`), cas d'usage `ReservationParJeton`. Tests.
 - API : `POST /api/v1/auth/activate`, `/auth/forgot`, `/auth/reset` ; `GET` / `PATCH` / `DELETE /api/v1/booking/manage/{token}` (voir, déplacer, annuler sans compte) ; `manageToken` renvoyé par la réservation ; limitation des tentatives par IP (429 + `Retry-After`) sur la réservation, l'activation, le mot de passe oublié et la gestion. API detailing : migration `auth_token`, tests fonctionnels.
 - Comptes : jetons de session (`TokenType::Refresh`) qui coexistent sur plusieurs appareils (`issue(..., replacePrevious: false)`), `TokenService::revokeAll()` ; un nouveau mot de passe ferme toutes les sessions. Tests.
+- Comptes : cas d'usage `SeConnecter` (même message et même coût de calcul quel que soit le cas d'échec), `RenouvelerSession` (rotation du jeton de session, 30 jours), `SeDeconnecter` ; `User::anonymize()` (RGPD) et `canLogIn()` ; erreur `NonAuthentifie` traduite en 401. Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

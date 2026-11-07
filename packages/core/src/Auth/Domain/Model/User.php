@@ -44,6 +44,23 @@ class User
         $this->passwordHash = $passwordHash;
     }
 
-    /** @todo Anonymiser (RGPD) : email aléatoire, noms vides, statut deleted. */
-    public function anonymize(): void { throw new \LogicException('À implémenter'); }
+    /**
+     * Suppression du compte (RGPD) : plus aucune donnée personnelle, connexion impossible.
+     * L'identifiant est conservé pour que les réservations passées (obligations comptables) restent cohérentes.
+     */
+    public function anonymize(): void
+    {
+        $this->email = sprintf('supprime-%s@invalid', $this->id);
+        $this->firstname = '';
+        $this->lastname = '';
+        $this->phone = '';
+        $this->passwordHash = null;
+        $this->roles = [];
+        $this->status = UserStatus::Deleted;
+    }
+
+    public function canLogIn(): bool
+    {
+        return $this->status === UserStatus::Active && $this->passwordHash !== null;
+    }
 }
