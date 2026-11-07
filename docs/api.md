@@ -4,8 +4,8 @@
 | --- | --- | --- | --- |
 | GET | /catalog | public | ListerCatalogue |
 | POST | /booking/quote | public | CalculerDevis (+ zone) |
-| GET | /booking/days?month=YYYY-MM&duration=&lat=&lng= | public | ListerJoursDisponibles |
-| GET | /booking/slots?date=&duration=&lat=&lng= | public | ListerCreneaux |
+| GET | /booking/days?month=YYYY-MM&duration=&lat=&lng=&prestation= | public | ListerJoursDisponibles |
+| GET | /booking/slots?date=YYYY-MM-DD&duration=&lat=&lng=&prestation= | public | ListerCreneaux |
 | POST | /booking/reservations | public, rate limit | ReserverCreneau → URL Stripe |
 | POST | /payment/stripe/webhook | signature Stripe | ConfirmerPaiement |
 | GET/PATCH/DELETE | /booking/manage/{token} | jeton | voir / déplacer / annuler sans compte |
@@ -42,3 +42,10 @@ Variante : celle que le module métier déduit de `metierData`, sinon `variante`
  "travelFeeCents": 0, "inZone": true, "distanceKm": 3.2, "travelMinutes": 5, "variante": "suv"}
 ```
 Adresse hors zone : `inZone: false`, pas de frais de déplacement (la réservation sera refusée).
+
+## GET /booking/days et /booking/slots
+Paramètres : `duration` (minutes, devis compris options), `lat` / `lng` (obligatoires pour une activité à domicile, contrôle de zone), `prestation` (facultatif : si elle est à durée incertaine, seuls les débuts de demi-journée libres sont proposés).
+- `/booking/days?month=2026-11&duration=150&lat=49.89&lng=2.29` → `["2026-11-03", "2026-11-10"]`
+- `/booking/slots?date=2026-11-10&duration=150&lat=49.89&lng=2.29` → `[{"start": "2026-11-10T07:30:00+00:00", "end": "2026-11-10T10:00:00+00:00", "label": "08:30"}]` (`start` / `end` en UTC, `label` en heure locale du pro)
+
+Les créneaux tiennent compte du trajet, des congés, et des réservations confirmées ou en cours de paiement (chacune étendue de son propre trajet). Adresse hors zone ou manquante : 422 ; paramètre invalide : 400.
