@@ -30,6 +30,8 @@ use Bsandoz\Core\Tests\Double\InMemoryAvailabilityRepository;
 use Bsandoz\Core\Tests\Double\InMemoryOptionRepository;
 use Bsandoz\Core\Tests\Double\InMemoryPrestationRepository;
 use Bsandoz\Core\Tests\Double\InMemoryReservationRepository;
+use Bsandoz\Core\Tests\Double\InMemoryTokenService;
+use Bsandoz\Core\Tests\Double\RecordingNotifier;
 use Bsandoz\Core\Tests\Double\InMemoryUserRepository;
 use Bsandoz\Core\Tests\Double\SequenceIdGenerator;
 use PHPUnit\Framework\TestCase;
@@ -69,7 +71,7 @@ final class GererReservationTest extends TestCase
         $creneaux = new ListerCreneaux($availability, $settings, $prestations, new CreneauCalculator(), new Occupations($this->reservations, $availability, $trajet, $this->clock), $trajet, $this->clock);
         $devis = new CalculerDevis($prestations, new InMemoryOptionRepository(), new SansVarianteResolver(), $zone, $settings, new PrixCalculator());
 
-        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation(new InMemoryUserRepository(), new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, new SequenceIdGenerator('r'), $this->clock);
+        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation(new InMemoryUserRepository(), new InMemoryTokenService($this->clock), new RecordingNotifier(), new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, new SequenceIdGenerator('r'), $this->clock);
         $this->annuler = new AnnulerReservation($this->reservations, $settings, $this->clock);
         $this->deplacer = new DeplacerReservation($this->reservations, $creneaux, $devis, $settings, $this->clock);
         $this->expirer = new ExpirerReservationsNonPayees($this->reservations, $this->clock);

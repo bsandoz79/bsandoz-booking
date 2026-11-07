@@ -26,6 +26,8 @@ use Bsandoz\Core\Tests\Double\InMemoryAvailabilityRepository;
 use Bsandoz\Core\Tests\Double\InMemoryOptionRepository;
 use Bsandoz\Core\Tests\Double\InMemoryPrestationRepository;
 use Bsandoz\Core\Tests\Double\InMemoryReservationRepository;
+use Bsandoz\Core\Tests\Double\InMemoryTokenService;
+use Bsandoz\Core\Tests\Double\RecordingNotifier;
 use Bsandoz\Core\Tests\Double\InMemoryUserRepository;
 use Bsandoz\Core\Tests\Double\SequenceIdGenerator;
 use PHPUnit\Framework\TestCase;
@@ -80,7 +82,7 @@ final class ReserverCreneauTest extends TestCase
 
         return new ReserverCreneau(
             $devis, $creneaux,
-            new CreerCompteDepuisReservation($this->users, new SequenceIdGenerator('u'), $this->clock),
+            new CreerCompteDepuisReservation($this->users, new InMemoryTokenService($this->clock), new RecordingNotifier(), new SequenceIdGenerator('u'), $this->clock),
             $this->reservations, $settings, new SequenceIdGenerator('r'), $this->clock,
         );
     }
