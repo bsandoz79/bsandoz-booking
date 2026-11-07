@@ -20,4 +20,5 @@
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
+- Site detailing : nom du projet synchronisé dans `package-lock.json` ; import de `vite.config.ts` avec son extension dans `vitest.config.ts` (avertissement Vite).
 - Kit back : types des tableaux renvoyés précisés pour PHPStan niveau 8 (`ExporterDonnees`, `ListerCreneaux` → `list<TimeRange>`, `ListerJoursDisponibles` → dates `Y-m-d`, `PaymentGateway` → `{sessionId, url}` et événement décodé).
