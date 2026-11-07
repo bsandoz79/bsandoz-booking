@@ -11,6 +11,7 @@ namespace Bsandoz\Core\Auth\Application;
  */
 final class ExporterDonnees
 {
+    /** @return array<string, mixed> */
     public function __invoke(string $userId): array
     {
         throw new \LogicException('À implémenter');

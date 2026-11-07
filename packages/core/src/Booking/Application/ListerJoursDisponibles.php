@@ -11,6 +11,7 @@ namespace Bsandoz\Core\Booking\Application;
  */
 final class ListerJoursDisponibles
 {
+    /** @return list<string> dates Y-m-d */
     public function __invoke(int $year, int $month, int $durationMin, float $lat, float $lng): array
     {
         throw new \LogicException('À implémenter');
