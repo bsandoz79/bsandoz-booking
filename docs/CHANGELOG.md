@@ -35,6 +35,7 @@
 - Réservation : prestations à durée incertaine (`occupePlage` dans `CreneauCalculator`) : un seul créneau par plage d'ouverture, en début de plage, si elle est entièrement libre ; le créneau occupe la plage jusqu'à la fermeture. Tests.
 - Catalogue : réglage `occupePlage` par prestation (durée incertaine), persisté (colonne `occupe_plage`, migration) et renvoyé dans `GET /catalog`.
 - Réservation : zone d'intervention facultative (`bsandoz_core.zone`, `SettingsProvider::zone()` nullable) ; sans zone, activité sur place : l'adresse est ignorée, ni trajet ni frais. Tests.
+- Réservation (persistance) : mapping XML de `Reservation` (période en `TimeRange` intégré, dates stockées en UTC via `datetime_utc_immutable`, statut en enum), `DoctrineReservationRepository` (`get`, `between`, `forUser`, `save` ; verrou d'agenda à la branche suivante), tests d'intégration.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

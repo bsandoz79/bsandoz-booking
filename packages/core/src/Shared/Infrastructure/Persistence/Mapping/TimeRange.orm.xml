@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <!-- Intervalle de temps intégré dans les entités (colonnes <préfixe>start / <préfixe>end, en UTC). -->
+    <embeddable name="Bsandoz\Core\Shared\Domain\TimeRange">
+        <field name="start" column="start" type="datetime_utc_immutable"/>
+        <field name="end" column="end" type="datetime_utc_immutable"/>
+    </embeddable>
+</doctrine-mapping>

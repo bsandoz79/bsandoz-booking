@@ -18,7 +18,9 @@ final class DoctrineMappings
         $src = \dirname(__DIR__, 3);
 
         return [
+            'BsandozShared' => ['dir' => $src . '/Shared/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Shared\Domain'],
             'BsandozCatalog' => ['dir' => $src . '/Catalog/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Catalog\Domain\Model'],
+            'BsandozBooking' => ['dir' => $src . '/Booking/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Booking\Domain\Model'],
         ];
     }
 

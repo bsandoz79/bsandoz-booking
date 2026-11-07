@@ -12,7 +12,7 @@
 | unavailability | Booking | starts_at, ends_at, reason |
 | booking_rule | Booking | min_notice_hours, horizon_days, buffer_min, slot_step_min, free_cancel_hours, deposit_percent, deposit_fixed_cents |
 | zone | Booking | origin_label, origin_lat, origin_lng, free_radius_km, price_per_km_cents, max_distance_km |
-| reservation | Booking | user_id, prestation_id, variante, starts_at, ends_at, address (chiffrée), lat, lng, distance_km, travel_fee_cents, total_cents, deposit_cents, status, hold_expires_at, notes, metier_data JSON |
+| reservation | Booking | id, user_id, prestation_id, variante, option_ids JSON, period_start, period_end (UTC), address (chiffrement prévu), lat, lng, travel_fee_cents, total_cents, deposit_cents, status, hold_expires_at (UTC), notes, metier_data JSON |
 | reservation_option | Booking | reservation_id, option_id, price_cents |
 | payment | Payment | reservation_id, provider_session_id, amount_cents, status, refunded_cents |
 | notification | Notification | type, recipient, reservation_id, scheduled_at, sent_at |
