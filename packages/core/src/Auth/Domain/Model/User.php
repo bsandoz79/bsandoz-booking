@@ -24,6 +24,10 @@ class User
 
     public function id(): string { return $this->id; }
     public function email(): string { return $this->email; }
+    public function firstname(): string { return $this->firstname; }
+    public function lastname(): string { return $this->lastname; }
+    public function phone(): string { return $this->phone; }
+    public function createdAt(): ?\DateTimeImmutable { return $this->createdAt; }
     public function status(): UserStatus { return $this->status; }
     /** @return list<string> */
     public function roles(): array { return $this->roles; }
