@@ -41,6 +41,7 @@
 - API : `CreneauxController` (`GET /api/v1/booking/days`, `GET /api/v1/booking/slots`, paramètre `prestation` facultatif), services et routes du kit ; API detailing : horloge figée en test, migration des tables `opening_hour`, `unavailability`, `reservation`, tests fonctionnels du calendrier.
 - Réservation (domaine) : `Reservation::cancel` (acompte remboursable si confirmée et annulée au moins `freeCancelHours` avant), `reschedule` (confirmée, même délai, nouvelle date après le délai minimum), `expire` réservé aux réservations en attente de paiement. Tests.
 - Comptes : port `IdGenerator` (UUID v7 en production), persistance des utilisateurs (table `user_account`, e-mail unique en minuscules), `CreerCompteDepuisReservation` (compte « pending » sans mot de passe, ou compte existant réutilisé sans modification ; lien d'activation à `feature/core-auth`). Tests.
+- Réservation : verrou d'agenda `ReservationRepository::dansVerrouAgenda()` (transaction, et verrou nommé `GET_LOCK` sous MySQL / MariaDB) et `pendingHoldExpired()` (blocages de paiement expirés). Tests d'intégration (dont l'annulation complète en cas d'erreur).
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
