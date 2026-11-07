@@ -12,8 +12,8 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/core-booking-domain` : tests complets de `CreneauCalculator` et `ZoneCalculator`, invariants des règles / horaires / zone, créneaux sans doublon
 - [x] `feature/core-booking-demi-journee` : prestations à durée incertaine (`occupePlage`) : seulement en début de demi-journée libre, qui est alors bloquée jusqu'à la fermeture
 - [x] `feature/core-zone-facultative` : zone facultative (activité sur place, ex. barbier : ni trajet ni frais, rendez-vous enchaînés avec tampon 0)
-- [ ] `feature/core-booking-creneaux` : horaires et indisponibilités (persistance), `ListerJoursDisponibles`, `ListerCreneaux`, routes `/booking/days` et `/booking/slots`, occupations = réservations bloquantes étendues de leur propre trajet, tests
-- [ ] `feature/core-booking-reservation` : persistance des réservations, `ReserverCreneau` (blocage 10 min), `AnnulerReservation`, `DeplacerReservation`, contrôleurs, tests
+- [x] `feature/core-booking-creneaux` : horaires et indisponibilités (persistance), `ListerJoursDisponibles`, `ListerCreneaux`, routes `/booking/days` et `/booking/slots`, occupations = réservations bloquantes étendues de leur propre trajet, tests
+- [ ] `feature/core-booking-reservation` : verrou d'agenda, `ReserverCreneau` (blocage 10 min), `AnnulerReservation`, `DeplacerReservation`, contrôleurs, tests
 - [ ] `feature/core-geocoding` : adaptateur api-adresse.data.gouv.fr (gratuit) + cache
 - [ ] `feature/core-auth` : compte auto, activation par lien, JWT + refresh token en cookie httpOnly, mot de passe oublié, rate limit, voters
 - [ ] `feature/core-payment` : Stripe Checkout, webhook signé et idempotent, remboursement
