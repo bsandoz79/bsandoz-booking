@@ -6,6 +6,7 @@ namespace Bsandoz\Core\Catalog\Infrastructure\Persistence;
 
 use Bsandoz\Core\Catalog\Domain\Model\Prestation;
 use Bsandoz\Core\Catalog\Domain\Port\PrestationRepository;
+use Bsandoz\Core\Shared\Domain\NotFound;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class DoctrinePrestationRepository implements PrestationRepository
@@ -14,11 +15,16 @@ final class DoctrinePrestationRepository implements PrestationRepository
     {
     }
 
-    /** @todo find() ou DomainError « Prestation introuvable ». */
-    public function get(string $id): Prestation { throw new \LogicException('À implémenter'); }
+    public function get(string $id): Prestation
+    {
+        return $this->em->find(Prestation::class, $id) ?? throw new NotFound('Prestation introuvable.');
+    }
 
-    /** @todo active = true, ORDER BY position. */
-    public function allActive(): array { throw new \LogicException('À implémenter'); }
+    public function allActive(): array
+    {
+        /** @var list<Prestation> */
+        return $this->em->getRepository(Prestation::class)->findBy(['active' => true], ['position' => 'ASC', 'name' => 'ASC']);
+    }
 
     public function save(Prestation $prestation): void
     {
