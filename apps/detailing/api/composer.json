@@ -7,11 +7,21 @@
         "php": ">=8.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "bsandoz/core": "@dev",
+        "doctrine/doctrine-bundle": "^2.19",
+        "doctrine/doctrine-migrations-bundle": "^3.7",
+        "doctrine/orm": "^3.7",
+        "lexik/jwt-authentication-bundle": "^3.2",
+        "nelmio/cors-bundle": "^2.6",
+        "stripe/stripe-php": "^16.6",
         "symfony/console": "7.4.*",
         "symfony/dotenv": "7.4.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.4.*",
+        "symfony/mailer": "7.4.*",
         "symfony/runtime": "7.4.*",
+        "symfony/security-bundle": "7.4.*",
+        "symfony/twig-bundle": "7.4.*",
         "symfony/yaml": "7.4.*"
     },
     "require-dev": {
@@ -63,7 +73,13 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.4.*"
+            "require": "7.4.*",
+            "docker": "false"
         }
-    }
+    },
+    "repositories": [{
+        "name": "core",
+        "type": "path",
+        "url": "../../../packages/core"
+    }]
 }

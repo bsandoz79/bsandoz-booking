@@ -21,3 +21,10 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    # Module métier detailing branché sur le port du kit
+    App\Metier\Detailing\Domain\VehicleModelCatalog:
+        factory: ['App\Metier\Detailing\Domain\VehicleModelCatalog', 'fromJsonFile']
+        arguments: ['%kernel.project_dir%/data/vehicle_models.json']
+
+    Bsandoz\Core\Catalog\Domain\Port\VarianteResolver: '@App\Metier\Detailing\Domain\DetailingVarianteResolver'
