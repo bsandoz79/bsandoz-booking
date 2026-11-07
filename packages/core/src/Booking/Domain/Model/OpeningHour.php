@@ -9,12 +9,16 @@ use Bsandoz\Core\Shared\Domain\DomainError;
 /** Plage d'ouverture hebdomadaire, en heure locale (ex. lundi 08:00–12:00 ; « 24:00 » = minuit en fin de journée). */
 final class OpeningHour
 {
+    public readonly string $id;
+
     /** @param int $weekday 1 = lundi … 7 = dimanche (ISO-8601) */
     public function __construct(
         public readonly int $weekday,
         public readonly string $startsAt,
         public readonly string $endsAt,
+        ?string $id = null,
     ) {
+        $this->id = $id ?? bin2hex(random_bytes(16));
         if ($weekday < 1 || $weekday > 7) {
             throw new DomainError('Le jour doit être compris entre 1 (lundi) et 7 (dimanche).');
         }

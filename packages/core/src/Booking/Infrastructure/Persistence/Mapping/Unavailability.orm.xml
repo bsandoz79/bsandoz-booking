@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Bsandoz\Core\Booking\Domain\Model\Unavailability" table="unavailability">
+        <indexes>
+            <index name="idx_unavailability_period" columns="period_start,period_end"/>
+        </indexes>
+        <id name="id" type="string" length="36"/>
+        <embedded name="period" class="Bsandoz\Core\Shared\Domain\TimeRange" column-prefix="period_"/>
+        <field name="reason" type="string" length="255"/>
+    </entity>
+</doctrine-mapping>
