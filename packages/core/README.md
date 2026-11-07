@@ -24,13 +24,14 @@ Le reste : méthodes `@todo` à implémenter selon `docs/plan.md`.
 
 ## Installer le kit dans une application
 1. `composer require bsandoz/core` (dépôt `path` dans le monorepo) : `BsandozCoreBundle` s'enregistre dans `config/bundles.php`.
-2. `config/packages/bsandoz_core.yaml` (zone obligatoire, règles facultatives) :
+2. `config/packages/bsandoz_core.yaml` (tout est facultatif) :
    ```yaml
    bsandoz_core:
        timezone: 'Europe/Paris'
        rules: { deposit_percent: 30, min_notice_hours: 24 }   # valeurs par défaut sinon
-       zone: { origin_lat: 49.89, origin_lng: 2.29, free_radius_km: 15, price_per_km_cents: 50, max_distance_km: 60 }
+       zone: { origin_lat: 49.89, origin_lng: 2.29, free_radius_km: 15, price_per_km_cents: 50, max_distance_km: 60 }   # à domicile ; sans zone : activité sur place
    ```
+   Types d'activité : **à domicile** (zone : trajet et frais kilométriques) ; **sur place**, client reçu dans les locaux (pas de zone, `buffer_min: 0` pour enchaîner les rendez-vous). Par prestation, `occupePlage` (durée incertaine) bloque toute la demi-journée.
 3. `config/routes/bsandoz_core.yaml` : `bsandoz_core: { resource: '@BsandozCoreBundle/config/routes.php' }`.
 4. Mappings et types Doctrine : ajoutés automatiquement par le bundle (`DoctrineMappings`).
 5. Métier : redéfinir le port `Bsandoz\Core\Catalog\Domain\Port\VarianteResolver` dans `config/services.yaml` (par défaut `SansVarianteResolver`, aucune variante).

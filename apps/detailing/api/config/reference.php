@@ -1341,7 +1341,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         deposit_fixed_cents?: int|Param, // Default: null
  *         hold_minutes?: int|Param, // Default: 10
  *     },
- *     zone?: array{ // Zone d'intervention depuis le point de départ du pro.
+ *     zone?: array{ // Zone d'intervention à domicile depuis le point de départ du pro. Absente : activité sur place (ni trajet ni frais).
  *         origin_lat?: float|Param,
  *         origin_lng?: float|Param,
  *         free_radius_km?: float|Param, // Default: 0.0

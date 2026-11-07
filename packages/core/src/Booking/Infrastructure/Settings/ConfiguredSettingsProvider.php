@@ -11,6 +11,7 @@ use Bsandoz\Core\Shared\Domain\Money;
 
 /**
  * Règles et zone lues dans la configuration de l'application (config/packages/bsandoz_core.yaml).
+ * Sans zone : activité sur place (ni trajet ni frais de déplacement).
  * Remplacé par des paramètres modifiables dans l'espace pro (branche feature/core-admin).
  *
  * @phpstan-type RulesConfig array{min_notice_hours: int, horizon_days: int, buffer_min: int, slot_step_min: int, free_cancel_hours: int, deposit_percent: int|null, deposit_fixed_cents: int|null, hold_minutes: int}
@@ -19,14 +20,14 @@ use Bsandoz\Core\Shared\Domain\Money;
 final class ConfiguredSettingsProvider implements SettingsProvider
 {
     private BookingRules $rules;
-    private Zone $zone;
+    private ?Zone $zone = null;
     private \DateTimeZone $timezone;
 
     /**
      * @param RulesConfig $rules
-     * @param ZoneConfig $zone
+     * @param ZoneConfig|null $zone null : activité sur place
      */
-    public function __construct(array $rules, array $zone, string $timezone)
+    public function __construct(array $rules, ?array $zone, string $timezone)
     {
         $this->rules = new BookingRules(
             minNoticeHours: $rules['min_notice_hours'],
@@ -38,7 +39,7 @@ final class ConfiguredSettingsProvider implements SettingsProvider
             depositFixedCents: $rules['deposit_fixed_cents'],
             holdMinutes: $rules['hold_minutes'],
         );
-        $this->zone = new Zone(
+        $this->zone = $zone === null ? null : new Zone(
             originLat: $zone['origin_lat'],
             originLng: $zone['origin_lng'],
             freeRadiusKm: $zone['free_radius_km'],
@@ -55,7 +56,7 @@ final class ConfiguredSettingsProvider implements SettingsProvider
         return $this->rules;
     }
 
-    public function zone(): Zone
+    public function zone(): ?Zone
     {
         return $this->zone;
     }

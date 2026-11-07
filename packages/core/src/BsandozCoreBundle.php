@@ -41,8 +41,7 @@ final class BsandozCoreBundle extends AbstractBundle
                     ->end()
                 ->end()
                 ->arrayNode('zone')
-                    ->info('Zone d\'intervention depuis le point de départ du pro.')
-                    ->isRequired()
+                    ->info('Zone d\'intervention à domicile depuis le point de départ du pro. Absente : activité sur place (ni trajet ni frais).')
                     ->children()
                         ->floatNode('origin_lat')->isRequired()->min(-90)->max(90)->end()
                         ->floatNode('origin_lng')->isRequired()->min(-180)->max(180)->end()
@@ -56,13 +55,13 @@ final class BsandozCoreBundle extends AbstractBundle
             ->end();
     }
 
-    /** @param array{timezone: string, rules: array<string, int|null>, zone: array<string, float|int>} $config */
+    /** @param array{timezone: string, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->parameters()
             ->set('bsandoz_core.timezone', $config['timezone'])
             ->set('bsandoz_core.rules', $config['rules'])
-            ->set('bsandoz_core.zone', $config['zone']);
+            ->set('bsandoz_core.zone', $config['zone'] ?? null);
 
         $container->import('../config/services.php');
     }
