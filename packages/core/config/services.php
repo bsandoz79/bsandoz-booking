@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+use Bsandoz\Core\Auth\Application\ExporterDonnees;
+use Bsandoz\Core\Auth\Application\RenouvelerSession;
+use Bsandoz\Core\Auth\Application\SeConnecter;
+use Bsandoz\Core\Auth\Application\SeDeconnecter;
+use Bsandoz\Core\Auth\Application\SupprimerCompte;
+use Bsandoz\Core\Auth\Infrastructure\Http\MeController;
+use Bsandoz\Core\Auth\Infrastructure\Http\SessionController;
+use Bsandoz\Core\Auth\Infrastructure\Security\SecurityUserProvider;
+use Bsandoz\Core\Booking\Application\MesReservations;
 use Bsandoz\Core\Auth\Application\ActiverCompte;
 use Bsandoz\Core\Auth\Application\CreerCompteDepuisReservation;
 use Bsandoz\Core\Auth\Application\DemanderReinitialisation;
@@ -90,6 +99,17 @@ return static function (ContainerConfigurator $container): void {
     $services->set(ActiverCompte::class);
     $services->set(DemanderReinitialisation::class);
     $services->set(ReinitialiserMotDePasse::class);
+    $services->set(SeConnecter::class);
+    $services->set(RenouvelerSession::class);
+    $services->set(SeDeconnecter::class);
+    $services->set(ExporterDonnees::class);
+    $services->set(SupprimerCompte::class);
+    $services->set(MesReservations::class);
+    $services->set(SecurityUserProvider::class);
+    $services->set(SessionController::class)->public()->tag('controller.service_arguments')
+        ->arg('$loginLimiter', service('limiter.bsandoz_login'))
+        ->arg('$accessTokenTtl', param('lexik_jwt_authentication.token_ttl'));
+    $services->set(MeController::class)->public()->tag('controller.service_arguments');
     $services->set(AuthController::class)->public()->tag('controller.service_arguments')
         ->arg('$activationLimiter', service('limiter.bsandoz_activation'))
         ->arg('$forgotLimiter', service('limiter.bsandoz_forgot'));
