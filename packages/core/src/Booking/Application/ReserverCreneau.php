@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Bsandoz\Core\Booking\Application;
 
 use Bsandoz\Core\Auth\Application\CreerCompteDepuisReservation;
+use Bsandoz\Core\Auth\Domain\Model\TokenType;
+use Bsandoz\Core\Auth\Domain\Port\TokenService;
 use Bsandoz\Core\Booking\Domain\Model\Reservation;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
@@ -19,7 +21,8 @@ use Bsandoz\Core\Shared\Domain\TimeRange;
  *  1. recalcule le devis côté serveur (prix, variante, zone) ;
  *  2. revérifie que le créneau demandé fait toujours partie des créneaux libres ;
  *  3. crée ou retrouve le compte du client ;
- *  4. enregistre la réservation : bloquée holdMinutes en attente de l'acompte, ou confirmée si aucun acompte n'est demandé.
+ *  4. enregistre la réservation : bloquée holdMinutes en attente de l'acompte, ou confirmée si aucun acompte n'est demandé ;
+ *  5. émet le jeton « gérer mon rendez-vous » (voir, annuler, déplacer sans compte), valable jusqu'à la fin du rendez-vous.
  * La session de paiement de l'acompte est créée ensuite (feature/core-payment).
  */
 final class ReserverCreneau
@@ -32,6 +35,7 @@ final class ReserverCreneau
         private CreerCompteDepuisReservation $creerCompte,
         private ReservationRepository $reservations,
         private SettingsProvider $settings,
+        private TokenService $tokens,
         private IdGenerator $ids,
         private Clock $clock,
     ) {
@@ -85,7 +89,10 @@ final class ReserverCreneau
             }
             $this->reservations->save($reservation);
 
-            return new ReservationCreee($reservation->id(), $reservation->status(), $reservation->deposit(), $reservation->total(), $reservation->holdExpiresAt());
+            $validite = max(3600, $slot->end->getTimestamp() - $now->getTimestamp());
+            $manageToken = $this->tokens->issue($reservation->id(), TokenType::ManageReservation, new \DateInterval(sprintf('PT%dS', $validite)));
+
+            return new ReservationCreee($reservation->id(), $reservation->status(), $reservation->deposit(), $reservation->total(), $reservation->holdExpiresAt(), $manageToken);
         });
     }
 

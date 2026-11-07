@@ -12,4 +12,5 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 return static function (RoutingConfigurator $routes): void {
     $routes->import('../src/Catalog/Infrastructure/Http/', 'attribute');
     $routes->import('../src/Booking/Infrastructure/Http/', 'attribute');
+    $routes->import('../src/Auth/Infrastructure/Http/', 'attribute');
 };

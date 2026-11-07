@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bsandoz\Core\Tests\Unit\Booking;
 
 use Bsandoz\Core\Auth\Application\CreerCompteDepuisReservation;
+use Bsandoz\Core\Auth\Domain\Model\TokenType;
 use Bsandoz\Core\Booking\Application\ListerCreneaux;
 use Bsandoz\Core\Booking\Application\Occupations;
 use Bsandoz\Core\Booking\Application\ReserverCreneau;
@@ -26,6 +27,8 @@ use Bsandoz\Core\Tests\Double\InMemoryAvailabilityRepository;
 use Bsandoz\Core\Tests\Double\InMemoryOptionRepository;
 use Bsandoz\Core\Tests\Double\InMemoryPrestationRepository;
 use Bsandoz\Core\Tests\Double\InMemoryReservationRepository;
+use Bsandoz\Core\Tests\Double\InMemoryTokenService;
+use Bsandoz\Core\Tests\Double\RecordingNotifier;
 use Bsandoz\Core\Tests\Double\InMemoryUserRepository;
 use Bsandoz\Core\Tests\Double\SequenceIdGenerator;
 use PHPUnit\Framework\TestCase;
@@ -42,12 +45,14 @@ final class ReserverCreneauTest extends TestCase
     private InMemoryReservationRepository $reservations;
     private InMemoryUserRepository $users;
     private FrozenClock $clock;
+    private InMemoryTokenService $tokens;
 
     protected function setUp(): void
     {
         $this->reservations = new InMemoryReservationRepository();
         $this->users = new InMemoryUserRepository();
         $this->clock = new FrozenClock('2026-11-01 10:00');
+        $this->tokens = new InMemoryTokenService($this->clock);
     }
 
     private function reserver(?int $depositPercent = 30, bool $surPlace = false): ReserverCreneau
@@ -80,8 +85,8 @@ final class ReserverCreneauTest extends TestCase
 
         return new ReserverCreneau(
             $devis, $creneaux,
-            new CreerCompteDepuisReservation($this->users, new SequenceIdGenerator('u'), $this->clock),
-            $this->reservations, $settings, new SequenceIdGenerator('r'), $this->clock,
+            new CreerCompteDepuisReservation($this->users, $this->tokens, new RecordingNotifier(), new SequenceIdGenerator('u'), $this->clock),
+            $this->reservations, $settings, $this->tokens, new SequenceIdGenerator('r'), $this->clock,
         );
     }
 
@@ -109,6 +114,7 @@ final class ReserverCreneauTest extends TestCase
         self::assertSame(3000, $resultat->deposit->cents);
         self::assertSame(10000, $resultat->total->cents);
         self::assertSame('2026-11-01T10:10:00+00:00', $resultat->holdExpiresAt?->format(DATE_ATOM));
+        self::assertSame('r-1', $this->tokens->verify($resultat->manageToken, TokenType::ManageReservation), 'lien « gérer mon rendez-vous »');
 
         $r = $this->reservations->get('r-1');
         self::assertSame('u-1', $r->userId());

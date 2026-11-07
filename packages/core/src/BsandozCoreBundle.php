@@ -66,8 +66,22 @@ final class BsandozCoreBundle extends AbstractBundle
         $container->import('../config/services.php');
     }
 
+    /** Limites de tentatives par adresse IP (fenêtre glissante d'une heure). */
+    public const RATE_LIMITS = [
+        'bsandoz_reservation' => 10,
+        'bsandoz_activation' => 10,
+        'bsandoz_forgot' => 5,
+        'bsandoz_manage' => 30,
+    ];
+
     public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
     {
+        $limiters = [];
+        foreach (self::RATE_LIMITS as $name => $limit) {
+            $limiters[$name] = ['policy' => 'sliding_window', 'limit' => $limit, 'interval' => '1 hour'];
+        }
+        $container->extension('framework', ['rate_limiter' => $limiters]);
+
         if (!$builder->hasExtension('doctrine')) {
             return;
         }
