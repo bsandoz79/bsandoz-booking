@@ -7,7 +7,7 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `chore/installation` : `composer install` dans `packages/core` et `apps/detailing/api` (Symfony 7.4 LTS), `npm install` dans `packages/ui` et `apps/detailing/front`, toute la CI verte
 
 ## 1. Kit back
-- [ ] `feature/core-shared` : tests de `Money` et `Clock`
+- [x] `feature/core-shared` : tests de `Money`, `TimeRange` et `Clock`, horloge figée `FrozenClock`
 - [ ] `feature/core-catalog` : entités Doctrine, repositories, `ListerCatalogue`, `CalculerDevis`, contrôleur, tests
 - [ ] `feature/core-booking-domain` : tests complets de `CreneauCalculator` et `ZoneCalculator`
 - [ ] `feature/core-booking` : repositories, `ListerCreneaux`, `ReserverCreneau`, `AnnulerReservation`, `DeplacerReservation`, blocage 10 min, contrôleurs, tests
