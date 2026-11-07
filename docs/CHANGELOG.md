@@ -6,3 +6,4 @@
 - Kit back `packages/core` : modules Shared, Auth, Catalog, Booking, Payment, Notification, Admin (architecture hexagonale, méthodes `@todo`).
 - Logique métier implémentée : `Money`, `TimeRange`, `PrixCalculator`, `ZoneCalculator`, `CreneauCalculator`.
 - Tests unitaires : Money, ZoneCalculator, CreneauCalculator, PrixCalculator (10 tests).
+- Kit front `packages/ui` : thème `--bs-*`, blocs Calendar et SlotPicker avec tests.

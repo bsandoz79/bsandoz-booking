@@ -1,0 +1,11 @@
+.calendar { font-family: var(--bs-font); color: var(--bs-color-text); display: flex; flex-direction: column; gap: var(--bs-space-3); }
+.header { display: flex; align-items: center; justify-content: space-between; }
+.title { font-weight: 600; font-size: 1rem; }
+.nav { width: 44px; height: 44px; border-radius: var(--bs-radius-sm); border: 1px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); font-size: 1.2rem; cursor: pointer; }
+.nav:disabled { opacity: 0.4; cursor: not-allowed; }
+.grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--bs-space-1); text-align: center; }
+.weekday { font-size: 0.75rem; color: var(--bs-color-text-muted); padding: var(--bs-space-1) 0; }
+.day { min-height: 44px; border: 0; border-radius: var(--bs-radius-sm); background: transparent; color: var(--bs-color-disabled); font: inherit; font-size: 0.95rem; }
+.available { background: var(--bs-color-primary-soft); color: var(--bs-color-text); font-weight: 600; cursor: pointer; transition: background var(--bs-transition), transform var(--bs-transition); }
+.available:hover { transform: translateY(-1px); }
+.selected { background: var(--bs-color-primary); color: #fff; }

@@ -1,0 +1,26 @@
+/* Thème par défaut du kit. Chaque client surcharge ces variables dans son propre fichier. */
+:root {
+  --bs-color-primary: #2f80ed;
+  --bs-color-primary-dark: #1c5fbf;
+  --bs-color-primary-soft: #e8f1fd;
+  --bs-color-text: #16213e;
+  --bs-color-text-muted: #4a5068;
+  --bs-color-surface: #ffffff;
+  --bs-color-bg: #f7f8fb;
+  --bs-color-border: #e1e5ee;
+  --bs-color-disabled: #b9bcc8;
+  --bs-color-success: #13794a;
+  --bs-radius-sm: 10px;
+  --bs-radius-md: 16px;
+  --bs-radius-pill: 999px;
+  --bs-space-1: 4px;
+  --bs-space-2: 8px;
+  --bs-space-3: 12px;
+  --bs-space-4: 16px;
+  --bs-space-5: 24px;
+  --bs-font: Inter, system-ui, sans-serif;
+  --bs-transition: 0.2s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --bs-transition: 0s; }
+}
