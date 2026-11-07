@@ -17,6 +17,7 @@
 - API detailing : squelette Symfony 7.4 LTS (la 7.3 n'est plus maintenue et ses versions sont bloquées pour failles de sécurité), PHP 8.3 minimum, `APP_SECRET` uniquement dans `.env.local`.
 - API detailing : kit `bsandoz/core` (dépôt `path`), Doctrine ORM et migrations (MySQL), Twig, Mailer, Security, LexikJWT, Stripe, CORS ; `VarianteResolver` du kit branché sur `DetailingVarianteResolver`. Aucun secret dans `.env` (`JWT_PASSPHRASE` dans `.env.local`).
 - API detailing : PHPUnit, PHPStan niveau 8 et MakerBundle (dev), scripts `composer test` et `composer stan`.
+- CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
 - Kit back : types des tableaux renvoyés précisés pour PHPStan niveau 8 (`ExporterDonnees`, `ListerCreneaux` → `list<TimeRange>`, `ListerJoursDisponibles` → dates `Y-m-d`, `PaymentGateway` → `{sessionId, url}` et événement décodé).
