@@ -46,6 +46,7 @@
 - Réservation : cas d'usage `AnnulerReservation` (titulaire uniquement, renvoie si l'acompte est remboursable), `DeplacerReservation` (titulaire, sous verrou, créneau revérifié sans compter le créneau actuel) et `ExpirerReservationsNonPayees`. Tests.
 - API : `POST /api/v1/booking/reservations` (`BookingController`, validation `ReservationRequest`, réponse 201 ; lien de paiement à `feature/core-payment`), commande cron `bsandoz:reservations:expirer`, services du kit ; API detailing : migration `user_account`, tests fonctionnels de la réservation.
 - Adresses : `ApiAdresseGeocoder` (Base Adresse Nationale, gratuite ; cache 1 jour pour l'autocomplétion, 30 jours pour le géocodage ; API indisponible → aucun résultat, rien en cache), cas d'usage `RechercherAdresse`, route `GET /api/v1/geo/search`. Tests avec un faux client HTTP.
+- Comptes : jetons envoyés par mail (`AuthToken`, `DoctrineTokenService` : 32 octets aléatoires, seul le hachage SHA-256 est stocké, usage unique ou réutilisable pour la gestion d'une réservation, seul le dernier lien d'un même type fonctionne), port `PasswordHasher` (hachage « auto » de Symfony), `PolitiqueMotDePasse` (10 caractères, une lettre et un chiffre). Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

@@ -3,7 +3,7 @@
 | Table | Module | Champs principaux |
 | --- | --- | --- |
 | user_account | Auth | id UUID, email unique (minuscules), password_hash nullable, roles JSON, status (pending/active/deleted), firstname, lastname, phone (chiffrement prévu), created_at (UTC) |
-| auth_token | Auth | user_id, type (activation/reset/manage), token_hash, expires_at, used_at |
+| auth_token | Auth | id, subject_id (compte ou réservation), type (activation/reset/manage/email_change), token_hash SHA-256 unique, expires_at, used_at (UTC) |
 | refresh_token | Auth | user_id, token_hash, expires_at |
 | category | Catalog | id, name, position |
 | prestation | Catalog | id, category_id, name, description, base_price_cents, base_duration_min, active, position, occupe_plage (durée incertaine : occupe la demi-journée), tarifs JSON `{"<variante>": {"price_cents", "duration_min"}}`, option_ids JSON (photo : plus tard) |
