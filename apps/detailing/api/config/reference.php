@@ -1329,6 +1329,28 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         ...<string, mixed>
  *     },
  * }
+ * @psalm-type BsandozCoreConfig = array{
+ *     timezone?: scalar|Param|null, // Default: "Europe/Paris"
+ *     rules?: array{ // Règles de réservation (modifiables dans l'espace pro à partir de feature/core-admin).
+ *         min_notice_hours?: int|Param, // Default: 24
+ *         horizon_days?: int|Param, // Default: 60
+ *         buffer_min?: int|Param, // Default: 15
+ *         slot_step_min?: int|Param, // Default: 30
+ *         free_cancel_hours?: int|Param, // Default: 48
+ *         deposit_percent?: int|Param, // Default: 30
+ *         deposit_fixed_cents?: int|Param, // Default: null
+ *         hold_minutes?: int|Param, // Default: 10
+ *     },
+ *     zone?: array{ // Zone d'intervention depuis le point de départ du pro.
+ *         origin_lat?: float|Param,
+ *         origin_lng?: float|Param,
+ *         free_radius_km?: float|Param, // Default: 0.0
+ *         price_per_km_cents?: int|Param, // Default: 0
+ *         max_distance_km?: float|Param,
+ *         road_factor?: float|Param, // Default: 1.3
+ *         average_speed_kmh?: float|Param, // Default: 50.0
+ *     },
+ * }
  * @psalm-type NelmioCorsConfig = array{
  *     defaults?: array{
  *         allow_credentials?: bool|Param, // Default: false
@@ -1428,6 +1450,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     security?: SecurityConfig,
  *     lexik_jwt_authentication?: LexikJwtAuthenticationConfig,
  *     doctrine?: DoctrineConfig,
+ *     bsandoz_core?: BsandozCoreConfig,
  *     nelmio_cors?: NelmioCorsConfig,
  *     doctrine_migrations?: DoctrineMigrationsConfig,
  *     twig?: TwigConfig,
@@ -1439,6 +1462,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         security?: SecurityConfig,
  *         lexik_jwt_authentication?: LexikJwtAuthenticationConfig,
  *         doctrine?: DoctrineConfig,
+ *         bsandoz_core?: BsandozCoreConfig,
  *         nelmio_cors?: NelmioCorsConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
  *         twig?: TwigConfig,
@@ -1452,6 +1476,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         security?: SecurityConfig,
  *         lexik_jwt_authentication?: LexikJwtAuthenticationConfig,
  *         doctrine?: DoctrineConfig,
+ *         bsandoz_core?: BsandozCoreConfig,
  *         nelmio_cors?: NelmioCorsConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
  *         twig?: TwigConfig,
@@ -1464,6 +1489,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         security?: SecurityConfig,
  *         lexik_jwt_authentication?: LexikJwtAuthenticationConfig,
  *         doctrine?: DoctrineConfig,
+ *         bsandoz_core?: BsandozCoreConfig,
  *         nelmio_cors?: NelmioCorsConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
  *         twig?: TwigConfig,

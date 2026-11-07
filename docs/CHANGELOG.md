@@ -26,6 +26,8 @@
 - Catalogue : cas d'usage `CalculerDevis` (variante déduite par le métier, sinon variante explicite ; options ; frais kilométriques ; adresse hors zone signalée par `inZone = false` sans frais ; acompte en % ou fixe plafonné) et ses tests.
 - Réservation : `ConfiguredSettingsProvider`, règles et zone lues dans la configuration de l'application en attendant l'espace pro.
 - API : `CatalogController` (`GET /api/v1/catalog`, `POST /api/v1/booking/quote`), validation du corps (`QuoteRequest`), erreurs en `application/problem+json` (`ProblemJsonListener` : 404, 422, 400), avec tests.
+- Kit back : `BsandozCoreBundle` câblé (configuration `bsandoz_core` : fuseau, règles, zone ; services ; routes ; mappings et types Doctrine ajoutés automatiquement ; résolveur de variante par défaut `SansVarianteResolver`).
+- API detailing : réglages de démonstration (`bsandoz_core.yaml`), routes du kit, tests fonctionnels du catalogue et du devis sur SQLite (avec le résolveur detailing).
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
