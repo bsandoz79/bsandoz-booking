@@ -55,6 +55,6 @@ final class PrixCalculator
             default => Money::zero(),
         };
 
-        return new Devis($lines, $travelFee, $total, $deposit, $duration);
+        return new Devis($lines, $travelFee, $total, $deposit, $duration, $variante);
     }
 }

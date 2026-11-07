@@ -47,3 +47,7 @@ App\Metier\Detailing\Domain\VehicleModelCatalog:
 
 Bsandoz\Core\Catalog\Domain\Port\VarianteResolver: '@App\Metier\Detailing\Domain\DetailingVarianteResolver'
 ```
+Réglages du kit (zone de démonstration, règles) : `config/packages/bsandoz_core.yaml`. Routes du kit : `config/routes/bsandoz_core.yaml`.
+
+## Tests
+`composer test` lance aussi les tests fonctionnels (`tests/Functional`) : de la requête HTTP à la base, sur une base SQLite jetable (`var/test.db`, définie dans `.env.test`), avec le vrai résolveur detailing.

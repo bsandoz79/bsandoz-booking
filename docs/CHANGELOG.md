@@ -20,6 +20,15 @@
 - Kit back : tests complets de `Money` (zéro, immuabilité, multiplication, pourcentage arrondi au centime supérieur, minimum, égalité, format français).
 - Kit back : tests de `TimeRange` (durée, bornes invalides, chevauchement symétrique avec bornes exclues, inclusion).
 - Kit back : horloge figée `FrozenClock` (UTC, déplaçable) pour les tests, et tests de `SystemClock` / `FrozenClock` (48 tests back au total).
+- Catalogue (domaine) : `Prestation` garde les identifiants de ses options (plus les objets) et expose tarifs, prix et durée de base ; `Option` a une description ; `Devis` porte la variante et la zone (dans la zone, distance, temps de trajet) ; erreur `NotFound` ; `OptionRepository::allActive()`. Tests de `Prestation`.
+- Catalogue (persistance) : mapping XML Doctrine de `Prestation`, `Option`, `Category` ; types `bsandoz_money` et `bsandoz_tarifs` ; `DoctrinePrestationRepository` et `DoctrineOptionRepository` ; tests d'intégration sur SQLite en mémoire (suite PHPUnit `integration`).
+- Catalogue : cas d'usage `ListerCatalogue` (formules actives avec tarifs par variante, options actives proposées) et ses tests ; repositories en mémoire pour les tests (`tests/Double`).
+- Catalogue : cas d'usage `CalculerDevis` (variante déduite par le métier, sinon variante explicite ; options ; frais kilométriques ; adresse hors zone signalée par `inZone = false` sans frais ; acompte en % ou fixe plafonné) et ses tests.
+- Réservation : `ConfiguredSettingsProvider`, règles et zone lues dans la configuration de l'application en attendant l'espace pro.
+- API : `CatalogController` (`GET /api/v1/catalog`, `POST /api/v1/booking/quote`), validation du corps (`QuoteRequest`), erreurs en `application/problem+json` (`ProblemJsonListener` : 404, 422, 400), avec tests.
+- Kit back : `BsandozCoreBundle` câblé (configuration `bsandoz_core` : fuseau, règles, zone ; services ; routes ; mappings et types Doctrine ajoutés automatiquement ; résolveur de variante par défaut `SansVarianteResolver`).
+- API detailing : réglages de démonstration (`bsandoz_core.yaml`), routes du kit, tests fonctionnels du catalogue et du devis sur SQLite (avec le résolveur detailing).
+- API detailing : première migration (tables `category`, `catalog_option`, `prestation`), SQL MySQL 8 / MariaDB 10.6+.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

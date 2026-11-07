@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Table « catalog_option » : « option » est un mot réservé MySQL. -->
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Bsandoz\Core\Catalog\Domain\Model\Option" table="catalog_option">
+        <id name="id" type="string" length="36"/>
+        <field name="name" type="string" length="120"/>
+        <field name="description" type="text"/>
+        <field name="price" column="price_cents" type="bsandoz_money"/>
+        <field name="durationMin" column="duration_min" type="integer"/>
+        <field name="active" type="boolean"/>
+    </entity>
+</doctrine-mapping>

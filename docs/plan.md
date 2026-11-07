@@ -8,7 +8,7 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 
 ## 1. Kit back
 - [x] `feature/core-shared` : tests de `Money`, `TimeRange` et `Clock`, horloge figée `FrozenClock`
-- [ ] `feature/core-catalog` : entités Doctrine, repositories, `ListerCatalogue`, `CalculerDevis`, contrôleur, tests
+- [x] `feature/core-catalog` : mapping Doctrine XML, repositories, `ListerCatalogue`, `CalculerDevis`, contrôleur, erreurs problem+json, bundle câblé, migration, tests (unitaires, SQLite, fonctionnels)
 - [ ] `feature/core-booking-domain` : tests complets de `CreneauCalculator` et `ZoneCalculator`
 - [ ] `feature/core-booking` : repositories, `ListerCreneaux`, `ReserverCreneau`, `AnnulerReservation`, `DeplacerReservation`, blocage 10 min, contrôleurs, tests
 - [ ] `feature/core-geocoding` : adaptateur api-adresse.data.gouv.fr (gratuit) + cache

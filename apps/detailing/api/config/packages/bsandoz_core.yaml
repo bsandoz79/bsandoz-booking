@@ -1,0 +1,19 @@
+# Réglages du kit bsandoz/core pour Atelier Brillance (démonstration).
+# Seront modifiables dans l'espace pro (branche feature/core-admin).
+bsandoz_core:
+    timezone: 'Europe/Paris'
+    rules:
+        min_notice_hours: 24
+        horizon_days: 60
+        buffer_min: 15
+        slot_step_min: 30
+        free_cancel_hours: 48
+        deposit_percent: 30
+        hold_minutes: 10
+    zone:
+        # Point de départ de démonstration (Amiens), comme les données de démo du front.
+        origin_lat: 49.8941
+        origin_lng: 2.2958
+        free_radius_km: 15
+        price_per_km_cents: 50
+        max_distance_km: 60
