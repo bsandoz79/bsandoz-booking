@@ -28,6 +28,7 @@
 - API : `CatalogController` (`GET /api/v1/catalog`, `POST /api/v1/booking/quote`), validation du corps (`QuoteRequest`), erreurs en `application/problem+json` (`ProblemJsonListener` : 404, 422, 400), avec tests.
 - Kit back : `BsandozCoreBundle` câblé (configuration `bsandoz_core` : fuseau, règles, zone ; services ; routes ; mappings et types Doctrine ajoutés automatiquement ; résolveur de variante par défaut `SansVarianteResolver`).
 - API detailing : réglages de démonstration (`bsandoz_core.yaml`), routes du kit, tests fonctionnels du catalogue et du devis sur SQLite (avec le résolveur detailing).
+- API detailing : première migration (tables `category`, `catalog_option`, `prestation`), SQL MySQL 8 / MariaDB 10.6+.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
