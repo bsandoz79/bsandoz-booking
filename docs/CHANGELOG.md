@@ -54,6 +54,7 @@
 - Comptes : cas d'usage `SeConnecter` (même message et même coût de calcul quel que soit le cas d'échec), `RenouvelerSession` (rotation du jeton de session, 30 jours), `SeDeconnecter` ; `User::anonymize()` (RGPD) et `canLogIn()` ; erreur `NonAuthentifie` traduite en 401. Tests.
 - Espace client : cas d'usage `MesReservations`, `ExporterDonnees` (RGPD : compte et réservations en JSON), `SupprimerCompte` (refusée s'il reste un rendez-vous à venir ; compte anonymisé, liens et sessions invalidés, réservations passées conservées). Tests.
 - API : session (`POST /api/v1/auth/login`, `/auth/refresh`, `/auth/logout` ; JWT 15 min en HS256 + cookie de renouvellement httpOnly, Secure, SameSite=Strict de 30 jours, limite de 10 connexions par heure et par IP), espace client (`GET /me`, `/me/reservations`, `PATCH` / `DELETE /me/reservations/{id}`, `GET /me/export`, `DELETE /me`), `SecurityUser` et `SecurityUserProvider`. API detailing : pare-feu `api`, `JWT_SECRET` (plus de fichiers de clés), tests fonctionnels.
+- Sécurité : `Chiffreur` (sodium XSalsa20-Poly1305, nonce aléatoire, format versionné `enc:v1:`, valeurs en clair antérieures lisibles) et type Doctrine `bsandoz_chiffre`. Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
