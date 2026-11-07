@@ -9,3 +9,4 @@
 - Kit front `packages/ui` : thème `--bs-*`, blocs Calendar et SlotPicker avec tests.
 - Blocs OptionCard, ChoiceChips, PriceSummary, Stepper avec tests (15 tests front au total).
 - Module métier detailing : types de véhicule, catalogue marque/modèle → type, `DetailingVarianteResolver` et ses tests.
+- Site detailing (front) : thème, accueil, en-tête, pied de page, parcours de réservation en 8 étapes branché sur les blocs du kit, données de démonstration, service API (bascule vers la vraie API via `VITE_API_URL`), géocodage api-adresse.data.gouv.fr, test fonctionnel du parcours.

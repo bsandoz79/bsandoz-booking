@@ -1,0 +1,10 @@
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: var(--bs-font); color: var(--bs-color-text); background: var(--bs-color-bg); line-height: 1.6; }
+h1, h2, h3 { line-height: 1.15; margin: 0; }
+p { margin: 0; }
+a { color: var(--bs-color-primary-dark); }
+:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
+.container { width: 100%; max-width: var(--brand-container); margin-inline: auto; padding-inline: 1.25rem; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 1.5rem; border-radius: var(--bs-radius-pill); border: 0; background: var(--bs-color-primary); color: #fff; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn--ghost { background: transparent; color: var(--bs-color-text); border: 1.5px solid var(--bs-color-border); }

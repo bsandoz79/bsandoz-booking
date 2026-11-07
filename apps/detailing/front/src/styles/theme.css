@@ -1,0 +1,10 @@
+/* Thème du client : surcharge les variables du kit (--bs-*) et ajoute les siennes. */
+:root {
+  --bs-color-primary: #1677d2;  /* bleu clair lisible : contraste AA avec le texte blanc */
+  --bs-color-primary-dark: #0b5fae;
+  --bs-color-primary-soft: #e7f3ff;
+  --bs-color-text: #0f1b2d;
+  --bs-color-bg: #f5f8fc;
+  --brand-navy: #0f1b2d;
+  --brand-container: 72rem;
+}

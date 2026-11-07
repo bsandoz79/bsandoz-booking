@@ -1,0 +1,4 @@
+.footer { background: var(--brand-navy); color: #dfe6f2; margin-top: 4rem; }
+.inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1.5rem; padding-block: 2.5rem; font-size: 0.9rem; }
+.footer a { color: #ffffff; }
+.legal { display: flex; flex-direction: column; gap: 0.35rem; }

@@ -1,0 +1,5 @@
+.header { background: var(--bs-color-surface); border-bottom: 1px solid var(--bs-color-border); position: sticky; top: 0; z-index: 10; }
+.inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.75rem; flex-wrap: wrap; }
+.brand { font-weight: 800; font-size: 1.15rem; color: var(--brand-navy); text-decoration: none; }
+.nav { display: flex; align-items: center; gap: 1.25rem; font-weight: 600; }
+.nav a:not(:global(.btn)) { color: var(--bs-color-text); text-decoration: none; }
