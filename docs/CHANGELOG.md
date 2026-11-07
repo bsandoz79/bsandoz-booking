@@ -59,6 +59,7 @@
 - Paiement (domaine) : `Payment` (en attente, payé une seule fois, remboursements partiels ou total plafonnés au montant encaissé), `EvenementPaiement` (seule une session réglée confirme), ports `PaymentGateway` (notification typée, `SignatureInvalide`) et `PaymentRepository` ; une réservation expirée peut encore être confirmée par un paiement tardif. Tests.
 - Paiement (persistance) : mapping XML de `Payment` (table `payment`, session unique), `DoctrinePaymentRepository` (`bySessionId`, `paidForReservation`). Tests d'intégration.
 - Paiement : cas d'usage `CreerSessionAcompte` (réservation en attente et bloquée, URL de retour avec `{reservationId}`), `ConfirmerPaiement` (signature vérifiée, idempotent, sous verrou : confirmation + mail `booking_confirmed` avec lien de gestion, ou remboursement automatique + mail `payment_refunded` si le créneau a été repris), `RembourserAcompte` (total ou partiel) ; `AnnulerReservation` rembourse l'acompte en cas d'annulation gratuite. Tests avec un faux prestataire.
+- Paiement : `StripeGateway` (Stripe Checkout en euros, session de 30 min, métadonnées de réservation ; remboursement sur le moyen de paiement de la session ; webhook vérifié par `Stripe\Webhook::constructEvent`, tolérance 5 min ; erreurs Stripe traduites en messages français ; paiement non configuré signalé clairement). Tests sans réseau (faux client HTTP du SDK, signatures calculées).
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

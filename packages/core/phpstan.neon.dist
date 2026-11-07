@@ -8,10 +8,6 @@ parameters:
     # Retirer l'entrée dans la branche qui implémente la classe (PHPStan signale toute entrée devenue inutile).
     reportUnmatchedIgnoredErrors: true
     ignoreErrors:
-        # feature/core-payment
-        -
-            identifier: property.onlyWritten
-            path: src/Payment/Infrastructure/StripeGateway.php
         # feature/core-notification
         -
             identifier: property.onlyWritten
