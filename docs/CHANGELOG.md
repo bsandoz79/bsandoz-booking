@@ -17,6 +17,9 @@
 - API detailing : squelette Symfony 7.4 LTS (la 7.3 n'est plus maintenue et ses versions sont bloquées pour failles de sécurité), PHP 8.3 minimum, `APP_SECRET` uniquement dans `.env.local`.
 - API detailing : kit `bsandoz/core` (dépôt `path`), Doctrine ORM et migrations (MySQL), Twig, Mailer, Security, LexikJWT, Stripe, CORS ; `VarianteResolver` du kit branché sur `DetailingVarianteResolver`. Aucun secret dans `.env` (`JWT_PASSPHRASE` dans `.env.local`).
 - API detailing : PHPUnit, PHPStan niveau 8 et MakerBundle (dev), scripts `composer test` et `composer stan`.
+- Kit back : tests complets de `Money` (zéro, immuabilité, multiplication, pourcentage arrondi au centime supérieur, minimum, égalité, format français).
+- Kit back : tests de `TimeRange` (durée, bornes invalides, chevauchement symétrique avec bornes exclues, inclusion).
+- Kit back : horloge figée `FrozenClock` (UTC, déplaçable) pour les tests, et tests de `SystemClock` / `FrozenClock` (48 tests back au total).
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
