@@ -20,6 +20,7 @@
 - Kit back : tests complets de `Money` (zéro, immuabilité, multiplication, pourcentage arrondi au centime supérieur, minimum, égalité, format français).
 - Kit back : tests de `TimeRange` (durée, bornes invalides, chevauchement symétrique avec bornes exclues, inclusion).
 - Kit back : horloge figée `FrozenClock` (UTC, déplaçable) pour les tests, et tests de `SystemClock` / `FrozenClock` (48 tests back au total).
+- Catalogue (domaine) : `Prestation` garde les identifiants de ses options (plus les objets) et expose tarifs, prix et durée de base ; `Option` a une description ; `Devis` porte la variante et la zone (dans la zone, distance, temps de trajet) ; erreur `NotFound` ; `OptionRepository::allActive()`. Tests de `Prestation`.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

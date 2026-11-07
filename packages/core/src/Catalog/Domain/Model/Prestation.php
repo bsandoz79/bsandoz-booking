@@ -6,14 +6,17 @@ namespace Bsandoz\Core\Catalog\Domain\Model;
 
 use Bsandoz\Core\Shared\Domain\Money;
 
-/** Une prestation vendue (ex. « Nettoyage intérieur »), avec ses tarifs par variante métier. */
+/**
+ * Une prestation vendue (ex. « Nettoyage intérieur »), avec ses tarifs par variante métier
+ * et la liste des options autorisées (par identifiant, les options vivant à part).
+ */
 class Prestation
 {
     /** @var array<string, Tarif> tarifs indexés par variante */
     private array $tarifs = [];
 
-    /** @var list<Option> */
-    private array $options = [];
+    /** @var list<string> identifiants des options autorisées */
+    private array $optionIds = [];
 
     public function __construct(
         private string $id,
@@ -30,6 +33,8 @@ class Prestation
     public function id(): string { return $this->id; }
     public function name(): string { return $this->name; }
     public function description(): string { return $this->description; }
+    public function basePrice(): Money { return $this->basePrice; }
+    public function baseDurationMin(): int { return $this->baseDurationMin; }
     public function isActive(): bool { return $this->active; }
     public function categoryId(): ?string { return $this->categoryId; }
     public function position(): int { return $this->position; }
@@ -39,15 +44,23 @@ class Prestation
         $this->tarifs[$tarif->variante] = $tarif;
     }
 
-    public function addOption(Option $option): void
+    /** @return array<string, Tarif> */
+    public function tarifs(): array
     {
-        $this->options[] = $option;
+        return $this->tarifs;
     }
 
-    /** @return list<Option> */
-    public function options(): array
+    public function addOption(Option $option): void
     {
-        return $this->options;
+        if (!$this->allowsOption($option->id)) {
+            $this->optionIds[] = $option->id;
+        }
+    }
+
+    /** @return list<string> */
+    public function optionIds(): array
+    {
+        return $this->optionIds;
     }
 
     public function priceFor(?string $variante): Money
@@ -62,11 +75,6 @@ class Prestation
 
     public function allowsOption(string $optionId): bool
     {
-        foreach ($this->options as $option) {
-            if ($option->id === $optionId) {
-                return true;
-            }
-        }
-        return false;
+        return in_array($optionId, $this->optionIds, true);
     }
 }

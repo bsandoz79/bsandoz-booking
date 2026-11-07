@@ -15,6 +15,7 @@ final class Option
         public readonly Money $price,
         public readonly int $durationMin,
         public readonly bool $active = true,
+        public readonly string $description = '',
     ) {
     }
 }
