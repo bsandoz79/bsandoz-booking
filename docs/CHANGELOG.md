@@ -13,6 +13,7 @@
 - Kit back : accesseurs des entités `User` (prénom, nom, téléphone, date de création) et `Reservation` (prestation, variante, options, adresse, coordonnées, frais de déplacement, données métier, notes), avec tests unitaires (5 tests).
 
 - Kit back : configuration PHPStan `phpstan.neon.dist` (niveau 8, `src` et `tests`) ; les dépendances encore inutilisées des classes `@todo` sont ignorées classe par classe, à retirer dans la branche qui les implémente.
+- Kit back : `composer.lock` non versionné (bibliothèque : les versions sont fixées par chaque application cliente).
 
 ### Corrigé
 - Kit back : types des tableaux renvoyés précisés pour PHPStan niveau 8 (`ExporterDonnees`, `ListerCreneaux` → `list<TimeRange>`, `ListerJoursDisponibles` → dates `Y-m-d`, `PaymentGateway` → `{sessionId, url}` et événement décodé).
