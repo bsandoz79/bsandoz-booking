@@ -117,4 +117,50 @@ final class DoctrineReservationRepositoryTest extends DoctrineTestCase
         $this->expectException(NotFound::class);
         $this->repository->get('inconnue');
     }
+
+    public function testReservationsDontLeBlocageAExpire(): void
+    {
+        $now = self::utc('2026-11-07 10:00');
+        $this->repository->save(Reservation::hold(self::reservation('expiree', '2026-11-10 08:00', '2026-11-10 09:00'), $now->modify('-15 minutes'), 10));
+        $this->repository->save(Reservation::hold(self::reservation('pile', '2026-11-10 10:00', '2026-11-10 11:00'), $now->modify('-10 minutes'), 10));
+        $this->repository->save(Reservation::hold(self::reservation('en-cours', '2026-11-10 12:00', '2026-11-10 13:00'), $now->modify('-5 minutes'), 10));
+        $confirmee = self::reservation('confirmee', '2026-11-10 14:00', '2026-11-10 15:00');
+        $confirmee->confirm();
+        $this->repository->save($confirmee);
+        $this->reload();
+
+        $ids = array_map(static fn (Reservation $r): string => $r->id(), $this->repository->pendingHoldExpired($now));
+        sort($ids);
+
+        self::assertSame(['expiree', 'pile'], $ids);
+    }
+
+    public function testVerrouAgendaEnregistreDansUneTransaction(): void
+    {
+        $resultat = $this->repository->dansVerrouAgenda(function (): string {
+            $this->repository->save(self::reservation('r-1', '2026-11-10 08:00', '2026-11-10 09:00'));
+
+            return 'fait';
+        });
+        $this->reload();
+
+        self::assertSame('fait', $resultat);
+        self::assertSame('r-1', $this->repository->get('r-1')->id());
+    }
+
+    public function testVerrouAgendaAnnuleTouteLOperationEnCasDErreur(): void
+    {
+        try {
+            $this->repository->dansVerrouAgenda(function (): void {
+                $this->repository->save(self::reservation('r-1', '2026-11-10 08:00', '2026-11-10 09:00'));
+                throw new \RuntimeException('échec après enregistrement');
+            });
+        } catch (\RuntimeException $e) {
+            self::assertSame('échec après enregistrement', $e->getMessage(), 'l\'exception remonte');
+        }
+
+        $this->em->clear();
+        $this->expectException(NotFound::class);
+        $this->repository->get('r-1');
+    }
 }

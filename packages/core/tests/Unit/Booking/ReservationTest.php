@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bsandoz\Core\Tests\Unit\Booking;
 
+use Bsandoz\Core\Booking\Domain\Model\BookingRules;
 use Bsandoz\Core\Booking\Domain\Model\Reservation;
 use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
 use Bsandoz\Core\Shared\Domain\DomainError;
@@ -77,5 +78,105 @@ final class ReservationTest extends TestCase
 
         $this->expectException(DomainError::class);
         $r->confirm();
+    }
+
+    // Rendez-vous le mardi 10/11/2026 à 08:00 UTC ; annulation gratuite jusqu'à 48 h avant (dimanche 08/11 08:00).
+
+    public function testAnnulationGratuiteRembourseLAcompte(): void
+    {
+        $r = $this->reservation();
+        $r->confirm();
+
+        self::assertTrue($r->cancel($this->utc('2026-11-08 08:00'), new BookingRules()), 'pile 48 h avant');
+        self::assertSame(ReservationStatus::Cancelled, $r->status());
+        self::assertFalse($r->blocks($this->utc('2026-11-08 08:00')), 'le créneau est libéré');
+    }
+
+    public function testAnnulationTardiveSansRemboursement(): void
+    {
+        $r = $this->reservation();
+        $r->confirm();
+
+        self::assertFalse($r->cancel($this->utc('2026-11-08 08:01'), new BookingRules()));
+        self::assertSame(ReservationStatus::Cancelled, $r->status());
+    }
+
+    public function testAnnulationEnAttenteDePaiementSansRemboursement(): void
+    {
+        $r = Reservation::hold($this->reservation(), $this->utc('2026-11-01 10:00'), 10);
+
+        self::assertFalse($r->cancel($this->utc('2026-11-01 10:05'), new BookingRules()), 'rien n\'a été versé');
+        self::assertNull($r->holdExpiresAt());
+    }
+
+    public function testAnnulationImpossibleDeuxFois(): void
+    {
+        $r = $this->reservation();
+        $r->cancel($this->utc('2026-11-01 10:00'), new BookingRules());
+
+        $this->expectException(DomainError::class);
+        $r->cancel($this->utc('2026-11-01 10:00'), new BookingRules());
+    }
+
+    public function testAnnulationImpossibleApresLeRendezVous(): void
+    {
+        $r = $this->reservation();
+        $r->confirm();
+
+        $this->expectException(DomainError::class);
+        $r->cancel($this->utc('2026-11-10 08:00'), new BookingRules());
+    }
+
+    public function testDeplacement(): void
+    {
+        $r = $this->reservation();
+        $r->confirm();
+        $nouvelle = new TimeRange($this->utc('2026-11-12 13:00'), $this->utc('2026-11-12 15:00'));
+
+        $r->reschedule($nouvelle, $this->utc('2026-11-05 10:00'), new BookingRules());
+
+        self::assertSame($nouvelle, $r->period());
+    }
+
+    public function testDeplacementTropTardif(): void
+    {
+        $r = $this->reservation();
+        $r->confirm();
+
+        $this->expectException(DomainError::class);
+        $r->reschedule(new TimeRange($this->utc('2026-11-20 08:00'), $this->utc('2026-11-20 10:00')), $this->utc('2026-11-09 08:00'), new BookingRules());
+    }
+
+    public function testDeplacementVersUneDateTropProche(): void
+    {
+        $r = $this->reservation();
+        $r->confirm();
+
+        $this->expectException(DomainError::class);
+        $r->reschedule(new TimeRange($this->utc('2026-11-05 20:00'), $this->utc('2026-11-05 22:00')), $this->utc('2026-11-05 10:00'), new BookingRules());
+    }
+
+    public function testDeplacementDUneReservationNonConfirmee(): void
+    {
+        $this->expectException(DomainError::class);
+        $this->reservation()->reschedule(new TimeRange($this->utc('2026-11-20 08:00'), $this->utc('2026-11-20 10:00')), $this->utc('2026-11-01 08:00'), new BookingRules());
+    }
+
+    public function testExpiration(): void
+    {
+        $r = Reservation::hold($this->reservation(), $this->utc('2026-11-01 10:00'), 10);
+        $r->expire();
+
+        self::assertSame(ReservationStatus::Expired, $r->status());
+        self::assertNull($r->holdExpiresAt());
+    }
+
+    public function testUneReservationConfirmeeNExpirePas(): void
+    {
+        $r = $this->reservation();
+        $r->confirm();
+
+        $this->expectException(DomainError::class);
+        $r->expire();
     }
 }

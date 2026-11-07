@@ -49,3 +49,11 @@ Paramètres : `duration` (minutes, devis compris options), `lat` / `lng` (obliga
 - `/booking/slots?date=2026-11-10&duration=150&lat=49.89&lng=2.29` → `[{"start": "2026-11-10T07:30:00+00:00", "end": "2026-11-10T10:00:00+00:00", "label": "08:30"}]` (`start` / `end` en UTC, `label` en heure locale du pro)
 
 Les créneaux tiennent compte du trajet, des congés, et des réservations confirmées ou en cours de paiement (chacune étendue de son propre trajet). Adresse hors zone ou manquante : 422 ; paramètre invalide : 400.
+
+## POST /booking/reservations
+Corps : `{"prestationId", "optionIds": [], "metierData": {}, "variante"?, "start": "2026-11-10T08:00:00+00:00", "address": {"label", "lat", "lng"} | null, "firstname", "lastname", "email", "phone", "notes"?, "acceptedTerms": true}` — `start` tel que renvoyé par `/booking/slots` ; `address` null pour une activité sur place.
+
+Réponse 201 : `{"reservationId", "status": "pending_payment" | "confirmed", "totalCents", "depositCents", "holdExpiresAt", "paymentUrl": null}`.
+Sous verrou d'agenda : devis recalculé côté serveur, créneau revérifié, compte client créé (ou compte existant réutilisé), réservation bloquée `holdMinutes` (10 min) en attente de l'acompte, ou confirmée directement sans acompte. `paymentUrl` sera rempli à partir de `feature/core-payment`. Créneau déjà pris, CGV non acceptées, adresse hors zone : 422.
+
+Cron : `php bin/console bsandoz:reservations:expirer` passe en « expirée » les réservations dont le blocage est dépassé.

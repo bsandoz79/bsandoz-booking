@@ -2,7 +2,7 @@
 
 | Table | Module | Champs principaux |
 | --- | --- | --- |
-| user | Auth | id UUID, email unique, password nullable, roles, status (pending/active), firstname, lastname, phone (chiffré), created_at |
+| user_account | Auth | id UUID, email unique (minuscules), password_hash nullable, roles JSON, status (pending/active/deleted), firstname, lastname, phone (chiffrement prévu), created_at (UTC) |
 | auth_token | Auth | user_id, type (activation/reset/manage), token_hash, expires_at, used_at |
 | refresh_token | Auth | user_id, token_hash, expires_at |
 | category | Catalog | id, name, position |

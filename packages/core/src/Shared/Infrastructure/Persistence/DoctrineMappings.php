@@ -20,6 +20,7 @@ final class DoctrineMappings
         return [
             'BsandozShared' => ['dir' => $src . '/Shared/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Shared\Domain'],
             'BsandozCatalog' => ['dir' => $src . '/Catalog/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Catalog\Domain\Model'],
+            'BsandozAuth' => ['dir' => $src . '/Auth/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Auth\Domain\Model'],
             'BsandozBooking' => ['dir' => $src . '/Booking/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Booking\Domain\Model'],
         ];
     }

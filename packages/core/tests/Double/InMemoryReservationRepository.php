@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bsandoz\Core\Tests\Double;
 
 use Bsandoz\Core\Booking\Domain\Model\Reservation;
+use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Shared\Domain\NotFound;
 
@@ -13,6 +14,7 @@ final class InMemoryReservationRepository implements ReservationRepository
     /** @var array<string, Reservation> */
     private array $items = [];
 
+    /** Nombre de passages dans le verrou d'agenda. */
     public int $locks = 0;
 
     public function __construct(Reservation ...$reservations)
@@ -48,8 +50,15 @@ final class InMemoryReservationRepository implements ReservationRepository
         $this->items[$reservation->id()] = $reservation;
     }
 
-    public function lockAgenda(): void
+    public function pendingHoldExpired(\DateTimeImmutable $now): array
+    {
+        return array_values(array_filter($this->items, static fn (Reservation $r): bool => $r->status() === ReservationStatus::PendingPayment && $r->holdExpiresAt() !== null && $r->holdExpiresAt() <= $now));
+    }
+
+    public function dansVerrouAgenda(callable $operation): mixed
     {
         ++$this->locks;
+
+        return $operation();
     }
 }
