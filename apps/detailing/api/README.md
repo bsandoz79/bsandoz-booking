@@ -6,7 +6,6 @@ Application Symfony du client detailing. Elle installe le kit `bsandoz/core` et 
 ```bash
 composer install
 cp .env .env.local                          # puis renseigner les valeurs ci-dessous
-php bin/console lexik:jwt:generate-keypair  # clés JWT dans config/jwt/ (non versionnées)
 ```
 Le kit `bsandoz/core` est installé depuis `../../../packages/core` (dépôt Composer `path`, lien symbolique) ; `BsandozCoreBundle` est enregistré dans `config/bundles.php`.
 
@@ -30,7 +29,7 @@ Puis ajouter dans `composer.json` : `"autoload": {"psr-4": {"App\\": "src/"}}` (
 ## Configuration (`.env.local`, jamais versionné)
 ```
 APP_SECRET=      # php -r "echo bin2hex(random_bytes(16));"
-JWT_PASSPHRASE=  # php -r "echo bin2hex(random_bytes(32));"
+JWT_SECRET=      # php -r "echo bin2hex(random_bytes(32));"  (signature HS256 des jetons d'accès)
 DATABASE_URL="mysql://utilisateur:motdepasse@127.0.0.1:3306/detailing?serverVersion=8.0"
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
@@ -51,3 +50,6 @@ Réglages du kit (zone de démonstration, règles) : `config/packages/bsandoz_co
 
 ## Tests
 `composer test` lance aussi les tests fonctionnels (`tests/Functional`) : de la requête HTTP à la base, sur une base SQLite jetable (`var/test.db`, définie dans `.env.test`), avec le vrai résolveur detailing.
+
+## Sécurité (`config/packages/security.yaml`)
+Pare-feu `api` sans état : jeton d'accès JWT (15 min, HS256 avec `JWT_SECRET`) en `Authorization: Bearer …`, comptes chargés par le kit (`SecurityUserProvider`). `/api/v1/me` exige `ROLE_CLIENT`, `/api/v1/admin` `ROLE_PRO` (le pro a aussi les droits client). La session dure 30 jours grâce au cookie httpOnly renouvelé par `POST /api/v1/auth/refresh`.

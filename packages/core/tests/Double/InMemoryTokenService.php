@@ -19,19 +19,26 @@ final class InMemoryTokenService implements TokenService
     {
     }
 
-    public function issue(string $subjectId, TokenType $type, \DateInterval $ttl): string
+    public function issue(string $subjectId, TokenType $type, \DateInterval $ttl, bool $replacePrevious = true): string
     {
-        foreach ($this->tokens as &$token) {
-            if ($token['subject'] === $subjectId && $token['type'] === $type) {
-                $token['used'] = true;
-            }
+        if ($replacePrevious) {
+            $this->revokeAll($subjectId, $type);
         }
-        unset($token);
 
         $plain = sprintf('%s-%d', $type->value, $this->next++);
         $this->tokens[$plain] = ['subject' => $subjectId, 'type' => $type, 'expiresAt' => $this->clock->now()->add($ttl), 'used' => false];
 
         return $plain;
+    }
+
+    public function revokeAll(string $subjectId, TokenType ...$types): void
+    {
+        foreach ($this->tokens as &$token) {
+            if ($token['subject'] === $subjectId && in_array($token['type'], $types, true)) {
+                $token['used'] = true;
+            }
+        }
+        unset($token);
     }
 
     public function consume(string $plainToken, TokenType $type): ?string

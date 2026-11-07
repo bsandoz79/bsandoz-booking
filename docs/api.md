@@ -76,3 +76,17 @@ Lien inconnu ou expiré : 404.
 
 ## Limitation des tentatives
 Par adresse IP et par heure (fenêtre glissante) : réservation 10, activation / nouveau mot de passe 10, mot de passe oublié 5, gestion par lien 30. Au-delà : 429 avec l'en-tête `Retry-After`.
+
+## Session (`/auth/login`, `/auth/refresh`, `/auth/logout`)
+- `POST /auth/login` `{"email", "password"}` → `{"token", "expiresIn": 900, "roles"}` et cookie `bsandoz_refresh` (httpOnly, Secure, SameSite=Strict, chemin `/api/v1/auth`, 30 jours). Identifiants refusés : 401, même message dans tous les cas. Limite : 10 tentatives par heure et par IP.
+- `POST /auth/refresh` (cookie) → nouveau jeton d'accès et nouveau cookie ; l'ancien cookie ne sert plus (rotation). Session expirée : 401.
+- `POST /auth/logout` (cookie) → 204, cookie effacé.
+Le jeton d'accès s'envoie en `Authorization: Bearer …`. Plusieurs appareils peuvent être connectés ; un nouveau mot de passe les déconnecte tous.
+
+## Espace client (`/me`, rôle client)
+- `GET /me` → `{"id", "email", "firstname", "lastname", "phone", "roles"}`
+- `GET /me/reservations` → mes réservations (de la plus récente à la plus ancienne)
+- `PATCH /me/reservations/{id}` `{"start"}` → 204 (déplacement, mêmes règles que le lien de gestion) ; `DELETE /me/reservations/{id}` → `{"refundable"}`
+- `GET /me/export` → toutes mes données en JSON (fichier `mes-donnees.json`)
+- `DELETE /me` → 204 : compte anonymisé, sessions fermées, accès coupé immédiatement ; refusé (422) s'il reste un rendez-vous à venir.
+Réservation d'un autre client : 404. Sans jeton : 401.

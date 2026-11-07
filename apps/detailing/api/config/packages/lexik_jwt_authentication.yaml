@@ -1,4 +1,7 @@
+# Jeton d'accès JWT signé en HS256 avec JWT_SECRET (.env.local, au moins 32 caractères) : pas de fichiers de clés.
+# Durée courte (15 min) ; la session est renouvelée par le cookie de 30 jours (POST /api/v1/auth/refresh).
 lexik_jwt_authentication:
-    secret_key: '%env(resolve:JWT_SECRET_KEY)%'
-    public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
-    pass_phrase: '%env(JWT_PASSPHRASE)%'
+    secret_key: '%env(JWT_SECRET)%'
+    token_ttl: 900
+    encoder:
+        signature_algorithm: HS256

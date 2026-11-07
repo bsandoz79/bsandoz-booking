@@ -10,4 +10,5 @@ enum TokenType: string
     case PasswordReset = 'reset';
     case ManageReservation = 'manage';
     case EmailChange = 'email_change';
+    case Refresh = 'refresh';
 }

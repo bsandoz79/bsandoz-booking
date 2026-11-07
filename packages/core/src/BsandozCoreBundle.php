@@ -69,6 +69,7 @@ final class BsandozCoreBundle extends AbstractBundle
     /** Limites de tentatives par adresse IP (fenêtre glissante d'une heure). */
     public const RATE_LIMITS = [
         'bsandoz_reservation' => 10,
+        'bsandoz_login' => 10,
         'bsandoz_activation' => 10,
         'bsandoz_forgot' => 5,
         'bsandoz_manage' => 30,
