@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bsandoz\Core\Payment\Infrastructure;
 
+use Bsandoz\Core\Payment\Domain\Model\EvenementPaiement;
 use Bsandoz\Core\Payment\Domain\Port\PaymentGateway;
 use Bsandoz\Core\Shared\Domain\Money;
 
@@ -23,9 +24,6 @@ final class StripeGateway implements PaymentGateway
     /** @todo \Stripe\Refund::create sur le payment_intent de la session. */
     public function refund(string $sessionId, Money $amount): void { throw new \LogicException('À implémenter'); }
 
-    /**
-     * @return array<string, mixed>
-     * @todo \Stripe\Webhook::constructEvent($payload, $signatureHeader, $this->webhookSecret).
-     */
-    public function parseWebhook(string $payload, string $signatureHeader): array { throw new \LogicException('À implémenter'); }
+    /** @todo \Stripe\Webhook::constructEvent($payload, $signatureHeader, $this->webhookSecret). */
+    public function parseWebhook(string $payload, string $signatureHeader): EvenementPaiement { throw new \LogicException('À implémenter'); }
 }

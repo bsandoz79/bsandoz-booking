@@ -68,9 +68,13 @@ class Reservation
         return $this->status->blocksSlot();
     }
 
+    /**
+     * Confirme après paiement de l'acompte (ou sans acompte). Une réservation expirée peut encore l'être :
+     * le paiement peut arriver après la fin du blocage ; le cas d'usage vérifie alors que le créneau est toujours libre.
+     */
     public function confirm(): void
     {
-        if ($this->status !== ReservationStatus::PendingPayment) {
+        if (!in_array($this->status, [ReservationStatus::PendingPayment, ReservationStatus::Expired], true)) {
             throw new DomainError('Seule une réservation en attente de paiement peut être confirmée.');
         }
         $this->status = ReservationStatus::Confirmed;

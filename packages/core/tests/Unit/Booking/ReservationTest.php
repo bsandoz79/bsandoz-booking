@@ -179,4 +179,22 @@ final class ReservationTest extends TestCase
         $this->expectException(DomainError::class);
         $r->expire();
     }
+
+    public function testPaiementTardifApresExpirationDuBlocage(): void
+    {
+        $r = Reservation::hold($this->reservation(), $this->utc('2026-11-01 10:00'), 10);
+        $r->expire();
+        $r->confirm();
+
+        self::assertSame(ReservationStatus::Confirmed, $r->status());
+    }
+
+    public function testUneReservationAnnuleeNePeutPasEtreConfirmee(): void
+    {
+        $r = $this->reservation();
+        $r->cancel($this->utc('2026-11-01 10:00'), new BookingRules());
+
+        $this->expectException(DomainError::class);
+        $r->confirm();
+    }
 }
