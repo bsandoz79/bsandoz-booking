@@ -48,7 +48,7 @@ final class PrestationTest extends TestCase
 
     public function testExposeSesDonnees(): void
     {
-        $p = new Prestation('int', 'Intérieur', Money::cents(6900), 90, 'Description', false, 'cat-1', 3);
+        $p = new Prestation('int', 'Intérieur', Money::cents(6900), 90, 'Description', false, 'cat-1', 3, true);
 
         self::assertSame('int', $p->id());
         self::assertSame('Intérieur', $p->name());
@@ -58,5 +58,7 @@ final class PrestationTest extends TestCase
         self::assertFalse($p->isActive());
         self::assertSame('cat-1', $p->categoryId());
         self::assertSame(3, $p->position());
+        self::assertTrue($p->occupePlage());
+        self::assertFalse((new Prestation('x', 'X', Money::cents(1), 1))->occupePlage(), 'durée fiable par défaut');
     }
 }

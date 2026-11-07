@@ -30,7 +30,7 @@ final class DoctrineCatalogRepositoriesTest extends DoctrineTestCase
         $option = new Option('o-1', 'Option A', Money::cents(1500), 30, true, 'Description A');
         $this->options->save($option);
 
-        $p = new Prestation('p-1', 'Prestation', Money::cents(6900), 90, 'Description', true, 'cat-1', 2);
+        $p = new Prestation('p-1', 'Prestation', Money::cents(6900), 90, 'Description', true, 'cat-1', 2, true);
         $p->addTarif(new Tarif('v-1', Money::cents(7900), 105));
         $p->addTarif(new Tarif('v-2', Money::cents(8900), 120));
         $p->addOption($option);
@@ -45,6 +45,7 @@ final class DoctrineCatalogRepositoriesTest extends DoctrineTestCase
         self::assertSame(90, $relue->baseDurationMin());
         self::assertSame('cat-1', $relue->categoryId());
         self::assertSame(2, $relue->position());
+        self::assertTrue($relue->occupePlage());
         self::assertSame(['v-1', 'v-2'], array_keys($relue->tarifs()));
         self::assertSame(8900, $relue->priceFor('v-2')->cents);
         self::assertSame(120, $relue->durationFor('v-2'));

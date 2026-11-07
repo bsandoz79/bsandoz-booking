@@ -19,13 +19,17 @@ use Bsandoz\Core\Shared\Domain\TimeRange;
  * sont possibles ; un créneau commun à deux plages qui se chevauchent n'est compté qu'une fois.
  * Les heures d'ouverture sont en heure locale ($tz) ; tout le reste est comparé en instants absolus.
  * $day désigne une date locale : passer une date construite dans $tz.
+ *
+ * Prestation à durée incertaine ($occupePlage) : un seul créneau par plage d'ouverture (ex. matin, après-midi),
+ * à l'ouverture + trajet, proposé seulement si toute la plage est libre ; il occupe la plage jusqu'à sa fermeture
+ * (le créneau renvoyé se termine à la fermeture, pour bloquer le reste de la demi-journée une fois réservé).
  */
 final class CreneauCalculator
 {
     /**
      * @param list<OpeningHour> $openingHours
      * @param list<TimeRange> $busy
-     * @return list<TimeRange> créneaux (début → fin de la prestation)
+     * @return list<TimeRange> créneaux (début → fin de la prestation, ou fermeture de la plage si $occupePlage)
      */
     public function creneauxDuJour(
         \DateTimeImmutable $day,
@@ -36,6 +40,7 @@ final class CreneauCalculator
         BookingRules $rules,
         \DateTimeImmutable $now,
         \DateTimeZone $tz,
+        bool $occupePlage = false,
     ): array {
         if ($durationMin < 1) {
             throw new DomainError('La durée d\'une prestation doit être d\'au moins une minute.');
@@ -56,6 +61,14 @@ final class CreneauCalculator
             }
             $open = new TimeRange($this->at($localDay, $opening->startsAt), $this->at($localDay, $opening->endsAt));
             $start = $open->start->modify(sprintf('+%d minutes', $travelMin));
+
+            if ($occupePlage) {
+                $fits = $start->modify(sprintf('+%d minutes', $durationMin)) <= $open->end;
+                if ($fits && $start >= $earliest && $start <= $latest && !$this->overlapsAny($open, $busy)) {
+                    $slots[$start->getTimestamp()] = new TimeRange($start, $open->end);
+                }
+                continue;
+            }
 
             while (true) {
                 $end = $start->modify(sprintf('+%d minutes', $durationMin));
@@ -95,11 +108,12 @@ final class CreneauCalculator
         BookingRules $rules,
         \DateTimeImmutable $now,
         \DateTimeZone $tz,
+        bool $occupePlage = false,
     ): array {
         $first = new \DateTimeImmutable(sprintf('%04d-%02d-01 00:00', $year, $month), $tz);
         $days = [];
         for ($d = $first; (int) $d->format('n') === $month; $d = $d->modify('+1 day')) {
-            if ($this->creneauxDuJour($d, $durationMin, $travelMin, $openingHours, $busy, $rules, $now, $tz) !== []) {
+            if ($this->creneauxDuJour($d, $durationMin, $travelMin, $openingHours, $busy, $rules, $now, $tz, $occupePlage) !== []) {
                 $days[] = $d->format('Y-m-d');
             }
         }

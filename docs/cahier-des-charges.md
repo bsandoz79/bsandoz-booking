@@ -11,6 +11,8 @@ Artisan de detailing auto **à domicile** (tout se fait chez le client), plus ne
    4. Options (ex. poils d'animaux, siège enfant, moteur, traitement céramique) : prix et durée en plus. Mention « prix ajustable sur place si le véhicule ne correspond pas ».
    5. Adresse : contrôle de la zone, frais kilométriques au-delà du rayon gratuit, questions pratiques (parking, accès eau/électricité).
    6. Créneau : calendrier du mois entier, jours disponibles en évidence, créneaux du jour (durée + trajet), réservation au plus tôt le lendemain.
+      - Prestation à **durée fiable** : elle n'occupe que sa durée estimée (+ trajet et marge) ; d'autres rendez-vous peuvent suivre dans la même demi-journée.
+      - Prestation à **durée incertaine** (réglage par prestation) : proposée seulement en début de demi-journée (matin ou après-midi, d'après les plages d'ouverture), si la demi-journée est entièrement libre ; elle la bloque jusqu'à la fermeture. Le rendez-vous suivant est au plus tôt la demi-journée d'après.
    7. Coordonnées (sans mot de passe), récapitulatif, acceptation des CGV.
    8. Acompte en ligne (Stripe : carte, Apple Pay, Google Pay), confirmation.
 3. **Mails** : confirmation + .ics + lien « gérer mon rendez-vous » + bouton « créer mon mot de passe » ; rappel la veille ; annulation.

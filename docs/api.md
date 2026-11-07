@@ -27,7 +27,7 @@ Erreurs en `application/problem+json`, montants en centimes, dates ISO 8601 UTC.
 ```json
 {
   "formules": [{"id": "interieur", "category": "auto", "name": "Intérieur", "description": "…",
-                "basePriceCents": 6900, "baseDurationMin": 90,
+                "basePriceCents": 6900, "baseDurationMin": 90, "occupePlage": false,
                 "tarifs": {"suv": {"priceCents": 8900, "durationMin": 120}}, "optionIds": ["poils"]}],
   "options": [{"id": "poils", "name": "Poils d'animaux", "description": "…", "priceCents": 1500, "durationMin": 30}]
 }

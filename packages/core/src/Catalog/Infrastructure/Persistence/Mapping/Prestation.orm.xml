@@ -15,6 +15,7 @@
         <field name="active" type="boolean"/>
         <field name="categoryId" column="category_id" type="string" length="36" nullable="true"/>
         <field name="position" type="integer"/>
+        <field name="occupePlage" column="occupe_plage" type="boolean"/>
         <field name="tarifs" type="bsandoz_tarifs"/>
         <field name="optionIds" column="option_ids" type="json"/>
     </entity>
