@@ -32,7 +32,7 @@ final class CatalogApiTest extends WebTestCase
         $poils = new Option('poils', 'Poils d\'animaux', Money::cents(1500), 30, true, 'Retrait des poils incrustés.');
         $em->persist($poils);
 
-        $interieur = new Prestation('interieur', 'Intérieur', Money::cents(6900), 90, 'Aspiration, plastiques, vitres.', true, 'auto', 0);
+        $interieur = new Prestation('interieur', 'Intérieur', Money::cents(6900), 90, 'Aspiration, plastiques, vitres.', true, 'auto', 0, false);
         $interieur->addTarif(new Tarif('citadine', Money::cents(6900), 90));
         $interieur->addTarif(new Tarif('suv', Money::cents(8900), 120));
         $interieur->addOption($poils);
@@ -63,6 +63,7 @@ final class CatalogApiTest extends WebTestCase
         self::assertSame('auto', $catalogue['formules'][0]['category']);
         self::assertSame(['priceCents' => 8900, 'durationMin' => 120], $catalogue['formules'][0]['tarifs']['suv']);
         self::assertSame(['poils'], $catalogue['formules'][0]['optionIds']);
+        self::assertFalse($catalogue['formules'][0]['occupePlage']);
         self::assertSame('poils', $catalogue['options'][0]['id']);
     }
 

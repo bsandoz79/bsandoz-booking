@@ -6,7 +6,7 @@
 | auth_token | Auth | user_id, type (activation/reset/manage), token_hash, expires_at, used_at |
 | refresh_token | Auth | user_id, token_hash, expires_at |
 | category | Catalog | id, name, position |
-| prestation | Catalog | id, category_id, name, description, base_price_cents, base_duration_min, active, position, tarifs JSON `{"<variante>": {"price_cents", "duration_min"}}`, option_ids JSON (photo : plus tard) |
+| prestation | Catalog | id, category_id, name, description, base_price_cents, base_duration_min, active, position, occupe_plage (durée incertaine : occupe la demi-journée), tarifs JSON `{"<variante>": {"price_cents", "duration_min"}}`, option_ids JSON (photo : plus tard) |
 | catalog_option | Catalog | id, name, description, price_cents, duration_min, active (« option » est un mot réservé MySQL) |
 | opening_hour | Booking | weekday (1-7), starts_at, ends_at |
 | unavailability | Booking | starts_at, ends_at, reason |

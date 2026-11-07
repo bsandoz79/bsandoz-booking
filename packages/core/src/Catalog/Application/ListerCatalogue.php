@@ -13,7 +13,7 @@ use Bsandoz\Core\Catalog\Domain\Port\PrestationRepository;
  * Renvoie le catalogue public : prestations actives (« formules ») avec leurs tarifs par variante,
  * et les options actives proposées par au moins une de ces prestations.
  *
- * @phpstan-type Formule array{id: string, category: string|null, name: string, description: string, basePriceCents: int, baseDurationMin: int, tarifs: array<string, array{priceCents: int, durationMin: int}>, optionIds: list<string>}
+ * @phpstan-type Formule array{id: string, category: string|null, name: string, description: string, basePriceCents: int, baseDurationMin: int, occupePlage: bool, tarifs: array<string, array{priceCents: int, durationMin: int}>, optionIds: list<string>}
  * @phpstan-type OptionItem array{id: string, name: string, description: string, priceCents: int, durationMin: int}
  */
 final class ListerCatalogue
@@ -70,6 +70,7 @@ final class ListerCatalogue
             'description' => $prestation->description(),
             'basePriceCents' => $prestation->basePrice()->cents,
             'baseDurationMin' => $prestation->baseDurationMin(),
+            'occupePlage' => $prestation->occupePlage(),
             'tarifs' => $tarifs,
             'optionIds' => $optionIds,
         ];

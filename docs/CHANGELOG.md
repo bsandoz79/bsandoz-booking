@@ -33,6 +33,7 @@
 - Réservation : tests complets de `CreneauCalculator` (pas, tampon, trajet, occupations, plusieurs plages, délai minimum, horizon, changement d'heure, fuseaux, jours disponibles du mois) ; durée et trajet invalides refusés.
 - Réservation : tests complets de `ZoneCalculator` (calculs exacts, coefficient routier, vitesse, limites du rayon gratuit et de la distance maximale, gratuité, symétrie).
 - Réservation : prestations à durée incertaine (`occupePlage` dans `CreneauCalculator`) : un seul créneau par plage d'ouverture, en début de plage, si elle est entièrement libre ; le créneau occupe la plage jusqu'à la fermeture. Tests.
+- Catalogue : réglage `occupePlage` par prestation (durée incertaine), persisté (colonne `occupe_plage`, migration) et renvoyé dans `GET /catalog`.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

@@ -26,7 +26,7 @@ final class ListerCatalogueTest extends TestCase
         $p1->addTarif(new Tarif('v-1', Money::cents(7900), 105));
         $p1->addOption($o1);
         $p1->addOption($inactive);
-        $p2 = new Prestation('p-2', 'Deuxième', Money::cents(4900), 60, position: 1);
+        $p2 = new Prestation('p-2', 'Deuxième', Money::cents(4900), 60, position: 1, occupePlage: true);
         $p2->addOption($o2);
         $masquee = new Prestation('p-3', 'Masquée', Money::cents(100), 10, active: false);
         $masquee->addOption($orpheline);
@@ -44,6 +44,7 @@ final class ListerCatalogueTest extends TestCase
                 'description' => 'Description 1',
                 'basePriceCents' => 6900,
                 'baseDurationMin' => 90,
+                'occupePlage' => false,
                 'tarifs' => ['v-1' => ['priceCents' => 7900, 'durationMin' => 105]],
                 'optionIds' => ['o-1'],
             ],
@@ -54,6 +55,7 @@ final class ListerCatalogueTest extends TestCase
                 'description' => '',
                 'basePriceCents' => 4900,
                 'baseDurationMin' => 60,
+                'occupePlage' => true,
                 'tarifs' => [],
                 'optionIds' => ['o-2'],
             ],

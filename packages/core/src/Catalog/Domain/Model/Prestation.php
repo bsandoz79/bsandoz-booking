@@ -9,6 +9,7 @@ use Bsandoz\Core\Shared\Domain\Money;
 /**
  * Une prestation vendue (ex. « Nettoyage intérieur »), avec ses tarifs par variante métier
  * et la liste des options autorisées (par identifiant, les options vivant à part).
+ * Durée incertaine ($occupePlage) : la prestation occupe toute la plage d'ouverture (demi-journée) où elle commence.
  */
 class Prestation
 {
@@ -27,6 +28,7 @@ class Prestation
         private bool $active = true,
         private ?string $categoryId = null,
         private int $position = 0,
+        private bool $occupePlage = false,
     ) {
     }
 
@@ -38,6 +40,8 @@ class Prestation
     public function isActive(): bool { return $this->active; }
     public function categoryId(): ?string { return $this->categoryId; }
     public function position(): int { return $this->position; }
+    /** Vrai si la durée est incertaine : la prestation bloque toute la demi-journée. */
+    public function occupePlage(): bool { return $this->occupePlage; }
 
     public function addTarif(Tarif $tarif): void
     {
