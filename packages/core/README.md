@@ -17,3 +17,7 @@ Mapping Doctrine en XML dans `src/<Module>/Infrastructure/Persistence/Mapping/` 
 
 Déjà implémenté et testé : `Shared\Domain\Money`, `Booking\Domain\Service\CreneauCalculator`, `Booking\Domain\Service\ZoneCalculator`, `Catalog\Domain\Service\PrixCalculator`.
 Le reste : méthodes `@todo` à implémenter selon `docs/plan.md`.
+
+## Qualité
+- `composer test` : PHPUnit (`tests/Unit`).
+- `composer stan` : PHPStan niveau 8, configuré dans `phpstan.neon.dist`. Les classes encore `@todo` y ont une entrée `ignoreErrors` (dépendances injectées non lues) : la supprimer dès que la classe est implémentée.

@@ -27,7 +27,7 @@
     "autoload-dev": { "psr-4": { "Bsandoz\\Core\\Tests\\": "tests/" } },
     "scripts": {
         "test": "phpunit",
-        "stan": "phpstan analyse src tests --level=8"
+        "stan": "phpstan analyse --no-progress"
     },
     "config": { "sort-packages": true }
 }
