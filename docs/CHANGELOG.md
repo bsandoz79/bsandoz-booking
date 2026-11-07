@@ -48,6 +48,7 @@
 - Adresses : `ApiAdresseGeocoder` (Base Adresse Nationale, gratuite ; cache 1 jour pour l'autocomplétion, 30 jours pour le géocodage ; API indisponible → aucun résultat, rien en cache), cas d'usage `RechercherAdresse`, route `GET /api/v1/geo/search`. Tests avec un faux client HTTP.
 - Comptes : jetons envoyés par mail (`AuthToken`, `DoctrineTokenService` : 32 octets aléatoires, seul le hachage SHA-256 est stocké, usage unique ou réutilisable pour la gestion d'une réservation, seul le dernier lien d'un même type fonctionne), port `PasswordHasher` (hachage « auto » de Symfony), `PolitiqueMotDePasse` (10 caractères, une lettre et un chiffre). Tests.
 - Comptes : lien d'activation (7 jours) envoyé à la création du compte, `ActiverCompte`, `DemanderReinitialisation` (lien 1 h, aucune information sur l'existence de l'e-mail), `ReinitialiserMotDePasse` (active aussi un compte en attente) ; mot de passe vérifié avant de consommer le lien. `LogNotifier` provisoire : les mails sont écrits dans le journal jusqu'à `feature/core-notification`. Tests.
+- Réservation : jeton « gérer mon rendez-vous » émis par `ReserverCreneau` (réutilisable jusqu'à la fin du rendez-vous, renvoyé dans `ReservationCreee`), cas d'usage `ReservationParJeton`. Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

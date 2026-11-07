@@ -12,6 +12,7 @@ use Bsandoz\Core\Booking\Application\ListerCreneaux;
 use Bsandoz\Core\Booking\Application\Occupations;
 use Bsandoz\Core\Booking\Application\ReserverCreneau;
 use Bsandoz\Core\Booking\Application\ReserverCreneauCommand;
+use Bsandoz\Core\Booking\Application\ReservationParJeton;
 use Bsandoz\Core\Booking\Application\Trajet;
 use Bsandoz\Core\Booking\Domain\Model\OpeningHour;
 use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
@@ -45,11 +46,14 @@ final class GererReservationTest extends TestCase
     private AnnulerReservation $annuler;
     private DeplacerReservation $deplacer;
     private ExpirerReservationsNonPayees $expirer;
+    private InMemoryTokenService $tokens;
+    private ReservationParJeton $parJeton;
 
     protected function setUp(): void
     {
         $this->reservations = new InMemoryReservationRepository();
         $this->clock = new FrozenClock('2026-11-01 10:00');
+        $this->tokens = new InMemoryTokenService($this->clock);
         $this->construire(depositPercent: 0);
     }
 
@@ -71,7 +75,8 @@ final class GererReservationTest extends TestCase
         $creneaux = new ListerCreneaux($availability, $settings, $prestations, new CreneauCalculator(), new Occupations($this->reservations, $availability, $trajet, $this->clock), $trajet, $this->clock);
         $devis = new CalculerDevis($prestations, new InMemoryOptionRepository(), new SansVarianteResolver(), $zone, $settings, new PrixCalculator());
 
-        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation(new InMemoryUserRepository(), new InMemoryTokenService($this->clock), new RecordingNotifier(), new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, new SequenceIdGenerator('r'), $this->clock);
+        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation(new InMemoryUserRepository(), $this->tokens, new RecordingNotifier(), new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, $this->tokens, new SequenceIdGenerator('r'), $this->clock);
+        $this->parJeton = new ReservationParJeton($this->tokens, $this->reservations);
         $this->annuler = new AnnulerReservation($this->reservations, $settings, $this->clock);
         $this->deplacer = new DeplacerReservation($this->reservations, $creneaux, $devis, $settings, $this->clock);
         $this->expirer = new ExpirerReservationsNonPayees($this->reservations, $this->clock);
@@ -84,7 +89,40 @@ final class GererReservationTest extends TestCase
 
     private function reserver(string $start, string $email = 'camille@example.test'): string
     {
-        return ($this->reserver)(new ReserverCreneauCommand('p', [], [], self::paris($start), 'adresse', 45.0, 5.0, $email, 'Camille', 'Martin', '0600000000', '', true))->reservationId;
+        return $this->reserverAvecJeton($start, $email)->reservationId;
+    }
+
+    private function reserverAvecJeton(string $start, string $email = 'camille@example.test'): \Bsandoz\Core\Booking\Application\ReservationCreee
+    {
+        return ($this->reserver)(new ReserverCreneauCommand('p', [], [], self::paris($start), 'adresse', 45.0, 5.0, $email, 'Camille', 'Martin', '0600000000', '', true));
+    }
+
+    public function testLeLienDeGestionRetrouveLaReservationJusquALaFinDuRendezVous(): void
+    {
+        $creee = $this->reserverAvecJeton('2026-11-10 09:00');
+
+        self::assertSame($creee->reservationId, ($this->parJeton)($creee->manageToken)->id());
+        self::assertSame($creee->reservationId, ($this->parJeton)($creee->manageToken)->id(), 'réutilisable');
+
+        $this->clock->set('2026-11-10 09:00'); // 10:00 à Paris, fin du rendez-vous
+        $this->expectException(NotFound::class);
+        ($this->parJeton)($creee->manageToken);
+    }
+
+    public function testLienDeGestionInconnu(): void
+    {
+        $this->expectException(NotFound::class);
+        ($this->parJeton)('manage-999');
+    }
+
+    public function testAnnulationDepuisLeLienDeGestion(): void
+    {
+        $creee = $this->reserverAvecJeton('2026-11-10 09:00');
+        $reservation = ($this->parJeton)($creee->manageToken);
+
+        ($this->annuler)($reservation->id(), $reservation->userId());
+
+        self::assertSame(ReservationStatus::Cancelled, $this->reservations->get($creee->reservationId)->status());
     }
 
     public function testAnnulationGratuiteEtCreneauLibere(): void

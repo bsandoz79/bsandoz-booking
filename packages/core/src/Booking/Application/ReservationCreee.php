@@ -12,6 +12,7 @@ final class ReservationCreee
 {
     /**
      * @param ReservationStatus $status en attente de paiement (acompte à verser avant $holdExpiresAt) ou confirmée (sans acompte)
+     * @param string $manageToken jeton du lien « gérer mon rendez-vous »
      */
     public function __construct(
         public readonly string $reservationId,
@@ -19,6 +20,7 @@ final class ReservationCreee
         public readonly Money $deposit,
         public readonly Money $total,
         public readonly ?\DateTimeImmutable $holdExpiresAt,
+        public readonly string $manageToken,
     ) {
     }
 }
