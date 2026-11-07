@@ -57,6 +57,7 @@
 - Sécurité : `Chiffreur` (sodium XSalsa20-Poly1305, nonce aléatoire, format versionné `enc:v1:`, valeurs en clair antérieures lisibles) et type Doctrine `bsandoz_chiffre`. Tests.
 - Sécurité : téléphone (`user_account.phone`) et adresse (`reservation.address`) chiffrés en base ; clé `bsandoz_core.encryption_key` (par défaut `BSANDOZ_ENCRYPTION_KEY`), chiffreur fourni au type Doctrine au démarrage du bundle ; commande `bsandoz:cle-chiffrement`. API detailing : migration (`phone` en LONGTEXT), clé factice de test. Tests d'intégration (valeurs brutes chiffrées en base).
 - Paiement (domaine) : `Payment` (en attente, payé une seule fois, remboursements partiels ou total plafonnés au montant encaissé), `EvenementPaiement` (seule une session réglée confirme), ports `PaymentGateway` (notification typée, `SignatureInvalide`) et `PaymentRepository` ; une réservation expirée peut encore être confirmée par un paiement tardif. Tests.
+- Paiement (persistance) : mapping XML de `Payment` (table `payment`, session unique), `DoctrinePaymentRepository` (`bySessionId`, `paidForReservation`). Tests d'intégration.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

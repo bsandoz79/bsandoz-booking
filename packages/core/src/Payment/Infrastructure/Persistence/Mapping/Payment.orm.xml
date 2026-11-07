@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <!-- Aucune donnée de carte : seulement l'identifiant de session du prestataire. -->
+    <entity name="Bsandoz\Core\Payment\Domain\Model\Payment" table="payment">
+        <unique-constraints>
+            <unique-constraint name="uniq_payment_session" columns="provider_session_id"/>
+        </unique-constraints>
+        <indexes>
+            <index name="idx_payment_reservation" columns="reservation_id"/>
+        </indexes>
+        <id name="id" type="string" length="36"/>
+        <field name="reservationId" column="reservation_id" type="string" length="36"/>
+        <field name="providerSessionId" column="provider_session_id" type="string" length="255"/>
+        <field name="amount" column="amount_cents" type="bsandoz_money"/>
+        <field name="refunded" column="refunded_cents" type="bsandoz_money"/>
+        <field name="status" type="string" length="20" enum-type="Bsandoz\Core\Payment\Domain\Model\PaymentStatus"/>
+        <field name="paidAt" column="paid_at" type="datetime_utc_immutable" nullable="true"/>
+        <field name="createdAt" column="created_at" type="datetime_utc_immutable"/>
+    </entity>
+</doctrine-mapping>
