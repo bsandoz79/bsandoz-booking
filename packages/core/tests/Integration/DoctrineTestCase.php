@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Bsandoz\Core\Tests\Integration;
 
+use Bsandoz\Core\Shared\Infrastructure\Persistence\ChiffreType;
 use Bsandoz\Core\Shared\Infrastructure\Persistence\DoctrineMappings;
+use Bsandoz\Core\Shared\Infrastructure\Security\Chiffreur;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
@@ -17,6 +19,9 @@ use PHPUnit\Framework\TestCase;
 /** Base SQLite en mémoire, schéma recréé pour chaque test à partir des mappings du kit. */
 abstract class DoctrineTestCase extends TestCase
 {
+    /** Clé factice réservée aux tests. */
+    protected const CLE_DE_TEST = 'a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90';
+
     protected EntityManagerInterface $em;
 
     protected function setUp(): void
@@ -26,6 +31,7 @@ abstract class DoctrineTestCase extends TestCase
                 Type::addType($name, $class);
             }
         }
+        ChiffreType::utiliser(new Chiffreur(self::CLE_DE_TEST));
 
         $prefixes = [];
         foreach (DoctrineMappings::mappings() as $mapping) {

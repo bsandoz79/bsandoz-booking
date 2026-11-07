@@ -2,7 +2,7 @@
 
 | Table | Module | Champs principaux |
 | --- | --- | --- |
-| user_account | Auth | id UUID, email unique (minuscules), password_hash nullable, roles JSON, status (pending/active/deleted), firstname, lastname, phone (chiffrement prévu), created_at (UTC) |
+| user_account | Auth | id UUID, email unique (minuscules), password_hash nullable, roles JSON, status (pending/active/deleted), firstname, lastname, phone (chiffré, LONGTEXT), created_at (UTC) |
 | auth_token | Auth | id, subject_id (compte ou réservation), type (activation/reset/manage/email_change), token_hash SHA-256 unique, expires_at, used_at (UTC) |
 | refresh_token | Auth | user_id, token_hash, expires_at |
 | category | Catalog | id, name, position |
@@ -12,7 +12,7 @@
 | unavailability | Booking | id, period_start, period_end (UTC), reason |
 | booking_rule | Booking | min_notice_hours, horizon_days, buffer_min, slot_step_min, free_cancel_hours, deposit_percent, deposit_fixed_cents |
 | zone | Booking | origin_label, origin_lat, origin_lng, free_radius_km, price_per_km_cents, max_distance_km |
-| reservation | Booking | id, user_id, prestation_id, variante, option_ids JSON, period_start, period_end (UTC), address (chiffrement prévu), lat, lng, travel_fee_cents, total_cents, deposit_cents, status, hold_expires_at (UTC), notes, metier_data JSON |
+| reservation | Booking | id, user_id, prestation_id, variante, option_ids JSON, period_start, period_end (UTC), address (chiffrée), lat, lng, travel_fee_cents, total_cents, deposit_cents, status, hold_expires_at (UTC), notes, metier_data JSON |
 | reservation_option | Booking | reservation_id, option_id, price_cents |
 | payment | Payment | reservation_id, provider_session_id, amount_cents, status, refunded_cents |
 | notification | Notification | type, recipient, reservation_id, scheduled_at, sent_at |

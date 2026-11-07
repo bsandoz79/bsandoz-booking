@@ -30,6 +30,7 @@ Puis ajouter dans `composer.json` : `"autoload": {"psr-4": {"App\\": "src/"}}` (
 ```
 APP_SECRET=      # php -r "echo bin2hex(random_bytes(16));"
 JWT_SECRET=      # php -r "echo bin2hex(random_bytes(32));"  (signature HS256 des jetons d'accès)
+BSANDOZ_ENCRYPTION_KEY=  # php bin/console bsandoz:cle-chiffrement  (chiffre adresse et téléphone ; à sauvegarder à part)
 DATABASE_URL="mysql://utilisateur:motdepasse@127.0.0.1:3306/detailing?serverVersion=8.0"
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...

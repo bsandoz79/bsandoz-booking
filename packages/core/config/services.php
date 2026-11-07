@@ -11,6 +11,8 @@ use Bsandoz\Core\Auth\Infrastructure\Http\MeController;
 use Bsandoz\Core\Auth\Infrastructure\Http\SessionController;
 use Bsandoz\Core\Auth\Infrastructure\Security\SecurityUserProvider;
 use Bsandoz\Core\Booking\Application\MesReservations;
+use Bsandoz\Core\Shared\Infrastructure\Console\CleChiffrementCommand;
+use Bsandoz\Core\Shared\Infrastructure\Security\Chiffreur;
 use Bsandoz\Core\Auth\Application\ActiverCompte;
 use Bsandoz\Core\Auth\Application\CreerCompteDepuisReservation;
 use Bsandoz\Core\Auth\Application\DemanderReinitialisation;
@@ -82,6 +84,8 @@ return static function (ContainerConfigurator $container): void {
     $services->alias(Clock::class, SystemClock::class);
     $services->set(UuidGenerator::class);
     $services->alias(IdGenerator::class, UuidGenerator::class);
+    $services->set(Chiffreur::class)->public()->args([param('bsandoz_core.encryption_key')]);
+    $services->set(CleChiffrementCommand::class);
 
     // Notification : mails écrits dans le journal en attendant feature/core-notification
     $services->set(LogNotifier::class);
