@@ -77,19 +77,66 @@ class Reservation
         $this->holdExpiresAt = null;
     }
 
-    /** @todo Vérifier la règle d'annulation gratuite (freeCancelHours) et renvoyer si l'acompte est remboursable. */
+    /**
+     * Annule une réservation à venir (en attente de paiement ou confirmée).
+     *
+     * @return bool vrai si l'acompte versé est remboursable : réservation confirmée annulée au moins
+     *              freeCancelHours avant le rendez-vous (en attente de paiement : rien n'a été versé)
+     * @throws DomainError déjà annulée / terminée, ou rendez-vous passé
+     */
     public function cancel(\DateTimeImmutable $now, BookingRules $rules): bool
     {
-        throw new \LogicException('À implémenter');
+        if (!in_array($this->status, [ReservationStatus::PendingPayment, ReservationStatus::Confirmed], true)) {
+            throw new DomainError('Cette réservation ne peut plus être annulée.');
+        }
+        if ($this->period->start <= $now) {
+            throw new DomainError('Un rendez-vous passé ne peut pas être annulé.');
+        }
+
+        $refundable = $this->status === ReservationStatus::Confirmed && $this->isBeforeFreeCancelDeadline($now, $rules);
+        $this->status = ReservationStatus::Cancelled;
+        $this->holdExpiresAt = null;
+
+        return $refundable;
     }
 
-    /** @todo Déplacer vers une nouvelle période (vérifier statut et règle de délai). */
+    /**
+     * Déplace une réservation confirmée vers une nouvelle période (la disponibilité est vérifiée par le cas d'usage).
+     *
+     * @throws DomainError réservation non confirmée, moins de freeCancelHours avant le rendez-vous, ou nouvelle date trop proche
+     */
     public function reschedule(TimeRange $newPeriod, \DateTimeImmutable $now, BookingRules $rules): void
     {
-        throw new \LogicException('À implémenter');
+        if ($this->status !== ReservationStatus::Confirmed) {
+            throw new DomainError('Seule une réservation confirmée peut être déplacée.');
+        }
+        if (!$this->isBeforeFreeCancelDeadline($now, $rules)) {
+            throw new DomainError(sprintf('Un rendez-vous ne peut plus être déplacé moins de %d h avant.', $rules->freeCancelHours));
+        }
+        if ($newPeriod->start < $now->modify(sprintf('+%d hours', $rules->minNoticeHours))) {
+            throw new DomainError('La nouvelle date est trop proche.');
+        }
+
+        $this->period = $newPeriod;
     }
 
     public function markDone(): void { $this->status = ReservationStatus::Done; }
     public function markNoShow(): void { $this->status = ReservationStatus::NoShow; }
-    public function expire(): void { $this->status = ReservationStatus::Expired; }
+
+    /** Blocage de paiement dépassé : libère le créneau. */
+    public function expire(): void
+    {
+        if ($this->status !== ReservationStatus::PendingPayment) {
+            throw new DomainError('Seule une réservation en attente de paiement peut expirer.');
+        }
+        $this->status = ReservationStatus::Expired;
+        $this->holdExpiresAt = null;
+    }
+
+    public function holdExpiresAt(): ?\DateTimeImmutable { return $this->holdExpiresAt; }
+
+    private function isBeforeFreeCancelDeadline(\DateTimeImmutable $now, BookingRules $rules): bool
+    {
+        return $now <= $this->period->start->modify(sprintf('-%d hours', $rules->freeCancelHours));
+    }
 }
