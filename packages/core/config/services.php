@@ -2,7 +2,20 @@
 
 declare(strict_types=1);
 
+use Bsandoz\Core\Auth\Application\ActiverCompte;
 use Bsandoz\Core\Auth\Application\CreerCompteDepuisReservation;
+use Bsandoz\Core\Auth\Application\DemanderReinitialisation;
+use Bsandoz\Core\Auth\Application\ReinitialiserMotDePasse;
+use Bsandoz\Core\Auth\Domain\Port\PasswordHasher;
+use Bsandoz\Core\Auth\Domain\Port\TokenService;
+use Bsandoz\Core\Auth\Domain\Service\PolitiqueMotDePasse;
+use Bsandoz\Core\Auth\Infrastructure\Http\AuthController;
+use Bsandoz\Core\Auth\Infrastructure\Security\DoctrineTokenService;
+use Bsandoz\Core\Auth\Infrastructure\Security\NativePasswordHasherAdapter;
+use Bsandoz\Core\Booking\Application\ReservationParJeton;
+use Bsandoz\Core\Booking\Infrastructure\Http\ManageController;
+use Bsandoz\Core\Notification\Domain\Port\Notifier;
+use Bsandoz\Core\Notification\Infrastructure\LogNotifier;
 use Bsandoz\Core\Auth\Domain\Port\UserRepository;
 use Bsandoz\Core\Auth\Infrastructure\Persistence\DoctrineUserRepository;
 use Bsandoz\Core\Booking\Application\AnnulerReservation;
@@ -46,6 +59,7 @@ use Bsandoz\Core\Shared\Infrastructure\SystemClock;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 /*
  * Services du kit, déclarés un par un au fil des modules implémentés.
@@ -60,10 +74,25 @@ return static function (ContainerConfigurator $container): void {
     $services->set(UuidGenerator::class);
     $services->alias(IdGenerator::class, UuidGenerator::class);
 
-    // Auth (compte créé à la réservation)
+    // Notification : mails écrits dans le journal en attendant feature/core-notification
+    $services->set(LogNotifier::class);
+    $services->alias(Notifier::class, LogNotifier::class);
+
+    // Auth (comptes et liens envoyés par mail)
     $services->set(DoctrineUserRepository::class);
     $services->alias(UserRepository::class, DoctrineUserRepository::class);
+    $services->set(DoctrineTokenService::class);
+    $services->alias(TokenService::class, DoctrineTokenService::class);
+    $services->set(NativePasswordHasherAdapter::class);
+    $services->alias(PasswordHasher::class, NativePasswordHasherAdapter::class);
+    $services->set(PolitiqueMotDePasse::class);
     $services->set(CreerCompteDepuisReservation::class);
+    $services->set(ActiverCompte::class);
+    $services->set(DemanderReinitialisation::class);
+    $services->set(ReinitialiserMotDePasse::class);
+    $services->set(AuthController::class)->public()->tag('controller.service_arguments')
+        ->arg('$activationLimiter', service('limiter.bsandoz_activation'))
+        ->arg('$forgotLimiter', service('limiter.bsandoz_forgot'));
     $services->set(ProblemJsonListener::class)
         ->tag('kernel.event_listener', ['event' => 'kernel.exception', 'priority' => 10]);
 
@@ -90,7 +119,11 @@ return static function (ContainerConfigurator $container): void {
     $services->set(AnnulerReservation::class);
     $services->set(DeplacerReservation::class);
     $services->set(ExpirerReservationsNonPayees::class);
-    $services->set(BookingController::class)->public()->tag('controller.service_arguments');
+    $services->set(ReservationParJeton::class);
+    $services->set(BookingController::class)->public()->tag('controller.service_arguments')
+        ->arg('$reservationLimiter', service('limiter.bsandoz_reservation'));
+    $services->set(ManageController::class)->public()->tag('controller.service_arguments')
+        ->arg('$manageLimiter', service('limiter.bsandoz_manage'));
 
     // Booking (adresses) : Base Adresse Nationale, gratuite
     $services->set(ApiAdresseGeocoder::class);

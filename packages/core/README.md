@@ -44,3 +44,7 @@ Tout code qui a besoin de « maintenant » reçoit le port `Shared\Domain\Clock`
 ## Qualité
 - `composer test` : PHPUnit, suites `unit` (`tests/Unit`, doubles en mémoire dans `tests/Double`) et `integration` (`tests/Integration`, Doctrine sur SQLite en mémoire).
 - `composer stan` : PHPStan niveau 8, configuré dans `phpstan.neon.dist`. Les classes encore `@todo` y ont une entrée `ignoreErrors` (dépendances injectées non lues) : la supprimer dès que la classe est implémentée.
+
+## Mails et limitation des tentatives
+- Tant que `feature/core-notification` n'est pas faite, le port `Notifier` pointe sur `LogNotifier` : les mails (activation, mot de passe oublié…) sont écrits dans `var/log` au lieu d'être envoyés. Ne pas mettre en production dans cet état.
+- Le bundle déclare des limiteurs Symfony par adresse IP (`BsandozCoreBundle::RATE_LIMITS`) : réservation, activation, mot de passe oublié, gestion par lien. Ils utilisent le pool `cache.rate_limiter` ; les tests fonctionnels le vident au démarrage.

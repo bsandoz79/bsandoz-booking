@@ -19,6 +19,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 /** Réservation de bout en bout (horloge figée au 01/11/2026 10:00 UTC ; mardi 10/11 ouvert 08:00–12:00, Paris). */
 final class ReservationApiTest extends WebTestCase
 {
+    use ReinitialiseLimites;
+
     private const LAT = 49.8941;
     private const LNG = 2.2958;
 
@@ -27,6 +29,7 @@ final class ReservationApiTest extends WebTestCase
     protected function setUp(): void
     {
         $this->client = static::createClient();
+        self::reinitialiserLimites();
         $em = $this->em();
         $schema = new SchemaTool($em);
         $metadata = $em->getMetadataFactory()->getAllMetadata();

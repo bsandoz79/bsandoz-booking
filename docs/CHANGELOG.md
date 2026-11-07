@@ -49,6 +49,7 @@
 - Comptes : jetons envoyés par mail (`AuthToken`, `DoctrineTokenService` : 32 octets aléatoires, seul le hachage SHA-256 est stocké, usage unique ou réutilisable pour la gestion d'une réservation, seul le dernier lien d'un même type fonctionne), port `PasswordHasher` (hachage « auto » de Symfony), `PolitiqueMotDePasse` (10 caractères, une lettre et un chiffre). Tests.
 - Comptes : lien d'activation (7 jours) envoyé à la création du compte, `ActiverCompte`, `DemanderReinitialisation` (lien 1 h, aucune information sur l'existence de l'e-mail), `ReinitialiserMotDePasse` (active aussi un compte en attente) ; mot de passe vérifié avant de consommer le lien. `LogNotifier` provisoire : les mails sont écrits dans le journal jusqu'à `feature/core-notification`. Tests.
 - Réservation : jeton « gérer mon rendez-vous » émis par `ReserverCreneau` (réutilisable jusqu'à la fin du rendez-vous, renvoyé dans `ReservationCreee`), cas d'usage `ReservationParJeton`. Tests.
+- API : `POST /api/v1/auth/activate`, `/auth/forgot`, `/auth/reset` ; `GET` / `PATCH` / `DELETE /api/v1/booking/manage/{token}` (voir, déplacer, annuler sans compte) ; `manageToken` renvoyé par la réservation ; limitation des tentatives par IP (429 + `Retry-After`) sur la réservation, l'activation, le mot de passe oublié et la gestion. API detailing : migration `auth_token`, tests fonctionnels.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

@@ -60,3 +60,19 @@ Cron : `php bin/console bsandoz:reservations:expirer` passe en « expirée » le
 
 ## GET /geo/search
 `/geo/search?q=12 rue de&limit=5` → `[{"label": "12 Rue … 80000 Amiens", "lat": 49.89, "lng": 2.29}]`. Base Adresse Nationale (api-adresse.data.gouv.fr, gratuite, sans clé), au moins 3 caractères, 10 résultats maximum, cache 1 jour (30 jours pour le géocodage d'une adresse complète). API indisponible : liste vide, jamais d'erreur.
+
+## Comptes par lien (`/auth`)
+- `POST /auth/activate` `{"token", "password"}` → 204 (lien d'activation de 7 jours reçu après la première réservation).
+- `POST /auth/forgot` `{"email"}` → 202, même réponse que l'e-mail soit connu ou non (lien de 1 h).
+- `POST /auth/reset` `{"token", "password"}` → 204 (active aussi un compte encore en attente).
+Mot de passe : 10 caractères minimum, au moins une lettre et un chiffre (sinon 422). Lien invalide ou expiré : 422.
+
+## Gérer mon rendez-vous (`/booking/manage/{token}`)
+`manageToken` est renvoyé par `POST /booking/reservations` (et sera mis dans les mails). Valable jusqu'à la fin du rendez-vous.
+- `GET` → `{"id", "status", "prestationId", "optionIds", "start", "end", "address", "totalCents", "depositCents", "freeCancelUntil"}`
+- `PATCH` `{"start"}` → déplace vers un créneau libre (réservation confirmée, au moins 48 h avant) et renvoie la réservation.
+- `DELETE` → annule et renvoie `{"refundable": bool}` (acompte remboursable si annulation gratuite).
+Lien inconnu ou expiré : 404.
+
+## Limitation des tentatives
+Par adresse IP et par heure (fenêtre glissante) : réservation 10, activation / nouveau mot de passe 10, mot de passe oublié 5, gestion par lien 30. Au-delà : 429 avec l'en-tête `Retry-After`.
