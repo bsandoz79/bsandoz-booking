@@ -10,6 +10,10 @@ php bin/console lexik:jwt:generate-keypair  # clés JWT dans config/jwt/ (non ve
 ```
 Le kit `bsandoz/core` est installé depuis `../../../packages/core` (dépôt Composer `path`, lien symbolique) ; `BsandozCoreBundle` est enregistré dans `config/bundles.php`.
 
+## Qualité
+- `composer test` : PHPUnit (`phpunit.dist.xml`, `tests/`).
+- `composer stan` : PHPStan niveau 8 (`phpstan.neon.dist`, `src` et `tests`).
+
 ## Historique : création du squelette (branche `chore/installation`)
 Squelette **Symfony 7.4 LTS** (maintenu jusqu'en 11/2029). La 7.3, prévue au départ, n'est plus maintenue et toutes ses versions sont bloquées par Composer pour failles de sécurité.
 Le dossier contenait déjà le code métier : le squelette a été créé à côté puis copié sans rien écraser (sans `vendor/` ni `var/`). Le `.env.dev` généré (qui contient un `APP_SECRET`) a été supprimé : `APP_SECRET` se met dans `.env.local`.
