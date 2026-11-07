@@ -115,6 +115,16 @@ final class MotDePasseParLienTest extends TestCase
         self::assertTrue($this->hasher->verify((string) $this->users->get($this->userId)->passwordHash(), 'nouveau2027'));
     }
 
+    public function testNouveauMotDePasseFermeToutesLesSessions(): void
+    {
+        $session = $this->tokens->issue($this->userId, \Bsandoz\Core\Auth\Domain\Model\TokenType::Refresh, new \DateInterval('P30D'), false);
+        $this->demander('camille@example.test');
+
+        ($this->reinitialiser())($this->lien('password_reset'), 'nouveau2027');
+
+        self::assertNull($this->tokens->verify($session, \Bsandoz\Core\Auth\Domain\Model\TokenType::Refresh));
+    }
+
     public function testEmailInconnuSansMailNiErreur(): void
     {
         $this->demander('inconnu@example.test');

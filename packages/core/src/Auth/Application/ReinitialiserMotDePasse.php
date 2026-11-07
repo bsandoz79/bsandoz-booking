@@ -14,7 +14,7 @@ use Bsandoz\Core\Shared\Domain\DomainError;
 
 /**
  * Nouveau mot de passe depuis le lien « mot de passe oublié ». Un compte encore en attente est activé au passage
- * (le lien prouve que le client a accès à sa boîte mail). Révocation des sessions ouvertes : feature/core-auth-session.
+ * (le lien prouve que le client a accès à sa boîte mail). Toutes les sessions ouvertes sont fermées.
  */
 final class ReinitialiserMotDePasse
 {
@@ -38,5 +38,6 @@ final class ReinitialiserMotDePasse
         $hash = $this->hasher->hash($plainPassword);
         $user->status() === UserStatus::Pending ? $user->activate($hash) : $user->changePassword($hash);
         $this->users->save($user);
+        $this->tokens->revokeAll($user->id(), TokenType::Refresh);
     }
 }

@@ -80,4 +80,20 @@ final class DoctrineTokenServiceTest extends DoctrineTestCase
         $this->clock->modify('+10 days');
         self::assertNull($this->tokens->verify($plain, TokenType::ManageReservation));
     }
+
+    public function testSessionsSimultaneesPuisToutesRevoquees(): void
+    {
+        $telephone = $this->tokens->issue('u-1', TokenType::Refresh, new \DateInterval('P30D'), replacePrevious: false);
+        $ordinateur = $this->tokens->issue('u-1', TokenType::Refresh, new \DateInterval('P30D'), replacePrevious: false);
+        $lien = $this->tokens->issue('u-1', TokenType::ManageReservation, new \DateInterval('P30D'));
+
+        self::assertSame('u-1', $this->tokens->verify($telephone, TokenType::Refresh), 'les deux appareils restent connectés');
+        self::assertSame('u-1', $this->tokens->verify($ordinateur, TokenType::Refresh));
+
+        $this->tokens->revokeAll('u-1', TokenType::Refresh);
+
+        self::assertNull($this->tokens->verify($telephone, TokenType::Refresh));
+        self::assertNull($this->tokens->verify($ordinateur, TokenType::Refresh));
+        self::assertSame('u-1', $this->tokens->verify($lien, TokenType::ManageReservation), 'les autres types ne sont pas touchés');
+    }
 }
