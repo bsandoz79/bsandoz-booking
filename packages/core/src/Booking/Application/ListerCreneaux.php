@@ -31,10 +31,11 @@ final class ListerCreneaux
 
     /**
      * @param string $date jour local au format Y-m-d
+     * @param string|null $ignorerReservationId réservation à ne pas compter comme occupée (déplacement)
      * @return list<TimeRange> créneaux (début → fin), en UTC
      * @throws DomainError date invalide, adresse manquante ou hors zone
      */
-    public function __invoke(string $date, int $durationMin, ?float $lat, ?float $lng, ?string $prestationId = null): array
+    public function __invoke(string $date, int $durationMin, ?float $lat, ?float $lng, ?string $prestationId = null, ?string $ignorerReservationId = null): array
     {
         $tz = $this->settings->timezone();
         $day = \DateTimeImmutable::createFromFormat('!Y-m-d', $date, $tz);
@@ -44,7 +45,7 @@ final class ListerCreneaux
 
         $occupePlage = $prestationId !== null && $this->prestations->get($prestationId)->occupePlage();
         $travel = ($this->trajet)($lat, $lng);
-        $busy = ($this->occupations)($day, $day->modify('+1 day'));
+        $busy = ($this->occupations)($day, $day->modify('+1 day'), $ignorerReservationId);
 
         $slots = $this->calculator->creneauxDuJour(
             $day, $durationMin, $travel, $this->availability->openingHours(), $busy,

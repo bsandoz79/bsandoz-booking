@@ -27,15 +27,18 @@ final class Occupations
     ) {
     }
 
-    /** @return list<TimeRange> */
-    public function __invoke(\DateTimeImmutable $from, \DateTimeImmutable $to): array
+    /**
+     * @param string|null $ignorerReservationId réservation à ne pas compter (celle qu'on déplace)
+     * @return list<TimeRange>
+     */
+    public function __invoke(\DateTimeImmutable $from, \DateTimeImmutable $to, ?string $ignorerReservationId = null): array
     {
         $now = $this->clock->now();
         $busy = $this->availability->unavailabilities($from, $to);
 
         $marge = sprintf('%d hours', self::MARGE_HEURES);
         foreach ($this->reservations->between($from->modify('-' . $marge), $to->modify('+' . $marge)) as $reservation) {
-            if (!$reservation->blocks($now)) {
+            if (!$reservation->blocks($now) || $reservation->id() === $ignorerReservationId) {
                 continue;
             }
             $travel = $this->trajet->versReservation($reservation->lat(), $reservation->lng());
