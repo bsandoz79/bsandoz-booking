@@ -12,9 +12,6 @@ parameters:
         -
             identifier: property.onlyWritten
             path: src/Catalog/Application/CalculerDevis.php
-        -
-            identifier: property.onlyWritten
-            path: src/Catalog/Application/ListerCatalogue.php
         # feature/core-geocoding
         -
             identifier: property.onlyWritten

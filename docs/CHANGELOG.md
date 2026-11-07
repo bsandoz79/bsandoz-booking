@@ -22,6 +22,7 @@
 - Kit back : horloge figée `FrozenClock` (UTC, déplaçable) pour les tests, et tests de `SystemClock` / `FrozenClock` (48 tests back au total).
 - Catalogue (domaine) : `Prestation` garde les identifiants de ses options (plus les objets) et expose tarifs, prix et durée de base ; `Option` a une description ; `Devis` porte la variante et la zone (dans la zone, distance, temps de trajet) ; erreur `NotFound` ; `OptionRepository::allActive()`. Tests de `Prestation`.
 - Catalogue (persistance) : mapping XML Doctrine de `Prestation`, `Option`, `Category` ; types `bsandoz_money` et `bsandoz_tarifs` ; `DoctrinePrestationRepository` et `DoctrineOptionRepository` ; tests d'intégration sur SQLite en mémoire (suite PHPUnit `integration`).
+- Catalogue : cas d'usage `ListerCatalogue` (formules actives avec tarifs par variante, options actives proposées) et ses tests ; repositories en mémoire pour les tests (`tests/Double`).
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
