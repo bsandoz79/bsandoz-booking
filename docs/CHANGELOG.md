@@ -3,3 +3,5 @@
 ## [Non publié]
 ### Ajouté
 - Structure du monorepo (kit back, kit front, application detailing), règles du projet et documentation.
+- Kit back `packages/core` : modules Shared, Auth, Catalog, Booking, Payment, Notification, Admin (architecture hexagonale, méthodes `@todo`).
+- Logique métier implémentée : `Money`, `TimeRange`, `PrixCalculator`, `ZoneCalculator`, `CreneauCalculator`.

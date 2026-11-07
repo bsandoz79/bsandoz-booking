@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Exemple de mapping XML (garde le domaine sans attributs Doctrine). À compléter : relations tarifs/options. -->
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+    <entity name="Bsandoz\Core\Catalog\Domain\Model\Prestation" table="prestation">
+        <id name="id" type="string" length="36"/>
+        <field name="name" type="string" length="120"/>
+        <field name="description" type="text"/>
+        <field name="baseDurationMin" column="base_duration_min" type="integer"/>
+        <field name="active" type="boolean"/>
+        <field name="categoryId" column="category_id" type="string" length="36" nullable="true"/>
+        <field name="position" type="integer"/>
+        <!-- basePrice : type Doctrine personnalisé « money » (centimes) à créer dans Shared/Infrastructure. -->
+    </entity>
+</doctrine-mapping>
