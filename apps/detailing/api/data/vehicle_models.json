@@ -1,0 +1,20 @@
+[
+  {"brand": "Renault", "model": "Clio", "type": "citadine"},
+  {"brand": "Peugeot", "model": "208", "type": "citadine"},
+  {"brand": "Volkswagen", "model": "Polo", "type": "citadine"},
+  {"brand": "Toyota", "model": "Yaris", "type": "citadine"},
+  {"brand": "Citroën", "model": "C3", "type": "citadine"},
+  {"brand": "Peugeot", "model": "308", "type": "berline_break"},
+  {"brand": "Renault", "model": "Mégane", "type": "berline_break"},
+  {"brand": "Volkswagen", "model": "Golf", "type": "berline_break"},
+  {"brand": "Skoda", "model": "Octavia", "type": "berline_break"},
+  {"brand": "BMW", "model": "Série 3", "type": "berline_break"},
+  {"brand": "Peugeot", "model": "3008", "type": "suv"},
+  {"brand": "Peugeot", "model": "5008", "type": "suv"},
+  {"brand": "Renault", "model": "Captur", "type": "suv"},
+  {"brand": "Dacia", "model": "Duster", "type": "suv"},
+  {"brand": "Tesla", "model": "Model Y", "type": "suv"},
+  {"brand": "Renault", "model": "Kangoo", "type": "utilitaire"},
+  {"brand": "Citroën", "model": "Berlingo", "type": "utilitaire"},
+  {"brand": "Ford", "model": "Transit", "type": "utilitaire"}
+]

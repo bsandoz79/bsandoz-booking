@@ -8,3 +8,4 @@
 - Tests unitaires : Money, ZoneCalculator, CreneauCalculator, PrixCalculator (10 tests).
 - Kit front `packages/ui` : thème `--bs-*`, blocs Calendar et SlotPicker avec tests.
 - Blocs OptionCard, ChoiceChips, PriceSummary, Stepper avec tests (15 tests front au total).
+- Module métier detailing : types de véhicule, catalogue marque/modèle → type, `DetailingVarianteResolver` et ses tests.
