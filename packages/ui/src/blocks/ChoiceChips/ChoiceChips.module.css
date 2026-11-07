@@ -1,0 +1,4 @@
+.group { display: flex; flex-wrap: wrap; gap: var(--bs-space-2); font-family: var(--bs-font); }
+.chip { min-height: 44px; padding: 0 var(--bs-space-4); border-radius: var(--bs-radius-pill); border: 1px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); font: inherit; font-weight: 500; cursor: pointer; transition: border-color var(--bs-transition), background var(--bs-transition); }
+.chip:disabled { opacity: 0.5; cursor: not-allowed; }
+.checked { border: 2px solid var(--bs-color-primary); background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); font-weight: 600; }

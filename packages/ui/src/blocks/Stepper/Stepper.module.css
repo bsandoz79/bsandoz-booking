@@ -1,0 +1,7 @@
+.stepper { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--bs-space-2); font-family: var(--bs-font); }
+.step { display: flex; flex-direction: column; gap: var(--bs-space-2); }
+.bar { height: 6px; border-radius: 3px; background: var(--bs-color-border); transition: background var(--bs-transition); }
+.label { font-size: 0.75rem; color: var(--bs-color-text-muted); }
+.done .bar, .current .bar { background: var(--bs-color-primary); }
+.current .label { color: var(--bs-color-primary-dark); font-weight: 700; }
+@media (max-width: 480px) { .label { display: none; } .current .label { display: block; } }
