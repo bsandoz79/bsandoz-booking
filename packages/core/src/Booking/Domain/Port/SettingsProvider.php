@@ -11,7 +11,8 @@ interface SettingsProvider
 {
     public function rules(): BookingRules;
 
-    public function zone(): Zone;
+    /** Zone d'intervention, ou null pour une activité sur place (ni trajet ni frais de déplacement). */
+    public function zone(): ?Zone;
 
     public function timezone(): \DateTimeZone;
 }

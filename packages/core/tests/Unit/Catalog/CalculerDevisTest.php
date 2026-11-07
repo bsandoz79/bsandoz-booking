@@ -24,10 +24,8 @@ final class CalculerDevisTest extends TestCase
     private const ORIGIN_LAT = 45.0;
     private const ORIGIN_LNG = 5.0;
 
-    /**
-     * @param int|null $depositPercent
-     */
-    private function calculer(?int $depositPercent = 30, ?int $depositFixedCents = null): CalculerDevis
+    /** @param bool $surPlace activité sur place : aucune zone configurée */
+    private function calculer(?int $depositPercent = 30, ?int $depositFixedCents = null, bool $surPlace = false): CalculerDevis
     {
         $o1 = new Option('o-1', 'Option un', Money::cents(1500), 30);
         $o2 = new Option('o-2', 'Option deux', Money::cents(2000), 15);
@@ -52,7 +50,7 @@ final class CalculerDevisTest extends TestCase
                 'min_notice_hours' => 24, 'horizon_days' => 60, 'buffer_min' => 15, 'slot_step_min' => 30,
                 'free_cancel_hours' => 48, 'deposit_percent' => $depositPercent, 'deposit_fixed_cents' => $depositFixedCents, 'hold_minutes' => 10,
             ],
-            [
+            $surPlace ? null : [
                 'origin_lat' => self::ORIGIN_LAT, 'origin_lng' => self::ORIGIN_LNG, 'free_radius_km' => 15.0,
                 'price_per_km_cents' => 50, 'max_distance_km' => 60.0, 'road_factor' => 1.3, 'average_speed_kmh' => 50.0,
             ],
@@ -136,6 +134,18 @@ final class CalculerDevisTest extends TestCase
         $devis = ($this->calculer())('p-1', [], [], self::ORIGIN_LAT + 1.0, self::ORIGIN_LNG);
 
         self::assertFalse($devis->inZone);
+        self::assertSame(0, $devis->travelFee->cents);
+        self::assertSame(6900, $devis->total->cents);
+    }
+
+    public function testActiviteSurPlaceSansTrajetNiFrais(): void
+    {
+        // Même une adresse lointaine n'a pas d'effet : le client vient sur place.
+        $devis = ($this->calculer(surPlace: true))('p-1', [], [], self::ORIGIN_LAT + 1.0, self::ORIGIN_LNG);
+
+        self::assertTrue($devis->inZone);
+        self::assertNull($devis->distanceKm);
+        self::assertSame(0, $devis->travelMinutes);
         self::assertSame(0, $devis->travelFee->cents);
         self::assertSame(6900, $devis->total->cents);
     }

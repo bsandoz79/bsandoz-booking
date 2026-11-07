@@ -34,6 +34,7 @@ final class ConfiguredSettingsProviderTest extends TestCase
         self::assertSame(5, $rules->holdMinutes);
 
         $zone = $settings->zone();
+        self::assertNotNull($zone);
         self::assertSame(48.85, $zone->originLat);
         self::assertSame(2.35, $zone->originLng);
         self::assertSame(10.0, $zone->freeRadiusKm);
@@ -43,5 +44,20 @@ final class ConfiguredSettingsProviderTest extends TestCase
         self::assertSame(40.0, $zone->averageSpeedKmh);
 
         self::assertSame('Europe/Paris', $settings->timezone()->getName());
+    }
+
+    public function testSansZoneActiviteSurPlace(): void
+    {
+        $settings = new ConfiguredSettingsProvider(
+            [
+                'min_notice_hours' => 0, 'horizon_days' => 30, 'buffer_min' => 0, 'slot_step_min' => 15,
+                'free_cancel_hours' => 24, 'deposit_percent' => 0, 'deposit_fixed_cents' => null, 'hold_minutes' => 10,
+            ],
+            null,
+            'Europe/Paris',
+        );
+
+        self::assertNull($settings->zone());
+        self::assertSame(0, $settings->rules()->bufferMin);
     }
 }

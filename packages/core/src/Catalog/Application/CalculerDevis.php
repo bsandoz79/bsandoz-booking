@@ -21,6 +21,7 @@ use Bsandoz\Core\Shared\Domain\NotFound;
  * Variante : celle que le module métier déduit des données métier ; à défaut, la variante
  * envoyée explicitement (le kit ne connaît que cette clé). Adresse hors zone : le devis est
  * renvoyé avec inZone = false et sans frais de déplacement (la réservation, elle, sera refusée).
+ * Activité sur place (aucune zone configurée) : l'adresse éventuelle est ignorée, ni distance ni frais.
  */
 final class CalculerDevis
 {
@@ -52,7 +53,8 @@ final class CalculerDevis
         $variante = $this->varianteResolver->resolve($metierData) ?? ($variante !== '' ? $variante : null);
         $options = $this->options->getMany($optionIds);
 
-        $zoneQuote = $lat !== null && $lng !== null ? $this->zone->quote($this->settings->zone(), $lat, $lng) : null;
+        $zone = $this->settings->zone();
+        $zoneQuote = $zone !== null && $lat !== null && $lng !== null ? $this->zone->quote($zone, $lat, $lng) : null;
 
         $rules = $this->settings->rules();
         $devis = $this->prix->calculer(
