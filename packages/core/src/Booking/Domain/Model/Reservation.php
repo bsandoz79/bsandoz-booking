@@ -44,10 +44,21 @@ class Reservation
 
     public function id(): string { return $this->id; }
     public function userId(): string { return $this->userId; }
+    public function prestationId(): string { return $this->prestationId; }
+    public function variante(): ?string { return $this->variante; }
+    /** @return list<string> */
+    public function optionIds(): array { return $this->optionIds; }
     public function period(): TimeRange { return $this->period; }
+    public function address(): string { return $this->address; }
+    public function lat(): float { return $this->lat; }
+    public function lng(): float { return $this->lng; }
     public function status(): ReservationStatus { return $this->status; }
     public function total(): Money { return $this->total; }
     public function deposit(): Money { return $this->deposit; }
+    public function travelFee(): Money { return $this->travelFee; }
+    /** @return array<string, mixed> */
+    public function metierData(): array { return $this->metierData; }
+    public function notes(): string { return $this->notes; }
 
     public function blocks(\DateTimeImmutable $now): bool
     {

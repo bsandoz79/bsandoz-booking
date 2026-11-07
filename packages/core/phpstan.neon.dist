@@ -1,0 +1,29 @@
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+
+    # Classes encore marquées @todo : leurs dépendances injectées ne sont pas encore lues.
+    # Retirer l'entrée dans la branche qui implémente la classe (PHPStan signale toute entrée devenue inutile).
+    reportUnmatchedIgnoredErrors: true
+    ignoreErrors:
+        # feature/core-catalog
+        -
+            identifier: property.onlyWritten
+            path: src/Catalog/Application/CalculerDevis.php
+        -
+            identifier: property.onlyWritten
+            path: src/Catalog/Application/ListerCatalogue.php
+        # feature/core-geocoding
+        -
+            identifier: property.onlyWritten
+            path: src/Booking/Infrastructure/Geo/ApiAdresseGeocoder.php
+        # feature/core-payment
+        -
+            identifier: property.onlyWritten
+            path: src/Payment/Infrastructure/StripeGateway.php
+        # feature/core-notification
+        -
+            identifier: property.onlyWritten
+            path: src/Notification/Infrastructure/Mailer/SymfonyMailerNotifier.php

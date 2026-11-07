@@ -18,6 +18,19 @@ jobs:
       - run: composer stan
       - run: composer test
 
+  detailing-api:
+    name: Detailing – API
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: apps/detailing/api } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '8.3', tools: composer }
+      - run: composer install --no-interaction --prefer-dist
+      - run: php bin/console lint:container
+      - run: composer stan
+      - run: composer test
+
   ui:
     name: Kit front (packages/ui)
     runs-on: ubuntu-latest

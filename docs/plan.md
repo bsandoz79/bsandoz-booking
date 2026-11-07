@@ -4,7 +4,7 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 
 ## 0. Socle
 - [x] `chore/structure` : monorepo, règles, documentation, squelette des modules (méthodes `@todo`), logique de prix / zone / créneaux implémentée
-- [ ] `chore/installation` : `composer install` dans `packages/core` et `apps/detailing/api`, `npm install` dans `packages/ui` et `apps/detailing/front`, toute la CI verte
+- [x] `chore/installation` : `composer install` dans `packages/core` et `apps/detailing/api` (Symfony 7.4 LTS), `npm install` dans `packages/ui` et `apps/detailing/front`, toute la CI verte
 
 ## 1. Kit back
 - [ ] `feature/core-shared` : tests de `Money` et `Clock`
