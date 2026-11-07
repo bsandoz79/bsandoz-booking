@@ -23,6 +23,8 @@
 - Catalogue (domaine) : `Prestation` garde les identifiants de ses options (plus les objets) et expose tarifs, prix et durée de base ; `Option` a une description ; `Devis` porte la variante et la zone (dans la zone, distance, temps de trajet) ; erreur `NotFound` ; `OptionRepository::allActive()`. Tests de `Prestation`.
 - Catalogue (persistance) : mapping XML Doctrine de `Prestation`, `Option`, `Category` ; types `bsandoz_money` et `bsandoz_tarifs` ; `DoctrinePrestationRepository` et `DoctrineOptionRepository` ; tests d'intégration sur SQLite en mémoire (suite PHPUnit `integration`).
 - Catalogue : cas d'usage `ListerCatalogue` (formules actives avec tarifs par variante, options actives proposées) et ses tests ; repositories en mémoire pour les tests (`tests/Double`).
+- Catalogue : cas d'usage `CalculerDevis` (variante déduite par le métier, sinon variante explicite ; options ; frais kilométriques ; adresse hors zone signalée par `inZone = false` sans frais ; acompte en % ou fixe plafonné) et ses tests.
+- Réservation : `ConfiguredSettingsProvider`, règles et zone lues dans la configuration de l'application en attendant l'espace pro.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
