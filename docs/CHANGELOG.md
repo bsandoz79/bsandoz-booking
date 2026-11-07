@@ -44,6 +44,7 @@
 - Réservation : verrou d'agenda `ReservationRepository::dansVerrouAgenda()` (transaction, et verrou nommé `GET_LOCK` sous MySQL / MariaDB) et `pendingHoldExpired()` (blocages de paiement expirés). Tests d'intégration (dont l'annulation complète en cas d'erreur).
 - Réservation : cas d'usage `ReserverCreneau` (sous verrou d'agenda : devis recalculé côté serveur, créneau revérifié, compte client créé ou retrouvé, réservation bloquée `holdMinutes` en attente de l'acompte ou confirmée sans acompte ; CGV, adresse et zone contrôlées) ; `ListerCreneaux` / `Occupations` peuvent ignorer une réservation (déplacement). Tests.
 - Réservation : cas d'usage `AnnulerReservation` (titulaire uniquement, renvoie si l'acompte est remboursable), `DeplacerReservation` (titulaire, sous verrou, créneau revérifié sans compter le créneau actuel) et `ExpirerReservationsNonPayees`. Tests.
+- API : `POST /api/v1/booking/reservations` (`BookingController`, validation `ReservationRequest`, réponse 201 ; lien de paiement à `feature/core-payment`), commande cron `bsandoz:reservations:expirer`, services du kit ; API detailing : migration `user_account`, tests fonctionnels de la réservation.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

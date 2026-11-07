@@ -2,6 +2,17 @@
 
 declare(strict_types=1);
 
+use Bsandoz\Core\Auth\Application\CreerCompteDepuisReservation;
+use Bsandoz\Core\Auth\Domain\Port\UserRepository;
+use Bsandoz\Core\Auth\Infrastructure\Persistence\DoctrineUserRepository;
+use Bsandoz\Core\Booking\Application\AnnulerReservation;
+use Bsandoz\Core\Booking\Application\DeplacerReservation;
+use Bsandoz\Core\Booking\Application\ExpirerReservationsNonPayees;
+use Bsandoz\Core\Booking\Application\ReserverCreneau;
+use Bsandoz\Core\Booking\Infrastructure\Console\ExpirerReservationsCommand;
+use Bsandoz\Core\Booking\Infrastructure\Http\BookingController;
+use Bsandoz\Core\Shared\Domain\IdGenerator;
+use Bsandoz\Core\Shared\Infrastructure\UuidGenerator;
 use Bsandoz\Core\Booking\Application\ListerCreneaux;
 use Bsandoz\Core\Booking\Application\ListerJoursDisponibles;
 use Bsandoz\Core\Booking\Application\Occupations;
@@ -42,6 +53,13 @@ return static function (ContainerConfigurator $container): void {
     // Shared
     $services->set(SystemClock::class);
     $services->alias(Clock::class, SystemClock::class);
+    $services->set(UuidGenerator::class);
+    $services->alias(IdGenerator::class, UuidGenerator::class);
+
+    // Auth (compte créé à la réservation)
+    $services->set(DoctrineUserRepository::class);
+    $services->alias(UserRepository::class, DoctrineUserRepository::class);
+    $services->set(CreerCompteDepuisReservation::class);
     $services->set(ProblemJsonListener::class)
         ->tag('kernel.event_listener', ['event' => 'kernel.exception', 'priority' => 10]);
 
@@ -62,6 +80,14 @@ return static function (ContainerConfigurator $container): void {
     $services->set(ListerCreneaux::class);
     $services->set(ListerJoursDisponibles::class);
     $services->set(CreneauxController::class)->public()->tag('controller.service_arguments');
+
+    // Booking (réservations)
+    $services->set(ReserverCreneau::class);
+    $services->set(AnnulerReservation::class);
+    $services->set(DeplacerReservation::class);
+    $services->set(ExpirerReservationsNonPayees::class);
+    $services->set(BookingController::class)->public()->tag('controller.service_arguments');
+    $services->set(ExpirerReservationsCommand::class);
 
     // Catalog
     $services->set(PrixCalculator::class);

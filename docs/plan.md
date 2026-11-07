@@ -15,8 +15,8 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/core-booking-creneaux` : horaires et indisponibilités (persistance), `ListerJoursDisponibles`, `ListerCreneaux`, routes `/booking/days` et `/booking/slots`, occupations = réservations bloquantes étendues de leur propre trajet, tests
 - [ ] `feature/core-booking-reservation` : verrou d'agenda, `ReserverCreneau` (blocage 10 min), `AnnulerReservation`, `DeplacerReservation`, contrôleurs, tests
 - [ ] `feature/core-geocoding` : adaptateur api-adresse.data.gouv.fr (gratuit) + cache
-- [ ] `feature/core-auth` : compte auto, activation par lien, JWT + refresh token en cookie httpOnly, mot de passe oublié, rate limit, voters
-- [ ] `feature/core-payment` : Stripe Checkout, webhook signé et idempotent, remboursement
+- [ ] `feature/core-auth` : activation par lien (le compte auto est fait), routes annuler / déplacer (jeton de gestion et espace client), JWT + refresh token en cookie httpOnly, mot de passe oublié, rate limit, voters
+- [ ] `feature/core-payment` : Stripe Checkout (`paymentUrl` de `POST /booking/reservations`), webhook signé et idempotent, remboursement
 - [ ] `feature/core-notification` : mails Twig, .ics, flux iCal, commande cron des rappels
 - [ ] `feature/core-admin` : CRUD prestations, options, tarifs, horaires, indisponibilités, règles, zone, paramètres ; tableau de bord
 
