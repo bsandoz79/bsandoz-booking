@@ -13,6 +13,10 @@ use Bsandoz\Core\Booking\Infrastructure\Console\ExpirerReservationsCommand;
 use Bsandoz\Core\Booking\Infrastructure\Http\BookingController;
 use Bsandoz\Core\Shared\Domain\IdGenerator;
 use Bsandoz\Core\Shared\Infrastructure\UuidGenerator;
+use Bsandoz\Core\Booking\Application\RechercherAdresse;
+use Bsandoz\Core\Booking\Domain\Port\Geocoder;
+use Bsandoz\Core\Booking\Infrastructure\Geo\ApiAdresseGeocoder;
+use Bsandoz\Core\Booking\Infrastructure\Http\GeoController;
 use Bsandoz\Core\Booking\Application\ListerCreneaux;
 use Bsandoz\Core\Booking\Application\ListerJoursDisponibles;
 use Bsandoz\Core\Booking\Application\Occupations;
@@ -87,6 +91,12 @@ return static function (ContainerConfigurator $container): void {
     $services->set(DeplacerReservation::class);
     $services->set(ExpirerReservationsNonPayees::class);
     $services->set(BookingController::class)->public()->tag('controller.service_arguments');
+
+    // Booking (adresses) : Base Adresse Nationale, gratuite
+    $services->set(ApiAdresseGeocoder::class);
+    $services->alias(Geocoder::class, ApiAdresseGeocoder::class);
+    $services->set(RechercherAdresse::class);
+    $services->set(GeoController::class)->public()->tag('controller.service_arguments');
     $services->set(ExpirerReservationsCommand::class);
 
     // Catalog

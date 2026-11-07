@@ -57,3 +57,6 @@ Réponse 201 : `{"reservationId", "status": "pending_payment" | "confirmed", "to
 Sous verrou d'agenda : devis recalculé côté serveur, créneau revérifié, compte client créé (ou compte existant réutilisé), réservation bloquée `holdMinutes` (10 min) en attente de l'acompte, ou confirmée directement sans acompte. `paymentUrl` sera rempli à partir de `feature/core-payment`. Créneau déjà pris, CGV non acceptées, adresse hors zone : 422.
 
 Cron : `php bin/console bsandoz:reservations:expirer` passe en « expirée » les réservations dont le blocage est dépassé.
+
+## GET /geo/search
+`/geo/search?q=12 rue de&limit=5` → `[{"label": "12 Rue … 80000 Amiens", "lat": 49.89, "lng": 2.29}]`. Base Adresse Nationale (api-adresse.data.gouv.fr, gratuite, sans clé), au moins 3 caractères, 10 résultats maximum, cache 1 jour (30 jours pour le géocodage d'une adresse complète). API indisponible : liste vide, jamais d'erreur.

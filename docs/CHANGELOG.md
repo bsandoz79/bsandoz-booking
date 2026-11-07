@@ -45,6 +45,7 @@
 - Réservation : cas d'usage `ReserverCreneau` (sous verrou d'agenda : devis recalculé côté serveur, créneau revérifié, compte client créé ou retrouvé, réservation bloquée `holdMinutes` en attente de l'acompte ou confirmée sans acompte ; CGV, adresse et zone contrôlées) ; `ListerCreneaux` / `Occupations` peuvent ignorer une réservation (déplacement). Tests.
 - Réservation : cas d'usage `AnnulerReservation` (titulaire uniquement, renvoie si l'acompte est remboursable), `DeplacerReservation` (titulaire, sous verrou, créneau revérifié sans compter le créneau actuel) et `ExpirerReservationsNonPayees`. Tests.
 - API : `POST /api/v1/booking/reservations` (`BookingController`, validation `ReservationRequest`, réponse 201 ; lien de paiement à `feature/core-payment`), commande cron `bsandoz:reservations:expirer`, services du kit ; API detailing : migration `user_account`, tests fonctionnels de la réservation.
+- Adresses : `ApiAdresseGeocoder` (Base Adresse Nationale, gratuite ; cache 1 jour pour l'autocomplétion, 30 jours pour le géocodage ; API indisponible → aucun résultat, rien en cache), cas d'usage `RechercherAdresse`, route `GET /api/v1/geo/search`. Tests avec un faux client HTTP.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
