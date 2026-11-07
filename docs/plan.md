@@ -9,8 +9,8 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 ## 1. Kit back
 - [x] `feature/core-shared` : tests de `Money`, `TimeRange` et `Clock`, horloge figée `FrozenClock`
 - [x] `feature/core-catalog` : mapping Doctrine XML, repositories, `ListerCatalogue`, `CalculerDevis`, contrôleur, erreurs problem+json, bundle câblé, migration, tests (unitaires, SQLite, fonctionnels)
-- [ ] `feature/core-booking-domain` : tests complets de `CreneauCalculator` et `ZoneCalculator`
-- [ ] `feature/core-booking` : repositories, `ListerCreneaux`, `ReserverCreneau`, `AnnulerReservation`, `DeplacerReservation`, blocage 10 min, contrôleurs, tests
+- [x] `feature/core-booking-domain` : tests complets de `CreneauCalculator` et `ZoneCalculator`, invariants des règles / horaires / zone, créneaux sans doublon
+- [ ] `feature/core-booking` : repositories, `ListerCreneaux`, `ReserverCreneau`, `AnnulerReservation`, `DeplacerReservation`, blocage 10 min, contrôleurs, tests (occupations = réservations étendues de leur propre temps de trajet)
 - [ ] `feature/core-geocoding` : adaptateur api-adresse.data.gouv.fr (gratuit) + cache
 - [ ] `feature/core-auth` : compte auto, activation par lien, JWT + refresh token en cookie httpOnly, mot de passe oublié, rate limit, voters
 - [ ] `feature/core-payment` : Stripe Checkout, webhook signé et idempotent, remboursement
