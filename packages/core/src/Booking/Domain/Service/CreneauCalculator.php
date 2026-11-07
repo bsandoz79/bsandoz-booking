@@ -6,15 +6,19 @@ namespace Bsandoz\Core\Booking\Domain\Service;
 
 use Bsandoz\Core\Booking\Domain\Model\BookingRules;
 use Bsandoz\Core\Booking\Domain\Model\OpeningHour;
+use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\TimeRange;
 
 /**
  * Calcule les créneaux libres.
  * Un créneau à l'heure H est libre si :
- *  - [H − trajet, H + durée + tampon] tient dans une plage d'ouverture du jour ;
- *  - ce bloc ne chevauche aucune période occupée (réservations bloquantes, congés) ;
+ *  - [H − trajet, H + durée] tient dans une plage d'ouverture du jour (le tampon peut dépasser la fermeture) ;
+ *  - le bloc [H − trajet, H + durée + tampon] ne chevauche aucune période occupée (réservations bloquantes, congés) ;
  *  - H ≥ maintenant + délai minimum, et H ≤ maintenant + horizon.
+ * Les créneaux partent de l'ouverture + trajet, puis avancent du pas réglé. Plusieurs plages le même jour
+ * sont possibles ; un créneau commun à deux plages qui se chevauchent n'est compté qu'une fois.
  * Les heures d'ouverture sont en heure locale ($tz) ; tout le reste est comparé en instants absolus.
+ * $day désigne une date locale : passer une date construite dans $tz.
  */
 final class CreneauCalculator
 {
@@ -33,6 +37,13 @@ final class CreneauCalculator
         \DateTimeImmutable $now,
         \DateTimeZone $tz,
     ): array {
+        if ($durationMin < 1) {
+            throw new DomainError('La durée d\'une prestation doit être d\'au moins une minute.');
+        }
+        if ($travelMin < 0) {
+            throw new DomainError('Le temps de trajet ne peut pas être négatif.');
+        }
+
         $localDay = $day->setTimezone($tz)->setTime(0, 0);
         $weekday = (int) $localDay->format('N');
         $earliest = $now->modify(sprintf('+%d hours', $rules->minNoticeHours));
@@ -56,15 +67,15 @@ final class CreneauCalculator
                     break;
                 }
                 if ($start >= $earliest && $start <= $latest && !$this->overlapsAny($block, $busy)) {
-                    $slots[] = new TimeRange($start, $end);
+                    $slots[$start->getTimestamp()] = new TimeRange($start, $end);
                 }
                 $start = $start->modify(sprintf('+%d minutes', $rules->slotStepMin));
             }
         }
 
-        usort($slots, static fn (TimeRange $a, TimeRange $b) => $a->start <=> $b->start);
+        ksort($slots);
 
-        return $slots;
+        return array_values($slots);
     }
 
     /**

@@ -30,9 +30,11 @@
 - API detailing : réglages de démonstration (`bsandoz_core.yaml`), routes du kit, tests fonctionnels du catalogue et du devis sur SQLite (avec le résolveur detailing).
 - API detailing : première migration (tables `category`, `catalog_option`, `prestation`), SQL MySQL 8 / MariaDB 10.6+.
 - Réservation (domaine) : invariants de `BookingRules` (pas ≥ 5 min, horizon ≥ 1 jour, acompte 0–100 %, valeurs non négatives), `OpeningHour` (jour 1–7, heures HH:MM, « 24:00 » accepté en fin, fin après début) et `Zone` (coordonnées, distances, coefficient ≥ 1, vitesse > 0), avec tests.
+- Réservation : tests complets de `CreneauCalculator` (pas, tampon, trajet, occupations, plusieurs plages, délai minimum, horizon, changement d'heure, fuseaux, jours disponibles du mois) ; durée et trajet invalides refusés.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
+- Réservation : deux plages d'ouverture qui se chevauchent ne produisent plus de créneaux en double.
 - Réservation : un pas de créneau nul ne fait plus tourner le calcul à l'infini, une vitesse nulle ne provoque plus de division par zéro (refusés à la création des règles et de la zone).
 - Site detailing : nom du projet synchronisé dans `package-lock.json` ; import de `vite.config.ts` avec son extension dans `vitest.config.ts` (avertissement Vite).
 - Kit back : types des tableaux renvoyés précisés pour PHPStan niveau 8 (`ExporterDonnees`, `ListerCreneaux` → `list<TimeRange>`, `ListerJoursDisponibles` → dates `Y-m-d`, `PaymentGateway` → `{sessionId, url}` et événement décodé).
