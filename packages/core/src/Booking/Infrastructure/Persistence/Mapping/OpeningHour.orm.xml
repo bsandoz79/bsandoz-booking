@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <!-- Heures locales « HH:MM » (fuseau du pro). -->
+    <entity name="Bsandoz\Core\Booking\Domain\Model\OpeningHour" table="opening_hour">
+        <id name="id" type="string" length="36"/>
+        <field name="weekday" type="smallint"/>
+        <field name="startsAt" column="starts_at" type="string" length="5"/>
+        <field name="endsAt" column="ends_at" type="string" length="5"/>
+    </entity>
+</doctrine-mapping>

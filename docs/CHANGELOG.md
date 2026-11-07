@@ -35,6 +35,10 @@
 - Réservation : prestations à durée incertaine (`occupePlage` dans `CreneauCalculator`) : un seul créneau par plage d'ouverture, en début de plage, si elle est entièrement libre ; le créneau occupe la plage jusqu'à la fermeture. Tests.
 - Catalogue : réglage `occupePlage` par prestation (durée incertaine), persisté (colonne `occupe_plage`, migration) et renvoyé dans `GET /catalog`.
 - Réservation : zone d'intervention facultative (`bsandoz_core.zone`, `SettingsProvider::zone()` nullable) ; sans zone, activité sur place : l'adresse est ignorée, ni trajet ni frais. Tests.
+- Réservation (persistance) : mapping XML de `Reservation` (période en `TimeRange` intégré, dates stockées en UTC via `datetime_utc_immutable`, statut en enum), `DoctrineReservationRepository` (`get`, `between`, `forUser`, `save` ; verrou d'agenda à la branche suivante), tests d'intégration.
+- Réservation (persistance) : horaires (`OpeningHour`, avec identifiant) et indisponibilités (nouveau modèle `Unavailability`), `DoctrineAvailabilityRepository`, tests d'intégration.
+- Réservation : cas d'usage `ListerCreneaux` et `ListerJoursDisponibles` (trajet depuis la zone, adresse obligatoire à domicile et contrôlée, demi-journée si la prestation est à durée incertaine, créneaux renvoyés en UTC) ; `Occupations` (indisponibilités + réservations bloquantes **étendues de leur propre trajet aller**) ; `Trajet`. Tests avec doubles en mémoire.
+- API : `CreneauxController` (`GET /api/v1/booking/days`, `GET /api/v1/booking/slots`, paramètre `prestation` facultatif), services et routes du kit ; API detailing : horloge figée en test, migration des tables `opening_hour`, `unavailability`, `reservation`, tests fonctionnels du calendrier.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

@@ -2,8 +2,18 @@
 
 declare(strict_types=1);
 
+use Bsandoz\Core\Booking\Application\ListerCreneaux;
+use Bsandoz\Core\Booking\Application\ListerJoursDisponibles;
+use Bsandoz\Core\Booking\Application\Occupations;
+use Bsandoz\Core\Booking\Application\Trajet;
+use Bsandoz\Core\Booking\Domain\Port\AvailabilityRepository;
+use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
+use Bsandoz\Core\Booking\Domain\Service\CreneauCalculator;
 use Bsandoz\Core\Booking\Domain\Service\ZoneCalculator;
+use Bsandoz\Core\Booking\Infrastructure\Http\CreneauxController;
+use Bsandoz\Core\Booking\Infrastructure\Persistence\DoctrineAvailabilityRepository;
+use Bsandoz\Core\Booking\Infrastructure\Persistence\DoctrineReservationRepository;
 use Bsandoz\Core\Booking\Infrastructure\Settings\ConfiguredSettingsProvider;
 use Bsandoz\Core\Catalog\Application\CalculerDevis;
 use Bsandoz\Core\Catalog\Application\ListerCatalogue;
@@ -40,6 +50,18 @@ return static function (ContainerConfigurator $container): void {
     $services->set(ConfiguredSettingsProvider::class)
         ->args([param('bsandoz_core.rules'), param('bsandoz_core.zone'), param('bsandoz_core.timezone')]);
     $services->alias(SettingsProvider::class, ConfiguredSettingsProvider::class);
+
+    // Booking (créneaux)
+    $services->set(CreneauCalculator::class);
+    $services->set(DoctrineReservationRepository::class);
+    $services->alias(ReservationRepository::class, DoctrineReservationRepository::class);
+    $services->set(DoctrineAvailabilityRepository::class);
+    $services->alias(AvailabilityRepository::class, DoctrineAvailabilityRepository::class);
+    $services->set(Trajet::class);
+    $services->set(Occupations::class);
+    $services->set(ListerCreneaux::class);
+    $services->set(ListerJoursDisponibles::class);
+    $services->set(CreneauxController::class)->public()->tag('controller.service_arguments');
 
     // Catalog
     $services->set(PrixCalculator::class);
