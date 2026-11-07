@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+vendor/
+var/
+.env.local
+.env.*.local
+.phpunit.result.cache
+*.log
+.DS_Store
+.idea/
+.vscode/*

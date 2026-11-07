@@ -1,0 +1,32 @@
+# Plan de développement
+
+Une case = une branche. Commits « un ajout = un commit », tests et docs à jour, push, fusion dans `main`, case cochée.
+
+## 0. Socle
+- [x] `chore/structure` : monorepo, règles, documentation, squelette des modules (méthodes `@todo`), logique de prix / zone / créneaux implémentée
+- [ ] `chore/installation` : `composer install` dans `packages/core` et `apps/detailing/api`, `npm install` dans `packages/ui` et `apps/detailing/front`, toute la CI verte
+
+## 1. Kit back
+- [ ] `feature/core-shared` : tests de `Money` et `Clock`
+- [ ] `feature/core-catalog` : entités Doctrine, repositories, `ListerCatalogue`, `CalculerDevis`, contrôleur, tests
+- [ ] `feature/core-booking-domain` : tests complets de `CreneauCalculator` et `ZoneCalculator`
+- [ ] `feature/core-booking` : repositories, `ListerCreneaux`, `ReserverCreneau`, `AnnulerReservation`, `DeplacerReservation`, blocage 10 min, contrôleurs, tests
+- [ ] `feature/core-geocoding` : adaptateur api-adresse.data.gouv.fr (gratuit) + cache
+- [ ] `feature/core-auth` : compte auto, activation par lien, JWT + refresh token en cookie httpOnly, mot de passe oublié, rate limit, voters
+- [ ] `feature/core-payment` : Stripe Checkout, webhook signé et idempotent, remboursement
+- [ ] `feature/core-notification` : mails Twig, .ics, flux iCal, commande cron des rappels
+- [ ] `feature/core-admin` : CRUD prestations, options, tarifs, horaires, indisponibilités, règles, zone, paramètres ; tableau de bord
+
+## 2. Kit front
+- [ ] `feature/ui-calendar` : Calendar et SlotPicker (déjà écrits) : tests complets, accessibilité clavier
+- [ ] `feature/ui-blocks` : OptionCard, ChoiceChips, PriceSummary, Stepper, Button, Field
+- [ ] `feature/ui-admin-blocks` : PlanningView (jour/semaine/mois), DataTable, Toggle
+
+## 3. Application detailing
+- [ ] `feature/detailing-metier` : `VehiculeType`, `Vehicule` (marque/modèle → type), `DetailingVarianteResolver`, données de démo
+- [ ] `feature/detailing-site` : accueil, prestations, zone, avis `[à compléter]`, pied de page, pages légales
+- [ ] `feature/detailing-reservation` : parcours en étapes (auto ou canapé → véhicule → formule → options → adresse → créneau → coordonnées → acompte)
+- [ ] `feature/detailing-espace-client` : rendez-vous, annulation/déplacement, compte, mot de passe par lien, suppression
+- [ ] `feature/detailing-espace-pro` : planning, rendez-vous pris par téléphone + lien d'acompte, catalogue, horaires, zone
+- [ ] `feature/detailing-pwa` : manifest, service worker, notifications
+- [ ] `feature/deploiement` : workflows de déploiement o2switch (API + front), cron, sous-domaines `demo.bsandoz.fr` et `api.demo.bsandoz.fr`
