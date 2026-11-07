@@ -37,6 +37,7 @@
 - Réservation : zone d'intervention facultative (`bsandoz_core.zone`, `SettingsProvider::zone()` nullable) ; sans zone, activité sur place : l'adresse est ignorée, ni trajet ni frais. Tests.
 - Réservation (persistance) : mapping XML de `Reservation` (période en `TimeRange` intégré, dates stockées en UTC via `datetime_utc_immutable`, statut en enum), `DoctrineReservationRepository` (`get`, `between`, `forUser`, `save` ; verrou d'agenda à la branche suivante), tests d'intégration.
 - Réservation (persistance) : horaires (`OpeningHour`, avec identifiant) et indisponibilités (nouveau modèle `Unavailability`), `DoctrineAvailabilityRepository`, tests d'intégration.
+- Réservation : cas d'usage `ListerCreneaux` et `ListerJoursDisponibles` (trajet depuis la zone, adresse obligatoire à domicile et contrôlée, demi-journée si la prestation est à durée incertaine, créneaux renvoyés en UTC) ; `Occupations` (indisponibilités + réservations bloquantes **étendues de leur propre trajet aller**) ; `Trajet`. Tests avec doubles en mémoire.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
