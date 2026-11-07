@@ -6,6 +6,6 @@
 - Validation par DTO + contraintes ; Doctrine paramétré ; pas de `dangerouslySetInnerHTML`.
 - CORS limité au domaine du client ; HSTS, CSP, X-Frame-Options, X-Content-Type-Options.
 - Stripe : signature du webhook vérifiée, traitement idempotent ; aucune donnée de carte chez nous.
-- Données sensibles (téléphone, adresse) chiffrées avec une clé propre au client.
+- Données sensibles (téléphone, adresse) chiffrées en base avec une clé propre au client (`BSANDOZ_ENCRYPTION_KEY`, sodium XSalsa20-Poly1305, nonce aléatoire, format versionné `enc:v1:`). Clé générée par `php bin/console bsandoz:cle-chiffrement`, dans `.env.local` uniquement, sauvegardée à part : la perdre rend ces données illisibles. L'e-mail reste en clair (recherche à la connexion).
 - o2switch : racine web sur `public/`, `.env.local` en 600, un utilisateur MySQL par base, sauvegardes séparées.
 - RGPD : mention de création de compte, export JSON, suppression du compte, anonymisation après 3 ans.

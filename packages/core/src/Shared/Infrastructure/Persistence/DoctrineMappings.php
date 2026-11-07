@@ -30,6 +30,7 @@ final class DoctrineMappings
     {
         return [
             MoneyType::NAME => MoneyType::class,
+            ChiffreType::NAME => ChiffreType::class,
             TarifsType::NAME => TarifsType::class,
         ];
     }

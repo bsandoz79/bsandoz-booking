@@ -2,7 +2,7 @@
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    <!-- Adresse en clair pour l'instant : chiffrement prévu (docs/securite.md). -->
+    <!-- Adresse chiffrée (type bsandoz_chiffre). -->
     <entity name="Bsandoz\Core\Booking\Domain\Model\Reservation" table="reservation">
         <indexes>
             <index name="idx_reservation_period" columns="period_start,period_end"/>
@@ -14,7 +14,7 @@
         <field name="variante" type="string" length="60" nullable="true"/>
         <field name="optionIds" column="option_ids" type="json"/>
         <embedded name="period" class="Bsandoz\Core\Shared\Domain\TimeRange" column-prefix="period_"/>
-        <field name="address" type="text"/>
+        <field name="address" type="bsandoz_chiffre"/>
         <field name="lat" type="float"/>
         <field name="lng" type="float"/>
         <field name="total" column="total_cents" type="bsandoz_money"/>

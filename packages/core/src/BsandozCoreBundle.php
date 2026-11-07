@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Bsandoz\Core;
 
+use Bsandoz\Core\Shared\Infrastructure\Persistence\ChiffreType;
 use Bsandoz\Core\Shared\Infrastructure\Persistence\DoctrineMappings;
+use Bsandoz\Core\Shared\Infrastructure\Security\Chiffreur;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -26,6 +28,10 @@ final class BsandozCoreBundle extends AbstractBundle
         $root
             ->children()
                 ->scalarNode('timezone')->defaultValue('Europe/Paris')->cannotBeEmpty()->end()
+                ->scalarNode('encryption_key')
+                    ->info('Clé de chiffrement de l\'adresse et du téléphone (64 caractères hexadécimaux), propre au client.')
+                    ->defaultValue('%env(default::BSANDOZ_ENCRYPTION_KEY)%')
+                ->end()
                 ->arrayNode('rules')
                     ->info('Règles de réservation (modifiables dans l\'espace pro à partir de feature/core-admin).')
                     ->addDefaultsIfNotSet()
@@ -55,15 +61,25 @@ final class BsandozCoreBundle extends AbstractBundle
             ->end();
     }
 
-    /** @param array{timezone: string, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
+    /** @param array{timezone: string, encryption_key: string|null, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->parameters()
             ->set('bsandoz_core.timezone', $config['timezone'])
+            ->set('bsandoz_core.encryption_key', $config['encryption_key'])
             ->set('bsandoz_core.rules', $config['rules'])
             ->set('bsandoz_core.zone', $config['zone'] ?? null);
 
         $container->import('../config/services.php');
+    }
+
+    /** Fournit le chiffreur au type Doctrine « bsandoz_chiffre » (les types Doctrine ne passent pas par le conteneur). */
+    public function boot(): void
+    {
+        $chiffreur = $this->container?->get(Chiffreur::class);
+        if ($chiffreur instanceof Chiffreur) {
+            ChiffreType::utiliser($chiffreur);
+        }
     }
 
     /** Limites de tentatives par adresse IP (fenêtre glissante d'une heure). */
