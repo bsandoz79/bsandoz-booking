@@ -11,6 +11,14 @@ use Bsandoz\Core\Auth\Infrastructure\Http\MeController;
 use Bsandoz\Core\Auth\Infrastructure\Http\SessionController;
 use Bsandoz\Core\Auth\Infrastructure\Security\SecurityUserProvider;
 use Bsandoz\Core\Booking\Application\MesReservations;
+use Bsandoz\Core\Payment\Application\ConfirmerPaiement;
+use Bsandoz\Core\Payment\Application\CreerSessionAcompte;
+use Bsandoz\Core\Payment\Application\RembourserAcompte;
+use Bsandoz\Core\Payment\Domain\Port\PaymentGateway;
+use Bsandoz\Core\Payment\Domain\Port\PaymentRepository;
+use Bsandoz\Core\Payment\Infrastructure\Http\PaymentController;
+use Bsandoz\Core\Payment\Infrastructure\Persistence\DoctrinePaymentRepository;
+use Bsandoz\Core\Payment\Infrastructure\StripeGateway;
 use Bsandoz\Core\Shared\Infrastructure\Console\CleChiffrementCommand;
 use Bsandoz\Core\Shared\Infrastructure\Security\Chiffreur;
 use Bsandoz\Core\Auth\Application\ActiverCompte;
@@ -144,6 +152,18 @@ return static function (ContainerConfigurator $container): void {
     $services->set(DeplacerReservation::class);
     $services->set(ExpirerReservationsNonPayees::class);
     $services->set(ReservationParJeton::class);
+    // Payment : acompte Stripe Checkout
+    $services->set(StripeGateway::class)->args([param('bsandoz_core.payment.stripe_secret_key'), param('bsandoz_core.payment.stripe_webhook_secret')]);
+    $services->alias(PaymentGateway::class, StripeGateway::class);
+    $services->set(DoctrinePaymentRepository::class);
+    $services->alias(PaymentRepository::class, DoctrinePaymentRepository::class);
+    $services->set(CreerSessionAcompte::class)
+        ->arg('$successUrl', param('bsandoz_core.payment.success_url'))
+        ->arg('$cancelUrl', param('bsandoz_core.payment.cancel_url'));
+    $services->set(ConfirmerPaiement::class);
+    $services->set(RembourserAcompte::class);
+    $services->set(PaymentController::class)->public()->tag('controller.service_arguments');
+
     $services->set(BookingController::class)->public()->tag('controller.service_arguments')
         ->arg('$reservationLimiter', service('limiter.bsandoz_reservation'));
     $services->set(ManageController::class)->public()->tag('controller.service_arguments')

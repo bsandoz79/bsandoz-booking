@@ -29,9 +29,11 @@ services:
 
     Bsandoz\Core\Catalog\Domain\Port\VarianteResolver: '@App\Metier\Detailing\Domain\DetailingVarianteResolver'
 
-# Tests : horloge figée au dimanche 1er novembre 2026 10:00 UTC, pour des calendriers reproductibles.
+# Tests : horloge figée au dimanche 1er novembre 2026 10:00 UTC (calendriers reproductibles) et faux Stripe (aucun appel réseau).
 when@test:
     services:
         Bsandoz\Core\Shared\Infrastructure\FrozenClock:
             arguments: ['2026-11-01 10:00:00']
         Bsandoz\Core\Shared\Domain\Clock: '@Bsandoz\Core\Shared\Infrastructure\FrozenClock'
+        App\Tests\Double\FauxPrestatairePaiement: ~
+        Bsandoz\Core\Payment\Domain\Port\PaymentGateway: '@App\Tests\Double\FauxPrestatairePaiement'

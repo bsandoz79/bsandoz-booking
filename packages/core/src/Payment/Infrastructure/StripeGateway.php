@@ -24,10 +24,13 @@ final class StripeGateway implements PaymentGateway
 {
     private const EXPIRATION = 1800;
 
-    public function __construct(
-        private string $secretKey,
-        private string $webhookSecret,
-    ) {
+    private string $secretKey;
+    private string $webhookSecret;
+
+    public function __construct(?string $secretKey, ?string $webhookSecret)
+    {
+        $this->secretKey = $secretKey ?? '';
+        $this->webhookSecret = $webhookSecret ?? '';
     }
 
     public function createCheckout(string $reservationId, Money $amount, string $description, string $customerEmail, string $successUrl, string $cancelUrl): array
