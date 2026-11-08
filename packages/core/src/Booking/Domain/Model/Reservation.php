@@ -124,8 +124,44 @@ class Reservation
         $this->period = $newPeriod;
     }
 
-    public function markDone(): void { $this->status = ReservationStatus::Done; }
-    public function markNoShow(): void { $this->status = ReservationStatus::NoShow; }
+    /** Prestation réalisée (espace pro). @throws DomainError réservation non confirmée ou pas encore commencée */
+    public function markDone(\DateTimeImmutable $now): void
+    {
+        $this->terminer($now);
+        $this->status = ReservationStatus::Done;
+    }
+
+    /** Client absent (espace pro). @throws DomainError réservation non confirmée ou pas encore commencée */
+    public function markNoShow(\DateTimeImmutable $now): void
+    {
+        $this->terminer($now);
+        $this->status = ReservationStatus::NoShow;
+    }
+
+    /**
+     * Annulation par le pro (rendez-vous pris par téléphone, imprévu…) : possible à tout moment avant la fin du rendez-vous ;
+     * le remboursement de l'acompte est décidé par le pro, pas par le délai d'annulation gratuite.
+     *
+     * @throws DomainError déjà annulée, terminée ou passée
+     */
+    public function cancelByPro(\DateTimeImmutable $now): void
+    {
+        if (!in_array($this->status, [ReservationStatus::PendingPayment, ReservationStatus::Confirmed], true) || $this->period->end <= $now) {
+            throw new DomainError('Cette réservation ne peut plus être annulée.');
+        }
+        $this->status = ReservationStatus::Cancelled;
+        $this->holdExpiresAt = null;
+    }
+
+    private function terminer(\DateTimeImmutable $now): void
+    {
+        if (!in_array($this->status, [ReservationStatus::Confirmed, ReservationStatus::Done, ReservationStatus::NoShow], true)) {
+            throw new DomainError('Seule une réservation confirmée peut être marquée comme faite ou absente.');
+        }
+        if ($this->period->start > $now) {
+            throw new DomainError('Le rendez-vous n\'a pas encore commencé.');
+        }
+    }
 
     /** Blocage de paiement dépassé : libère le créneau. */
     public function expire(): void

@@ -69,6 +69,7 @@
 - Espace pro : réglages en base (table `setting`) prioritaires sur la configuration (`DatabaseSettingsProvider`), cas d'usage `GererReglages` (lire, modifier les règles de réservation, modifier la zone ou passer en activité sur place, validation par le domaine), conversion `Reglages`. Tests.
 - Espace pro : cas d'usage `GererCatalogue` (lister tout le catalogue, créer / modifier une prestation avec ses tarifs par variante, ses options et sa durée incertaine, la désactiver ; créer / modifier une option), `Prestation::modifier()` / `remplacerTarifs()` / `remplacerOptions()`, `all()` sur les dépôts du catalogue, remplacement d'une option existante en base. Tests.
 - Espace pro : cas d'usage `GererDisponibilites` (horaires de la semaine remplacés d'un coup, plages qui se chevauchent refusées ; indisponibilités : lister avec motif, ajouter, supprimer), dépôt complété (`unavailabilityList`, `replaceOpeningHours`, `removeUnavailability`). Tests.
+- Espace pro : `GererRendezVousPro` (planning avec le client, statut fait / absent après le début, annulation par le pro avec ou sans remboursement, remboursement partiel, rendez-vous pris par téléphone confirmé ou avec lien d'acompte par mail `deposit_link`), `TableauDeBord` (jour, semaine, chiffre d'affaires et taux d'annulation du mois, paiements en attente, prochains rendez-vous), `CreerComptePro` et commande `bsandoz:pro:creer` ; `Reservation::markDone/markNoShow/cancelByPro` avec leurs règles. Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
