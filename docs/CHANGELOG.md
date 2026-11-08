@@ -68,6 +68,7 @@
 - Notifications : flux d'agenda du pro (`FluxAgendaPro`, `GET /api/v1/ical/{secret}.ics`, secret `bsandoz_core.ical_secret`). API detailing : configuration des mails (Atelier Brillance, `MAILER_FROM`, `PRO_EMAIL`, `FRONT_URL`), `BSANDOZ_ICAL_SECRET`, migration `notification`, tests fonctionnels des mails réellement rendus et du flux.
 - Espace pro : réglages en base (table `setting`) prioritaires sur la configuration (`DatabaseSettingsProvider`), cas d'usage `GererReglages` (lire, modifier les règles de réservation, modifier la zone ou passer en activité sur place, validation par le domaine), conversion `Reglages`. Tests.
 - Espace pro : cas d'usage `GererCatalogue` (lister tout le catalogue, créer / modifier une prestation avec ses tarifs par variante, ses options et sa durée incertaine, la désactiver ; créer / modifier une option), `Prestation::modifier()` / `remplacerTarifs()` / `remplacerOptions()`, `all()` sur les dépôts du catalogue, remplacement d'une option existante en base. Tests.
+- Espace pro : cas d'usage `GererDisponibilites` (horaires de la semaine remplacés d'un coup, plages qui se chevauchent refusées ; indisponibilités : lister avec motif, ajouter, supprimer), dépôt complété (`unavailabilityList`, `replaceOpeningHours`, `removeUnavailability`). Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
