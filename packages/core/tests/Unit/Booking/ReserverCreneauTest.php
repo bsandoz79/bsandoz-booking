@@ -86,7 +86,9 @@ final class ReserverCreneauTest extends TestCase
         return new ReserverCreneau(
             $devis, $creneaux,
             new CreerCompteDepuisReservation($this->users, $this->tokens, new RecordingNotifier(), new SequenceIdGenerator('u'), $this->clock),
-            $this->reservations, $settings, $this->tokens, new SequenceIdGenerator('r'), $this->clock,
+            $this->reservations, $settings, $this->tokens,
+            new \Bsandoz\Core\Booking\Application\NotificationsReservation(new RecordingNotifier(), $this->users, $prestations, new \Bsandoz\Core\Notification\Domain\Service\IcsGenerator(), 'Marque'),
+            new SequenceIdGenerator('r'), $this->clock,
         );
     }
 

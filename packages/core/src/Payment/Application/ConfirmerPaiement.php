@@ -6,12 +6,11 @@ namespace Bsandoz\Core\Payment\Application;
 
 use Bsandoz\Core\Auth\Domain\Model\TokenType;
 use Bsandoz\Core\Auth\Domain\Port\TokenService;
-use Bsandoz\Core\Auth\Domain\Port\UserRepository;
+use Bsandoz\Core\Booking\Application\NotificationsReservation;
 use Bsandoz\Core\Booking\Application\Occupations;
 use Bsandoz\Core\Booking\Domain\Model\Reservation;
 use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
-use Bsandoz\Core\Notification\Domain\Port\Notifier;
 use Bsandoz\Core\Payment\Domain\Port\PaymentGateway;
 use Bsandoz\Core\Payment\Domain\Port\PaymentRepository;
 use Bsandoz\Core\Payment\Domain\SignatureInvalide;
@@ -20,7 +19,7 @@ use Bsandoz\Core\Shared\Domain\Clock;
 /**
  * Notification « session de paiement réglée » (webhook) : signature vérifiée, traitement idempotent, sous verrou d'agenda.
  *  - créneau toujours libre (y compris paiement arrivé après la fin du blocage) : réservation confirmée,
- *    mail « booking_confirmed » avec un lien « gérer mon rendez-vous » ;
+ *    mails de confirmation au client (avec .ics et lien « gérer mon rendez-vous ») et au pro ;
  *  - créneau repris entre-temps ou réservation annulée : acompte remboursé en totalité, mail « payment_refunded ».
  * Les autres notifications, et les sessions inconnues, sont ignorées.
  */
@@ -31,9 +30,8 @@ final class ConfirmerPaiement
         private PaymentRepository $payments,
         private ReservationRepository $reservations,
         private Occupations $occupations,
-        private UserRepository $users,
         private TokenService $tokens,
-        private Notifier $notifier,
+        private NotificationsReservation $notifications,
         private Clock $clock,
     ) {
     }
@@ -56,7 +54,6 @@ final class ConfirmerPaiement
                 return;
             }
             $reservation = $this->reservations->get($payment->reservationId());
-            $user = $this->users->get($reservation->userId());
 
             if ($this->peutEtreConfirmee($reservation, $now)) {
                 $reservation->confirm();
@@ -65,13 +62,7 @@ final class ConfirmerPaiement
 
                 $validite = max(3600, $reservation->period()->end->getTimestamp() - $now->getTimestamp());
                 $lien = $this->tokens->issue($reservation->id(), TokenType::ManageReservation, new \DateInterval(sprintf('PT%dS', $validite)), replacePrevious: false);
-                $this->notifier->send($user->email(), 'booking_confirmed', [
-                    'firstname' => $user->firstname(),
-                    'reservationId' => $reservation->id(),
-                    'start' => $reservation->period()->start->format(DATE_ATOM),
-                    'depositCents' => $payment->amount()->cents,
-                    'manageToken' => $lien,
-                ]);
+                $this->notifications->confirmee($reservation, $lien);
 
                 return;
             }
@@ -80,12 +71,7 @@ final class ConfirmerPaiement
             $payment->refund($montant);
             $this->gateway->refund($payment->providerSessionId(), $montant);
             $this->payments->save($payment);
-            $this->notifier->send($user->email(), 'payment_refunded', [
-                'firstname' => $user->firstname(),
-                'reservationId' => $reservation->id(),
-                'amountCents' => $montant->cents,
-                'reason' => 'creneau_indisponible',
-            ]);
+            $this->notifications->remboursee($reservation, $montant, 'creneau_indisponible');
         });
     }
 

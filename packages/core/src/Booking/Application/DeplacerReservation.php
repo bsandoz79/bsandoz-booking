@@ -14,7 +14,7 @@ use Bsandoz\Core\Shared\Domain\NotFound;
 /**
  * Déplacement par le client titulaire vers un autre créneau libre, sous verrou d'agenda.
  * La durée est recalculée à partir de la prestation et des options réservées ; le créneau actuel
- * de la réservation n'est pas compté comme occupé. Mails : feature/core-notification.
+ * de la réservation n'est pas compté comme occupé. Le client (avec le .ics à jour) et le pro sont prévenus.
  */
 final class DeplacerReservation
 {
@@ -23,6 +23,7 @@ final class DeplacerReservation
         private ListerCreneaux $creneaux,
         private CalculerDevis $calculerDevis,
         private SettingsProvider $settings,
+        private NotificationsReservation $notifications,
         private Clock $clock,
     ) {
     }
@@ -49,8 +50,10 @@ final class DeplacerReservation
             $date = $newStart->setTimezone($this->settings->timezone())->format('Y-m-d');
             foreach (($this->creneaux)($date, $duration, $lat, $lng, $reservation->prestationId(), $reservation->id()) as $slot) {
                 if ($slot->start->getTimestamp() === $newStart->getTimestamp()) {
+                    $previousStart = $reservation->period()->start;
                     $reservation->reschedule($slot, $this->clock->now(), $this->settings->rules());
                     $this->reservations->save($reservation);
+                    $this->notifications->deplacee($reservation, $previousStart);
 
                     return;
                 }

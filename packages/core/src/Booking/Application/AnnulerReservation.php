@@ -14,7 +14,7 @@ use Bsandoz\Core\Shared\Domain\NotFound;
 /**
  * Annulation par le client titulaire, selon les règles d'annulation.
  * Annulation gratuite : l'acompte encaissé est remboursé aussitôt. Renvoie vrai dans ce cas.
- * Mails au client et au pro : feature/core-notification.
+ * Le client et le pro sont prévenus par mail.
  */
 final class AnnulerReservation
 {
@@ -22,6 +22,7 @@ final class AnnulerReservation
         private ReservationRepository $reservations,
         private SettingsProvider $settings,
         private RembourserAcompte $rembourser,
+        private NotificationsReservation $notifications,
         private Clock $clock,
     ) {
     }
@@ -43,6 +44,7 @@ final class AnnulerReservation
         if ($refundable) {
             ($this->rembourser)($reservation->id());
         }
+        $this->notifications->annulee($reservation, $refundable);
 
         return $refundable;
     }

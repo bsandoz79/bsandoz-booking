@@ -12,7 +12,9 @@ use Bsandoz\Core\Booking\Application\ListerCreneaux;
 use Bsandoz\Core\Booking\Application\Occupations;
 use Bsandoz\Core\Booking\Application\ReserverCreneau;
 use Bsandoz\Core\Booking\Application\ReserverCreneauCommand;
+use Bsandoz\Core\Booking\Application\NotificationsReservation;
 use Bsandoz\Core\Booking\Application\ReservationParJeton;
+use Bsandoz\Core\Notification\Domain\Service\IcsGenerator;
 use Bsandoz\Core\Booking\Application\Trajet;
 use Bsandoz\Core\Booking\Domain\Model\OpeningHour;
 use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
@@ -51,6 +53,7 @@ final class GererReservationTest extends TestCase
     private ExpirerReservationsNonPayees $expirer;
     private InMemoryTokenService $tokens;
     private ReservationParJeton $parJeton;
+    private RecordingNotifier $notifier;
 
     protected function setUp(): void
     {
@@ -78,10 +81,14 @@ final class GererReservationTest extends TestCase
         $creneaux = new ListerCreneaux($availability, $settings, $prestations, new CreneauCalculator(), new Occupations($this->reservations, $availability, $trajet, $this->clock), $trajet, $this->clock);
         $devis = new CalculerDevis($prestations, new InMemoryOptionRepository(), new SansVarianteResolver(), $zone, $settings, new PrixCalculator());
 
-        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation(new InMemoryUserRepository(), $this->tokens, new RecordingNotifier(), new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, $this->tokens, new SequenceIdGenerator('r'), $this->clock);
+        $users = new InMemoryUserRepository();
+        $this->notifier = new RecordingNotifier();
+        $notifications = new NotificationsReservation($this->notifier, $users, $prestations, new IcsGenerator(), 'Marque', 'pro@example.test');
+
+        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation($users, $this->tokens, $this->notifier, new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, $this->tokens, $notifications, new SequenceIdGenerator('r'), $this->clock);
         $this->parJeton = new ReservationParJeton($this->tokens, $this->reservations);
-        $this->annuler = new AnnulerReservation($this->reservations, $settings, new RembourserAcompte(new InMemoryPaymentRepository(), new FakePaymentGateway()), $this->clock);
-        $this->deplacer = new DeplacerReservation($this->reservations, $creneaux, $devis, $settings, $this->clock);
+        $this->annuler = new AnnulerReservation($this->reservations, $settings, new RembourserAcompte(new InMemoryPaymentRepository(), new FakePaymentGateway()), $notifications, $this->clock);
+        $this->deplacer = new DeplacerReservation($this->reservations, $creneaux, $devis, $settings, $notifications, $this->clock);
         $this->expirer = new ExpirerReservationsNonPayees($this->reservations, $this->clock);
     }
 
@@ -135,6 +142,47 @@ final class GererReservationTest extends TestCase
         self::assertTrue(($this->annuler)($id, 'u-1'), 'plus de 48 h avant : acompte remboursable');
         self::assertSame(ReservationStatus::Cancelled, $this->reservations->get($id)->status());
         self::assertSame('r-2', $this->reserver('2026-11-10 09:00', 'autre@example.test'), 'le créneau est de nouveau réservable');
+    }
+
+    public function testMailsDeConfirmationSansAcompte(): void
+    {
+        $this->reserver('2026-11-10 09:00');
+
+        $client = $this->notifier->of('booking_confirmed');
+        self::assertCount(1, $client);
+        self::assertSame('camille@example.test', $client[0]['to']);
+        self::assertSame('2026-11-10T08:00:00+00:00', $client[0]['context']['start']);
+        self::assertSame('Prestation', $client[0]['context']['prestation']);
+        self::assertIsString($client[0]['context']['manageToken']);
+        self::assertSame('rendez-vous.ics', $client[0]['attachments'][0]['name']);
+        self::assertStringContainsString('DTSTART:20261110T080000Z', $client[0]['attachments'][0]['content']);
+
+        $pro = $this->notifier->of('pro_new_booking');
+        self::assertCount(1, $pro);
+        self::assertSame('pro@example.test', $pro[0]['to']);
+        self::assertSame('Camille Martin', $pro[0]['context']['client']);
+        self::assertSame('0600000000', $pro[0]['context']['phone']);
+    }
+
+    public function testMailsDAnnulation(): void
+    {
+        $id = $this->reserver('2026-11-10 09:00');
+        ($this->annuler)($id, 'u-1');
+
+        self::assertTrue($this->notifier->of('booking_cancelled')[0]['context']['refundable']);
+        self::assertSame('pro@example.test', $this->notifier->of('pro_booking_cancelled')[0]['to']);
+    }
+
+    public function testMailsDeDeplacement(): void
+    {
+        $id = $this->reserver('2026-11-10 09:00');
+        ($this->deplacer)($id, self::paris('2026-11-17 10:00'), 'u-1');
+
+        $client = $this->notifier->of('booking_moved')[0];
+        self::assertSame('2026-11-17T09:00:00+00:00', $client['context']['start']);
+        self::assertSame('2026-11-10T08:00:00+00:00', $client['context']['previousStart']);
+        self::assertStringContainsString('DTSTART:20261117T090000Z', $client['attachments'][0]['content'], '.ics à jour');
+        self::assertCount(1, $this->notifier->of('pro_booking_moved'));
     }
 
     public function testAnnulationTardiveSansRemboursement(): void

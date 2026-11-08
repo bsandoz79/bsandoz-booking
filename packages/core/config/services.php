@@ -34,6 +34,7 @@ use Bsandoz\Core\Auth\Infrastructure\Security\NativePasswordHasherAdapter;
 use Bsandoz\Core\Booking\Application\ReservationParJeton;
 use Bsandoz\Core\Booking\Infrastructure\Http\ManageController;
 use Bsandoz\Core\Notification\Domain\Port\Notifier;
+use Bsandoz\Core\Booking\Application\NotificationsReservation;
 use Bsandoz\Core\Notification\Domain\Service\IcsGenerator;
 use Bsandoz\Core\Notification\Infrastructure\LogNotifier;
 use Bsandoz\Core\Notification\Infrastructure\Mailer\SymfonyMailerNotifier;
@@ -110,6 +111,9 @@ return static function (ContainerConfigurator $container): void {
     ]);
     $services->alias(Notifier::class, SymfonyMailerNotifier::class);
     $services->set(IcsGenerator::class);
+    $services->set(NotificationsReservation::class)
+        ->arg('$brand', param('bsandoz_core.mail.brand'))
+        ->arg('$proEmail', param('bsandoz_core.mail.pro_email'));
 
     // Auth (comptes et liens envoyés par mail)
     $services->set(DoctrineUserRepository::class);

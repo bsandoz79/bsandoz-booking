@@ -8,7 +8,9 @@ use Bsandoz\Core\Auth\Application\CreerCompteDepuisReservation;
 use Bsandoz\Core\Auth\Domain\Model\TokenType;
 use Bsandoz\Core\Booking\Application\AnnulerReservation;
 use Bsandoz\Core\Booking\Application\ListerCreneaux;
+use Bsandoz\Core\Booking\Application\NotificationsReservation;
 use Bsandoz\Core\Booking\Application\Occupations;
+use Bsandoz\Core\Notification\Domain\Service\IcsGenerator;
 use Bsandoz\Core\Booking\Application\ReserverCreneau;
 use Bsandoz\Core\Booking\Application\ReserverCreneauCommand;
 use Bsandoz\Core\Booking\Application\Trajet;
@@ -85,11 +87,13 @@ final class ParcoursPaiementTest extends TestCase
         $creneaux = new ListerCreneaux($availability, $settings, $prestations, new CreneauCalculator(), $occupations, $trajet, $this->clock);
         $devis = new CalculerDevis($prestations, new InMemoryOptionRepository(), new SansVarianteResolver(), new ZoneCalculator(), $settings, new PrixCalculator());
 
-        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation($users, $this->tokens, $this->notifier, new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, $this->tokens, new SequenceIdGenerator('r'), $this->clock);
+        $notifications = new NotificationsReservation($this->notifier, $users, $prestations, new IcsGenerator(), 'Marque', 'pro@example.test');
+
+        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation($users, $this->tokens, $this->notifier, new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, $this->tokens, $notifications, new SequenceIdGenerator('r'), $this->clock);
         $this->session = new CreerSessionAcompte($this->reservations, $users, $prestations, $this->gateway, $this->payments, new SequenceIdGenerator('pay'), $this->clock, 'https://site.test/confirmation?reservation={reservationId}', 'https://site.test/reserver?annule={reservationId}');
-        $this->confirmer = new ConfirmerPaiement($this->gateway, $this->payments, $this->reservations, $occupations, $users, $this->tokens, $this->notifier, $this->clock);
+        $this->confirmer = new ConfirmerPaiement($this->gateway, $this->payments, $this->reservations, $occupations, $this->tokens, $notifications, $this->clock);
         $this->rembourser = new RembourserAcompte($this->payments, $this->gateway);
-        $this->annuler = new AnnulerReservation($this->reservations, $settings, $this->rembourser, $this->clock);
+        $this->annuler = new AnnulerReservation($this->reservations, $settings, $this->rembourser, $notifications, $this->clock);
     }
 
     private function reserver(string $email = 'camille@example.test', string $heure = '09:00'): string
