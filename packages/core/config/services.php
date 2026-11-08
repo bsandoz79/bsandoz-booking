@@ -35,7 +35,11 @@ use Bsandoz\Core\Booking\Application\ReservationParJeton;
 use Bsandoz\Core\Booking\Infrastructure\Http\ManageController;
 use Bsandoz\Core\Notification\Domain\Port\Notifier;
 use Bsandoz\Core\Booking\Application\NotificationsReservation;
+use Bsandoz\Core\Notification\Application\EnvoyerRappels;
+use Bsandoz\Core\Notification\Domain\Port\JournalNotifications;
 use Bsandoz\Core\Notification\Domain\Service\IcsGenerator;
+use Bsandoz\Core\Notification\Infrastructure\Console\SendNotificationsCommand;
+use Bsandoz\Core\Notification\Infrastructure\Persistence\DoctrineJournalNotifications;
 use Bsandoz\Core\Notification\Infrastructure\LogNotifier;
 use Bsandoz\Core\Notification\Infrastructure\Mailer\SymfonyMailerNotifier;
 use Bsandoz\Core\Auth\Domain\Port\UserRepository;
@@ -111,6 +115,10 @@ return static function (ContainerConfigurator $container): void {
     ]);
     $services->alias(Notifier::class, SymfonyMailerNotifier::class);
     $services->set(IcsGenerator::class);
+    $services->set(DoctrineJournalNotifications::class);
+    $services->alias(JournalNotifications::class, DoctrineJournalNotifications::class);
+    $services->set(EnvoyerRappels::class);
+    $services->set(SendNotificationsCommand::class);
     $services->set(NotificationsReservation::class)
         ->arg('$brand', param('bsandoz_core.mail.brand'))
         ->arg('$proEmail', param('bsandoz_core.mail.pro_email'));
