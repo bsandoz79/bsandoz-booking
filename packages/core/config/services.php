@@ -36,6 +36,8 @@ use Bsandoz\Core\Booking\Infrastructure\Http\ManageController;
 use Bsandoz\Core\Notification\Domain\Port\Notifier;
 use Bsandoz\Core\Booking\Application\NotificationsReservation;
 use Bsandoz\Core\Notification\Application\EnvoyerRappels;
+use Bsandoz\Core\Notification\Application\FluxAgendaPro;
+use Bsandoz\Core\Notification\Infrastructure\Http\AgendaController;
 use Bsandoz\Core\Notification\Domain\Port\JournalNotifications;
 use Bsandoz\Core\Notification\Domain\Service\IcsGenerator;
 use Bsandoz\Core\Notification\Infrastructure\Console\SendNotificationsCommand;
@@ -118,6 +120,9 @@ return static function (ContainerConfigurator $container): void {
     $services->set(DoctrineJournalNotifications::class);
     $services->alias(JournalNotifications::class, DoctrineJournalNotifications::class);
     $services->set(EnvoyerRappels::class);
+    $services->set(FluxAgendaPro::class)->arg('$brand', param('bsandoz_core.mail.brand'));
+    $services->set(AgendaController::class)->public()->tag('controller.service_arguments')
+        ->arg('$secret', param('bsandoz_core.ical_secret'));
     $services->set(SendNotificationsCommand::class);
     $services->set(NotificationsReservation::class)
         ->arg('$brand', param('bsandoz_core.mail.brand'))

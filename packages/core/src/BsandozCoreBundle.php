@@ -32,6 +32,10 @@ final class BsandozCoreBundle extends AbstractBundle
                     ->info('Clé de chiffrement de l\'adresse et du téléphone (64 caractères hexadécimaux), propre au client.')
                     ->defaultValue('%env(default::BSANDOZ_ENCRYPTION_KEY)%')
                 ->end()
+                ->scalarNode('ical_secret')
+                    ->info('Secret de l\'adresse du flux d\'agenda du pro (au moins 32 caractères) : /api/v1/ical/<secret>.ics.')
+                    ->defaultValue('%env(default::BSANDOZ_ICAL_SECRET)%')
+                ->end()
                 ->arrayNode('mail')
                     ->info('Mails envoyés aux clients et au pro (modèles Twig du kit, surchargeables dans templates/bsandoz/emails/).')
                     ->addDefaultsIfNotSet()
@@ -82,11 +86,12 @@ final class BsandozCoreBundle extends AbstractBundle
             ->end();
     }
 
-    /** @param array{timezone: string, encryption_key: string|null, mail: array{from_email: string, from_name: string, brand: string, front_url: string|null, pro_email: string|null}, payment: array{stripe_secret_key: string|null, stripe_webhook_secret: string|null, success_url: string, cancel_url: string}, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
+    /** @param array{timezone: string, encryption_key: string|null, ical_secret: string|null, mail: array{from_email: string, from_name: string, brand: string, front_url: string|null, pro_email: string|null}, payment: array{stripe_secret_key: string|null, stripe_webhook_secret: string|null, success_url: string, cancel_url: string}, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->parameters()
             ->set('bsandoz_core.timezone', $config['timezone'])
+            ->set('bsandoz_core.ical_secret', $config['ical_secret'])
             ->set('bsandoz_core.mail.from_email', $config['mail']['from_email'])
             ->set('bsandoz_core.mail.from_name', $config['mail']['from_name'])
             ->set('bsandoz_core.mail.brand', $config['mail']['brand'])

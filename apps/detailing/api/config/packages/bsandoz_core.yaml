@@ -2,6 +2,12 @@
 # Seront modifiables dans l'espace pro (branche feature/core-admin).
 bsandoz_core:
     timezone: 'Europe/Paris'
+    mail:
+        from_email: '%env(MAILER_FROM)%'
+        from_name: 'Atelier Brillance'
+        brand: 'Atelier Brillance'
+        front_url: '%env(FRONT_URL)%'
+        pro_email: '%env(default::PRO_EMAIL)%'
     payment:
         # Pages du site où Stripe renvoie le client après paiement ou abandon.
         success_url: '%env(FRONT_URL)%/confirmation?reservation={reservationId}'

@@ -14,4 +14,5 @@ return static function (RoutingConfigurator $routes): void {
     $routes->import('../src/Booking/Infrastructure/Http/', 'attribute');
     $routes->import('../src/Auth/Infrastructure/Http/', 'attribute');
     $routes->import('../src/Payment/Infrastructure/Http/', 'attribute');
+    $routes->import('../src/Notification/Infrastructure/Http/', 'attribute');
 };
