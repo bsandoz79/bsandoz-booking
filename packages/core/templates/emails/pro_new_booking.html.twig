@@ -1,0 +1,14 @@
+{% extends '_base.html.twig' %}
+{% import '_macros.html.twig' as m %}
+{% block subject %}Nouveau rendez-vous le {{ start|date('d/m/Y', timezone) }}{% endblock %}
+{% block body %}
+<p>Nouveau rendez-vous confirmé :</p>
+<ul>
+    <li>Date : <strong>{{ m.date(start, timezone) }}</strong></li>
+    {% if prestation is defined and prestation %}<li>Prestation : {{ prestation }}</li>{% endif %}
+    <li>Client : {{ client }}{% if phone is defined and phone %} – {{ phone }}{% endif %}</li>
+    {% if address is defined and address %}<li>Adresse : {{ address }}</li>{% endif %}
+    <li>Total : {{ totalCents|euros }}{% if depositCents is defined and depositCents > 0 %} (acompte réglé : {{ depositCents|euros }}){% endif %}</li>
+    {% if notes is defined and notes %}<li>Informations : {{ notes }}</li>{% endif %}
+</ul>
+{% endblock %}

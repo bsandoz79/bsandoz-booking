@@ -3,12 +3,3 @@ parameters:
     paths:
         - src
         - tests
-
-    # Classes encore marquées @todo : leurs dépendances injectées ne sont pas encore lues.
-    # Retirer l'entrée dans la branche qui implémente la classe (PHPStan signale toute entrée devenue inutile).
-    reportUnmatchedIgnoredErrors: true
-    ignoreErrors:
-        # feature/core-notification
-        -
-            identifier: property.onlyWritten
-            path: src/Notification/Infrastructure/Mailer/SymfonyMailerNotifier.php

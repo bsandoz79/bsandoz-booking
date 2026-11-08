@@ -1,0 +1,10 @@
+{% extends '_base.html.twig' %}
+{% import '_macros.html.twig' as m %}
+{% block subject %}Votre rendez-vous est annulé{% endblock %}
+{% block body %}
+<p>Bonjour {{ firstname }},</p>
+<p>Votre rendez-vous du <strong>{{ m.date(start, timezone) }}</strong> est annulé.</p>
+{% if refundable %}<p>Votre acompte vous est remboursé sur le moyen de paiement utilisé. Le délai dépend de votre banque (en général quelques jours).</p>
+{% elseif depositCents is defined and depositCents > 0 %}<p>L'annulation intervenant après le délai d'annulation gratuite, l'acompte n'est pas remboursé.</p>{% endif %}
+{{ m.bouton(front_url ~ '/reserver', 'Prendre un nouveau rendez-vous') }}
+{% endblock %}

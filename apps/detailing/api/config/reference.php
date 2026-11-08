@@ -1331,6 +1331,20 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * }
  * @psalm-type BsandozCoreConfig = array{
  *     timezone?: scalar|Param|null, // Default: "Europe/Paris"
+ *     encryption_key?: scalar|Param|null, // Clé de chiffrement de l'adresse et du téléphone (64 caractères hexadécimaux), propre au client. // Default: "%env(default::BSANDOZ_ENCRYPTION_KEY)%"
+ *     mail?: array{ // Mails envoyés aux clients et au pro (modèles Twig du kit, surchargeables dans templates/bsandoz/emails/).
+ *         from_email?: scalar|Param|null, // Default: "no-reply@localhost"
+ *         from_name?: scalar|Param|null, // Default: "Réservation"
+ *         brand?: scalar|Param|null, // Nom affiché dans les mails et les agendas. // Default: "Réservation"
+ *         front_url?: scalar|Param|null, // Adresse du site, pour les liens des mails. // Default: "%env(default::FRONT_URL)%"
+ *         pro_email?: scalar|Param|null, // Adresse du pro, prévenu à chaque rendez-vous confirmé, déplacé ou annulé. // Default: null
+ *     },
+ *     payment?: array{ // Acompte en ligne (Stripe Checkout). URL de retour vers le site : marqueur {reservationId} accepté.
+ *         stripe_secret_key?: scalar|Param|null, // Default: "%env(default::STRIPE_SECRET_KEY)%"
+ *         stripe_webhook_secret?: scalar|Param|null, // Default: "%env(default::STRIPE_WEBHOOK_SECRET)%"
+ *         success_url?: scalar|Param|null, // Default: "/"
+ *         cancel_url?: scalar|Param|null, // Default: "/"
+ *     },
  *     rules?: array{ // Règles de réservation (modifiables dans l'espace pro à partir de feature/core-admin).
  *         min_notice_hours?: int|Param, // Default: 24
  *         horizon_days?: int|Param, // Default: 60

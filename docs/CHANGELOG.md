@@ -62,6 +62,7 @@
 - Paiement : `StripeGateway` (Stripe Checkout en euros, session de 30 min, métadonnées de réservation ; remboursement sur le moyen de paiement de la session ; webhook vérifié par `Stripe\Webhook::constructEvent`, tolérance 5 min ; erreurs Stripe traduites en messages français ; paiement non configuré signalé clairement). Tests sans réseau (faux client HTTP du SDK, signatures calculées).
 - API : `paymentUrl` (et `paymentError` si le paiement est indisponible) dans `POST /booking/reservations`, webhook `POST /api/v1/payment/stripe/webhook`, configuration `bsandoz_core.payment` (clés Stripe, URL de retour vers le site). API detailing : `FRONT_URL`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, faux Stripe en test, migration `payment`, tests fonctionnels du parcours de paiement.
 - Notifications : `IcsGenerator` (iCalendar RFC 5545 : événement ou flux, UTC, CRLF, échappement, pliage à 75 octets sans couper l'UTF-8). Tests.
+- Notifications : `SymfonyMailerNotifier` (modèles Twig du kit `templates/emails/` surchargeables dans `templates/bsandoz/emails/`, version texte déduite, pièces jointes, filtre `euros`, dates locales), 10 modèles en français (activation, mot de passe, confirmation, annulation, déplacement, rappel, remboursement, et 3 mails au pro), configuration `bsandoz_core.mail` (expéditeur, nom affiché, adresse du site, e-mail du pro). Le port `Notifier` envoie désormais les vrais mails. PHPStan n'a plus aucune exception. Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
