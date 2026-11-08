@@ -32,6 +32,7 @@ APP_SECRET=      # php -r "echo bin2hex(random_bytes(16));"
 JWT_SECRET=      # php -r "echo bin2hex(random_bytes(32));"  (signature HS256 des jetons d'accès)
 BSANDOZ_ENCRYPTION_KEY=  # php bin/console bsandoz:cle-chiffrement  (chiffre adresse et téléphone ; à sauvegarder à part)
 DATABASE_URL="mysql://utilisateur:motdepasse@127.0.0.1:3306/detailing?serverVersion=8.0"
+FRONT_URL=https://demo.bsandoz.fr   # adresse publique du site (retours de paiement)
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 MAILER_DSN=smtp://contact%40domaine.fr:motdepasse@mail.domaine.fr:465
@@ -54,3 +55,9 @@ Réglages du kit (zone de démonstration, règles) : `config/packages/bsandoz_co
 
 ## Sécurité (`config/packages/security.yaml`)
 Pare-feu `api` sans état : jeton d'accès JWT (15 min, HS256 avec `JWT_SECRET`) en `Authorization: Bearer …`, comptes chargés par le kit (`SecurityUserProvider`). `/api/v1/me` exige `ROLE_CLIENT`, `/api/v1/admin` `ROLE_PRO` (le pro a aussi les droits client). La session dure 30 jours grâce au cookie httpOnly renouvelé par `POST /api/v1/auth/refresh`.
+
+## Paiement (Stripe)
+1. Tableau de bord Stripe du client > Développeurs > Clés API : `STRIPE_SECRET_KEY` (`sk_test_…` pour les essais, `sk_live_…` en production).
+2. Développeurs > Webhooks : ajouter `https://api.demo.bsandoz.fr/api/v1/payment/stripe/webhook`, évènement `checkout.session.completed` ; copier le secret de signature dans `STRIPE_WEBHOOK_SECRET`.
+3. En local : `stripe listen --forward-to localhost:8000/api/v1/payment/stripe/webhook` (Stripe CLI) donne un secret `whsec_…` temporaire.
+Sans clés, la réservation fonctionne mais `paymentError` indique que le paiement en ligne n'est pas configuré (mettre `deposit_percent: 0` pour une démo sans acompte). En test, un faux Stripe est branché (`tests/Double/FauxPrestatairePaiement`).

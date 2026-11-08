@@ -90,3 +90,9 @@ Le jeton d'accès s'envoie en `Authorization: Bearer …`. Plusieurs appareils p
 - `GET /me/export` → toutes mes données en JSON (fichier `mes-donnees.json`)
 - `DELETE /me` → 204 : compte anonymisé, sessions fermées, accès coupé immédiatement ; refusé (422) s'il reste un rendez-vous à venir.
 Réservation d'un autre client : 404. Sans jeton : 401.
+
+## Paiement de l'acompte (Stripe Checkout)
+- `POST /booking/reservations` renvoie maintenant `paymentUrl` (page de paiement Stripe : carte, Apple Pay, Google Pay selon le tableau de bord Stripe). Paiement indisponible ou non configuré : la réservation est créée quand même, `paymentUrl` vaut `null` et `paymentError` explique pourquoi.
+- Après paiement, Stripe renvoie le client sur `success_url` (`/confirmation?reservation=…`), ou sur `cancel_url` s'il abandonne.
+- `POST /payment/stripe/webhook` (appelé par Stripe, évènement `checkout.session.completed`) : signature vérifiée (`STRIPE_WEBHOOK_SECRET`, tolérance 5 min, sinon 400), traitement idempotent. Créneau toujours libre : réservation confirmée et mail avec le lien de gestion. Paiement arrivé trop tard pour un créneau repris : acompte remboursé automatiquement.
+- Annulation gratuite (lien de gestion ou espace client) : l'acompte est remboursé aussitôt sur le moyen de paiement d'origine.

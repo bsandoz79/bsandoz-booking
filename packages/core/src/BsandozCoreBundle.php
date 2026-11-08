@@ -32,6 +32,16 @@ final class BsandozCoreBundle extends AbstractBundle
                     ->info('Clé de chiffrement de l\'adresse et du téléphone (64 caractères hexadécimaux), propre au client.')
                     ->defaultValue('%env(default::BSANDOZ_ENCRYPTION_KEY)%')
                 ->end()
+                ->arrayNode('payment')
+                    ->info('Acompte en ligne (Stripe Checkout). URL de retour vers le site : marqueur {reservationId} accepté.')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('stripe_secret_key')->defaultValue('%env(default::STRIPE_SECRET_KEY)%')->end()
+                        ->scalarNode('stripe_webhook_secret')->defaultValue('%env(default::STRIPE_WEBHOOK_SECRET)%')->end()
+                        ->scalarNode('success_url')->defaultValue('/')->end()
+                        ->scalarNode('cancel_url')->defaultValue('/')->end()
+                    ->end()
+                ->end()
                 ->arrayNode('rules')
                     ->info('Règles de réservation (modifiables dans l\'espace pro à partir de feature/core-admin).')
                     ->addDefaultsIfNotSet()
@@ -61,11 +71,15 @@ final class BsandozCoreBundle extends AbstractBundle
             ->end();
     }
 
-    /** @param array{timezone: string, encryption_key: string|null, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
+    /** @param array{timezone: string, encryption_key: string|null, payment: array{stripe_secret_key: string|null, stripe_webhook_secret: string|null, success_url: string, cancel_url: string}, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->parameters()
             ->set('bsandoz_core.timezone', $config['timezone'])
+            ->set('bsandoz_core.payment.stripe_secret_key', $config['payment']['stripe_secret_key'])
+            ->set('bsandoz_core.payment.stripe_webhook_secret', $config['payment']['stripe_webhook_secret'])
+            ->set('bsandoz_core.payment.success_url', $config['payment']['success_url'])
+            ->set('bsandoz_core.payment.cancel_url', $config['payment']['cancel_url'])
             ->set('bsandoz_core.encryption_key', $config['encryption_key'])
             ->set('bsandoz_core.rules', $config['rules'])
             ->set('bsandoz_core.zone', $config['zone'] ?? null);

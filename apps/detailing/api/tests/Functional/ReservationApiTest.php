@@ -84,7 +84,8 @@ final class ReservationApiTest extends WebTestCase
         self::assertSame(6900, $resultat['totalCents']);
         self::assertSame(2070, $resultat['depositCents']);
         self::assertSame('2026-11-01T10:10:00+00:00', $resultat['holdExpiresAt']);
-        self::assertNull($resultat['paymentUrl']);
+        self::assertStringStartsWith('https://paiement.test/cs_test_', (string) $resultat['paymentUrl'], 'lien de paiement de l\'acompte');
+        self::assertNull($resultat['paymentError']);
 
         $reservation = $this->em()->find(Reservation::class, $resultat['reservationId']);
         self::assertInstanceOf(Reservation::class, $reservation);

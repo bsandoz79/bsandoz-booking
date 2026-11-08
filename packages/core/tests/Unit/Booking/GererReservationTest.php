@@ -30,6 +30,9 @@ use Bsandoz\Core\Shared\Infrastructure\FrozenClock;
 use Bsandoz\Core\Tests\Double\InMemoryAvailabilityRepository;
 use Bsandoz\Core\Tests\Double\InMemoryOptionRepository;
 use Bsandoz\Core\Tests\Double\InMemoryPrestationRepository;
+use Bsandoz\Core\Payment\Application\RembourserAcompte;
+use Bsandoz\Core\Tests\Double\FakePaymentGateway;
+use Bsandoz\Core\Tests\Double\InMemoryPaymentRepository;
 use Bsandoz\Core\Tests\Double\InMemoryReservationRepository;
 use Bsandoz\Core\Tests\Double\InMemoryTokenService;
 use Bsandoz\Core\Tests\Double\RecordingNotifier;
@@ -77,7 +80,7 @@ final class GererReservationTest extends TestCase
 
         $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation(new InMemoryUserRepository(), $this->tokens, new RecordingNotifier(), new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, $this->tokens, new SequenceIdGenerator('r'), $this->clock);
         $this->parJeton = new ReservationParJeton($this->tokens, $this->reservations);
-        $this->annuler = new AnnulerReservation($this->reservations, $settings, $this->clock);
+        $this->annuler = new AnnulerReservation($this->reservations, $settings, new RembourserAcompte(new InMemoryPaymentRepository(), new FakePaymentGateway()), $this->clock);
         $this->deplacer = new DeplacerReservation($this->reservations, $creneaux, $devis, $settings, $this->clock);
         $this->expirer = new ExpirerReservationsNonPayees($this->reservations, $this->clock);
     }
