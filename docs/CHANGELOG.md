@@ -66,6 +66,7 @@
 - Notifications : `NotificationsReservation` (contenu des mails, `.ics` joint) branché sur la confirmation (avec ou sans acompte), l'annulation, le déplacement et le remboursement d'un paiement tardif ; le pro est prévenu à chaque fois si `bsandoz_core.mail.pro_email` est renseigné. Tests.
 - Notifications : rappels de la veille (`EnvoyerRappels` : rendez-vous confirmés du lendemain en heure locale, un seul rappel grâce au journal `notification`, lien de gestion), commande cron `bsandoz:notifications:send` (expiration des blocages + rappels). Tests.
 - Notifications : flux d'agenda du pro (`FluxAgendaPro`, `GET /api/v1/ical/{secret}.ics`, secret `bsandoz_core.ical_secret`). API detailing : configuration des mails (Atelier Brillance, `MAILER_FROM`, `PRO_EMAIL`, `FRONT_URL`), `BSANDOZ_ICAL_SECRET`, migration `notification`, tests fonctionnels des mails réellement rendus et du flux.
+- Espace pro : réglages en base (table `setting`) prioritaires sur la configuration (`DatabaseSettingsProvider`), cas d'usage `GererReglages` (lire, modifier les règles de réservation, modifier la zone ou passer en activité sur place, validation par le domaine), conversion `Reglages`. Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé

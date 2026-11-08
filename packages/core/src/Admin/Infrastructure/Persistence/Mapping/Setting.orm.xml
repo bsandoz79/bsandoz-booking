@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <!-- Colonne « setting_key » : « key » est un mot réservé MySQL. -->
+    <entity name="Bsandoz\Core\Admin\Domain\Model\Setting" table="setting">
+        <id name="key" column="setting_key" type="string" length="60"/>
+        <field name="value" type="json"/>
+        <field name="updatedAt" column="updated_at" type="datetime_utc_immutable"/>
+    </entity>
+</doctrine-mapping>

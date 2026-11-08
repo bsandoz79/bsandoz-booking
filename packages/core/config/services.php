@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Bsandoz\Core\Admin\Application\GererReglages;
+use Bsandoz\Core\Admin\Domain\Port\SettingRepository;
+use Bsandoz\Core\Admin\Infrastructure\Persistence\DoctrineSettingRepository;
+use Bsandoz\Core\Booking\Infrastructure\Settings\DatabaseSettingsProvider;
 use Bsandoz\Core\Auth\Application\ExporterDonnees;
 use Bsandoz\Core\Auth\Application\RenouvelerSession;
 use Bsandoz\Core\Auth\Application\SeConnecter;
@@ -161,7 +165,12 @@ return static function (ContainerConfigurator $container): void {
     $services->set(ZoneCalculator::class);
     $services->set(ConfiguredSettingsProvider::class)
         ->args([param('bsandoz_core.rules'), param('bsandoz_core.zone'), param('bsandoz_core.timezone')]);
-    $services->alias(SettingsProvider::class, ConfiguredSettingsProvider::class);
+    // Réglages du pro en base (table setting), repli sur la configuration
+    $services->set(DoctrineSettingRepository::class);
+    $services->alias(SettingRepository::class, DoctrineSettingRepository::class);
+    $services->set(DatabaseSettingsProvider::class);
+    $services->alias(SettingsProvider::class, DatabaseSettingsProvider::class);
+    $services->set(GererReglages::class);
 
     // Booking (créneaux)
     $services->set(CreneauCalculator::class);
