@@ -20,6 +20,12 @@ final class DoctrinePrestationRepository implements PrestationRepository
         return $this->em->find(Prestation::class, $id) ?? throw new NotFound('Prestation introuvable.');
     }
 
+    public function all(): array
+    {
+        /** @var list<Prestation> */
+        return $this->em->getRepository(Prestation::class)->findBy([], ['position' => 'ASC', 'name' => 'ASC']);
+    }
+
     public function allActive(): array
     {
         /** @var list<Prestation> */

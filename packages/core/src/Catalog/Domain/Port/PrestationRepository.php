@@ -12,6 +12,9 @@ interface PrestationRepository
     /** @throws NotFound */
     public function get(string $id): Prestation;
 
+    /** @return list<Prestation> toutes les prestations, actives ou non (espace pro), triées par position puis nom */
+    public function all(): array;
+
     /** @return list<Prestation> prestations actives, triées par position puis nom */
     public function allActive(): array;
 

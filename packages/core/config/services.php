@@ -76,6 +76,7 @@ use Bsandoz\Core\Booking\Infrastructure\Persistence\DoctrineAvailabilityReposito
 use Bsandoz\Core\Booking\Infrastructure\Persistence\DoctrineReservationRepository;
 use Bsandoz\Core\Booking\Infrastructure\Settings\ConfiguredSettingsProvider;
 use Bsandoz\Core\Catalog\Application\CalculerDevis;
+use Bsandoz\Core\Catalog\Application\GererCatalogue;
 use Bsandoz\Core\Catalog\Application\ListerCatalogue;
 use Bsandoz\Core\Catalog\Domain\Port\OptionRepository;
 use Bsandoz\Core\Catalog\Domain\Port\PrestationRepository;
@@ -224,5 +225,6 @@ return static function (ContainerConfigurator $container): void {
     $services->alias(OptionRepository::class, DoctrineOptionRepository::class);
     $services->set(ListerCatalogue::class);
     $services->set(CalculerDevis::class);
+    $services->set(GererCatalogue::class);
     $services->set(CatalogController::class)->public()->tag('controller.service_arguments');
 };

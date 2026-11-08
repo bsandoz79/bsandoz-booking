@@ -21,8 +21,12 @@ interface OptionRepository
      */
     public function getMany(array $ids): array;
 
+    /** @return list<Option> toutes les options, actives ou non (espace pro), triées par nom */
+    public function all(): array;
+
     /** @return list<Option> options actives, triées par nom */
     public function allActive(): array;
 
+    /** Crée ou remplace l'option du même identifiant. */
     public function save(Option $option): void;
 }

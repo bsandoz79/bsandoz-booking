@@ -30,6 +30,14 @@ final class InMemoryOptionRepository implements OptionRepository
         return array_map($this->get(...), array_values(array_unique($ids)));
     }
 
+    public function all(): array
+    {
+        $all = array_values($this->items);
+        usort($all, static fn (Option $a, Option $b): int => $a->name <=> $b->name);
+
+        return $all;
+    }
+
     public function allActive(): array
     {
         $active = array_values(array_filter($this->items, static fn (Option $o): bool => $o->active));

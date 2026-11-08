@@ -40,15 +40,45 @@ final class DoctrineOptionRepository implements OptionRepository
         return $options;
     }
 
+    public function all(): array
+    {
+        /** @var list<Option> */
+        return $this->em->getRepository(Option::class)->findBy([], ['name' => 'ASC']);
+    }
+
     public function allActive(): array
     {
         /** @var list<Option> */
         return $this->em->getRepository(Option::class)->findBy(['active' => true], ['name' => 'ASC']);
     }
 
+    /** Les propriétés d'une option sont en lecture seule : une option existante est remplacée par une mise à jour en base. */
     public function save(Option $option): void
     {
-        $this->em->persist($option);
-        $this->em->flush();
+        $existante = $this->em->find(Option::class, $option->id);
+        if ($existante === null || $existante === $option) {
+            $this->em->persist($option);
+            $this->em->flush();
+
+            return;
+        }
+
+        $this->em->createQueryBuilder()
+            ->update(Option::class, 'o')
+            ->set('o.name', ':name')
+            ->set('o.description', ':description')
+            ->set('o.price', ':price')
+            ->set('o.durationMin', ':duration')
+            ->set('o.active', ':active')
+            ->where('o.id = :id')
+            ->setParameter('name', $option->name)
+            ->setParameter('description', $option->description)
+            ->setParameter('price', $option->price, 'bsandoz_money')
+            ->setParameter('duration', $option->durationMin)
+            ->setParameter('active', $option->active, 'boolean')
+            ->setParameter('id', $option->id)
+            ->getQuery()
+            ->execute();
+        $this->em->detach($existante);
     }
 }

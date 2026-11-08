@@ -25,6 +25,14 @@ final class InMemoryPrestationRepository implements PrestationRepository
         return $this->items[$id] ?? throw new NotFound('Prestation introuvable.');
     }
 
+    public function all(): array
+    {
+        $all = array_values($this->items);
+        usort($all, static fn (Prestation $a, Prestation $b): int => [$a->position(), $a->name()] <=> [$b->position(), $b->name()]);
+
+        return $all;
+    }
+
     public function allActive(): array
     {
         $active = array_values(array_filter($this->items, static fn (Prestation $p): bool => $p->isActive()));
