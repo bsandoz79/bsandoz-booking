@@ -1,0 +1,8 @@
+{% extends '_base.html.twig' %}
+{% import '_macros.html.twig' as m %}
+{% block subject %}Rendez-vous annulé : {{ start|date('d/m/Y', timezone) }}{% endblock %}
+{% block body %}
+<p>{{ client }} a annulé son rendez-vous du <strong>{{ m.date(start, timezone) }}</strong>.</p>
+<p>{% if refundable %}L'acompte a été remboursé automatiquement.{% else %}Annulation tardive : l'acompte éventuel est conservé.{% endif %}</p>
+<p>Le créneau est de nouveau proposé à la réservation.</p>
+{% endblock %}

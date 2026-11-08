@@ -1,0 +1,7 @@
+{% macro bouton(url, libelle) %}
+    <p style="margin:24px 0;"><a href="{{ url }}" style="display:inline-block;background:#2b8ac6;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:bold;">{{ libelle }}</a></p>
+    <p style="font-size:13px;color:#6b7280;">Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur : {{ url }}</p>
+{% endmacro %}
+
+{# Date et heure locales, ex. « 10/11/2026 à 09h00 ». #}
+{% macro date(iso, timezone) %}{{ iso|date('d/m/Y', timezone) }} à {{ iso|date('H', timezone) }}h{{ iso|date('i', timezone) }}{% endmacro %}

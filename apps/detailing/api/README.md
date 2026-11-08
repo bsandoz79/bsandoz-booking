@@ -61,3 +61,9 @@ Pare-feu `api` sans état : jeton d'accès JWT (15 min, HS256 avec `JWT_SECRET`)
 2. Développeurs > Webhooks : ajouter `https://api.demo.bsandoz.fr/api/v1/payment/stripe/webhook`, évènement `checkout.session.completed` ; copier le secret de signature dans `STRIPE_WEBHOOK_SECRET`.
 3. En local : `stripe listen --forward-to localhost:8000/api/v1/payment/stripe/webhook` (Stripe CLI) donne un secret `whsec_…` temporaire.
 Sans clés, la réservation fonctionne mais `paymentError` indique que le paiement en ligne n'est pas configuré (mettre `deposit_percent: 0` pour une démo sans acompte). En test, un faux Stripe est branché (`tests/Double/FauxPrestatairePaiement`).
+
+## Mails et agenda
+- `MAILER_DSN` (SMTP o2switch, ex. `smtp://contact%40domaine.fr:motdepasse@mail.domaine.fr:465`), `MAILER_FROM` (expéditeur), `PRO_EMAIL` (adresse de l'artisan, prévenue à chaque rendez-vous). En développement, `MAILER_DSN=null://null` jette les mails ; un outil comme Mailpit permet de les voir.
+- Textes : modèles du kit (`packages/core/templates/emails/`), à surcharger en copiant un fichier dans `templates/bsandoz/emails/`.
+- Agenda de l'artisan : `BSANDOZ_ICAL_SECRET` dans `.env.local`, puis abonnement à `https://api.demo.bsandoz.fr/api/v1/ical/<secret>.ics` depuis Google Agenda / iPhone.
+- Cron cPanel (toutes les 15 min) : `php bin/console bsandoz:notifications:send`.

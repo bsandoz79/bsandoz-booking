@@ -34,7 +34,16 @@ use Bsandoz\Core\Auth\Infrastructure\Security\NativePasswordHasherAdapter;
 use Bsandoz\Core\Booking\Application\ReservationParJeton;
 use Bsandoz\Core\Booking\Infrastructure\Http\ManageController;
 use Bsandoz\Core\Notification\Domain\Port\Notifier;
+use Bsandoz\Core\Booking\Application\NotificationsReservation;
+use Bsandoz\Core\Notification\Application\EnvoyerRappels;
+use Bsandoz\Core\Notification\Application\FluxAgendaPro;
+use Bsandoz\Core\Notification\Infrastructure\Http\AgendaController;
+use Bsandoz\Core\Notification\Domain\Port\JournalNotifications;
+use Bsandoz\Core\Notification\Domain\Service\IcsGenerator;
+use Bsandoz\Core\Notification\Infrastructure\Console\SendNotificationsCommand;
+use Bsandoz\Core\Notification\Infrastructure\Persistence\DoctrineJournalNotifications;
 use Bsandoz\Core\Notification\Infrastructure\LogNotifier;
+use Bsandoz\Core\Notification\Infrastructure\Mailer\SymfonyMailerNotifier;
 use Bsandoz\Core\Auth\Domain\Port\UserRepository;
 use Bsandoz\Core\Auth\Infrastructure\Persistence\DoctrineUserRepository;
 use Bsandoz\Core\Booking\Application\AnnulerReservation;
@@ -95,9 +104,29 @@ return static function (ContainerConfigurator $container): void {
     $services->set(Chiffreur::class)->public()->args([param('bsandoz_core.encryption_key')]);
     $services->set(CleChiffrementCommand::class);
 
-    // Notification : mails écrits dans le journal en attendant feature/core-notification
+    // Notification : mails Twig envoyés par Symfony Mailer (LogNotifier reste disponible pour écrire les mails dans le journal)
     $services->set(LogNotifier::class);
-    $services->alias(Notifier::class, LogNotifier::class);
+    $services->set(SymfonyMailerNotifier::class)->args([
+        service('mailer'),
+        param('bsandoz_core.mail.from_email'),
+        param('bsandoz_core.mail.from_name'),
+        param('bsandoz_core.mail.brand'),
+        param('bsandoz_core.mail.front_url'),
+        param('bsandoz_core.timezone'),
+        '%kernel.project_dir%/templates/bsandoz/emails',
+    ]);
+    $services->alias(Notifier::class, SymfonyMailerNotifier::class);
+    $services->set(IcsGenerator::class);
+    $services->set(DoctrineJournalNotifications::class);
+    $services->alias(JournalNotifications::class, DoctrineJournalNotifications::class);
+    $services->set(EnvoyerRappels::class);
+    $services->set(FluxAgendaPro::class)->arg('$brand', param('bsandoz_core.mail.brand'));
+    $services->set(AgendaController::class)->public()->tag('controller.service_arguments')
+        ->arg('$secret', param('bsandoz_core.ical_secret'));
+    $services->set(SendNotificationsCommand::class);
+    $services->set(NotificationsReservation::class)
+        ->arg('$brand', param('bsandoz_core.mail.brand'))
+        ->arg('$proEmail', param('bsandoz_core.mail.pro_email'));
 
     // Auth (comptes et liens envoyés par mail)
     $services->set(DoctrineUserRepository::class);

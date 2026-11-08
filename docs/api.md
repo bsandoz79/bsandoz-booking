@@ -96,3 +96,9 @@ Réservation d'un autre client : 404. Sans jeton : 401.
 - Après paiement, Stripe renvoie le client sur `success_url` (`/confirmation?reservation=…`), ou sur `cancel_url` s'il abandonne.
 - `POST /payment/stripe/webhook` (appelé par Stripe, évènement `checkout.session.completed`) : signature vérifiée (`STRIPE_WEBHOOK_SECRET`, tolérance 5 min, sinon 400), traitement idempotent. Créneau toujours libre : réservation confirmée et mail avec le lien de gestion. Paiement arrivé trop tard pour un créneau repris : acompte remboursé automatiquement.
 - Annulation gratuite (lien de gestion ou espace client) : l'acompte est remboursé aussitôt sur le moyen de paiement d'origine.
+
+## Mails et agenda
+- Mails envoyés (modèles Twig du kit, en français, surchargeables dans `templates/bsandoz/emails/` de l'application) : activation du compte, mot de passe oublié, confirmation (avec le rendez-vous en pièce jointe `.ics` et le lien « gérer mon rendez-vous »), annulation, déplacement, rappel de la veille, remboursement ; au pro (`PRO_EMAIL`) : nouveau rendez-vous, annulation, déplacement.
+- Liens des mails vers le site (`FRONT_URL`) : `/compte/activer?jeton=…`, `/compte/mot-de-passe?jeton=…`, `/rendez-vous?jeton=…` (lien de gestion), `/reserver`. Le site doit proposer ces pages et appeler respectivement `/auth/activate`, `/auth/reset` et `/booking/manage/{token}`.
+- `GET /ical/{secret}.ics` : flux d'agenda du pro (rendez-vous confirmés, des 30 derniers jours à l'année à venir) à ajouter dans Google Agenda ou Apple Calendrier (« s'abonner par URL »). Secret faux : 404.
+- Cron toutes les 15 min : `php bin/console bsandoz:notifications:send` (expire les blocages de paiement dépassés et envoie les rappels de la veille, une seule fois par rendez-vous).

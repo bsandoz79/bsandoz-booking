@@ -15,7 +15,7 @@
 | reservation | Booking | id, user_id, prestation_id, variante, option_ids JSON, period_start, period_end (UTC), address (chiffrée), lat, lng, travel_fee_cents, total_cents, deposit_cents, status, hold_expires_at (UTC), notes, metier_data JSON |
 | reservation_option | Booking | reservation_id, option_id, price_cents |
 | payment | Payment | id, reservation_id, provider_session_id (unique), amount_cents, refunded_cents, status (pending/paid/partially_refunded/refunded), paid_at, created_at (UTC) |
-| notification | Notification | type, recipient, reservation_id, scheduled_at, sent_at |
+| notification | Notification | id, type (reminder…), reservation_id (unique par type), sent_at (UTC) : journal des notifications programmées déjà envoyées |
 | push_subscription | Notification | user_id, endpoint, p256dh, auth |
 | setting | Admin | key, value JSON |
 | audit_log | Admin | user_id, action, target, created_at, ip |

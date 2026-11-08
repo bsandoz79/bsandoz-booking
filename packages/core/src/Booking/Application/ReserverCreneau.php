@@ -8,6 +8,7 @@ use Bsandoz\Core\Auth\Application\CreerCompteDepuisReservation;
 use Bsandoz\Core\Auth\Domain\Model\TokenType;
 use Bsandoz\Core\Auth\Domain\Port\TokenService;
 use Bsandoz\Core\Booking\Domain\Model\Reservation;
+use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
 use Bsandoz\Core\Catalog\Application\CalculerDevis;
@@ -36,6 +37,7 @@ final class ReserverCreneau
         private ReservationRepository $reservations,
         private SettingsProvider $settings,
         private TokenService $tokens,
+        private NotificationsReservation $notifications,
         private IdGenerator $ids,
         private Clock $clock,
     ) {
@@ -91,6 +93,9 @@ final class ReserverCreneau
 
             $validite = max(3600, $slot->end->getTimestamp() - $now->getTimestamp());
             $manageToken = $this->tokens->issue($reservation->id(), TokenType::ManageReservation, new \DateInterval(sprintf('PT%dS', $validite)));
+            if ($reservation->status() === ReservationStatus::Confirmed) {
+                $this->notifications->confirmee($reservation, $manageToken);
+            }
 
             return new ReservationCreee($reservation->id(), $reservation->status(), $reservation->deposit(), $reservation->total(), $reservation->holdExpiresAt(), $manageToken);
         });

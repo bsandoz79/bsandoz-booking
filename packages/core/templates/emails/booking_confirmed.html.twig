@@ -1,0 +1,12 @@
+{% extends '_base.html.twig' %}
+{% import '_macros.html.twig' as m %}
+{% block subject %}Votre rendez-vous est confirmé{% endblock %}
+{% block body %}
+<p>Bonjour {{ firstname }},</p>
+<p>Votre rendez-vous du <strong>{{ m.date(start, timezone) }}</strong> est confirmé{% if prestation is defined and prestation %} ({{ prestation }}){% endif %}.</p>
+{% if address is defined and address %}<p>Adresse : {{ address }}</p>{% endif %}
+{% if depositCents is defined and depositCents > 0 %}<p>Acompte réglé : {{ depositCents|euros }}. Le solde est à régler sur place.</p>{% endif %}
+<p>Le rendez-vous est joint à ce message : ouvrez la pièce jointe pour l'ajouter à votre agenda.</p>
+{{ m.bouton(front_url ~ '/rendez-vous?jeton=' ~ manageToken, 'Gérer mon rendez-vous') }}
+<p>Depuis ce lien, vous pouvez déplacer ou annuler votre rendez-vous selon les conditions d'annulation.</p>
+{% endblock %}

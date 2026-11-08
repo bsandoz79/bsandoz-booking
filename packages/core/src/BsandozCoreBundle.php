@@ -32,6 +32,21 @@ final class BsandozCoreBundle extends AbstractBundle
                     ->info('Clé de chiffrement de l\'adresse et du téléphone (64 caractères hexadécimaux), propre au client.')
                     ->defaultValue('%env(default::BSANDOZ_ENCRYPTION_KEY)%')
                 ->end()
+                ->scalarNode('ical_secret')
+                    ->info('Secret de l\'adresse du flux d\'agenda du pro (au moins 32 caractères) : /api/v1/ical/<secret>.ics.')
+                    ->defaultValue('%env(default::BSANDOZ_ICAL_SECRET)%')
+                ->end()
+                ->arrayNode('mail')
+                    ->info('Mails envoyés aux clients et au pro (modèles Twig du kit, surchargeables dans templates/bsandoz/emails/).')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('from_email')->defaultValue('no-reply@localhost')->end()
+                        ->scalarNode('from_name')->defaultValue('Réservation')->end()
+                        ->scalarNode('brand')->defaultValue('Réservation')->info('Nom affiché dans les mails et les agendas.')->end()
+                        ->scalarNode('front_url')->defaultValue('%env(default::FRONT_URL)%')->info('Adresse du site, pour les liens des mails.')->end()
+                        ->scalarNode('pro_email')->defaultNull()->info('Adresse du pro, prévenu à chaque rendez-vous confirmé, déplacé ou annulé.')->end()
+                    ->end()
+                ->end()
                 ->arrayNode('payment')
                     ->info('Acompte en ligne (Stripe Checkout). URL de retour vers le site : marqueur {reservationId} accepté.')
                     ->addDefaultsIfNotSet()
@@ -71,11 +86,17 @@ final class BsandozCoreBundle extends AbstractBundle
             ->end();
     }
 
-    /** @param array{timezone: string, encryption_key: string|null, payment: array{stripe_secret_key: string|null, stripe_webhook_secret: string|null, success_url: string, cancel_url: string}, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
+    /** @param array{timezone: string, encryption_key: string|null, ical_secret: string|null, mail: array{from_email: string, from_name: string, brand: string, front_url: string|null, pro_email: string|null}, payment: array{stripe_secret_key: string|null, stripe_webhook_secret: string|null, success_url: string, cancel_url: string}, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->parameters()
             ->set('bsandoz_core.timezone', $config['timezone'])
+            ->set('bsandoz_core.ical_secret', $config['ical_secret'])
+            ->set('bsandoz_core.mail.from_email', $config['mail']['from_email'])
+            ->set('bsandoz_core.mail.from_name', $config['mail']['from_name'])
+            ->set('bsandoz_core.mail.brand', $config['mail']['brand'])
+            ->set('bsandoz_core.mail.front_url', $config['mail']['front_url'] ?? '')
+            ->set('bsandoz_core.mail.pro_email', $config['mail']['pro_email'])
             ->set('bsandoz_core.payment.stripe_secret_key', $config['payment']['stripe_secret_key'])
             ->set('bsandoz_core.payment.stripe_webhook_secret', $config['payment']['stripe_webhook_secret'])
             ->set('bsandoz_core.payment.success_url', $config['payment']['success_url'])

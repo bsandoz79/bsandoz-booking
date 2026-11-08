@@ -101,8 +101,29 @@ final class PaiementApiTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSame(['received' => true], $this->json());
+        self::assertEmailCount(2, null, 'confirmation au client et alerte au pro');
+        $confirmation = self::getMailerMessage(0);
+        self::assertNotNull($confirmation);
+        self::assertEmailHeaderSame($confirmation, 'To', 'camille@example.test');
+        self::assertEmailHeaderSame($confirmation, 'Subject', 'Votre rendez-vous est confirmé');
+        self::assertEmailHtmlBodyContains($confirmation, '10/11/2026 à 09h00');
+        self::assertEmailAttachmentCount($confirmation, 1);
+        $pro = self::getMailerMessage(1);
+        self::assertNotNull($pro);
+        self::assertEmailHeaderSame($pro, 'To', 'pro@example.test');
+
         self::assertSame('confirmed', $this->statut());
         self::assertSame('paid', $this->db()->fetchOne('SELECT status FROM payment'));
+    }
+
+    public function testMailDActivationALaReservation(): void
+    {
+        // setUp vient de réserver : un compte a été créé, avec son lien d'activation.
+        $activation = self::getMailerMessage(0);
+        self::assertNotNull($activation);
+        self::assertEmailHeaderSame($activation, 'Subject', 'Créez votre mot de passe');
+        self::assertEmailHeaderSame($activation, 'From', 'Atelier Brillance <no-reply@demo.bsandoz.fr>');
+        self::assertEmailHtmlBodyContains($activation, 'http://localhost:5173/compte/activer?jeton=');
     }
 
     public function testWebhookRecuDeuxFois(): void

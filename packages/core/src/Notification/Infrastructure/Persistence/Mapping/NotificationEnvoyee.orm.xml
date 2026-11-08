@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <!-- Journal des notifications programmées déjà envoyées (rappels) : une seule par type et par réservation. -->
+    <entity name="Bsandoz\Core\Notification\Domain\Model\NotificationEnvoyee" table="notification">
+        <unique-constraints>
+            <unique-constraint name="uniq_notification_type_reservation" columns="type,reservation_id"/>
+        </unique-constraints>
+        <id name="id" type="string" length="36"/>
+        <field name="type" type="string" length="40"/>
+        <field name="reservationId" column="reservation_id" type="string" length="36"/>
+        <field name="sentAt" column="sent_at" type="datetime_utc_immutable"/>
+    </entity>
+</doctrine-mapping>
