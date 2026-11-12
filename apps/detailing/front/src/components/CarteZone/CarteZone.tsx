@@ -135,13 +135,17 @@ export function CarteZone({ zone, centre, ville, estimer, rechercherAdresse, onE
         )}
         {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
         {estimation && (
-          <p className={`${styles.resultat} ${!estimation.dansZone ? styles.horsZone : estimation.fraisCents === 0 ? styles.offert : ''}`} role="status">
-            {estimation.dansZone ? (
-              <>Vous êtes à environ <strong>{km(estimation.distanceKm)}</strong> de route de {ville} : déplacement <strong>{estimation.fraisCents === 0 ? 'offert' : formatEuros(estimation.fraisCents)}</strong>.</>
-            ) : (
-              <>Vous êtes à environ <strong>{km(estimation.distanceKm)}</strong> de {ville}, au-delà de {zone.maxDistanceKm} km : <strong>déplacement sur devis</strong>, contactez-moi.</>
-            )}
-          </p>
+          <div className={styles.resultat} role="status">
+            <span className={styles.resultatLibelle}>Déplacement</span>
+            <strong className={`${styles.resultatPrix} ${!estimation.dansZone ? styles.horsZone : estimation.fraisCents === 0 ? styles.offert : ''}`}>
+              {!estimation.dansZone ? 'Sur devis' : estimation.fraisCents === 0 ? 'Offert' : formatEuros(estimation.fraisCents)}
+            </strong>
+            <span className={styles.resultatDetail}>
+              {estimation.dansZone
+                ? `Vous êtes à environ ${km(estimation.distanceKm)} de route de ${ville}.`
+                : `Vous êtes à environ ${km(estimation.distanceKm)} de ${ville}, au-delà de ${zone.maxDistanceKm} km : contactez-moi pour un devis.`}
+            </span>
+          </div>
         )}
       </div>
     </div>

@@ -1,4 +1,4 @@
-.bloc { display: flex; flex-direction: column; gap: .75rem; padding: 1rem; border-radius: var(--bs-radius-md); background: var(--bs-color-primary-soft); }
+.bloc { display: flex; flex-direction: column; gap: .75rem; padding-top: 1rem; border-top: 1px solid var(--bs-color-border); }
 .titre { font-size: 1.1rem; }
 .intro { font-size: .9rem; color: var(--bs-color-text-muted); }
 .liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
