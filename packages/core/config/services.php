@@ -63,6 +63,9 @@ use Bsandoz\Core\Booking\Domain\Port\Geocoder;
 use Bsandoz\Core\Booking\Infrastructure\Geo\ApiAdresseGeocoder;
 use Bsandoz\Core\Booking\Infrastructure\Http\GeoController;
 use Bsandoz\Core\Admin\Application\TableauDeBord;
+use Bsandoz\Core\Admin\Infrastructure\Http\AdminController;
+use Bsandoz\Core\Booking\Infrastructure\Http\AdminAgendaController;
+use Bsandoz\Core\Catalog\Infrastructure\Http\AdminCatalogueController;
 use Bsandoz\Core\Auth\Application\CreerComptePro;
 use Bsandoz\Core\Auth\Infrastructure\Console\CreerCompteProCommand;
 use Bsandoz\Core\Booking\Application\GererDisponibilites;
@@ -193,6 +196,9 @@ return static function (ContainerConfigurator $container): void {
     $services->set(TableauDeBord::class);
     $services->set(CreerComptePro::class);
     $services->set(CreerCompteProCommand::class);
+    $services->set(AdminController::class)->public()->tag('controller.service_arguments');
+    $services->set(AdminCatalogueController::class)->public()->tag('controller.service_arguments');
+    $services->set(AdminAgendaController::class)->public()->tag('controller.service_arguments');
     $services->set(CreneauxController::class)->public()->tag('controller.service_arguments');
 
     // Booking (réservations)

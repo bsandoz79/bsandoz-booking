@@ -31,4 +31,13 @@ final class ReserverCreneauCommand
         public readonly ?string $variante = null,
     ) {
     }
+
+    /** Rendez-vous pris par le pro (téléphone) : les conditions sont convenues avec le client. */
+    public function avecConditionsAcceptees(): self
+    {
+        return new self(
+            $this->prestationId, $this->optionIds, $this->metierData, $this->start, $this->address, $this->lat, $this->lng,
+            $this->email, $this->firstname, $this->lastname, $this->phone, $this->notes, true, $this->variante,
+        );
+    }
 }
