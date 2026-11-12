@@ -24,7 +24,7 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 
 ## 2. Kit front
 - [x] `feature/ui-calendar` : Calendar et SlotPicker écrits et testés (navigation clavier ajoutée dans `feature/ui-blocks`)
-- [ ] `feature/ui-blocks` : OptionCard, ChoiceChips, PriceSummary, Stepper (déjà écrits) ; ajouter Button, Field, AddressInput (autocomplétion)
+- [x] `feature/ui-blocks` : OptionCard, ChoiceChips, PriceSummary, Stepper ; Button, Field, AddressInput (autocomplétion) ; navigation clavier du calendrier
 - [ ] `feature/ui-admin-blocks` : PlanningView (jour/semaine/mois), DataTable, Toggle
 
 ## 3. Application detailing
