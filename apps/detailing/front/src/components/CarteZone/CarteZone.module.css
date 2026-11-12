@@ -17,6 +17,10 @@
 .info { font-size: .9rem; color: var(--bs-color-text-muted); }
 .position { align-self: flex-start; }
 .erreur { color: var(--bs-color-danger); font-weight: 600; }
-.resultat { padding: .75rem 1rem; border-radius: var(--bs-radius-sm); background: var(--bs-color-primary-soft); border-left: 4px solid var(--bs-color-primary); }
-.offert { border-left-color: var(--bs-color-success); }
-.horsZone { border-left-color: var(--bs-color-danger); }
+/* Résultat : le prix en grand, le détail en dessous, séparés du formulaire par un simple filet. */
+.resultat { display: flex; flex-direction: column; gap: .15rem; padding-top: .9rem; border-top: 1px solid var(--bs-color-border); }
+.resultatLibelle { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--bs-color-text-muted); }
+.resultatPrix { font-size: 1.9rem; line-height: 1.1; color: var(--bs-color-text); }
+.resultatDetail { font-size: .9rem; color: var(--bs-color-text-muted); }
+.offert { color: var(--bs-color-success); }
+.horsZone { color: var(--bs-color-danger); }

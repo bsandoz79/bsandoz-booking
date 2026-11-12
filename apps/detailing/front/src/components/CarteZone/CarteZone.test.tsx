@@ -40,7 +40,7 @@ describe('CarteZone', () => {
     await userEvent.click(await screen.findByRole('option', { name: /Saint-Valery/ }));
 
     expect(estimer).toHaveBeenCalledWith(50.18, 1.63);
-    expect(await screen.findByRole('status')).toHaveTextContent('Vous êtes à environ 12 km de route de Abbeville : déplacement 5,00 €.');
+    expect(await screen.findByRole('status')).toHaveTextContent(/Déplacement5,00\s€Vous êtes à environ 12 km de route de Abbeville\./);
     expect(onEstimation).toHaveBeenCalledWith({ distanceKm: 12.4, dansZone: true, fraisCents: 500 });
   });
 
@@ -61,7 +61,7 @@ describe('CarteZone', () => {
 
     act(() => surVisible([{ isIntersecting: true }]));
     await waitFor(() => expect(estimer).toHaveBeenCalledWith(49.89, 2.29));
-    expect(await screen.findByRole('status')).toHaveTextContent('au-delà de 50 km : déplacement sur devis');
+    expect(await screen.findByRole('status')).toHaveTextContent(/Sur devis.*au-delà de 50 km : contactez-moi pour un devis/);
   });
 
   it('propose l’adresse quand la localisation est refusée', async () => {

@@ -127,3 +127,4 @@
 - Déploiement : l'envoi FTP de l'API fichier par fichier (des milliers de fichiers de `vendor`) durait plus d'une heure ; l'API part maintenant en une seule archive `api.zip`, décompressée sur le serveur par `deploy/apres-envoi.sh` (ancien code remplacé, `.env.local` et `var/` conservés).
 - Un serveur de mail en panne ou mal configuré ne provoque plus d'erreur 500 à la réservation : l'échec est journalisé. Documentation : hôte SMTP o2switch = nom du serveur (certificat valide).
 - Accueil et pages des communes : les liens « Nettoyage voiture <commune> » (liste de mots-clés) deviennent une phrase avec le nom des communes en lien.
+- Style : plus d'encadrés à barre de couleur sur le côté (résultat de la carte de zone, message de la carte de fidélité, options d'une formule, produits) ; résultat de la carte avec le prix du déplacement en grand.
