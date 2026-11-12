@@ -112,6 +112,12 @@ export async function annulerMonRendezVous(id: string): Promise<{ refundable: bo
   return authHttp(`/me/reservations/${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
 
+/** Acompte non réglé : renvoie la page de paiement (erreur 409 si le créneau a été repris entre-temps). */
+export async function payerMonRendezVous(id: string): Promise<string> {
+  if (isDemo()) { demo = demo.map((r) => (r.id === id ? { ...r, status: 'confirmed' } : r)); return '/confirmation?demo=1'; }
+  return (await authHttp<{ paymentUrl: string }>(`/me/reservations/${encodeURIComponent(id)}/payment`, { method: 'POST' })).paymentUrl;
+}
+
 /** Télécharge toutes mes données (JSON). */
 export async function exporterMesDonnees(): Promise<Blob> {
   const donnees = isDemo() ? { compte: await monCompte(), reservations: demo } : await authHttp<unknown>('/me/export');
@@ -152,6 +158,11 @@ export async function rendezVousParLien(token: string): Promise<RendezVous> {
 export async function deplacerParLien(token: string, start: string): Promise<void> {
   if (isDemo()) { demo = demo.map((r) => ({ ...r, start })); return; }
   await http(`/booking/manage/${encodeURIComponent(token)}`, { method: 'PATCH', body: JSON.stringify({ start }) });
+}
+
+export async function payerParLien(token: string): Promise<string> {
+  if (isDemo()) { demo = demo.map((r) => ({ ...r, status: 'confirmed' })); return '/confirmation?demo=1'; }
+  return (await http<{ paymentUrl: string }>(`/booking/manage/${encodeURIComponent(token)}/payment`, { method: 'POST' })).paymentUrl;
 }
 
 export async function annulerParLien(token: string): Promise<{ refundable: boolean }> {
