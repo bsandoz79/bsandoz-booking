@@ -54,7 +54,7 @@ async function ouvrirSession(reponse: { token: string; roles: string[] }) {
 export async function seConnecter(email: string, password: string): Promise<void> {
   if (isDemo()) {
     demo = [demoRendezVous()];
-    return ouvrirSession({ token: 'demo', roles: ['ROLE_CLIENT'] });
+    return ouvrirSession({ token: 'demo', roles: ['ROLE_CLIENT', 'ROLE_PRO'] }); // démo : ouvre aussi l'espace pro
   }
   return ouvrirSession(await http('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }));
 }
