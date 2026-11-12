@@ -185,13 +185,16 @@ export function Accueil() {
               estimer={estimerDeplacement} rechercherAdresse={searchAddress} onEstimation={setEstimation} />
           )}
           <p className={styles.note}>Cercles indicatifs (distance par la route). Le prix exact du déplacement est recalculé à partir de votre adresse lors de la réservation.</p>
-          {/* Une phrase normale plutôt qu'une liste de mots-clés : chaque commune qui a sa page est un lien (utile à Google). */}
-          <p>Communes desservies, entre autres :{' '}
-            {nomsCommunes.map((nom, i) => {
-              const page = COMMUNES.find((c) => c.nom.toLowerCase() === nom.toLowerCase());
-              return <span key={nom}>{i > 0 && ', '}{page ? <Link to={`/nettoyage-voiture/${page.slug}`}>{nom}</Link> : nom}</span>;
-            })}.
-          </p>
+          {/* Repliées par défaut (discret), mais présentes dans la page : chaque commune qui a sa page est un lien, utile à Google. */}
+          <details className={styles.communes}>
+            <summary>Voir les communes desservies</summary>
+            <p>
+              {nomsCommunes.map((nom, i) => {
+                const page = COMMUNES.find((c) => c.nom.toLowerCase() === nom.toLowerCase());
+                return <span key={nom}>{i > 0 && ', '}{page ? <Link to={`/nettoyage-voiture/${page.slug}`}>{nom}</Link> : nom}</span>;
+              })}, et alentours.
+            </p>
+          </details>
         </div>
       </section>
 

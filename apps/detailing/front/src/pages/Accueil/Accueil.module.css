@@ -99,3 +99,8 @@ blockquote.card { margin: 0; }
 @media (min-width: 760px) { .fidelite { grid-template-columns: 1fr 1fr; } }
 .tranche[aria-current='true'] { outline: 3px solid var(--bs-color-text); outline-offset: 3px; }
 .tranche[aria-current='true']::after { content: 'Vous êtes ici'; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--bs-color-text); }
+
+/* Communes desservies : repliées, un clic pour les voir. */
+.communes { font-size: .9rem; color: var(--bs-color-text-muted); }
+.communes summary { display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; font-weight: 600; color: var(--bs-color-text); }
+.communes p { margin-top: .25rem; line-height: 1.7; }
