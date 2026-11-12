@@ -104,6 +104,10 @@
 - Accueil : prestations en onglets (Intérieur, Extérieur, Phares, À la carte) avec cartes « Ce qui est compris », durée et bouton Choisir qui présélectionne la formule ; frais de déplacement en cartes par tranche ; horaires de la semaine ; carte de fidélité façon carton tamponnée du logo ; version claire / nuit.
 - Kit : estimation publique des frais de déplacement pour une position (GET /api/v1/booking/zone/estimation), roadFactor publié dans GET /booking/zone.
 - Accueil : carte de la zone d'intervention (OpenStreetMap), un cercle par tranche autour d'Abbeville ; position demandée à l'arrivée sur la carte ou adresse à saisir, frais estimés et tranche mise en avant ; politique de confidentialité complétée.
+- Kit : bloc `StepCard` (étape repliable d'un parcours en accordéon : active, terminée avec résumé et « Modifier », à venir).
+- Réservation en 3 étapes repliables (prestation, où et quand, coordonnées) avec total et bouton collés en bas de l'écran ; le véhicule n'est plus demandé.
+- Zone d'intervention : cartes des tranches et cercles de la carte en vert, jaune, orange et rouge, traits en tirets.
+- Menu : lien « Fidélité » vers la carte de fidélité de l'accueil, qui affiche la carte tamponnée du client connecté (sinon un exemple) ; défilement jusqu'à la section visée ; sur mobile, bouton clair / nuit à côté du logo.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
@@ -117,3 +121,4 @@
 - Déploiement : sans secrets FTP, le workflow échouait (« Input required and not supplied: server ») ; il vérifie maintenant la configuration et ignore l'envoi avec un avertissement listant les secrets manquants.
 - Déploiement : l'envoi FTP de l'API fichier par fichier (des milliers de fichiers de `vendor`) durait plus d'une heure ; l'API part maintenant en une seule archive `api.zip`, décompressée sur le serveur par `deploy/apres-envoi.sh` (ancien code remplacé, `.env.local` et `var/` conservés).
 - Un serveur de mail en panne ou mal configuré ne provoque plus d'erreur 500 à la réservation : l'échec est journalisé. Documentation : hôte SMTP o2switch = nom du serveur (certificat valide).
+- Accueil et pages des communes : les liens « Nettoyage voiture <commune> » (liste de mots-clés) deviennent une phrase avec le nom des communes en lien.

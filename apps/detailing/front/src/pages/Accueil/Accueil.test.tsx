@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { seConnecter, seDeconnecter } from '../../services/compte';
 import { Accueil } from './Accueil';
 
 describe('Accueil', () => {
@@ -60,6 +61,16 @@ describe('Accueil', () => {
     expect(section).toHaveTextContent('Au bout de 4 prestations, la suivante bénéficie de 20 % de remise');
     expect(within(section).getByRole('img', { name: '2 tampons sur 4' })).toBeInTheDocument();
     expect(section).toHaveTextContent('Exemple');
+    expect(within(section).getByRole('link', { name: 'Connectez-vous' })).toHaveAttribute('href', '/mon-espace');
+  });
+
+  it('montre au client connecté sa propre carte de fidélité', async () => {
+    await seConnecter('camille@example.org', 'demo');
+    render(<MemoryRouter><Accueil /></MemoryRouter>);
+    const section = await screen.findByRole('region', { name: 'Votre carte de fidélité' });
+    expect(within(section).getByRole('status')).toHaveTextContent('Encore 2 prestations avant 20 % de remise.');
+    expect(section).not.toHaveTextContent('Exemple');
+    await seDeconnecter();
   });
 
   it('n’invente aucun avis ni photo', () => {

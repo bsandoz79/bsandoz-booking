@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from 'react';
+import { useEffect, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { formatEuros } from '@bsandoz/ui';
 import { useContenu } from '../../app/contenuContexte';
@@ -7,9 +7,10 @@ import { CarteZone } from '../../components/CarteZone/CarteZone';
 import { CATEGORIES, FORMULES, OPTIONS, prixMin, type Category, type Formule, type OptionItem } from '../../data/demo';
 import { SITE } from '../../data/site';
 import { detailPrestation, jourIso, semaine, tranches, type Plage } from '../../data/vitrine';
-import type { Estimation, ZonePublique } from '../../data/zone';
+import { couleurTranche, type Estimation, type ZonePublique } from '../../data/zone';
 import { estimerDeplacement, getCatalog, getHoraires, getZone, searchAddress } from '../../services/api';
-import { regleFidelite, type RegleFidelite } from '../../services/fidelite';
+import { estConnecte, reprendreSession } from '../../services/compte';
+import { maCarteFidelite, messageCarte, regleFidelite, type CarteFidelite as Carte, type RegleFidelite } from '../../services/fidelite';
 import { A_COMPLETER } from '../../services/contenu';
 import { COMMUNES, ENTREPRISE, PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
@@ -38,8 +39,18 @@ export function Accueil() {
   useEffect(() => { getZone().then(setZone).catch(() => undefined); }, []);
   const [fidelite, setFidelite] = useState<RegleFidelite>();
   useEffect(() => { regleFidelite().then(setFidelite).catch(() => undefined); }, []);
+  // Client connecté (ou session à reprendre) : sa vraie carte, tamponnée, à la place de l'exemple.
+  const [maCarte, setMaCarte] = useState<Carte>();
+  const fideliteActive = !!fidelite?.actif;
+  useEffect(() => {
+    if (!fideliteActive) return;
+    (estConnecte() ? Promise.resolve(true) : reprendreSession())
+      .then((ok) => (ok ? maCarteFidelite().then(setMaCarte) : undefined))
+      .catch(() => undefined);
+  }, [fideliteActive]);
 
   const { accueil, etapes, faq, avis, realisations, communes } = contenu;
+  const nomsCommunes = [...new Set([...COMMUNES.map((c) => c.nom), ...communes.map((c) => c.trim()).filter(Boolean)])];
   const avisPublies = avis.filter((a) => a.texte.trim() !== '');
 
   return (
@@ -157,9 +168,10 @@ export function Accueil() {
               <p>Je me déplace chez vous ou au travail autour de <strong>{SITE.city}</strong>{zone ? `, jusqu’à ${String(zone.maxDistanceKm).replace('.', ',')} km` : ''}. Frais de déplacement selon la distance :</p>
               {zone && (
                 <ol className={styles.tranches} aria-label="Frais de déplacement par distance">
-                  {tranches(zone).map((t) => (
+                  {tranches(zone).map((t, i, toutes) => (
                     <li key={t.de} aria-current={estimation && estimation.distanceKm > t.de && estimation.distanceKm <= (t.jusqua ?? Infinity) ? 'true' : undefined}
-                      className={`${styles.tranche} ${t.offert ? styles.offert : ''}`}>
+                      className={`${styles.tranche} ${t.jusqua === undefined ? styles.devis : ''}`}
+                      style={t.jusqua === undefined ? undefined : { '--teinte': couleurTranche(i, toutes.length - 1) } as CSSProperties}>
                       <span className={styles.km}>{t.jusqua === undefined ? `Au-delà de ${t.de} km` : `${t.de} à ${t.jusqua} km`}</span>
                       <strong>{t.prix}</strong>
                     </li>
@@ -173,10 +185,13 @@ export function Accueil() {
               estimer={estimerDeplacement} rechercherAdresse={searchAddress} onEstimation={setEstimation} />
           )}
           <p className={styles.note}>Cercles indicatifs (distance par la route). Le prix exact du déplacement est recalculé à partir de votre adresse lors de la réservation.</p>
-          {communes.length > 0 && <p>Communes desservies : {communes.join(', ')}.</p>}
-          <ul className={styles.communes} aria-label="Nettoyage de voiture par commune">
-            {COMMUNES.map((c) => <li key={c.slug}><Link to={`/nettoyage-voiture/${c.slug}`}>Nettoyage voiture {c.nom}</Link></li>)}
-          </ul>
+          {/* Une phrase normale plutôt qu'une liste de mots-clés : chaque commune qui a sa page est un lien (utile à Google). */}
+          <p>Communes desservies, entre autres :{' '}
+            {nomsCommunes.map((nom, i) => {
+              const page = COMMUNES.find((c) => c.nom.toLowerCase() === nom.toLowerCase());
+              return <span key={nom}>{i > 0 && ', '}{page ? <Link to={`/nettoyage-voiture/${page.slug}`}>{nom}</Link> : nom}</span>;
+            })}.
+          </p>
         </div>
       </section>
 
@@ -200,14 +215,18 @@ export function Accueil() {
         <section id="fidelite" className={styles.band} aria-labelledby="titre-fidelite">
           <div className={`container ${styles.section} ${styles.fidelite}`}>
             <div className={styles.fideliteTexte}>
-              <h2 id="titre-fidelite">Carte de fidélité</h2>
+              <h2 id="titre-fidelite">{maCarte ? 'Votre carte de fidélité' : 'Carte de fidélité'}</h2>
               <p>
                 Au bout de {fidelite.tamponsRequis} prestations, la suivante bénéficie de <strong>{fidelite.remisePercent} % de remise</strong>. Chaque
                 prestation terminée ajoute un tampon sur votre carte, et la remise s’applique d’elle-même à la réservation.
               </p>
-              <p className={styles.note}>Votre carte est visible à tout moment dans « Mon espace ».</p>
+              {maCarte
+                ? <p className={styles.messageCarte} role="status">{messageCarte(maCarte)}</p>
+                : <p className={styles.note}>Déjà client ? <Link to="/mon-espace">Connectez-vous</Link> pour voir votre carte et vos tampons.</p>}
             </div>
-            <CarteFidelite carte={{ ...fidelite, tampons: Math.min(2, fidelite.tamponsRequis - 1), remiseDisponible: false }} titre="Carte de fidélité" exemple />
+            {maCarte
+              ? <CarteFidelite carte={maCarte} titre="Votre carte de fidélité" />
+              : <CarteFidelite carte={{ ...fidelite, tampons: Math.min(2, fidelite.tamponsRequis - 1), remiseDisponible: false }} titre="Carte de fidélité" exemple />}
           </div>
         </section>
       )}

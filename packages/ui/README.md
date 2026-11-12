@@ -10,5 +10,6 @@ Blocs React réutilisables du kit de réservation. Aucun texte métier en dur : 
 | ChoiceChips | choix unique en pastilles |
 | PriceSummary | récapitulatif de prix et acompte |
 | Stepper | barre de progression |
+| StepCard | étape repliable d'un parcours en accordéon (active, terminée avec résumé et « Modifier », à venir) |
 
 `npm run test` · `npm run lint` · `npm run build` (vérification TypeScript).

@@ -15,6 +15,15 @@ export interface Cercle { km: number; rayonM: number; fraisCents: number }
  * Cercles de la carte : un par limite de tranche (rayon offert, chaque tranche, distance maximale), du plus petit au
  * plus grand. Les distances étant routières, le rayon tracé est divisé par le facteur route / vol d'oiseau.
  */
+/** Couleurs des tranches, de la plus proche à la plus éloignée : vert, jaune, orange, rouge. */
+export const COULEURS_TRANCHES = ['#2e9e5b', '#e2b007', '#ef7d1a', '#d93025'];
+
+/** Couleur de la tranche `i` sur `n` : la première est verte, la dernière rouge, celles du milieu réparties entre les deux. */
+export function couleurTranche(i: number, n: number): string {
+  const dernier = COULEURS_TRANCHES.length - 1;
+  return COULEURS_TRANCHES[n <= 1 ? 0 : Math.round((i * dernier) / (n - 1))];
+}
+
 export function cerclesZone(zone: ZonePublique): Cercle[] {
   if (zone.surPlace) return [];
   const facteur = zone.roadFactor && zone.roadFactor >= 1 ? zone.roadFactor : 1.3;

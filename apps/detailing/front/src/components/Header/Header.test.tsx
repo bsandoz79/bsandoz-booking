@@ -21,6 +21,11 @@ describe('Header', () => {
     expect(localStorage.getItem('theme')).toBe('clair');
   });
 
+  it('mène directement à la carte de fidélité', async () => {
+    render(<MemoryRouter><Header /></MemoryRouter>);
+    expect(await screen.findByRole('link', { name: 'Fidélité' })).toHaveAttribute('href', '/#fidelite');
+  });
+
   it('affiche le logo comme lien vers l’accueil', () => {
     render(<MemoryRouter><Header /></MemoryRouter>);
     expect(screen.getByRole('link', { name: 'Perfect Clean' })).toHaveAttribute('href', '/');

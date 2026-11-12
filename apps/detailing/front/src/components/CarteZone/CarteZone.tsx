@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Circle, CircleMarker, Map as CarteLeaflet } from 'leaflet';
 import { AddressInput, formatEuros } from '@bsandoz/ui';
-import { cerclesZone, type Estimation, type ZonePublique } from '../../data/zone';
+import { cerclesZone, couleurTranche, type Estimation, type ZonePublique } from '../../data/zone';
 import styles from './CarteZone.module.css';
 
 export interface Position { lat: number; lng: number }
@@ -21,9 +21,7 @@ export interface CarteZoneProps {
 type EtatPosition = 'attente' | 'demande' | 'refusee' | 'indisponible' | 'ok';
 
 const prix = (cents: number) => (cents === 0 ? 'offert' : formatEuros(cents).replace(',00', ''));
-const COULEUR_OFFERT = '#13794a';
-const COULEUR_TRANCHE = '#1677d2';
-const COULEUR_DEVIS = '#a3122f';
+const COULEUR_VOUS = '#0f1b2d';
 
 /**
  * Carte de la zone d'intervention (OpenStreetMap) : un cercle par tranche de frais de déplacement autour de la ville de
@@ -87,13 +85,13 @@ export function CarteZone({ zone, centre, ville, estimer, rechercherAdresse, onE
         maxZoom: 18,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }).addTo(map);
-      // Du plus grand au plus petit, pour que les petits cercles restent par-dessus.
+      // Traits en tirets, du vert (le plus proche) au rouge (le plus loin) ; du plus grand au plus petit, pour que les
+      // petits cercles restent par-dessus.
       const traces = [...cercles].reverse().map((c, i) => {
         const dernier = i === 0;
-        const couleur = c.fraisCents === 0 ? COULEUR_OFFERT : dernier ? COULEUR_DEVIS : COULEUR_TRANCHE;
+        const couleur = couleurTranche(cercles.length - 1 - i, cercles.length);
         const cercle = L.circle([centre.lat, centre.lng], {
-          radius: c.rayonM, color: couleur, weight: 2, dashArray: dernier ? '6 6' : undefined,
-          fillColor: c.fraisCents === 0 ? COULEUR_OFFERT : COULEUR_TRANCHE, fillOpacity: c.fraisCents === 0 ? 0.18 : 0.06,
+          radius: c.rayonM, color: couleur, weight: 3, dashArray: '8 6', fillColor: couleur, fillOpacity: 0.07,
         }).addTo(map);
         L.tooltip({ permanent: true, direction: 'center', className: styles.etiquette })
           .setLatLng([centre.lat + c.rayonM / 111320, centre.lng])
@@ -115,7 +113,7 @@ export function CarteZone({ zone, centre, ville, estimer, rechercherAdresse, onE
     const c = carte.current;
     if (!c) return;
     c.repere?.remove();
-    c.repere = c.L.circleMarker([pos.lat, pos.lng], { radius: 8, color: '#fff', weight: 3, fillColor: COULEUR_DEVIS, fillOpacity: 1 })
+    c.repere = c.L.circleMarker([pos.lat, pos.lng], { radius: 8, color: '#fff', weight: 3, fillColor: COULEUR_VOUS, fillOpacity: 1 })
       .bindTooltip('Vous', { direction: 'top', offset: [0, -8] }).addTo(c.map);
     c.map.fitBounds(c.L.latLngBounds([[centre.lat, centre.lng], [pos.lat, pos.lng]]).pad(0.3), { maxZoom: 12 });
   };

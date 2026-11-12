@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { AppRoutes } from '../../app/App';
 import { Reserver } from './Reserver';
 
-const continuer = () => screen.getByRole('button', { name: 'Continuer' });
+const bouton = (nom: string | RegExp) => screen.getByRole('button', { name: nom });
 
 /** Base Adresse Nationale simulée (mode démo : appel direct depuis le navigateur). */
 function simulerBan() {
@@ -24,31 +24,21 @@ describe('Parcours de réservation', () => {
     vi.unstubAllGlobals();
   });
 
-  it('propose le type de véhicule depuis le modèle puis affiche le prix', async () => {
+  it('affiche le prix dès le choix de la formule, sans demander le véhicule', async () => {
     render(<MemoryRouter><Reserver /></MemoryRouter>);
 
-    expect(continuer()).toBeDisabled();
+    expect(bouton('Choisir le créneau')).toBeDisabled();
+    expect(screen.queryByLabelText('Marque')).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('radio', { name: 'Nettoyage intérieur' }));
-    await userEvent.click(continuer());
-
-    await userEvent.type(screen.getByLabelText('Marque'), 'Peugeot');
-    await userEvent.type(screen.getByLabelText('Modèle'), '3008');
-    expect(screen.getByRole('radio', { name: 'SUV / 4x4' })).toHaveAttribute('aria-checked', 'true');
-    await userEvent.click(continuer());
-
     await userEvent.click(await screen.findByRole('button', { name: /Intérieur Signature/ }));
     expect(await screen.findByText('Total')).toBeInTheDocument();
     expect(screen.getAllByText(/69,00/).length).toBeGreaterThan(0);
+    expect(bouton('Choisir le créneau')).toBeEnabled();
   });
 
   it('présélectionne la formule choisie sur l’accueil', async () => {
     render(<MemoryRouter initialEntries={['/reserver?formule=ext-signature']}><Reserver /></MemoryRouter>);
     expect(await screen.findByRole('radio', { name: 'Nettoyage extérieur' })).toHaveAttribute('aria-checked', 'true');
-    await userEvent.click(continuer());
-    await userEvent.type(screen.getByLabelText('Marque'), 'Peugeot');
-    await userEvent.type(screen.getByLabelText('Modèle'), '208');
-    await userEvent.click(screen.getByRole('radio', { name: 'Citadine' }));
-    await userEvent.click(continuer());
     expect(await screen.findByRole('button', { name: /Extérieur Signature/, pressed: true })).toBeInTheDocument();
   });
 
@@ -56,29 +46,23 @@ describe('Parcours de réservation', () => {
     render(<MemoryRouter initialEntries={['/reserver']}><AppRoutes /></MemoryRouter>);
 
     await userEvent.click(screen.getByRole('radio', { name: 'Nettoyage extérieur' }));
-    await userEvent.click(continuer());
-    await userEvent.type(screen.getByLabelText('Marque'), 'Renault');
-    await userEvent.type(screen.getByLabelText('Modèle'), 'Clio');
-    await userEvent.click(screen.getByRole('radio', { name: 'Citadine' }));
-    await userEvent.click(continuer());
     await userEvent.click(await screen.findByRole('button', { name: /Extérieur Éclat/ }));
-    await userEvent.click(continuer());
-    await userEvent.click(continuer()); // aucune option
+    await userEvent.click(bouton('Choisir le créneau'));
 
+    // Étape 1 repliée en résumé, étape 2 ouverte : adresse puis créneau.
+    expect(screen.getByRole('button', { name: 'Modifier : Que faut-il nettoyer ?' })).toBeInTheDocument();
     await userEvent.type(screen.getByRole('combobox', { name: /Adresse de l'intervention/ }), '1 place max');
     await userEvent.click(await screen.findByRole('option', { name: /Abbeville/ }));
     expect(await screen.findByText(/déplacement offert/)).toBeInTheDocument();
-    await userEvent.click(continuer());
-
     await userEvent.click(await screen.findByRole('button', { name: /vendredi 13 novembre 2026/ }));
     await userEvent.click(await screen.findByRole('button', { name: '10:30' }));
-    await userEvent.click(continuer());
+    await userEvent.click(bouton('Mes coordonnées'));
 
+    expect(screen.getByText(/ven\. 13 nov\..*Abbeville/)).toBeInTheDocument();
     await userEvent.type(screen.getByLabelText('Prénom'), 'Camille');
     await userEvent.type(screen.getByLabelText('Nom'), 'Martin');
     await userEvent.type(screen.getByLabelText('E-mail'), 'camille@example.org');
     await userEvent.type(screen.getByLabelText('Téléphone'), '0600000000');
-    await userEvent.click(continuer());
 
     const payer = screen.getByRole('button', { name: /Payer l'acompte \(7,50/ });
     expect(payer).toBeDisabled();
