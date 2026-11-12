@@ -71,9 +71,13 @@
 - Espace pro : cas d'usage `GererDisponibilites` (horaires de la semaine remplacés d'un coup, plages qui se chevauchent refusées ; indisponibilités : lister avec motif, ajouter, supprimer), dépôt complété (`unavailabilityList`, `replaceOpeningHours`, `removeUnavailability`). Tests.
 - Espace pro : `GererRendezVousPro` (planning avec le client, statut fait / absent après le début, annulation par le pro avec ou sans remboursement, remboursement partiel, rendez-vous pris par téléphone confirmé ou avec lien d'acompte par mail `deposit_link`), `TableauDeBord` (jour, semaine, chiffre d'affaires et taux d'annulation du mois, paiements en attente, prochains rendez-vous), `CreerComptePro` et commande `bsandoz:pro:creer` ; `Reservation::markDone/markNoShow/cancelByPro` avec leurs règles. Tests.
 - API : espace pro `/api/v1/admin` (`AdminController` : tableau de bord et réglages ; `AdminCatalogueController` ; `AdminAgendaController` : horaires, indisponibilités, planning, rendez-vous par téléphone, statut, annulation, remboursement), réservé à `ROLE_PRO` ; utilitaire `Json` (corps et dates). API detailing : migration `setting`, tests fonctionnels de l'espace pro.
+- Kit front : navigation au clavier du `Calendar` (un seul jour atteignable par Tab, flèches, semaines, Début / Fin), utilitaire `addDays`. Tests.
+- Kit front : blocs `Button` (principal, secondaire, discret ; chargement accessible ; pleine largeur) et `Field` (libellé, aide et erreur reliés au champ, obligatoire, zone de texte). Tests.
+- Kit front : bloc `AddressInput` (autocomplétion d'adresse, motif ARIA combobox, recherche fournie par l'application, délai et longueur minimale réglables, réponses dans le désordre ignorées, clavier). Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
+- Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
 - Réservation : deux plages d'ouverture qui se chevauchent ne produisent plus de créneaux en double.
 - Réservation : un pas de créneau nul ne fait plus tourner le calcul à l'infini, une vitesse nulle ne provoque plus de division par zéro (refusés à la création des règles et de la zone).
 - Site detailing : nom du projet synchronisé dans `package-lock.json` ; import de `vite.config.ts` avec son extension dans `vitest.config.ts` (avertissement Vite).
