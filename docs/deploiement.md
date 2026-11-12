@@ -1,7 +1,72 @@
 # Déploiement (o2switch)
 
-- Front : build statique envoyé en FTPS par GitHub Actions dans le dossier du domaine (ex. `demo.bsandoz.fr`), `.htaccess` pour les routes React.
-- API : `api.demo.bsandoz.fr` → racine sur `apps/detailing/api/public`. Envoi FTPS du code + `composer install --no-dev` (via SSH depuis ton PC, l'IP de GitHub n'étant pas autorisée en SSH chez o2switch) puis migrations.
-- Cron cPanel : `*/15 * * * * php ~/api.demo.bsandoz.fr/bin/console bsandoz:notifications:send`.
-- Secrets GitHub : `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_SERVER_DIR_FRONT`, `FTP_SERVER_DIR_API`.
-À finaliser dans la branche `feature/deploiement`.
+Démo : site sur `https://demo.bsandoz.fr`, API sur `https://api.demo.bsandoz.fr`.
+Chaque push sur `main` lance la CI ; si elle est verte, le workflow **Déploiement** (`.github/workflows/deploy.yml`) envoie le site et l'API en FTPS. Il peut aussi être lancé à la main (onglet Actions → Déploiement → Run workflow : tout, front ou api).
+
+## 1. Préparer o2switch (une seule fois)
+1. **Sous-domaines** (cPanel → Domaines) :
+   - `demo.bsandoz.fr` → dossier `~/demo.bsandoz.fr` ;
+   - `api.demo.bsandoz.fr` → racine web `~/api.demo.bsandoz.fr/public` (le reste du code de l'API n'est pas accessible depuis le web).
+2. **HTTPS** : cPanel → SSL/TLS Status → lancer AutoSSL pour les deux sous-domaines. Les `.htaccess` redirigent ensuite tout en HTTPS.
+3. **PHP** (cPanel → Sélectionner une version de PHP) pour `api.demo.bsandoz.fr` : PHP 8.3, extensions `pdo_mysql`, `sodium`, `curl`, `mbstring`, `openssl`, `intl` (et `gmp` si disponible, plus rapide pour les notifications push).
+4. **Base de données** (cPanel → Bases de données MySQL) : une base et un utilisateur dédiés (tous les droits sur cette base uniquement).
+5. **Compte FTP** (cPanel → Comptes FTP) limité au dossier personnel, utilisé seulement par GitHub.
+
+## 2. Fichier `.env.local` de l'API (sur le serveur, jamais dans le dépôt)
+Créer `~/api.demo.bsandoz.fr/.env.local` (gestionnaire de fichiers cPanel), droits 600 :
+```dotenv
+APP_ENV=prod
+APP_SECRET=                      # php -r "echo bin2hex(random_bytes(16));"
+DATABASE_URL="mysql://UTILISATEUR:MOTDEPASSE@localhost:3306/BASE?serverVersion=10.6.0-MariaDB&charset=utf8mb4"
+JWT_SECRET=                      # php -r "echo bin2hex(random_bytes(32));"
+BSANDOZ_ENCRYPTION_KEY=          # php bin/console bsandoz:cle-chiffrement — à sauvegarder à part (la perdre rend adresses et téléphones illisibles)
+BSANDOZ_ICAL_SECRET=             # php -r "echo bin2hex(random_bytes(24));"
+BSANDOZ_VAPID_PUBLIC_KEY=        # php bin/console bsandoz:push:cles (notifications push du pro, facultatif)
+BSANDOZ_VAPID_PRIVATE_KEY=
+FRONT_URL=https://demo.bsandoz.fr
+CORS_ALLOW_ORIGIN='^https://demo\.bsandoz\.fr$'
+MAILER_DSN="smtp://no-reply%40demo.bsandoz.fr:MOTDEPASSE@mail.demo.bsandoz.fr:465"   # boîte mail créée dans cPanel
+MAILER_FROM=no-reply@demo.bsandoz.fr
+PRO_EMAIL=                       # adresse du pro, prévenu de chaque rendez-vous
+STRIPE_SECRET_KEY=               # tableau de bord Stripe → Développeurs → Clés API (sk_test_… pour la démo)
+STRIPE_WEBHOOK_SECRET=           # voir § 5
+```
+Le mot de passe de la base, s'il contient des caractères spéciaux, doit être encodé (`@` → `%40`, `:` → `%3A`…).
+
+## 3. GitHub (une seule fois)
+Settings → Environments → créer l'environnement **demo**, puis dedans :
+- **Secrets** : `FTP_SERVER` (ex. `ftp.bsandoz.fr`), `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_SERVER_DIR_FRONT` (`demo.bsandoz.fr/`), `FTP_SERVER_DIR_API` (`api.demo.bsandoz.fr/`) — chemins relatifs au dossier du compte FTP, **terminés par `/`**.
+- **Variable** : `VITE_API_URL` = `https://api.demo.bsandoz.fr` (sans `/api/v1`). Vide : le site est construit en mode démonstration.
+
+## 4. Premier déploiement
+1. GitHub → Actions → Déploiement → Run workflow (tout). Le premier envoi de l'API est long (dossier `vendor` complet) ; les suivants n'envoient que les fichiers modifiés.
+2. cPanel → Terminal :
+   ```sh
+   cd ~/api.demo.bsandoz.fr
+   sh deploy/apres-envoi.sh                          # cache, migrations, vérification
+   php bin/console bsandoz:pro:creer contact@bsandoz.fr Prénom Nom   # compte pro (mot de passe demandé)
+   php bin/console detailing:demo:charger           # catalogue et horaires de démonstration (base vide uniquement)
+   ```
+3. **Tâche cron** (cPanel → Tâches cron), toutes les 15 minutes :
+   ```
+   */15 * * * * cd ~/api.demo.bsandoz.fr && php bin/console bsandoz:notifications:send --env=prod > /dev/null 2>&1
+   ```
+   Elle libère les créneaux dont l'acompte n'a pas été payé à temps et envoie les rappels de la veille.
+
+## 5. Stripe
+Tableau de bord Stripe → Développeurs → Webhooks → Ajouter un endpoint :
+- URL : `https://api.demo.bsandoz.fr/api/v1/payment/stripe/webhook`
+- Évènement : `checkout.session.completed`
+Copier le secret de signature (`whsec_…`) dans `STRIPE_WEBHOOK_SECRET`, puis relancer `sh deploy/apres-envoi.sh`.
+
+## 6. Vérifications
+- `https://api.demo.bsandoz.fr/api/v1/catalog` renvoie le catalogue en JSON.
+- `https://demo.bsandoz.fr` : réserver de bout en bout avec la carte de test Stripe `4242 4242 4242 4242` ; le mail de confirmation arrive.
+- `https://demo.bsandoz.fr/pro` : connexion du pro, planning, puis Réglages → « Activer les notifications » sur le téléphone.
+- Sur téléphone : « Ajouter à l'écran d'accueil » installe l'application.
+
+## 7. Mises à jour
+Push sur `main` → CI → déploiement automatique. Si l'API a changé : `sh deploy/apres-envoi.sh` dans le terminal cPanel (l'adresse IP de GitHub n'est pas autorisée en SSH chez o2switch, d'où cette étape manuelle). Le site, lui, est à jour immédiatement.
+
+## Nouveau client
+Copier `apps/detailing` en `apps/<client>`, ajouter ses deux jobs dans `deploy.yml` (avec son propre environnement GitHub et ses secrets), créer ses sous-domaines, sa base et son `.env.local` (nouvelles clés : chaque client a les siennes).
