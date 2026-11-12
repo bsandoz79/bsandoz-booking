@@ -34,4 +34,4 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/detailing-espace-client` : rendez-vous, annulation/déplacement, compte, mot de passe par lien, suppression
 - [x] `feature/detailing-espace-pro` : planning, rendez-vous pris par téléphone + lien d'acompte, catalogue, horaires, zone
 - [x] `feature/detailing-pwa` : manifest, service worker, notifications
-- [ ] `feature/deploiement` : workflows de déploiement o2switch (API + front), cron, sous-domaines `demo.bsandoz.fr` et `api.demo.bsandoz.fr`
+- [x] `feature/deploiement` : workflows de déploiement o2switch (API + front), cron, sous-domaines `demo.bsandoz.fr` et `api.demo.bsandoz.fr`
