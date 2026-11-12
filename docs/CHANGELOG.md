@@ -106,6 +106,7 @@
 - Accueil : carte de la zone d'intervention (OpenStreetMap), un cercle par tranche autour d'Abbeville ; position demandée à l'arrivée sur la carte ou adresse à saisir, frais estimés et tranche mise en avant ; politique de confidentialité complétée.
 - Kit : bloc `StepCard` (étape repliable d'un parcours en accordéon : active, terminée avec résumé et « Modifier », à venir).
 - Réservation en 3 étapes repliables (prestation, où et quand, coordonnées) avec total et bouton collés en bas de l'écran ; le véhicule n'est plus demandé.
+- Zone d'intervention : cartes des tranches et cercles de la carte en vert, jaune, orange et rouge, traits en tirets.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

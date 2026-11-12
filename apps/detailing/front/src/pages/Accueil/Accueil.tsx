@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from 'react';
+import { useEffect, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { formatEuros } from '@bsandoz/ui';
 import { useContenu } from '../../app/contenuContexte';
@@ -7,7 +7,7 @@ import { CarteZone } from '../../components/CarteZone/CarteZone';
 import { CATEGORIES, FORMULES, OPTIONS, prixMin, type Category, type Formule, type OptionItem } from '../../data/demo';
 import { SITE } from '../../data/site';
 import { detailPrestation, jourIso, semaine, tranches, type Plage } from '../../data/vitrine';
-import type { Estimation, ZonePublique } from '../../data/zone';
+import { couleurTranche, type Estimation, type ZonePublique } from '../../data/zone';
 import { estimerDeplacement, getCatalog, getHoraires, getZone, searchAddress } from '../../services/api';
 import { regleFidelite, type RegleFidelite } from '../../services/fidelite';
 import { A_COMPLETER } from '../../services/contenu';
@@ -157,9 +157,10 @@ export function Accueil() {
               <p>Je me déplace chez vous ou au travail autour de <strong>{SITE.city}</strong>{zone ? `, jusqu’à ${String(zone.maxDistanceKm).replace('.', ',')} km` : ''}. Frais de déplacement selon la distance :</p>
               {zone && (
                 <ol className={styles.tranches} aria-label="Frais de déplacement par distance">
-                  {tranches(zone).map((t) => (
+                  {tranches(zone).map((t, i, toutes) => (
                     <li key={t.de} aria-current={estimation && estimation.distanceKm > t.de && estimation.distanceKm <= (t.jusqua ?? Infinity) ? 'true' : undefined}
-                      className={`${styles.tranche} ${t.offert ? styles.offert : ''}`}>
+                      className={`${styles.tranche} ${t.jusqua === undefined ? styles.devis : ''}`}
+                      style={t.jusqua === undefined ? undefined : { '--teinte': couleurTranche(i, toutes.length - 1) } as CSSProperties}>
                       <span className={styles.km}>{t.jusqua === undefined ? `Au-delà de ${t.de} km` : `${t.de} à ${t.jusqua} km`}</span>
                       <strong>{t.prix}</strong>
                     </li>
