@@ -72,6 +72,7 @@
 - Espace pro : `GererRendezVousPro` (planning avec le client, statut fait / absent après le début, annulation par le pro avec ou sans remboursement, remboursement partiel, rendez-vous pris par téléphone confirmé ou avec lien d'acompte par mail `deposit_link`), `TableauDeBord` (jour, semaine, chiffre d'affaires et taux d'annulation du mois, paiements en attente, prochains rendez-vous), `CreerComptePro` et commande `bsandoz:pro:creer` ; `Reservation::markDone/markNoShow/cancelByPro` avec leurs règles. Tests.
 - API : espace pro `/api/v1/admin` (`AdminController` : tableau de bord et réglages ; `AdminCatalogueController` ; `AdminAgendaController` : horaires, indisponibilités, planning, rendez-vous par téléphone, statut, annulation, remboursement), réservé à `ROLE_PRO` ; utilitaire `Json` (corps et dates). API detailing : migration `setting`, tests fonctionnels de l'espace pro.
 - Kit front : navigation au clavier du `Calendar` (un seul jour atteignable par Tab, flèches, semaines, Début / Fin), utilitaire `addDays`. Tests.
+- Kit front : blocs `Button` (principal, secondaire, discret ; chargement accessible ; pleine largeur) et `Field` (libellé, aide et erreur reliés au champ, obligatoire, zone de texte). Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
