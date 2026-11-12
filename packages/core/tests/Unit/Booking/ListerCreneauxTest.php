@@ -48,11 +48,11 @@ final class ListerCreneauxTest extends TestCase
     }
 
     /** @return array{ListerCreneaux, ListerJoursDisponibles} */
-    private function useCases(bool $surPlace = false): array
+    private function useCases(bool $surPlace = false, int $battement = 0): array
     {
         $settings = new ConfiguredSettingsProvider(
             [
-                'min_notice_hours' => 24, 'horizon_days' => 60, 'buffer_min' => 0, 'slot_step_min' => 30,
+                'min_notice_hours' => 24, 'horizon_days' => 60, 'buffer_min' => $battement, 'slot_step_min' => 30,
                 'free_cancel_hours' => 48, 'deposit_percent' => 30, 'deposit_fixed_cents' => null, 'hold_minutes' => 10,
             ],
             $surPlace ? null : [
@@ -66,7 +66,7 @@ final class ListerCreneauxTest extends TestCase
             new Prestation('incertaine', 'Durée incertaine', Money::cents(9000), 150, occupePlage: true),
         );
         $trajet = new Trajet($settings, new ZoneCalculator());
-        $occupations = new Occupations($this->reservations, $this->availability, $trajet, $this->clock);
+        $occupations = new Occupations($this->reservations, $this->availability, $trajet, $this->clock, $settings);
         $calculator = new CreneauCalculator();
 
         return [
@@ -149,6 +149,19 @@ final class ListerCreneauxTest extends TestCase
         $matin = array_values(array_filter(self::starts($lister('2026-11-10', 60, self::LAT, self::LNG)), static fn (string $h): bool => $h < '12:00'));
 
         self::assertSame(['08:00', '11:00'], $matin, '08:30 finirait à 09:30, après le départ de 09:25');
+    }
+
+    public function testBattementDeTrenteMinutesApresChaqueRendezVous(): void
+    {
+        // Rendez-vous 08:00–09:30 sur place (aucun trajet), battement 30 min, pas 30 min : prochain créneau à 10:00.
+        $r = $this->reservation('r-1', '2026-11-10 08:00', '2026-11-10 09:30');
+        $r->confirm();
+        $this->reservations->save($r);
+
+        [$lister] = $this->useCases(battement: 30);
+        $matin = array_values(array_filter(self::starts($lister('2026-11-10', 60, self::LAT, self::LNG)), static fn (string $h): bool => $h < '12:00'));
+
+        self::assertSame(['10:00', '10:30', '11:00'], $matin, '09:30 → 10:00 : battement après le rendez-vous de 08:00');
     }
 
     public function testBlocageEnAttenteDePaiementExpireNeBloquePlus(): void

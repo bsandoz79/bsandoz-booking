@@ -6,13 +6,16 @@ namespace Bsandoz\Core\Booking\Application;
 
 use Bsandoz\Core\Booking\Domain\Port\AvailabilityRepository;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
+use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
 use Bsandoz\Core\Shared\Domain\Clock;
 use Bsandoz\Core\Shared\Domain\TimeRange;
 
 /**
  * Périodes où le pro n'est pas disponible : indisponibilités, et réservations qui bloquent le créneau
  * (confirmées, terminées, ou en attente de paiement dont le blocage court encore).
- * Chaque réservation est étendue de son propre temps de trajet aller : le pro doit partir avant l'heure du rendez-vous.
+ * Chaque réservation est étendue de son propre temps de trajet aller (le pro doit partir avant l'heure du rendez-vous)
+ * et du battement réglé après la prestation (rangement) : avec 30 min, un rendez-vous 08:00–09:30 laisse le suivant
+ * à 10:00 au plus tôt, trajet en plus. Le calcul des créneaux ajoute le même battement après le nouveau rendez-vous.
  */
 final class Occupations
 {
@@ -24,6 +27,7 @@ final class Occupations
         private AvailabilityRepository $availability,
         private Trajet $trajet,
         private Clock $clock,
+        private ?SettingsProvider $settings = null,
     ) {
     }
 
@@ -35,6 +39,7 @@ final class Occupations
     {
         $now = $this->clock->now();
         $busy = $this->availability->unavailabilities($from, $to);
+        $battement = $this->settings?->rules()->bufferMin ?? 0;
 
         $marge = sprintf('%d hours', self::MARGE_HEURES);
         foreach ($this->reservations->between($from->modify('-' . $marge), $to->modify('+' . $marge)) as $reservation) {
@@ -43,7 +48,7 @@ final class Occupations
             }
             $travel = $this->trajet->versReservation($reservation->lat(), $reservation->lng());
             $period = $reservation->period();
-            $busy[] = new TimeRange($period->start->modify(sprintf('-%d minutes', $travel)), $period->end);
+            $busy[] = new TimeRange($period->start->modify(sprintf('-%d minutes', $travel)), $period->end->modify(sprintf('+%d minutes', $battement)));
         }
 
         return $busy;
