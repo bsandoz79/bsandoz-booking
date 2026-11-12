@@ -3,6 +3,7 @@ import { ContenuProvider } from './ContenuContext';
 import { DefilementAncre } from './DefilementAncre';
 import { Footer } from '../components/Footer/Footer';
 import { Header } from '../components/Header/Header';
+import { RemonterEnHaut } from '../components/RemonterEnHaut/RemonterEnHaut';
 import { Accueil } from '../pages/Accueil/Accueil';
 import { Commune } from '../pages/Commune/Commune';
 import { Confirmation } from '../pages/Confirmation/Confirmation';
@@ -38,6 +39,7 @@ export function AppRoutes() {
         <Route path="*" element={<PageIntrouvable />} />
       </Routes>
       <Footer />
+      <RemonterEnHaut />
     </ContenuProvider>
   );
 }
