@@ -3,7 +3,7 @@
 À relire au début de chaque session et avant chaque tâche.
 
 ## Le projet
-Plateforme de réservation 100 % maison, sans abonnement : un **kit réutilisable** (back + front) et un **premier site client**, un artisan de detailing auto à domicile (marque fictive « Atelier Brillance »). Hébergement o2switch.
+Plateforme de réservation 100 % maison, sans abonnement : un **kit réutilisable** (back + front) et un **premier site client**, un artisan de detailing auto à domicile (marque de démo « Perfect Clean », Abbeville). Hébergement o2switch.
 - `packages/core` : bundle Symfony `bsandoz/core` (Auth, Catalog, Booking, Payment, Notification, Admin, Shared). NE CONNAÎT AUCUN MÉTIER.
 - `packages/ui` : blocs React `@bsandoz/ui` (Calendar, SlotPicker, OptionCard, ChoiceChips, PriceSummary, Stepper…). NE CONNAÎT AUCUN MÉTIER.
 - `apps/detailing/api` : application Symfony du client, installe `bsandoz/core` + module `Metier/Detailing`.

@@ -5,7 +5,6 @@ import { getAvailableDays, getCatalog, getQuote, getSlots, searchAddress, type A
 import { ajouterRendezVous } from '../../services/pro';
 import styles from './Pro.module.css';
 
-const PLACES = [{ value: '2', label: '2 places' }, { value: '3', label: '3 places' }, { value: '4', label: '4 places et plus' }];
 const CONTACT_VIDE = { firstname: '', lastname: '', email: '', phone: '', notes: '' };
 
 /** Rendez-vous pris par téléphone : mêmes règles que la réservation en ligne, confirmé tout de suite ou lien d'acompte envoyé. */
@@ -14,7 +13,6 @@ export function RdvTelephoneOnglet() {
   const [options, setOptions] = useState<OptionItem[]>([]);
   const [formuleId, setFormuleId] = useState('');
   const [vehicule, setVehicule] = useState('');
-  const [places, setPlaces] = useState('');
   const [optionIds, setOptionIds] = useState<string[]>([]);
   const [adresse, setAdresse] = useState<Address>();
   const [devis, setDevis] = useState<Quote>();
@@ -33,11 +31,10 @@ export function RdvTelephoneOnglet() {
   useEffect(() => { getCatalog().then((c) => { setFormules(c.formules); setOptions(c.options); }).catch((e: Error) => setErreur(e.message)); }, []);
 
   const formule = useMemo(() => formules.find((f) => f.id === formuleId), [formules, formuleId]);
-  const canape = formule?.category === 'canape';
-  const variante = canape ? (places ? `canape_${places}` : '') : vehicule;
+  const variante = vehicule;
   const selection = useMemo<Selection | undefined>(() => (formule && variante ? {
-    formule, variante, optionIds, metierData: canape ? { category: 'canape', seats: Number(places) } : { category: 'auto', vehicleType: vehicule },
-  } : undefined), [formule, variante, optionIds, canape, places, vehicule]);
+    formule, variante, optionIds, metierData: { category: formule.category, vehicleType: vehicule },
+  } : undefined), [formule, variante, optionIds, vehicule]);
   const duree = devis?.durationMin;
 
   useEffect(() => { if (selection) getQuote(selection, adresse).then(setDevis).catch((e: Error) => setErreur(e.message)); }, [selection, adresse]);
@@ -83,19 +80,11 @@ export function RdvTelephoneOnglet() {
               {formules.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
             </select>
           </label>
-          {formule && !canape && (
+          {formule && (
             <label className={styles.choix}>Type de véhicule
               <select value={vehicule} onChange={(e) => setVehicule(e.target.value)}>
                 <option value="">Choisir…</option>
                 {VEHICLE_TYPES.map((v) => <option key={v.value} value={v.value}>{v.label}</option>)}
-              </select>
-            </label>
-          )}
-          {canape && (
-            <label className={styles.choix}>Canapé
-              <select value={places} onChange={(e) => setPlaces(e.target.value)}>
-                <option value="">Choisir…</option>
-                {PLACES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
               </select>
             </label>
           )}

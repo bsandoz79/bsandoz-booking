@@ -39,8 +39,8 @@ const demoRendezVous = (): RendezVous => {
   debut.setUTCHours(8, 0, 0, 0);
   const fin = new Date(debut.getTime() + 150 * 60 * 1000);
   return {
-    id: 'demo-1', status: 'confirmed', prestationId: 'complet', optionIds: [], start: debut.toISOString(), end: fin.toISOString(),
-    address: '10 Rue de la République 80000 Amiens', lat: 49.8941, lng: 2.2958, totalCents: 14900, depositCents: 4470,
+    id: 'demo-1', status: 'confirmed', prestationId: 'int-signature', optionIds: [], start: debut.toISOString(), end: fin.toISOString(),
+    address: '1 Place Max Lejeune 80100 Abbeville', lat: 50.1054, lng: 1.8357, totalCents: 6900, depositCents: 2070,
     freeCancelUntil: new Date(debut.getTime() - 48 * 3600 * 1000).toISOString(),
   };
 };

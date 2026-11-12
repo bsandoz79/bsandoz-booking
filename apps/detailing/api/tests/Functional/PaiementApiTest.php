@@ -122,7 +122,7 @@ final class PaiementApiTest extends WebTestCase
         $activation = self::getMailerMessage(0);
         self::assertNotNull($activation);
         self::assertEmailHeaderSame($activation, 'Subject', 'Créez votre mot de passe');
-        self::assertEmailHeaderSame($activation, 'From', 'Atelier Brillance <no-reply@demo.bsandoz.fr>');
+        self::assertEmailHeaderSame($activation, 'From', 'Perfect Clean <no-reply@demo.bsandoz.fr>');
         self::assertEmailHtmlBodyContains($activation, 'http://localhost:5173/compte/activer?jeton=');
     }
 

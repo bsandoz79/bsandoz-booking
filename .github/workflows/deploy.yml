@@ -1,4 +1,4 @@
-# Déploiement de la démo Atelier Brillance sur o2switch (FTPS), après une CI verte sur main, ou à la demande.
+# Déploiement de la démo Perfect Clean sur o2switch (FTPS), après une CI verte sur main, ou à la demande.
 # Guide complet : docs/deploiement.md. Secrets et variables à créer dans GitHub (Settings → Secrets and variables → Actions).
 name: Déploiement
 

@@ -45,19 +45,26 @@ final class ChargerDemoTest extends WebTestCase
         $tester = $this->commande();
         $tester->execute([]);
         $tester->assertCommandIsSuccessful();
-        self::assertStringContainsString('4 prestations, 4 options et 11 plages', $tester->getDisplay());
+        self::assertStringContainsString('15 prestations, 6 options et 7 plages', $tester->getDisplay());
 
         $this->client->request('GET', '/api/v1/catalog');
         self::assertResponseIsSuccessful();
         $catalogue = $this->json();
-        self::assertSame(['Intérieur', 'Extérieur', 'Complet', 'Nettoyage de canapé'], array_column($catalogue['formules'], 'name'));
-        self::assertCount(4, $catalogue['options']);
+        $noms = array_column($catalogue['formules'], 'name');
+        self::assertCount(15, $noms);
+        self::assertSame(['Intérieur Éclat', 'Intérieur Signature', 'Intérieur Excellence', 'Extérieur Éclat'], array_slice($noms, 0, 4));
+        self::assertCount(6, $catalogue['options']);
 
-        $complet = $catalogue['formules'][2];
-        self::assertTrue($complet['occupePlage']);
-        self::assertSame(['priceCents' => 14900, 'durationMin' => 180], $complet['tarifs']['suv']);
-        self::assertCount(4, $complet['optionIds']);
-        self::assertSame('canape', $catalogue['formules'][3]['category']);
+        $excellence = $catalogue['formules'][2];
+        self::assertTrue($excellence['occupePlage'], 'durée incertaine : demi-journée');
+        self::assertSame(8900, $excellence['basePriceCents'], 'un seul prix quel que soit le véhicule');
+        self::assertSame([], $excellence['tarifs']);
+        self::assertCount(2, $excellence['optionIds']);
+        self::assertSame(['interieur', 'interieur', 'interieur', 'exterieur', 'exterieur', 'exterieur', 'optique'], array_slice(array_column($catalogue['formules'], 'category'), 0, 7));
+
+        // Devis : le prix ne dépend pas du type de véhicule.
+        $this->client->request('POST', '/api/v1/booking/quote', server: ['CONTENT_TYPE' => 'application/json'], content: json_encode(['prestationId' => $excellence['id'], 'metierData' => ['vehicleType' => 'suv']], JSON_THROW_ON_ERROR));
+        self::assertSame(8900, $this->json()['totalCents']);
 
         // Horaires chargés : le lundi 2 novembre 2026 (horloge de test figée au dimanche 1er) a des créneaux.
         $this->client->request('GET', '/api/v1/booking/days?month=2026-11&duration=90&lat=49.89&lng=2.29&prestation=' . $catalogue['formules'][0]['id']);
@@ -74,6 +81,6 @@ final class ChargerDemoTest extends WebTestCase
         self::assertStringContainsString('rien n\'a été chargé', $tester->getDisplay());
 
         $this->client->request('GET', '/api/v1/catalog');
-        self::assertCount(4, $this->json()['formules']);
+        self::assertCount(15, $this->json()['formules']);
     }
 }

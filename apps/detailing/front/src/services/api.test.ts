@@ -2,7 +2,7 @@ import type { Formule } from '../data/demo';
 
 /** Client branché sur l'API réelle (VITE_API_URL renseignée) : chemins, paramètres et corps conformes à docs/api.md. */
 const formule: Formule = {
-  id: 'p1', category: 'auto', name: 'Complet', description: '', occupePlage: true,
+  id: 'p1', category: 'interieur', name: 'Complet', description: '', occupePlage: true, basePriceCents: 14900, baseDurationMin: 180,
   tarifs: { suv: { priceCents: 14900, durationMin: 180 } }, optionIds: ['o1'],
 };
 const adresse = { label: '10 Rue X 80000 Amiens', lat: 49.89, lng: 2.29 };

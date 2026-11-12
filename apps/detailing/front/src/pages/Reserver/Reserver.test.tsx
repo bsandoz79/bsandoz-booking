@@ -9,7 +9,7 @@ const continuer = () => screen.getByRole('button', { name: 'Continuer' });
 /** Base Adresse Nationale simulée (mode démo : appel direct depuis le navigateur). */
 function simulerBan() {
   vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({
-    features: [{ properties: { label: '10 Rue de la République 80000 Amiens' }, geometry: { coordinates: [2.2958, 49.8941] } }],
+    features: [{ properties: { label: '1 Place Max Lejeune 80100 Abbeville' }, geometry: { coordinates: [1.8357, 50.1054] } }],
   }))));
 }
 
@@ -28,7 +28,7 @@ describe('Parcours de réservation', () => {
     render(<MemoryRouter><Reserver /></MemoryRouter>);
 
     expect(continuer()).toBeDisabled();
-    await userEvent.click(screen.getByRole('radio', { name: 'Mon véhicule' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Nettoyage intérieur' }));
     await userEvent.click(continuer());
 
     await userEvent.type(screen.getByLabelText('Marque'), 'Peugeot');
@@ -36,24 +36,26 @@ describe('Parcours de réservation', () => {
     expect(screen.getByRole('radio', { name: 'SUV / 4x4' })).toHaveAttribute('aria-checked', 'true');
     await userEvent.click(continuer());
 
-    await userEvent.click(await screen.findByRole('button', { name: /complet/i }));
+    await userEvent.click(await screen.findByRole('button', { name: /Intérieur Signature/ }));
     expect(await screen.findByText('Total')).toBeInTheDocument();
-    expect(screen.getAllByText(/149,00/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/69,00/).length).toBeGreaterThan(0);
   });
 
-  it('va jusqu’au paiement de l’acompte (démo) : canapé, adresse, demi-journée, coordonnées, CGV', async () => {
+  it('va jusqu’au paiement de l’acompte (démo) : extérieur, adresse, créneau, coordonnées, CGV', async () => {
     render(<MemoryRouter initialEntries={['/reserver']}><AppRoutes /></MemoryRouter>);
 
-    await userEvent.click(screen.getByRole('radio', { name: 'Mon canapé' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Nettoyage extérieur' }));
     await userEvent.click(continuer());
-    await userEvent.click(screen.getByRole('radio', { name: '3 places' }));
+    await userEvent.type(screen.getByLabelText('Marque'), 'Renault');
+    await userEvent.type(screen.getByLabelText('Modèle'), 'Clio');
+    await userEvent.click(screen.getByRole('radio', { name: 'Citadine' }));
     await userEvent.click(continuer());
-    await userEvent.click(await screen.findByRole('button', { name: /Nettoyage de canapé/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Extérieur Éclat/ }));
     await userEvent.click(continuer());
     await userEvent.click(continuer()); // aucune option
 
-    await userEvent.type(screen.getByRole('combobox', { name: /Adresse de l'intervention/ }), '10 rue de la');
-    await userEvent.click(await screen.findByRole('option', { name: /République/ }));
+    await userEvent.type(screen.getByRole('combobox', { name: /Adresse de l'intervention/ }), '1 place max');
+    await userEvent.click(await screen.findByRole('option', { name: /Abbeville/ }));
     expect(await screen.findByText(/déplacement offert/)).toBeInTheDocument();
     await userEvent.click(continuer());
 
@@ -67,7 +69,7 @@ describe('Parcours de réservation', () => {
     await userEvent.type(screen.getByLabelText('Téléphone'), '0600000000');
     await userEvent.click(continuer());
 
-    const payer = screen.getByRole('button', { name: /Payer l'acompte \(26,70/ });
+    const payer = screen.getByRole('button', { name: /Payer l'acompte \(7,50/ });
     expect(payer).toBeDisabled();
     await userEvent.click(screen.getByRole('checkbox'));
     await userEvent.click(payer);

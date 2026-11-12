@@ -10,8 +10,11 @@ describe('Accueil', () => {
     for (const titre of ['Prestations', 'Comment ça marche', 'Réalisations', 'Zone d’intervention', 'Avis clients', 'Questions fréquentes']) {
       expect(screen.getByRole('heading', { level: 2, name: titre })).toBeInTheDocument();
     }
-    expect(screen.getByRole('heading', { level: 3, name: 'Nettoyage de canapé' })).toBeInTheDocument();
-    expect(screen.getByText(/rayon de 15 km/)).toBeInTheDocument();
+    for (const categorie of ['Nettoyage intérieur', 'Nettoyage extérieur', 'Rénovation des phares', 'Soins à la carte']) {
+      expect(screen.getByRole('heading', { level: 3, name: categorie })).toBeInTheDocument();
+    }
+    expect(screen.getByRole('heading', { level: 4, name: 'Intérieur Signature' })).toBeInTheDocument();
+    expect(screen.getByText(/rayon de 5 km/)).toBeInTheDocument();
   });
 
   it('n’invente aucun avis ni photo', () => {

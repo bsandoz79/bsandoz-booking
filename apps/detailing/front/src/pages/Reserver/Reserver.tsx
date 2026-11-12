@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AddressInput, Calendar, ChoiceChips, OptionCard, PriceSummary, SlotPicker, Stepper, formatEuros } from '@bsandoz/ui';
 import type { Category, Formule, OptionItem } from '../../data/demo';
-import { VEHICLE_TYPES } from '../../data/demo';
+import { CATEGORIES, VEHICLE_TYPES, tarifDe } from '../../data/demo';
 import { suggestVehicleType } from '../../data/vehicles';
 import type { Address, Quote, Selection, Slot } from '../../services/api';
 import { getAvailableDays, getCatalog, getQuote, getSlots, reserve, searchAddress } from '../../services/api';
@@ -22,7 +22,6 @@ export function Reserver() {
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [vehicleType, setVehicleType] = useState<string>();
-  const [seats, setSeats] = useState<string>();
   const [formuleId, setFormuleId] = useState<string>();
   const [optionIds, setOptionIds] = useState<string[]>([]);
   const [address, setAddress] = useState<Address>();
@@ -37,17 +36,15 @@ export function Reserver() {
   const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
 
-  const steps = category === 'canape'
-    ? ['Prestation', 'Canapé', 'Formule', 'Options', 'Adresse', 'Créneau', 'Coordonnées', 'Récapitulatif']
-    : ['Prestation', 'Véhicule', 'Formule', 'Options', 'Adresse', 'Créneau', 'Coordonnées', 'Récapitulatif'];
+  const steps = ['Prestation', 'Véhicule', 'Formule', 'Options', 'Adresse', 'Créneau', 'Coordonnées', 'Récapitulatif'];
 
-  const variante = category === 'canape' ? (seats ? `canape_${seats}` : undefined) : vehicleType;
+  const variante = vehicleType;
   const formule = useMemo(() => formules.find((f) => f.id === formuleId), [formules, formuleId]);
   const formulesVisibles = useMemo(() => formules.filter((f) => f.category === category), [formules, category]);
   const optionsVisibles = options.filter((o) => formule?.optionIds.includes(o.id));
   const metierData = useMemo<Record<string, unknown>>(
-    () => (category === 'canape' ? { category, seats: Number(seats) } : { category, brand, model, vehicleType }),
-    [category, seats, brand, model, vehicleType],
+    () => ({ category, brand, model, vehicleType }),
+    [category, brand, model, vehicleType],
   );
   const selection = useMemo<Selection | undefined>(
     () => (formule && variante ? { formule, variante, optionIds, metierData } : undefined),
@@ -77,7 +74,7 @@ export function Reserver() {
 
   const canNext = [
     !!category,
-    category === 'canape' ? !!seats : !!(brand.trim() && model.trim() && vehicleType),
+    !!(brand.trim() && model.trim() && vehicleType),
     !!formule,
     true,
     !!address && quote?.inZone !== false,
@@ -123,30 +120,29 @@ export function Reserver() {
           <h2 id="etape-titre" className={styles.stepTitle}>{steps[step]}</h2>
 
           {step === 0 && (
-            <ChoiceChips label="Prestation" value={category} onChange={(v) => { setCategory(v as Category); setFormuleId(undefined); setOptionIds([]); }}
-              choices={[{ value: 'auto', label: 'Mon véhicule' }, { value: 'canape', label: 'Mon canapé' }]} />
+            <div className={styles.fields}>
+              <ChoiceChips label="Prestation" value={category} onChange={(v) => { setCategory(v as Category); setFormuleId(undefined); setOptionIds([]); }}
+                choices={CATEGORIES.map((c) => ({ value: c.value, label: c.label }))} />
+              {category && <p className={styles.hint}>{CATEGORIES.find((c) => c.value === category)?.description}</p>}
+            </div>
           )}
 
-          {step === 1 && category === 'auto' && (
+          {step === 1 && (
             <div className={styles.fields}>
               <label className={styles.field}>Marque<input value={brand} onChange={(e) => updateVehicle(e.target.value, model)} placeholder="Ex. Peugeot" required /></label>
               <label className={styles.field}>Modèle<input value={model} onChange={(e) => updateVehicle(brand, e.target.value)} placeholder="Ex. 3008" required /></label>
               <ChoiceChips label="Type de véhicule" value={vehicleType} onChange={setVehicleType} choices={VEHICLE_TYPES} />
-              <p className={styles.hint}>Le prix est ajusté sur place si le véhicule ne correspond pas au type choisi.</p>
+              <p className={styles.hint}>Même prix pour tous les véhicules ; le type de véhicule aide à préparer l’intervention.</p>
             </div>
-          )}
-          {step === 1 && category === 'canape' && (
-            <ChoiceChips label="Nombre de places" value={seats} onChange={setSeats}
-              choices={[{ value: '2', label: '2 places' }, { value: '3', label: '3 places' }, { value: '4', label: '4 places et plus' }]} />
           )}
 
           {step === 2 && (
             <div className={styles.cards}>
               {formulesVisibles.map((f) => {
-                const tarif = variante ? f.tarifs[variante] : undefined;
+                const tarif = tarifDe(f, variante);
                 return (
                   <OptionCard key={f.id} title={f.name} description={f.description} badge={f.badge}
-                    priceLabel={tarif ? formatEuros(tarif.priceCents) : undefined}
+                    priceLabel={formatEuros(tarif.priceCents)}
                     selected={f.id === formuleId} onToggle={() => { setFormuleId(f.id); setOptionIds([]); }} />
                 );
               })}
@@ -197,7 +193,7 @@ export function Reserver() {
 
           {step === 7 && (
             <div className={styles.fields}>
-              <p>{formule?.name} · {category === 'canape' ? `canapé ${seats} places` : `${brand} ${model}`}</p>
+              <p>{formule?.name} · {brand} {model}</p>
               <p>{start && new Date(start).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</p>
               <p>{address?.label}</p>
               <label className={styles.check}><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> J'accepte les <a href="/cgv" target="_blank" rel="noreferrer">conditions générales de vente</a>.</label>

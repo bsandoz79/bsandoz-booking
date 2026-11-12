@@ -1,4 +1,4 @@
-# Cahier des charges – démo detailing « Atelier Brillance »
+# Cahier des charges – démo detailing « Perfect Clean »
 
 Artisan de detailing auto **à domicile** (tout se fait chez le client), plus nettoyage de canapés. Objectif : remplacer un abonnement de réservation (~44 €/mois) par un système qui lui appartient.
 

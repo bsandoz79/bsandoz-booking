@@ -1,4 +1,4 @@
-import { DEMO_RULES, FORMULES, OPTIONS } from '../data/demo';
+import { DEMO_RULES, FORMULES, OPTIONS, tarifDe } from '../data/demo';
 import type { Formule, OptionItem } from '../data/demo';
 
 /**
@@ -67,11 +67,12 @@ export async function getCatalog(): Promise<{ formules: Formule[]; options: Opti
   return http('/catalog');
 }
 
-/** Démo : distance à vol d'oiseau depuis Amiens × 1,3. */
+/** Démo : distance à vol d'oiseau depuis le point de départ (Abbeville) × 1,3. */
 function demoDistanceKm(a: Address): number {
   const R = 6371, rad = (d: number) => (d * Math.PI) / 180;
-  const dLat = rad(a.lat - 49.8941), dLng = rad(a.lng - 2.2958);
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(49.8941)) * Math.cos(rad(a.lat)) * Math.sin(dLng / 2) ** 2;
+  const { lat, lng } = DEMO_RULES.origin;
+  const dLat = rad(a.lat - lat), dLng = rad(a.lng - lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(lat)) * Math.cos(rad(a.lat)) * Math.sin(dLng / 2) ** 2;
   return Math.round(2 * R * Math.asin(Math.sqrt(h)) * 1.3 * 10) / 10;
 }
 
@@ -83,7 +84,7 @@ export async function getQuote(selection: Selection, address?: Address): Promise
       body: JSON.stringify({ prestationId: formule.id, variante, optionIds, metierData, lat: address?.lat, lng: address?.lng }),
     });
   }
-  const tarif = formule.tarifs[variante] ?? Object.values(formule.tarifs)[0];
+  const tarif = tarifDe(formule, variante);
   const opts = OPTIONS.filter((o) => optionIds.includes(o.id));
   const lines = [{ label: formule.name, amountCents: tarif.priceCents }, ...opts.map((o) => ({ label: o.name, amountCents: o.priceCents }))];
   let travelFeeCents = 0;

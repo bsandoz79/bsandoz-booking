@@ -2,7 +2,7 @@
 
 Plateforme de réservation 100 % maison, sans abonnement, hébergée sur o2switch :
 - **kit réutilisable** : `packages/core` (Symfony) et `packages/ui` (React) ;
-- **premier client** : `apps/detailing`, artisan de detailing auto à domicile (marque de démo « Atelier Brillance »).
+- **premier client** : `apps/detailing`, artisan de detailing auto à domicile (marque de démo « Perfect Clean », Abbeville).
 
 ## Prérequis
 PHP 8.3+, Composer 2, Node 22, MySQL 8 (ou MariaDB 10.6+).

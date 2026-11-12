@@ -1,12 +1,12 @@
 /*
- * Service worker d'Atelier Brillance.
+ * Service worker de Perfect Clean.
  * - Pages : réseau d'abord ; hors connexion, dernière version en cache, sinon page « hors connexion ».
  * - Fichiers du build (/assets/, noms avec empreinte) et icônes : cache d'abord.
  * - API (autre domaine ou /api/) : jamais mise en cache (données personnelles, créneaux en temps réel).
  * - Notifications push (espace pro) : affichage et ouverture de la page indiquée.
  */
 const VERSION = 'v1';
-const CACHE = `atelier-brillance-${VERSION}`;
+const CACHE = `perfect-clean-${VERSION}`;
 const A_PRECHARGER = ['/', '/offline.html', '/manifest.webmanifest', '/icon-192.png', '/favicon.svg'];
 
 self.addEventListener('install', (event) => {
@@ -16,7 +16,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((noms) => Promise.all(noms.filter((n) => n.startsWith('atelier-brillance-') && n !== CACHE).map((n) => caches.delete(n))))
+      .then((noms) => Promise.all(noms.filter((n) => (n.startsWith('perfect-clean-') || n.startsWith('atelier-brillance-')) && n !== CACHE).map((n) => caches.delete(n))))
       .then(() => self.clients.claim()),
   );
 });
@@ -59,7 +59,7 @@ self.addEventListener('push', (event) => {
   } catch {
     donnees = { body: event.data ? event.data.text() : '' };
   }
-  event.waitUntil(self.registration.showNotification(donnees.title ?? 'Atelier Brillance', {
+  event.waitUntil(self.registration.showNotification(donnees.title ?? 'Perfect Clean', {
     body: donnees.body ?? '',
     icon: '/icon-192.png',
     badge: '/icon-192.png',

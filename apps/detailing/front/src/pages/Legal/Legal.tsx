@@ -62,7 +62,7 @@ export function Cgv() {
       </section>
       <section>
         <h2>2. Prix</h2>
-        <p>Les prix sont affichés en euros toutes taxes comprises avant la réservation. Ils dépendent de la prestation, du véhicule (ou du nombre de places du canapé) et des options choisies. Le déplacement est offert jusqu'à {SITE.freeRadiusKm} km ; au-delà, des frais de déplacement calculés à partir de l'adresse sont indiqués avant la validation.</p>
+        <p>Les prix sont affichés en euros toutes taxes comprises avant la réservation. Ils dépendent de la prestation et des options choisies ; un supplément peut s'appliquer pour un véhicule très sale ou des poils d'animaux. Le déplacement est offert jusqu'à {SITE.freeRadiusKm} km ; au-delà, des frais de déplacement calculés à partir de l'adresse sont indiqués avant la validation.</p>
       </section>
       <section>
         <h2>3. Réservation et acompte</h2>
@@ -78,7 +78,7 @@ export function Cgv() {
       </section>
       <section>
         <h2>6. Déroulement de la prestation</h2>
-        <p>Le client s'assure que le véhicule (ou le canapé) est accessible à l'adresse et à l'heure prévues. La durée affichée est une estimation ; certaines prestations occupent une demi-journée.</p>
+        <p>Le client s'assure que le véhicule est accessible à l'adresse et à l'heure prévues. La durée affichée est une estimation ; certaines prestations occupent une demi-journée.</p>
       </section>
       <section>
         <h2>7. Réclamations et médiation</h2>
