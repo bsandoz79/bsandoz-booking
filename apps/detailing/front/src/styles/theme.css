@@ -38,3 +38,15 @@
   --brand-on-navy: #c9d4e5;
   --brand-paper: #efe7d3;
 }
+
+/* Changement de thème en rideau (voir changerTheme) : l'ancien affichage reste dessous, le nouveau se dévoile
+   de gauche à droite vers la nuit, de droite à gauche vers le clair. */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+:root[data-rideau='nuit']::view-transition-new(root) { animation: rideau-vers-droite .7s cubic-bezier(.65, 0, .35, 1); }
+:root[data-rideau='clair']::view-transition-new(root) { animation: rideau-vers-gauche .7s cubic-bezier(.65, 0, .35, 1); }
+@keyframes rideau-vers-droite { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes rideau-vers-gauche { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-new(root) { animation: none !important; }
+}

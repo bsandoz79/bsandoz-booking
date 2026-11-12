@@ -16,3 +16,19 @@ export function appliquerTheme(theme: Theme): void {
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', COULEUR_BARRE[theme]);
   try { localStorage.setItem(CLE, theme); } catch { /* navigation privée : choix non mémorisé */ }
 }
+
+/**
+ * Change de thème avec un effet de rideau (View Transitions) : vers la nuit, le nouveau thème s'ouvre de gauche à
+ * droite ; vers le clair, de droite à gauche. `majInterface` met à jour l'affichage React dans la transition.
+ * Sans prise en charge du navigateur, ou si le visiteur demande moins d'animations : changement immédiat.
+ */
+export function changerTheme(theme: Theme, majInterface: () => void = () => undefined): void {
+  const racine = document.documentElement;
+  const reduit = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const appliquer = () => { appliquerTheme(theme); majInterface(); };
+  if (reduit || typeof document.startViewTransition !== 'function') { appliquer(); return; }
+
+  racine.dataset.rideau = theme;
+  const transition = document.startViewTransition(appliquer);
+  void transition.finished.finally(() => { delete racine.dataset.rideau; });
+}
