@@ -91,4 +91,5 @@ jobs:
             phpstan.neon.dist
             .phpunit.cache/**
       - name: Rappel
-        run: echo "Code envoyé. Sur le serveur (terminal cPanel ou SSH) : sh deploy/apres-envoi.sh — vide le cache et applique les migrations."
+        run: |
+          echo "Code envoyé. Sur le serveur (terminal cPanel ou SSH) : sh deploy/apres-envoi.sh — vide le cache et applique les migrations."
