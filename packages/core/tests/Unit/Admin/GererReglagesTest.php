@@ -80,6 +80,24 @@ final class GererReglagesTest extends TestCase
         self::assertSame(48.85, $zone->originLat);
         self::assertSame(40, $zone->pricePerKm->cents);
         self::assertSame(1.3, $zone->roadFactor, 'valeur par défaut');
+        self::assertSame([], $zone->paliers, 'sans tranche : prix au km');
+    }
+
+    public function testZoneParTranchesTrieesEtRelues(): void
+    {
+        $this->reglages->modifierZone(['originLat' => 50.1, 'originLng' => 1.83, 'freeRadiusKm' => 5, 'pricePerKmCents' => 0, 'maxDistanceKm' => 50,
+            'paliers' => [['jusquaKm' => 30, 'prixCents' => 1000], ['jusquaKm' => 15, 'prixCents' => 500], ['jusquaKm' => 50, 'prixCents' => 2000]]]);
+
+        self::assertSame(
+            [['jusquaKm' => 15.0, 'prixCents' => 500], ['jusquaKm' => 30.0, 'prixCents' => 1000], ['jusquaKm' => 50.0, 'prixCents' => 2000]],
+            $this->reglages->lire()['zone']['paliers'] ?? null,
+        );
+    }
+
+    public function testTrancheInvalideRefusee(): void
+    {
+        $this->expectException(DomainError::class);
+        $this->reglages->modifierZone(['originLat' => 50.1, 'originLng' => 1.83, 'freeRadiusKm' => 5, 'pricePerKmCents' => 0, 'maxDistanceKm' => 50, 'paliers' => [['jusquaKm' => 15]]]);
     }
 
     public function testPassageEnActiviteSurPlace(): void

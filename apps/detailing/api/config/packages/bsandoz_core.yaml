@@ -21,13 +21,17 @@ bsandoz_core:
         deposit_percent: 30
         hold_minutes: 10
     zone:
-        # Départ d'Abbeville (centre-ville) ; déplacement offert jusqu'à 5 km, intervention jusqu'à 50 km.
-        # Les frais par tranches (5-15 km : 5 €, 15-30 km : 10 €, 30-50 km : 20 €) arrivent avec feature/zone-paliers.
+        # Départ d'Abbeville (centre-ville) : déplacement offert jusqu'à 5 km, puis par tranches, intervention jusqu'à 50 km
+        # (au-delà : sur devis, hors zone en ligne). Modifiable dans l'espace pro (Réglages → Zone d'intervention).
         origin_lat: 50.1054
         origin_lng: 1.8357
         free_radius_km: 5
-        price_per_km_cents: 50
+        price_per_km_cents: 0
         max_distance_km: 50
+        paliers:
+            - { jusqua_km: 15, prix_cents: 500 }
+            - { jusqua_km: 30, prix_cents: 1000 }
+            - { jusqua_km: 50, prix_cents: 2000 }
 
 # Tests : zone fixe (Amiens, 15 km offerts, 0,50 €/km, 60 km max) sur laquelle reposent les scénarios des tests fonctionnels.
 when@test:
@@ -39,3 +43,4 @@ when@test:
             free_radius_km: 15
             price_per_km_cents: 50
             max_distance_km: 60
+            paliers: []

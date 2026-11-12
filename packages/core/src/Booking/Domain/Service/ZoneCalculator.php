@@ -11,6 +11,9 @@ use Bsandoz\Core\Shared\Domain\Money;
 /**
  * Distance, frais de déplacement et temps de trajet depuis le point de départ du pro.
  * Distance routière estimée = distance à vol d'oiseau × roadFactor.
+ * Frais : rien dans le rayon offert ; puis prix de la première tranche qui couvre la distance ; au-delà de la dernière
+ * tranche (sans dépasser la distance maximale), prix de la dernière tranche plus le prix au km pour les km en plus.
+ * Sans tranche : prix au km pour chaque km commencé au-delà du rayon offert.
  */
 final class ZoneCalculator
 {
@@ -20,11 +23,28 @@ final class ZoneCalculator
     {
         $distance = round($this->haversine($zone->originLat, $zone->originLng, $lat, $lng) * $zone->roadFactor, 1);
         $inZone = $distance <= $zone->maxDistanceKm;
-        $billableKm = (int) ceil(max(0.0, $distance - $zone->freeRadiusKm));
-        $fee = $inZone ? $zone->pricePerKm->multiply($billableKm) : Money::zero();
+        $fee = $inZone ? $this->frais($zone, $distance) : Money::zero();
         $minutes = (int) (ceil(($distance / $zone->averageSpeedKmh * 60) / 5) * 5);
 
         return new ZoneQuote($distance, $inZone, $fee, $minutes);
+    }
+
+    private function frais(Zone $zone, float $distance): Money
+    {
+        if ($distance <= $zone->freeRadiusKm) {
+            return Money::zero();
+        }
+        if ($zone->paliers === []) {
+            return $zone->pricePerKm->multiply((int) ceil($distance - $zone->freeRadiusKm));
+        }
+        foreach ($zone->paliers as $palier) {
+            if ($distance <= $palier->jusquaKm) {
+                return $palier->prix;
+            }
+        }
+        $dernier = $zone->paliers[count($zone->paliers) - 1];
+
+        return $dernier->prix->add($zone->pricePerKm->multiply((int) ceil($distance - $dernier->jusquaKm)));
     }
 
     private function haversine(float $lat1, float $lng1, float $lat2, float $lng2): float

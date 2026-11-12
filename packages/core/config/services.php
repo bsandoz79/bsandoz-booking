@@ -75,6 +75,7 @@ use Bsandoz\Core\Booking\Application\RechercherAdresse;
 use Bsandoz\Core\Booking\Domain\Port\Geocoder;
 use Bsandoz\Core\Booking\Infrastructure\Geo\ApiAdresseGeocoder;
 use Bsandoz\Core\Booking\Infrastructure\Http\GeoController;
+use Bsandoz\Core\Booking\Infrastructure\Http\ZoneController;
 use Bsandoz\Core\Admin\Application\TableauDeBord;
 use Bsandoz\Core\Admin\Infrastructure\Http\AdminController;
 use Bsandoz\Core\Booking\Infrastructure\Http\AdminAgendaController;
@@ -263,6 +264,7 @@ return static function (ContainerConfigurator $container): void {
     $services->alias(Geocoder::class, ApiAdresseGeocoder::class);
     $services->set(RechercherAdresse::class);
     $services->set(GeoController::class)->public()->tag('controller.service_arguments');
+    $services->set(ZoneController::class)->public()->tag('controller.service_arguments');
     $services->set(ExpirerReservationsCommand::class);
 
     // Catalog
