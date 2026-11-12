@@ -107,6 +107,7 @@ export function Confidentialite() {
           <li>Détails de la prestation (véhicule, options, notes) : préparer l'intervention.</li>
           <li>Paiement : traité directement par Stripe ; aucun numéro de carte n'est stocké sur ce site.</li>
           <li>Position (carte de la zone d'intervention, seulement si vous l'autorisez) : estimer les frais de déplacement ; elle n'est pas enregistrée.</li>
+          <li>Demande de devis (page Professionnels) : nom, entreprise, e-mail, téléphone et besoin, transmis par e-mail à {SITE.brand} uniquement pour vous répondre ; rien n'est enregistré sur le site.</li>
         </ul>
         <p>Base légale : l'exécution du contrat (votre réservation). Le téléphone et l'adresse sont chiffrés dans notre base de données.</p>
       </section>

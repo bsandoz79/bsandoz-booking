@@ -38,6 +38,7 @@ export function Header() {
           <NavLink to="/#prestations">Prestations</NavLink>
           {/* Section fidélité de l'accueil : la carte du client connecté, sinon un exemple. */}
           {fidelite && <Link to="/#fidelite">Fidélité</Link>}
+          <NavLink to="/professionnels">Pro</NavLink>
           <NavLink to="/mon-espace">Mon espace</NavLink>
         </nav>
         <div className={styles.actions}>

@@ -80,6 +80,14 @@ export async function getHoraires(): Promise<Plage[]> {
 }
 
 /** Conditions de déplacement à afficher (rayon offert, tranches, distance maximale). */
+/** Demande de contact ou de devis (page « Professionnels ») transmise au pro par mail. */
+export interface DemandeContact { nom: string; email: string; telephone?: string; entreprise?: string; message: string; details?: Record<string, string>; site?: string }
+
+export async function envoyerDemandeContact(demande: DemandeContact): Promise<void> {
+  if (isDemo()) return;
+  await http('/contact', { method: 'POST', body: JSON.stringify(demande) });
+}
+
 export async function getZone(): Promise<ZonePublique> {
   if (isDemo()) return ZONE_DEMO;
   return http('/booking/zone');
