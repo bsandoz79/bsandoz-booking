@@ -103,6 +103,11 @@ Réservation d'un autre client : 404. Sans jeton : 401.
 - `GET /ical/{secret}.ics` : flux d'agenda du pro (rendez-vous confirmés, des 30 derniers jours à l'année à venir) à ajouter dans Google Agenda ou Apple Calendrier (« s'abonner par URL »). Secret faux : 404.
 - Cron toutes les 15 min : `php bin/console bsandoz:notifications:send` (expire les blocages de paiement dépassés et envoie les rappels de la veille, une seule fois par rendez-vous).
 
+## Contenu modifiable du site
+- `GET /site` (public) → objet JSON du contenu éditorial (textes, coordonnées, FAQ, avis, photos…), `{}` tant que le pro n'a rien modifié ; le site complète avec ses textes par défaut. Mis en cache 60 s.
+- `PUT /admin/site` (rôle pro) : remplace tout le contenu. Objet de textes, nombres, booléens et listes ; rubriques nommées `[A-Za-z][A-Za-z0-9_]*`, 6 niveaux, 5 000 caractères par texte, 200 Ko au total (sinon 422). Le site l'affiche comme du texte, jamais comme du HTML.
+- Photos (rôle pro) : `POST /admin/medias` (multipart, champ `fichier`, JPEG / PNG / WebP reconnus à leur contenu, 5 Mo maximum) → 201 `{"name", "url"}` ; `GET /admin/medias` → `[{"name", "url"}]` ; `DELETE /admin/medias/{name}` → 204. Fichiers rangés dans `public/medias` de l'API (option `bsandoz_core.medias_dir`), servis à `https://<api>/medias/<name>`.
+
 ## Notifications push du pro (Web Push)
 - `GET /push/key` → `{"publicKey": "…" | null}` : clé publique VAPID (null : notifications non configurées).
 - `POST /admin/push` (rôle pro) : corps = `PushSubscription` du navigateur, `{"endpoint", "keys": {"p256dh", "auth"}}` → 204. Le même appareil remplace son abonnement. Endpoint non https ou clés invalides : 422 ; notifications non configurées : 422.

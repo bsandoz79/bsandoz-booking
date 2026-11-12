@@ -17,3 +17,6 @@
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+
+# Photos envoyées par le pro depuis l'espace pro (restent sur le serveur, jamais dans le dépôt)
+/public/medias/
