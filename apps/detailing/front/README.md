@@ -6,7 +6,10 @@ Site React (Vite) du premier client, construit avec les blocs du kit `@bsandoz/u
 - `npm run lint`, `npm run test`, `npm run build` (ne jamais lancer `npm run dev` dans les scripts automatiques).
 
 ## Configuration
-- `VITE_API_URL` : adresse de l'API (ex. `https://api.demo.bsandoz.fr/api/v1`). Vide : le parcours utilise les données de démonstration de `src/data/demo.ts`.
+- `VITE_API_URL` : adresse de base de l'API, sans `/api/v1` (ex. `https://api.demo.bsandoz.fr`), dans `.env.local` (non versionné). Vide : le site utilise les données de démonstration de `src/data/demo.ts` et n'appelle pas l'API (la recherche d'adresse interroge alors directement la Base Adresse Nationale, le paiement est simulé).
+
+## Branchement sur l'API (`src/services/api.ts`)
+Contrat : `docs/api.md`. Le parcours envoie la prestation, la variante (type de véhicule ou `canape_<places>`), les options et les données métier (`metierData`) ; l'API recalcule le prix et la variante côté serveur. Les jours et créneaux tiennent compte de la prestation (durée incertaine → débuts de demi-journée). À la validation : redirection vers la page de paiement Stripe (`paymentUrl`), ou page de confirmation si aucun acompte n'est demandé. Créneau pris entre-temps (422) : retour au choix de l'heure avec le message de l'API. Paiement abandonné : Stripe renvoie sur `/reserver?paiement=annule`, un message l'indique.
 
 ## Contenu
 - `src/data/site.ts` : marque, ville, zone, acompte, délai d'annulation et identité légale. Tout ce qui n'est pas connu reste `[à compléter]` : ne jamais inventer d'avis, de chiffres ni de coordonnées. Les valeurs de zone, d'acompte et d'annulation doivent rester identiques aux réglages de l'API.

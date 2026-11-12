@@ -1,8 +1,13 @@
 import { DEMO_RULES, FORMULES, OPTIONS } from '../data/demo';
 import type { Formule, OptionItem } from '../data/demo';
 
-/** Client de l'API. Sans VITE_API_URL, renvoie les données de démonstration. */
-const API_URL: string = import.meta.env.VITE_API_URL ?? '';
+/**
+ * Client de l'API (contrat : docs/api.md). `VITE_API_URL` = adresse de base de l'API, sans `/api/v1`
+ * (ex. https://api.demo.bsandoz.fr). Vide : données de démonstration, aucun appel réseau vers l'API.
+ */
+const API_URL: string = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
+
+export const isDemo = () => API_URL === '';
 
 export interface Quote {
   lines: { label: string; amountCents: number }[];
@@ -13,28 +18,49 @@ export interface Quote {
   inZone: boolean;
 }
 export interface Address { label: string; lat: number; lng: number }
-export interface ReservationRequest {
-  formuleId: string;
+export interface Slot { start: string; end?: string; label: string }
+
+/** Choix du client transmis à l'API : la variante est déduite de `metierData` par le module detailing. */
+export interface Selection {
+  formule: Formule;
+  variante: string;
   optionIds: string[];
   metierData: Record<string, unknown>;
-  start: string;
-  address: Address;
-  firstname: string;
-  lastname: string;
-  email: string;
-  phone: string;
-  notes: string;
-  acceptedTerms: boolean;
+}
+
+export interface Contact { firstname: string; lastname: string; email: string; phone: string; notes: string }
+
+export interface ReservationResult {
+  reservationId: string;
+  status: 'pending_payment' | 'confirmed';
+  /** Page de paiement de l'acompte (Stripe) ; null si aucun acompte ou paiement indisponible. */
+  paymentUrl: string | null;
+  paymentError?: string;
+}
+
+export class ApiError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
 }
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}/api/v1${path}`, { headers: { 'Content-Type': 'application/json' }, credentials: 'include', ...init });
-  if (!res.ok) throw new Error((await res.json().catch(() => null))?.detail ?? 'Une erreur est survenue.');
-  return res.json() as Promise<T>;
+  const res = await fetch(`${API_URL}/api/v1${path}`, { headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, credentials: 'include', ...init });
+  if (!res.ok) {
+    const probleme = (await res.json().catch(() => null)) as { detail?: string } | null;
+    throw new ApiError(probleme?.detail ?? 'Une erreur est survenue. Merci de réessayer.', res.status);
+  }
+  return (res.status === 204 ? undefined : await res.json()) as T;
 }
 
+const query = (params: Record<string, string | number | undefined>) =>
+  new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])).toString();
+
 export async function getCatalog(): Promise<{ formules: Formule[]; options: OptionItem[] }> {
-  if (!API_URL) return { formules: FORMULES, options: OPTIONS };
+  if (isDemo()) return { formules: FORMULES, options: OPTIONS };
   return http('/catalog');
 }
 
@@ -46,9 +72,13 @@ function demoDistanceKm(a: Address): number {
   return Math.round(2 * R * Math.asin(Math.sqrt(h)) * 1.3 * 10) / 10;
 }
 
-export async function getQuote(formule: Formule, variante: string, optionIds: string[], address?: Address): Promise<Quote> {
-  if (API_URL) {
-    return http('/booking/quote', { method: 'POST', body: JSON.stringify({ prestationId: formule.id, variante, optionIds, lat: address?.lat, lng: address?.lng }) });
+export async function getQuote(selection: Selection, address?: Address): Promise<Quote> {
+  const { formule, variante, optionIds, metierData } = selection;
+  if (!isDemo()) {
+    return http('/booking/quote', {
+      method: 'POST',
+      body: JSON.stringify({ prestationId: formule.id, variante, optionIds, metierData, lat: address?.lat, lng: address?.lng }),
+    });
   }
   const tarif = formule.tarifs[variante] ?? Object.values(formule.tarifs)[0];
   const opts = OPTIONS.filter((o) => optionIds.includes(o.id));
@@ -69,10 +99,10 @@ export async function getQuote(formule: Formule, variante: string, optionIds: st
   };
 }
 
-export async function searchAddress(query: string): Promise<Address[]> {
-  if (query.trim().length < 3) return [];
-  if (API_URL) return http(`/geo/search?q=${encodeURIComponent(query)}`);
-  const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=5`);
+export async function searchAddress(q: string): Promise<Address[]> {
+  if (q.trim().length < 3) return [];
+  if (!isDemo()) return http(`/geo/search?${query({ q })}`);
+  const res = await fetch(`https://api-adresse.data.gouv.fr/search/?${query({ q, limit: 5 })}`);
   const json = await res.json();
   return (json.features ?? []).map((f: { properties: { label: string }; geometry: { coordinates: [number, number] } }) => ({
     label: f.properties.label, lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1],
@@ -80,8 +110,8 @@ export async function searchAddress(query: string): Promise<Address[]> {
 }
 
 /** Démo : du mardi au samedi, à partir de demain. */
-export async function getAvailableDays(month: string, durationMin: number, address: Address): Promise<string[]> {
-  if (API_URL) return http(`/booking/days?month=${month}&duration=${durationMin}&lat=${address.lat}&lng=${address.lng}`);
+export async function getAvailableDays(month: string, durationMin: number, address: Address, prestationId?: string): Promise<string[]> {
+  if (!isDemo()) return http(`/booking/days?${query({ month, duration: durationMin, lat: address.lat, lng: address.lng, prestation: prestationId })}`);
   const [y, m] = month.split('-').map(Number);
   const count = new Date(y, m, 0).getDate();
   const tomorrow = new Date(); tomorrow.setHours(0, 0, 0, 0); tomorrow.setDate(tomorrow.getDate() + 1);
@@ -94,14 +124,27 @@ export async function getAvailableDays(month: string, durationMin: number, addre
   return days;
 }
 
-export async function getSlots(date: string, durationMin: number, address: Address): Promise<{ start: string; label: string }[]> {
-  if (API_URL) return http(`/booking/slots?date=${date}&duration=${durationMin}&lat=${address.lat}&lng=${address.lng}`);
-  const starts = durationMin > 180 ? ['08:30', '13:30'] : ['08:30', '10:30', '13:30', '15:30'];
+/** Démo : prestation à durée incertaine (`occupePlage`) → débuts de demi-journée uniquement. */
+export async function getSlots(date: string, durationMin: number, address: Address, formule?: Formule): Promise<Slot[]> {
+  if (!isDemo()) return http(`/booking/slots?${query({ date, duration: durationMin, lat: address.lat, lng: address.lng, prestation: formule?.id })}`);
+  const starts = formule?.occupePlage || durationMin > 180 ? ['08:30', '13:30'] : ['08:30', '10:30', '13:30', '15:30'];
   return starts.map((h) => ({ start: `${date}T${h}:00`, label: h }));
 }
 
-/** Renvoie l'URL de paiement de l'acompte (Stripe). */
-export async function reserve(request: ReservationRequest): Promise<{ paymentUrl: string }> {
-  if (API_URL) return http('/booking/reservations', { method: 'POST', body: JSON.stringify(request) });
-  return { paymentUrl: '/confirmation?demo=1' };
+/** Crée la réservation (bloquée le temps du paiement) ; renvoie la page de paiement de l'acompte. */
+export async function reserve(selection: Selection, start: string, address: Address, contact: Contact, acceptedTerms: boolean): Promise<ReservationResult> {
+  if (isDemo()) return { reservationId: 'demo', status: 'pending_payment', paymentUrl: '/confirmation?demo=1' };
+  return http('/booking/reservations', {
+    method: 'POST',
+    body: JSON.stringify({
+      prestationId: selection.formule.id,
+      variante: selection.variante,
+      optionIds: selection.optionIds,
+      metierData: selection.metierData,
+      start,
+      address,
+      ...contact,
+      acceptedTerms,
+    }),
+  });
 }

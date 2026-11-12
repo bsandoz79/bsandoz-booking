@@ -81,6 +81,7 @@
 - API detailing : commande `detailing:demo:charger` (cas d'usage `ChargerDonneesDemo`) : catalogue, options et horaires de démonstration chargés via les cas d'usage du kit, formule « Complet » à durée incertaine, sans effet si le catalogue n'est pas vide. Tests fonctionnels.
 - Site detailing : accueil enrichi (comment ça marche, réalisations avant / après à fournir, zone d'intervention, avis `[à compléter]`, questions fréquentes, carte canapé), informations du site centralisées dans `src/data/site.ts`, pied de page relié, README du front. Tests.
 - Site detailing : pages légales (mentions légales, CGV, politique de confidentialité) reprenant acompte, délai d'annulation et zone, informations d'identité `[à compléter]`, page introuvable. Tests.
+- Site detailing : parcours de réservation branché sur l'API réelle (`VITE_API_URL` sans `/api/v1`) : prestation, variante et données métier envoyées au devis et à la réservation, jours et créneaux selon la prestation (durée incertaine → demi-journée), autocomplétion d'adresse avec le bloc `AddressInput`, redirection vers Stripe ou confirmation directe, retour au choix de l'heure si le créneau vient d'être pris (422), message après paiement abandonné, page de confirmation (mode démo signalé). Tests du client API (appels simulés) et du parcours complet.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
@@ -88,3 +89,4 @@
 - Réservation : un pas de créneau nul ne fait plus tourner le calcul à l'infini, une vitesse nulle ne provoque plus de division par zéro (refusés à la création des règles et de la zone).
 - Site detailing : nom du projet synchronisé dans `package-lock.json` ; import de `vite.config.ts` avec son extension dans `vitest.config.ts` (avertissement Vite).
 - Kit back : types des tableaux renvoyés précisés pour PHPStan niveau 8 (`ExporterDonnees`, `ListerCreneaux` → `list<TimeRange>`, `ListerJoursDisponibles` → dates `Y-m-d`, `PaymentGateway` → `{sessionId, url}` et événement décodé).
+- API detailing : CORS avec `allow_credentials` (le front envoie le cookie de renouvellement de session).
