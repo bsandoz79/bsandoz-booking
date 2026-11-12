@@ -29,10 +29,11 @@ Erreurs en `application/problem+json`, montants en centimes, dates ISO 8601 UTC.
   "formules": [{"id": "interieur", "category": "auto", "name": "Intérieur", "description": "…",
                 "basePriceCents": 6900, "baseDurationMin": 90, "occupePlage": false,
                 "tarifs": {"suv": {"priceCents": 8900, "durationMin": 120}}, "optionIds": ["poils"]}],
-  "options": [{"id": "poils", "name": "Poils d'animaux", "description": "…", "priceCents": 1500, "durationMin": 30}]
+  "options": [{"id": "poils", "name": "Poils d'animaux", "description": "…", "priceCents": 1500, "durationMin": 30}],
+  "produits": [{"id": "…", "name": "Microfibre", "description": "…", "priceCents": 600, "stock": 3, "photo": null}]
 }
 ```
-Prestations actives triées par position ; seules les options actives proposées par une prestation sont listées.
+Prestations actives triées par position ; seules les options actives proposées par une prestation sont listées. `produits` : produits vendus avec la réservation, actifs et en stock (`stock` plafonné à 10 : quantité maximale à proposer).
 
 ## POST /booking/quote
 Corps : `{"prestationId": "interieur", "optionIds": ["poils"], "metierData": {"vehicleType": "suv"}, "variante": "suv", "lat": 49.89, "lng": 2.29}` — seul `prestationId` est obligatoire, `lat` et `lng` vont ensemble.
@@ -60,9 +61,10 @@ Paramètres : `duration` (minutes, devis compris options), `lat` / `lng` (obliga
 Les créneaux tiennent compte du trajet, des congés, et des réservations confirmées ou en cours de paiement (chacune étendue de son propre trajet). Adresse hors zone ou manquante : 422 ; paramètre invalide : 400.
 
 ## POST /booking/reservations
-Corps : `{"prestationId", "optionIds": [], "metierData": {}, "variante"?, "start": "2026-11-10T08:00:00+00:00", "address": {"label", "lat", "lng"} | null, "firstname", "lastname", "email", "phone", "notes"?, "acceptedTerms": true}` — `start` tel que renvoyé par `/booking/slots` ; `address` null pour une activité sur place.
+Corps : `{"prestationId", "optionIds": [], "metierData": {}, "variante"?, "start": "2026-11-10T08:00:00+00:00", "address": {"label", "lat", "lng"} | null, "firstname", "lastname", "email", "phone", "notes"?, "acceptedTerms": true, "produits"?: [{"id", "quantite"}]}` — `start` tel que renvoyé par `/booking/slots` ; `address` null pour une activité sur place ; `produits` : produits ajoutés, payés en entier en ligne avec l'acompte et remis le jour du rendez-vous.
 
-Réponse 201 : `{"reservationId", "status": "pending_payment" | "confirmed", "totalCents", "depositCents", "holdExpiresAt", "paymentUrl": null}`.
+Réponse 201 : `{"reservationId", "status": "pending_payment" | "confirmed", "totalCents", "depositCents", "produitsCents", "holdExpiresAt", "paymentUrl": null}` (`totalCents` : prestation seule ; payé en ligne : `depositCents` + `produitsCents`).
+Produits : retirés du stock à la réservation (stock insuffisant, produit retiré : 422), remis en stock si la réservation est annulée (client ou pro) ou expire sans paiement, repris si le paiement arrive après l'expiration. Avec des produits, la réservation attend le paiement même sans acompte.
 Sous verrou d'agenda : devis recalculé côté serveur, créneau revérifié, compte client créé (ou compte existant réutilisé), réservation bloquée `holdMinutes` (10 min) en attente de l'acompte, ou confirmée directement sans acompte. `paymentUrl` sera rempli à partir de `feature/core-payment`. Créneau déjà pris, CGV non acceptées, adresse hors zone : 422.
 
 Cron : `php bin/console bsandoz:reservations:expirer` passe en « expirée » les réservations dont le blocage est dépassé.
@@ -78,7 +80,7 @@ Mot de passe : 10 caractères minimum, au moins une lettre et un chiffre (sinon 
 
 ## Gérer mon rendez-vous (`/booking/manage/{token}`)
 `manageToken` est renvoyé par `POST /booking/reservations` (et sera mis dans les mails). Valable jusqu'à la fin du rendez-vous.
-- `GET` → `{"id", "status", "prestationId", "optionIds", "start", "end", "address", "lat", "lng", "totalCents", "depositCents", "freeCancelUntil"}` (`lat` / `lng` : pour chercher un nouveau créneau avec `/booking/slots`)
+- `GET` → `{"id", "status", "prestationId", "optionIds", "start", "end", "address", "lat", "lng", "totalCents", "depositCents", "remiseFideliteCents", "produits", "produitsCents", "freeCancelUntil"}` (`lat` / `lng` : pour chercher un nouveau créneau avec `/booking/slots`)
 - `PATCH` `{"start"}` → déplace vers un créneau libre (réservation confirmée, au moins 48 h avant) et renvoie la réservation.
 - `DELETE` → annule et renvoie `{"refundable": bool}` (acompte remboursable si annulation gratuite).
 Lien inconnu ou expiré : 404.
@@ -104,7 +106,8 @@ Réservation d'un autre client : 404. Sans jeton : 401.
 - `POST /booking/reservations` renvoie maintenant `paymentUrl` (page de paiement Stripe : carte, Apple Pay, Google Pay selon le tableau de bord Stripe). Paiement indisponible ou non configuré : la réservation est créée quand même, `paymentUrl` vaut `null` et `paymentError` explique pourquoi.
 - Après paiement, Stripe renvoie le client sur `success_url` (`/confirmation?reservation=…`), ou sur `cancel_url` s'il abandonne.
 - `POST /payment/stripe/webhook` (appelé par Stripe, évènement `checkout.session.completed`) : signature vérifiée (`STRIPE_WEBHOOK_SECRET`, tolérance 5 min, sinon 400), traitement idempotent. Créneau toujours libre : réservation confirmée et mail avec le lien de gestion. Paiement arrivé trop tard pour un créneau repris : acompte remboursé automatiquement.
-- Annulation gratuite (lien de gestion ou espace client) : l'acompte est remboursé aussitôt sur le moyen de paiement d'origine.
+- Annulation gratuite (lien de gestion ou espace client) : l'acompte est remboursé aussitôt sur le moyen de paiement d'origine, produits compris.
+- Montant de la session : acompte + produits ajoutés ; libellé « Acompte : <prestation> + 2 × <produit>, … ».
 
 ## Mails et agenda
 - Mails envoyés (modèles Twig du kit, en français, surchargeables dans `templates/bsandoz/emails/` de l'application) : activation du compte, mot de passe oublié, confirmation (avec le rendez-vous en pièce jointe `.ics` et le lien « gérer mon rendez-vous »), annulation, déplacement, rappel de la veille, remboursement ; au pro (`PRO_EMAIL`) : nouveau rendez-vous, annulation, déplacement.
@@ -135,6 +138,6 @@ Règle par défaut (`bsandoz_core.fidelite`) : 4 prestations réalisées, 20 % s
 Compte pro créé à l'installation : `php bin/console bsandoz:pro:creer contact@domaine.fr Prénom Nom` (mot de passe demandé), puis connexion par `/auth/login`. Client connecté : 403 ; sans jeton : 401.
 - `GET /admin/dashboard` → `{today, week, monthRevenueCents, monthBookings, pendingPayments, monthCancellationRate, next}`
 - `GET /admin/settings` → `{rules, zone, timezone}` ; `PUT /admin/settings/rules` `{minNoticeHours, horizonDays, bufferMin, slotStepMin, freeCancelHours, depositPercent, depositFixedCents, holdMinutes}` ; `PUT /admin/settings/zone` `{"zone": {originLat, originLng, freeRadiusKm, pricePerKmCents, maxDistanceKm, roadFactor?, averageSpeedKmh?, paliers?: [{jusquaKm, prixCents}]} | null}` (null : activité sur place ; `paliers` : frais par tranches au-delà du rayon offert, par distance croissante ; au-delà de la dernière tranche, prix de celle-ci plus `pricePerKmCents` par km). Valeurs incohérentes : 422.
-- `GET /admin/catalog` → `{prestations, options}` (actives ou non) ; `POST` / `PUT /admin/catalog/prestations[/{id}]` `{name, description, basePriceCents, baseDurationMin, active, categoryId, position, occupePlage, tarifs: {variante: {priceCents, durationMin}}, optionIds}` ; `DELETE /admin/catalog/prestations/{id}` (désactive) ; `POST` / `PUT /admin/catalog/options[/{id}]` `{name, description, priceCents, durationMin, active}`.
+- `GET /admin/catalog` → `{prestations, options}` (actives ou non) ; `POST` / `PUT /admin/catalog/prestations[/{id}]` `{name, description, basePriceCents, baseDurationMin, active, categoryId, position, occupePlage, tarifs: {variante: {priceCents, durationMin}}, optionIds}` ; `DELETE /admin/catalog/prestations/{id}` (désactive) ; `POST` / `PUT /admin/catalog/options[/{id}]` `{name, description, priceCents, durationMin, active}` ; `POST` / `PUT /admin/catalog/produits[/{id}]` `{name, description, priceCents (> 0), stock, active, position, photo (URL d'un média, facultative)}` ; `DELETE /admin/catalog/produits/{id}` (retire de la vente, gardé pour l'historique). Planning et vues de réservation : `produits` `[{id, nom, prixCents, quantite}]` et `produitsCents`.
 - `GET` / `PUT /admin/availability/hours` `{"hours": [{weekday, startsAt, endsAt}]}` (remplace la semaine) ; `GET /admin/availability/unavailabilities?from=&to=`, `POST` `{start, end, reason}`, `DELETE …/{id}`.
 - `GET /admin/reservations?from=AAAA-MM-JJ&to=AAAA-MM-JJ` → planning avec le client ; `POST /admin/reservations` (même corps que `/booking/reservations`, plus `sendDepositLink`) → rendez-vous pris par téléphone, confirmé tout de suite ou lien d'acompte envoyé par mail ; `PATCH /admin/reservations/{id}` `{"status": "done" | "no_show"}` ; `POST …/{id}/cancel` `{"refund": bool}` ; `POST …/{id}/refund` `{"amountCents"?}`.

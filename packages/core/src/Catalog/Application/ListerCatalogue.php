@@ -6,25 +6,30 @@ namespace Bsandoz\Core\Catalog\Application;
 
 use Bsandoz\Core\Catalog\Domain\Model\Option;
 use Bsandoz\Core\Catalog\Domain\Model\Prestation;
+use Bsandoz\Core\Catalog\Domain\Model\Produit;
 use Bsandoz\Core\Catalog\Domain\Port\OptionRepository;
 use Bsandoz\Core\Catalog\Domain\Port\PrestationRepository;
+use Bsandoz\Core\Catalog\Domain\Port\ProduitRepository;
 
 /**
  * Renvoie le catalogue public : prestations actives (« formules ») avec leurs tarifs par variante,
- * et les options actives proposées par au moins une de ces prestations.
+ * les options actives proposées par au moins une de ces prestations, et les produits en vente (actifs et en stock ;
+ * `stock` sert de quantité maximale à proposer).
  *
  * @phpstan-type Formule array{id: string, category: string|null, name: string, description: string, basePriceCents: int, baseDurationMin: int, occupePlage: bool, tarifs: array<string, array{priceCents: int, durationMin: int}>, optionIds: list<string>}
  * @phpstan-type OptionItem array{id: string, name: string, description: string, priceCents: int, durationMin: int}
+ * @phpstan-type ProduitItem array{id: string, name: string, description: string, priceCents: int, stock: int, photo: string|null}
  */
 final class ListerCatalogue
 {
     public function __construct(
         private PrestationRepository $prestations,
         private OptionRepository $options,
+        private ?ProduitRepository $produits = null,
     ) {
     }
 
-    /** @return array{formules: list<Formule>, options: list<OptionItem>} */
+    /** @return array{formules: list<Formule>, options: list<OptionItem>, produits: list<ProduitItem>} */
     public function __invoke(): array
     {
         $activeOptions = [];
@@ -49,7 +54,13 @@ final class ListerCatalogue
             }
         }
 
-        return ['formules' => $formules, 'options' => $options];
+        $produits = [];
+        foreach ($this->produits?->enVente() ?? [] as $p) {
+            $produits[] = ['id' => $p->id(), 'name' => $p->nom(), 'description' => $p->description(), 'priceCents' => $p->prix()->cents,
+                'stock' => min($p->stock(), Produit::QUANTITE_MAX), 'photo' => $p->photo()];
+        }
+
+        return ['formules' => $formules, 'options' => $options, 'produits' => $produits];
     }
 
     /**

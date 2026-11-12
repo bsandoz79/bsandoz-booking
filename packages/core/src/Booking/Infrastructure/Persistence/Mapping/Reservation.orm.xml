@@ -23,6 +23,7 @@
         <field name="metierData" column="metier_data" type="json"/>
         <field name="notes" type="text"/>
         <field name="remiseFidelite" column="loyalty_discount_cents" type="bsandoz_money" nullable="true"/>
+        <field name="produits" column="products" type="json" nullable="true"/>
         <field name="status" type="string" length="20" enum-type="Bsandoz\Core\Booking\Domain\Model\ReservationStatus"/>
         <field name="holdExpiresAt" column="hold_expires_at" type="datetime_utc_immutable" nullable="true"/>
     </entity>

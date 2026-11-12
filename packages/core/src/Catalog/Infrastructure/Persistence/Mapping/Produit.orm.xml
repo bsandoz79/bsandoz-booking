@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Produits vendus avec une réservation (stock tenu par le pro). -->
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Bsandoz\Core\Catalog\Domain\Model\Produit" table="catalog_product">
+        <id name="id" type="string" length="36"/>
+        <field name="nom" column="name" type="string" length="120"/>
+        <field name="description" type="text"/>
+        <field name="prix" column="price_cents" type="bsandoz_money"/>
+        <field name="stock" type="integer"/>
+        <field name="actif" column="active" type="boolean"/>
+        <field name="position" type="integer"/>
+        <field name="photo" type="string" length="255" nullable="true"/>
+    </entity>
+</doctrine-mapping>

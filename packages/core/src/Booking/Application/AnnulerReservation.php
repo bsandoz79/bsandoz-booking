@@ -8,6 +8,7 @@ use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
 use Bsandoz\Core\Payment\Application\RembourserAcompte;
 use Bsandoz\Core\Fidelite\Application\GererFidelite;
+use Bsandoz\Core\Catalog\Application\StockProduits;
 use Bsandoz\Core\Shared\Domain\Clock;
 use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\NotFound;
@@ -26,6 +27,7 @@ final class AnnulerReservation
         private NotificationsReservation $notifications,
         private Clock $clock,
         private ?GererFidelite $fidelite = null,
+        private ?StockProduits $stock = null,
     ) {
     }
 
@@ -45,6 +47,7 @@ final class AnnulerReservation
         if ($reservation->remiseFidelite()->cents > 0) {
             $this->fidelite?->rendreRemise($reservation->userId());
         }
+        $this->stock?->remettre($reservation->produits());
 
         if ($refundable) {
             ($this->rembourser)($reservation->id());

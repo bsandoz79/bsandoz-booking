@@ -6,9 +6,11 @@ namespace Bsandoz\Core\Catalog\Application;
 
 use Bsandoz\Core\Catalog\Domain\Model\Option;
 use Bsandoz\Core\Catalog\Domain\Model\Prestation;
+use Bsandoz\Core\Catalog\Domain\Model\Produit;
 use Bsandoz\Core\Catalog\Domain\Model\Tarif;
 use Bsandoz\Core\Catalog\Domain\Port\OptionRepository;
 use Bsandoz\Core\Catalog\Domain\Port\PrestationRepository;
+use Bsandoz\Core\Catalog\Domain\Port\ProduitRepository;
 use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\IdGenerator;
 use Bsandoz\Core\Shared\Domain\Money;
@@ -21,6 +23,7 @@ use Bsandoz\Core\Shared\Domain\NotFound;
  * Prestation : {"name", "description", "basePriceCents", "baseDurationMin", "active", "categoryId", "position",
  *               "occupePlage", "tarifs": {"<variante>": {"priceCents", "durationMin"}}, "optionIds": []}
  * Option     : {"name", "description", "priceCents", "durationMin", "active"}
+ * Produit    : {"name", "description", "priceCents", "stock", "active", "position", "photo"} (vendu avec une réservation)
  */
 final class GererCatalogue
 {
@@ -28,15 +31,71 @@ final class GererCatalogue
         private PrestationRepository $prestations,
         private OptionRepository $options,
         private IdGenerator $ids,
+        private ?ProduitRepository $produits = null,
     ) {
     }
 
-    /** @return array{prestations: list<array<string, mixed>>, options: list<array<string, mixed>>} */
+    /** @return array{prestations: list<array<string, mixed>>, options: list<array<string, mixed>>, produits: list<array<string, mixed>>} */
     public function lister(): array
     {
         return [
             'prestations' => array_map(self::prestationEnTableau(...), $this->prestations->all()),
             'options' => array_map(self::optionEnTableau(...), $this->options->all()),
+            'produits' => array_map(self::produitEnTableau(...), $this->produits?->all() ?? []),
+        ];
+    }
+
+    /**
+     * Crée (sans identifiant) ou modifie un produit : nom, prix, stock, photo… Stock à 0 ou produit inactif : plus proposé.
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     * @throws DomainError données invalides
+     * @throws NotFound produit inconnu
+     */
+    public function enregistrerProduit(array $data, ?string $id = null): array
+    {
+        $depot = $this->depotProduits();
+        $nom = self::texte($data, 'name');
+        $prix = Money::cents(self::entier($data, 'priceCents'));
+        $stock = self::entier($data, 'stock');
+        $photo = $data['photo'] ?? null;
+        $photo = is_string($photo) && trim($photo) !== '' ? trim($photo) : null;
+        $position = is_int($data['position'] ?? null) ? $data['position'] : 0;
+        $actif = ($data['active'] ?? true) === true;
+        $description = self::texte($data, 'description', '');
+
+        if ($id === null) {
+            $produit = new Produit($this->ids->generate(), $nom, $prix, $stock, $description, $actif, $position, $photo);
+        } else {
+            $produit = $depot->get($id);
+            $produit->modifier($nom, $description, $prix, $stock, $actif, $position, $photo);
+        }
+        $depot->save($produit);
+
+        return self::produitEnTableau($produit);
+    }
+
+    /** Retire un produit de la vente (gardé pour l'historique des réservations). @throws NotFound */
+    public function retirerProduit(string $id): void
+    {
+        $depot = $this->depotProduits();
+        $p = $depot->get($id);
+        $p->modifier($p->nom(), $p->description(), $p->prix(), $p->stock(), false, $p->position(), $p->photo());
+        $depot->save($p);
+    }
+
+    private function depotProduits(): ProduitRepository
+    {
+        return $this->produits ?? throw new DomainError('La vente de produits n\'est pas disponible.');
+    }
+
+    /** @return array<string, mixed> */
+    private static function produitEnTableau(Produit $p): array
+    {
+        return [
+            'id' => $p->id(), 'name' => $p->nom(), 'description' => $p->description(), 'priceCents' => $p->prix()->cents,
+            'stock' => $p->stock(), 'active' => $p->actif(), 'position' => $p->position(), 'photo' => $p->photo(),
         ];
     }
 

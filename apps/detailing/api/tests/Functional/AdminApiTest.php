@@ -143,4 +143,29 @@ final class AdminApiTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertNull($this->json()['zone']);
     }
+
+    public function testLeProGereSesProduitsEtLeurStock(): void
+    {
+        $token = $this->login('pro@example.test', 'artisan2026');
+        $this->request('POST', '/api/v1/admin/catalog/produits', ['name' => 'Microfibre', 'description' => 'Lot de 2', 'priceCents' => 600, 'stock' => 3], $token);
+        self::assertResponseStatusCodeSame(201);
+        $id = $this->json()['id'] ?? null;
+        self::assertIsString($id);
+
+        $this->request('GET', '/api/v1/catalog');
+        self::assertSame([['id' => $id, 'name' => 'Microfibre', 'description' => 'Lot de 2', 'priceCents' => 600, 'stock' => 3, 'photo' => null]], $this->json()['produits'] ?? null);
+
+        $this->request('PUT', '/api/v1/admin/catalog/produits/' . $id, ['name' => 'Microfibre', 'priceCents' => 700, 'stock' => 0], $token);
+        self::assertResponseIsSuccessful();
+        $this->request('GET', '/api/v1/catalog');
+        self::assertSame([], $this->json()['produits'] ?? null, 'stock à 0 : plus proposé sur le site');
+
+        $this->request('DELETE', '/api/v1/admin/catalog/produits/' . $id, token: $token);
+        self::assertResponseStatusCodeSame(204);
+        $this->request('GET', '/api/v1/admin/catalog', token: $token);
+        self::assertSame([false, 700], [$this->json()['produits'][0]['active'] ?? null, $this->json()['produits'][0]['priceCents'] ?? null]);
+
+        $this->request('POST', '/api/v1/admin/catalog/produits', ['name' => 'Gratuit', 'priceCents' => 0, 'stock' => 1], $token);
+        self::assertResponseStatusCodeSame(422);
+    }
 }

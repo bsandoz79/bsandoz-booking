@@ -13,6 +13,7 @@ final class ReserverCreneauCommand
      * @param \DateTimeImmutable $start début du créneau choisi (tel que renvoyé par /booking/slots)
      * @param float|null $lat null pour une activité sur place
      * @param string|null $variante variante explicite, si le module métier ne la déduit pas
+     * @param array<string, int> $produits produits ajoutés : identifiant → quantité
      */
     public function __construct(
         public readonly string $prestationId,
@@ -29,6 +30,7 @@ final class ReserverCreneauCommand
         public readonly string $notes,
         public readonly bool $acceptedTerms,
         public readonly ?string $variante = null,
+        public readonly array $produits = [],
     ) {
     }
 
@@ -37,7 +39,7 @@ final class ReserverCreneauCommand
     {
         return new self(
             $this->prestationId, $this->optionIds, $this->metierData, $this->start, $this->address, $this->lat, $this->lng,
-            $this->email, $this->firstname, $this->lastname, $this->phone, $this->notes, true, $this->variante,
+            $this->email, $this->firstname, $this->lastname, $this->phone, $this->notes, true, $this->variante, $this->produits,
         );
     }
 }

@@ -16,7 +16,7 @@ use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\IdGenerator;
 
 /**
- * Session de paiement de l'acompte d'une réservation en attente (Stripe Checkout : carte, Apple Pay, Google Pay).
+ * Session de paiement de l'acompte d'une réservation en attente, produits ajoutés compris (Stripe Checkout : carte, Apple Pay, Google Pay).
  * Renvoie l'URL de paiement. Les URL de retour acceptent le marqueur {reservationId}.
  */
 final class CreerSessionAcompte
@@ -42,19 +42,28 @@ final class CreerSessionAcompte
         if ($reservation->status() !== ReservationStatus::PendingPayment || !$reservation->blocks($now)) {
             throw new DomainError('Le délai de paiement est dépassé, merci de refaire votre réservation.');
         }
-        if ($reservation->deposit()->cents === 0) {
+        $montant = $reservation->aPayerEnLigne();
+        if ($montant->cents === 0) {
             throw new DomainError('Aucun acompte n\'est demandé pour cette réservation.');
+        }
+        $prestation = $this->prestations->get($reservation->prestationId())->name();
+        $libelle = sprintf($reservation->deposit()->cents > 0 ? 'Acompte : %s' : 'Réservation : %s', $prestation);
+        if ($reservation->produits() !== []) {
+            $libelle .= ' + ' . implode(', ', array_map(
+                static fn (array $p): string => $p['quantite'] > 1 ? sprintf('%d × %s', $p['quantite'], $p['nom']) : $p['nom'],
+                $reservation->produits(),
+            ));
         }
 
         $checkout = $this->gateway->createCheckout(
             $reservation->id(),
-            $reservation->deposit(),
-            sprintf('Acompte : %s', $this->prestations->get($reservation->prestationId())->name()),
+            $montant,
+            mb_substr($libelle, 0, 250),
             $this->users->get($reservation->userId())->email(),
             str_replace('{reservationId}', $reservation->id(), $this->successUrl),
             str_replace('{reservationId}', $reservation->id(), $this->cancelUrl),
         );
-        $this->payments->save(new Payment($this->ids->generate(), $reservation->id(), $checkout['sessionId'], $reservation->deposit(), $now));
+        $this->payments->save(new Payment($this->ids->generate(), $reservation->id(), $checkout['sessionId'], $montant, $now));
 
         return $checkout['url'];
     }

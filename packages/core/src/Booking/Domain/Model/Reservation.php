@@ -35,6 +35,12 @@ class Reservation
         private string $notes = '',
         /** Remise de la carte de fidélité déjà déduite du total (null : aucune). */
         private ?Money $remiseFidelite = null,
+        /**
+         * Produits ajoutés (prix figé à la réservation), payés en entier en ligne avec l'acompte, hors total de la prestation.
+         *
+         * @var list<array{id: string, nom: string, prixCents: int, quantite: int}>|null
+         */
+        private ?array $produits = null,
     ) {
     }
 
@@ -62,6 +68,25 @@ class Reservation
     public function metierData(): array { return $this->metierData; }
     public function notes(): string { return $this->notes; }
     public function remiseFidelite(): Money { return $this->remiseFidelite ?? Money::zero(); }
+    /** @return list<array{id: string, nom: string, prixCents: int, quantite: int}> */
+    public function produits(): array { return $this->produits ?? []; }
+
+    /** Total des produits ajoutés (payés en ligne, en plus de l'acompte). */
+    public function totalProduits(): Money
+    {
+        $total = Money::zero();
+        foreach ($this->produits() as $p) {
+            $total = $total->add(Money::cents($p['prixCents'])->multiply($p['quantite']));
+        }
+
+        return $total;
+    }
+
+    /** Montant payé en ligne : acompte de la prestation + produits. */
+    public function aPayerEnLigne(): Money
+    {
+        return $this->deposit->add($this->totalProduits());
+    }
 
     public function blocks(\DateTimeImmutable $now): bool
     {

@@ -14,9 +14,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Catalogue dans l'espace pro (ROLE_PRO) :
- *   GET    /api/v1/admin/catalog                       → {prestations, options} (actives ou non)
+ *   GET    /api/v1/admin/catalog                       → {prestations, options, produits} (actifs ou non)
  *   POST   /api/v1/admin/catalog/prestations  {…}      → 201 ; PUT …/prestations/{id} ; DELETE …/prestations/{id} (désactive)
  *   POST   /api/v1/admin/catalog/options      {…}      → 201 ; PUT …/options/{id}
+ *   POST   /api/v1/admin/catalog/produits     {…}      → 201 ; PUT …/produits/{id} ; DELETE …/produits/{id} (retire de la vente)
  */
 #[Route('/api/v1/admin/catalog')]
 #[IsGranted('ROLE_PRO')]
@@ -62,5 +63,25 @@ final class AdminCatalogueController
     public function modifierOption(string $id, Request $request): JsonResponse
     {
         return new JsonResponse($this->catalogue->enregistrerOption(Json::corps($request), $id));
+    }
+
+    #[Route('/produits', name: 'bsandoz_admin_produit_create', methods: ['POST'])]
+    public function creerProduit(Request $request): JsonResponse
+    {
+        return new JsonResponse($this->catalogue->enregistrerProduit(Json::corps($request)), Response::HTTP_CREATED);
+    }
+
+    #[Route('/produits/{id}', name: 'bsandoz_admin_produit_update', methods: ['PUT'])]
+    public function modifierProduit(string $id, Request $request): JsonResponse
+    {
+        return new JsonResponse($this->catalogue->enregistrerProduit(Json::corps($request), $id));
+    }
+
+    #[Route('/produits/{id}', name: 'bsandoz_admin_produit_disable', methods: ['DELETE'])]
+    public function retirerProduit(string $id): Response
+    {
+        $this->catalogue->retirerProduit($id);
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 }

@@ -12,6 +12,7 @@ use Bsandoz\Core\Catalog\Domain\Port\PrestationRepository;
 use Bsandoz\Core\Payment\Application\CreerSessionAcompte;
 use Bsandoz\Core\Payment\Application\RembourserAcompte;
 use Bsandoz\Core\Fidelite\Application\GererFidelite;
+use Bsandoz\Core\Catalog\Application\StockProduits;
 use Bsandoz\Core\Shared\Domain\Clock;
 use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\Money;
@@ -33,6 +34,7 @@ final class GererRendezVousPro
         private NotificationsReservation $notifications,
         private Clock $clock,
         private ?GererFidelite $fidelite = null,
+        private ?StockProduits $stock = null,
     ) {
     }
 
@@ -79,6 +81,7 @@ final class GererRendezVousPro
         if ($r->remiseFidelite()->cents > 0) {
             $this->fidelite?->rendreRemise($r->userId());
         }
+        $this->stock?->remettre($r->produits());
         $rembourse = $rembourser ? ($this->rembourser)($r->id()) : Money::zero();
         $this->notifications->annulee($r, $rembourse->cents > 0);
 
@@ -155,6 +158,8 @@ final class GererRendezVousPro
             'lng' => $r->lng(),
             'totalCents' => $r->total()->cents,
             'depositCents' => $r->deposit()->cents,
+            'produits' => $r->produits(),
+            'produitsCents' => $r->totalProduits()->cents,
             'travelFeeCents' => $r->travelFee()->cents,
             'notes' => $r->notes(),
             'metierData' => $r->metierData(),
