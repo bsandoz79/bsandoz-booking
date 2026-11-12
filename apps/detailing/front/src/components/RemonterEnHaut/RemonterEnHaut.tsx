@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import styles from './RemonterEnHaut.module.css';
 
 /**
- * Petit bouton rond en bas à gauche pour remonter en haut de la page, visible après avoir fait défiler un écran.
+ * Petit bouton rond en bas à droite pour remonter en haut de la page, visible après avoir fait défiler un écran.
  * Absent de la réservation (sa barre de paiement occupe déjà le bas de l'écran).
  */
 export function RemonterEnHaut() {
