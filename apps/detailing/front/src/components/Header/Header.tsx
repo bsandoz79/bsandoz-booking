@@ -41,15 +41,14 @@ export function Header() {
           <NavLink to="/mon-espace">Mon espace</NavLink>
         </nav>
         <div className={styles.actions}>
-          <button type="button" className={styles.interrupteur} onClick={basculer} aria-pressed={theme === 'nuit'} title={theme === 'nuit' ? 'Passer en version claire' : 'Passer en version nuit'}>
-            <span className={styles.piste} aria-hidden="true">
+          <button type="button" className={styles.astre} onClick={basculer} aria-pressed={theme === 'nuit'} title={theme === 'nuit' ? 'Passer en version claire' : 'Passer en version nuit'}>
+            {/* Une roue porte le soleil (en haut) et la lune (en bas) : elle tourne d'un demi-tour, le soleil se couche et
+                la lune se lève pendant que le ciel s'assombrit. */}
+            <span className={styles.ciel} aria-hidden="true">
               <span className={styles.etoiles} />
-              <span className={styles.bouton}>
-                {theme === 'nuit' ? (
-                  <svg viewBox="0 0 24 24" width="16" height="16"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="currentColor" /></svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="4.5" fill="currentColor" /><g stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" /></g></svg>
-                )}
+              <span className={styles.roue}>
+                <svg className={styles.soleil} viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="4.5" fill="currentColor" /><g stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" /></g></svg>
+                <svg className={styles.lune} viewBox="0 0 24 24" width="20" height="20"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="currentColor" /></svg>
               </span>
             </span>
             <span className={styles.srOnly}>Version nuit</span>
