@@ -60,7 +60,7 @@ describe('client API', () => {
     expect(resultat.paymentUrl).toBe('https://checkout.stripe.test/s');
     expect(JSON.parse(String(appel()[1].body))).toEqual({
       prestationId: 'p1', variante: 'suv', optionIds: ['o1'], metierData: { category: 'auto', vehicleType: 'suv' },
-      start: '2026-11-13T07:30:00+00:00', address: adresse, ...contact, acceptedTerms: true,
+      start: '2026-11-13T07:30:00+00:00', address: adresse, ...contact, acceptedTerms: true, produits: [],
     });
   });
 

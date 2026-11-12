@@ -1,7 +1,7 @@
-import { DEMO_RULES, FORMULES, OPTIONS, tarifDe } from '../data/demo';
+import { DEMO_RULES, FORMULES, OPTIONS, tarifDe, PRODUITS } from '../data/demo';
 import { fraisDeplacement, type Estimation, type ZonePublique } from '../data/zone';
 import type { Plage } from '../data/vitrine';
-import type { Formule, OptionItem } from '../data/demo';
+import type { Formule, OptionItem, ProduitItem } from '../data/demo';
 
 /**
  * Client de l'API (contrat : docs/api.md). `VITE_API_URL` = adresse de base de l'API, sans `/api/v1`
@@ -82,9 +82,10 @@ export async function getZone(): Promise<ZonePublique> {
   return http('/booking/zone');
 }
 
-export async function getCatalog(): Promise<{ formules: Formule[]; options: OptionItem[] }> {
-  if (isDemo()) return { formules: FORMULES, options: OPTIONS };
-  return http('/catalog');
+export async function getCatalog(): Promise<{ formules: Formule[]; options: OptionItem[]; produits: ProduitItem[] }> {
+  if (isDemo()) return { formules: FORMULES, options: OPTIONS, produits: PRODUITS };
+  const c = await http<{ formules: Formule[]; options: OptionItem[]; produits?: ProduitItem[] }>('/catalog');
+  return { ...c, produits: c.produits ?? [] };
 }
 
 /** Démo : distance à vol d'oiseau depuis le point de départ (Abbeville) × 1,3. */
@@ -166,7 +167,10 @@ export async function getSlots(date: string, durationMin: number, address: Addre
 }
 
 /** Crée la réservation (bloquée le temps du paiement) ; renvoie la page de paiement de l'acompte. */
-export async function reserve(selection: Selection, start: string, address: Address, contact: Contact, acceptedTerms: boolean): Promise<ReservationResult> {
+/** Produits ajoutés à la réservation : identifiant et quantité. */
+export interface ProduitChoisi { id: string; quantite: number }
+
+export async function reserve(selection: Selection, start: string, address: Address, contact: Contact, acceptedTerms: boolean, produits: ProduitChoisi[] = []): Promise<ReservationResult> {
   if (isDemo()) return { reservationId: 'demo', status: 'pending_payment', paymentUrl: '/confirmation?demo=1' };
   return http('/booking/reservations', {
     method: 'POST',
@@ -179,6 +183,7 @@ export async function reserve(selection: Selection, start: string, address: Addr
       address,
       ...contact,
       acceptedTerms,
+      produits,
     }),
   });
 }

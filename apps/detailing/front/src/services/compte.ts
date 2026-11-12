@@ -23,6 +23,9 @@ export interface RendezVous {
   depositCents: number;
   /** Remise de la carte de fidélité déjà déduite du total. */
   remiseFideliteCents?: number;
+  /** Produits ajoutés, payés en ligne et apportés le jour du rendez-vous. */
+  produits?: { id: string; nom: string; prixCents: number; quantite: number }[];
+  produitsCents?: number;
   /** Jusqu'à cette date (UTC), l'annulation est gratuite et l'acompte remboursé. */
   freeCancelUntil: string;
 }

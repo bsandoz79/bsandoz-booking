@@ -98,6 +98,9 @@ function DetailRendezVous({ rdv, onFermer, onChange }: { rdv: RendezVousPro; onF
         {Object.keys(rdv.metierData).length > 0 && <><dt>Détails</dt><dd>{Object.entries(rdv.metierData).filter(([, v]) => v !== '' && v !== null).map(([k, v]) => `${k} : ${String(v)}`).join(' · ')}</dd></>}
         {rdv.notes && <><dt>Précisions</dt><dd>{rdv.notes}</dd></>}
         <dt>Montant</dt><dd>{formatEuros(rdv.totalCents)} dont acompte {formatEuros(rdv.depositCents)}{rdv.travelFeeCents > 0 ? ` (déplacement ${formatEuros(rdv.travelFeeCents)})` : ''}{rdv.remiseFideliteCents ? ` · remise fidélité ${formatEuros(rdv.remiseFideliteCents)}` : ''}</dd>
+        {rdv.produits && rdv.produits.length > 0 && (
+          <><dt>Produits à apporter</dt><dd><strong>{rdv.produits.map((p) => `${p.quantite} × ${p.nom}`).join(', ')}</strong> (déjà payés : {formatEuros(rdv.produitsCents ?? 0)})</dd></>
+        )}
         {rdv.clientId && <><dt>Fidélité</dt><dd><Fidelite clientId={rdv.clientId} /></dd></>}
       </dl>
       {message && <p className={styles.ok} role="status">{message}</p>}
