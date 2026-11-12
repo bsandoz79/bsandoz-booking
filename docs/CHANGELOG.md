@@ -88,3 +88,4 @@
 - Réservation : un pas de créneau nul ne fait plus tourner le calcul à l'infini, une vitesse nulle ne provoque plus de division par zéro (refusés à la création des règles et de la zone).
 - Site detailing : nom du projet synchronisé dans `package-lock.json` ; import de `vite.config.ts` avec son extension dans `vitest.config.ts` (avertissement Vite).
 - Kit back : types des tableaux renvoyés précisés pour PHPStan niveau 8 (`ExporterDonnees`, `ListerCreneaux` → `list<TimeRange>`, `ListerJoursDisponibles` → dates `Y-m-d`, `PaymentGateway` → `{sessionId, url}` et événement décodé).
+- API detailing : CORS avec `allow_credentials` (le front envoie le cookie de renouvellement de session).

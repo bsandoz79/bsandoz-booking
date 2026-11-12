@@ -5,6 +5,8 @@ nelmio_cors:
         allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
         allow_headers: ['Content-Type', 'Authorization']
         expose_headers: ['Link']
+        # Le front envoie les cookies (jeton de renouvellement de session) : credentials: 'include'.
+        allow_credentials: true
         max_age: 3600
     paths:
         '^/': null
