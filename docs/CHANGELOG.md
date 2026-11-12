@@ -127,6 +127,7 @@
 - Adresse au-delà de la zone (réservation ou carte de l'accueil) : bouton « Demander un devis » vers une nouvelle page `/devis` avec l'adresse pré-remplie ; formulaire de devis partagé avec la page Professionnels.
 - Formulaires de devis : précision du type « Autre », nombre de véhicules en liste (1 à 10, plus de 10), fréquence facultative avec « Une seule fois », prestations en boutons à toucher ; numéro d'exemple 01 02 03 04 05 partout (coordonnées par défaut et exemples de saisie).
 - Bouton discret « Remonter en haut » en bas à gauche, visible après avoir fait défiler la page.
+- CI : vérifications seulement sur main et les pull requests (pas pour la seule documentation), vérification en cours annulée par un nouvel envoi, installations Composer et npm en cache, pour économiser les minutes GitHub Actions.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
