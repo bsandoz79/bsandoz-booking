@@ -31,6 +31,7 @@ final class ManageController
         private DeplacerReservation $deplacer,
         private SettingsProvider $settings,
         private RateLimiterFactoryInterface $manageLimiter,
+        private \Bsandoz\Core\Payment\Application\ReprendrePaiement $reprendrePaiement,
     ) {
     }
 
@@ -40,6 +41,16 @@ final class ManageController
         Limiteur::consommer($this->manageLimiter, $request);
 
         return new JsonResponse($this->vue(($this->parJeton)($token)));
+    }
+
+    /** Acompte non réglé : nouvelle page de paiement (409 si le créneau a été repris entre-temps). */
+    #[Route('/payment', name: 'bsandoz_booking_manage_payment', methods: ['POST'])]
+    public function payment(string $token, Request $request): JsonResponse
+    {
+        Limiteur::consommer($this->manageLimiter, $request);
+        $reservation = ($this->parJeton)($token);
+
+        return new JsonResponse(['paymentUrl' => ($this->reprendrePaiement)($reservation->id(), null)]);
     }
 
     #[Route('', name: 'bsandoz_booking_manage_move', methods: ['PATCH'])]

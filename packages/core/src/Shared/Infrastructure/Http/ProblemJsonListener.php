@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bsandoz\Core\Shared\Infrastructure\Http;
 
+use Bsandoz\Core\Shared\Domain\Conflit;
 use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\NonAuthentifie;
 use Bsandoz\Core\Shared\Domain\NotFound;
@@ -14,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
  * Erreurs de l'API (/api/…) en application/problem+json (RFC 9457) :
- * NotFound → 404, NonAuthentifie → 401, DomainError → 422, InvalidRequest → 400, HttpException → son statut.
+ * NotFound → 404, NonAuthentifie → 401, Conflit → 409, DomainError → 422, InvalidRequest → 400, HttpException → son statut.
  * Les autres exceptions restent gérées par Symfony (500, sans fuite de détail en production).
  */
 final class ProblemJsonListener
@@ -29,6 +30,7 @@ final class ProblemJsonListener
         [$status, $detail] = match (true) {
             $exception instanceof NotFound => [Response::HTTP_NOT_FOUND, $exception->getMessage()],
             $exception instanceof NonAuthentifie => [Response::HTTP_UNAUTHORIZED, $exception->getMessage()],
+            $exception instanceof Conflit => [Response::HTTP_CONFLICT, $exception->getMessage()],
             $exception instanceof DomainError => [Response::HTTP_UNPROCESSABLE_ENTITY, $exception->getMessage()],
             $exception instanceof InvalidRequest => [Response::HTTP_BAD_REQUEST, $exception->getMessage()],
             $exception instanceof HttpExceptionInterface => [

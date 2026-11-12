@@ -159,7 +159,7 @@ export function Reserver() {
     <main className={`container ${styles.page}`}>
       <h1 className={styles.title}>Réserver</h1>
       {paiementAnnule && step === 0 && (
-        <p className={styles.info} role="status">Le paiement de l'acompte a été annulé : votre rendez-vous n'est pas confirmé. Vous pouvez recommencer la réservation.</p>
+        <p className={styles.info} role="status">Le paiement de l'acompte a été annulé : votre rendez-vous n'est pas confirmé. Vous pouvez le régler plus tard depuis « Mon espace » (lien aussi dans l’e-mail reçu), ou recommencer la réservation.</p>
       )}
 
       <div className={styles.layout}>

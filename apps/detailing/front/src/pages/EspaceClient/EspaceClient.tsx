@@ -7,7 +7,7 @@ import type { Formule } from '../../data/demo';
 import { getCatalog } from '../../services/api';
 import { maCarteFidelite, type CarteFidelite as Carte } from '../../services/fidelite';
 import {
-  annulerMonRendezVous, deplacerMonRendezVous, exporterMesDonnees, mesRendezVous, monCompte, reprendreSession,
+  annulerMonRendezVous, deplacerMonRendezVous, payerMonRendezVous, exporterMesDonnees, mesRendezVous, monCompte, reprendreSession,
   seConnecter, seDeconnecter, supprimerMonCompte, type Compte, type RendezVous,
 } from '../../services/compte';
 import styles from '../Compte/Compte.module.css';
@@ -96,7 +96,8 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
   const carte = (r: RendezVous) => (
     <CarteRendezVous key={r.id} rdv={r} formule={formules.find((f) => f.id === r.prestationId)} maintenant={maintenant}
       onDeplacer={async (start) => { await deplacerMonRendezVous(r.id, start); await recharger(); }}
-      onAnnuler={async () => { const resultat = await annulerMonRendezVous(r.id); await recharger(); return resultat; }} />
+      onAnnuler={async () => { const resultat = await annulerMonRendezVous(r.id); await recharger(); return resultat; }}
+      onPayer={() => payerMonRendezVous(r.id)} />
   );
 
   const telecharger = async () => {

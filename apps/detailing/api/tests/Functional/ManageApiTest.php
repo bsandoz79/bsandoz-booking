@@ -89,11 +89,15 @@ final class ManageApiTest extends WebTestCase
         self::assertSame('cancelled', $this->json()['status']);
     }
 
-    public function testDeplacerUneReservationNonConfirmeeEn422(): void
+    public function testUneReservationNonPayeeChangeDeCreneauPuisSePaie(): void
     {
         $this->request('PATCH', '/api/v1/booking/manage/' . $this->token, ['start' => '2026-11-17T09:00:00+00:00']);
+        self::assertResponseIsSuccessful('pas encore payée : changement de créneau libre');
+        self::assertSame('2026-11-17T09:00:00+00:00', $this->json()['start'] ?? null);
 
-        self::assertResponseStatusCodeSame(422, 'seule une réservation confirmée (acompte payé) peut être déplacée');
+        $this->request('POST', '/api/v1/booking/manage/' . $this->token . '/payment');
+        self::assertResponseIsSuccessful();
+        self::assertStringStartsWith('https://paiement.test/', (string) ($this->json()['paymentUrl'] ?? ''));
     }
 
     public function testDeplacementSansDateEn400(): void

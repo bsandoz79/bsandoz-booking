@@ -14,6 +14,7 @@ use Bsandoz\Core\Booking\Application\MesReservations;
 use Bsandoz\Core\Booking\Domain\Model\Reservation;
 use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
 use Bsandoz\Core\Booking\Infrastructure\Http\VueReservation;
+use Bsandoz\Core\Payment\Application\ReprendrePaiement;
 use Bsandoz\Core\Shared\Infrastructure\Http\InvalidRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,6 +37,7 @@ final class MeController
         private ExporterDonnees $exporter,
         private SupprimerCompte $supprimer,
         private SettingsProvider $settings,
+        private ReprendrePaiement $reprendrePaiement,
     ) {
     }
 
@@ -94,5 +96,12 @@ final class MeController
         ($this->deplacer)($id, $start, $user->id());
 
         return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /** Acompte non réglé : nouvelle page de paiement (créneau revérifié s'il n'est plus bloqué ; 409 s'il a été repris). */
+    #[Route('/reservations/{id}/payment', name: 'bsandoz_me_reservation_payment', methods: ['POST'])]
+    public function payment(string $id, #[CurrentUser] SecurityUser $user): JsonResponse
+    {
+        return new JsonResponse(['paymentUrl' => ($this->reprendrePaiement)($id, $user->id())]);
     }
 }

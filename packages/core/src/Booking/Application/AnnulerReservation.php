@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bsandoz\Core\Booking\Application;
 
+use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
 use Bsandoz\Core\Payment\Application\RembourserAcompte;
@@ -42,12 +43,16 @@ final class AnnulerReservation
             throw new NotFound('Réservation introuvable.');
         }
 
+        // Réservation expirée : remise de fidélité et produits ont déjà été rendus à l'expiration.
+        $dejaRendue = $reservation->status() === ReservationStatus::Expired;
         $refundable = $reservation->cancel($this->clock->now(), $this->settings->rules());
         $this->reservations->save($reservation);
-        if ($reservation->remiseFidelite()->cents > 0) {
-            $this->fidelite?->rendreRemise($reservation->userId());
+        if (!$dejaRendue) {
+            if ($reservation->remiseFidelite()->cents > 0) {
+                $this->fidelite?->rendreRemise($reservation->userId());
+            }
+            $this->stock?->remettre($reservation->produits());
         }
-        $this->stock?->remettre($reservation->produits());
 
         if ($refundable) {
             ($this->rembourser)($reservation->id());

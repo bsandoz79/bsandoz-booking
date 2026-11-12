@@ -12,7 +12,8 @@ use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\NotFound;
 
 /**
- * Déplacement par le client titulaire vers un autre créneau libre, sous verrou d'agenda.
+ * Déplacement par le client titulaire vers un autre créneau libre, sous verrou d'agenda (réservation confirmée, ou
+ * pas encore payée : elle sera alors payée sur le nouveau créneau).
  * La durée est recalculée à partir de la prestation et des options réservées ; le créneau actuel
  * de la réservation n'est pas compté comme occupé. Le client (avec le .ics à jour) et le pro sont prévenus.
  */
@@ -43,7 +44,7 @@ final class DeplacerReservation
         $lat = $aDomicile ? $reservation->lat() : null;
         $lng = $aDomicile ? $reservation->lng() : null;
         $duration = ($this->calculerDevis)(
-            $reservation->prestationId(), $reservation->optionIds(), $reservation->metierData(), $lat, $lng, $reservation->variante(),
+            $reservation->prestationId(), $reservation->optionIds(), $reservation->metierData(), $lat, $lng, $reservation->variante(), $reservation->quantite(),
         )->durationMin;
 
         $this->reservations->dansVerrouAgenda(function () use ($reservation, $newStart, $lat, $lng, $duration): void {
@@ -51,6 +52,13 @@ final class DeplacerReservation
             foreach (($this->creneaux)($date, $duration, $lat, $lng, $reservation->prestationId(), $reservation->id()) as $slot) {
                 if ($slot->start->getTimestamp() === $newStart->getTimestamp()) {
                     $previousStart = $reservation->period()->start;
+                    if ($reservation->estImpayee()) {
+                        // Pas encore payée : nouveau créneau, à payer ensuite (rien à prévenir, le rendez-vous n'est pas confirmé).
+                        $reservation->changerCreneauImpaye($slot, $this->clock->now(), $this->settings->rules());
+                        $this->reservations->save($reservation);
+
+                        return;
+                    }
                     $reservation->reschedule($slot, $this->clock->now(), $this->settings->rules());
                     $this->reservations->save($reservation);
                     $this->notifications->deplacee($reservation, $previousStart);

@@ -10,7 +10,7 @@ const STATUTS: Record<RendezVous['status'], string> = {
   confirmed: 'Confirmé',
   done: 'Terminé',
   cancelled: 'Annulé',
-  expired: 'Expiré (acompte non réglé)',
+  expired: 'Acompte non réglé',
   no_show: 'Absent',
 };
 
@@ -24,10 +24,18 @@ interface Props {
   maintenant?: Date;
   onDeplacer: (start: string) => Promise<void>;
   onAnnuler: () => Promise<{ refundable: boolean }>;
+  /** Acompte non réglé : renvoie l'adresse de la page de paiement. */
+  onPayer?: () => Promise<string>;
+  /** Ouverture de la page de paiement (testable). */
+  naviguer?: (url: string) => void;
 }
 
-/** Un rendez-vous du client : détails, déplacement (nouveau créneau) et annulation (acompte remboursé si annulation gratuite). */
-export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, onDeplacer, onAnnuler }: Props) {
+/**
+ * Un rendez-vous du client : détails, déplacement (nouveau créneau) et annulation (acompte remboursé si annulation
+ * gratuite). Acompte non réglé : « Payer l'acompte » ; si le créneau a été repris entre-temps, le client en choisit un
+ * autre puis paie. Il peut aussi changer de créneau ou annuler (rien n'a été payé).
+ */
+export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, onDeplacer, onAnnuler, onPayer, naviguer = (url) => window.location.assign(url) }: Props) {
   const [maintenantInitial] = useState(() => new Date());
   const maintenant = maintenantFourni ?? maintenantInitial;
   const [mode, setMode] = useState<'aucun' | 'deplacer' | 'annuler'>('aucun');
@@ -37,7 +45,25 @@ export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, on
 
   const aVenir = new Date(rdv.start) > maintenant;
   const modifiable = aVenir && rdv.status === 'confirmed';
+  const impayee = aVenir && (rdv.status === 'pending_payment' || rdv.status === 'expired') && !!onPayer;
   const annulationGratuite = maintenant <= new Date(rdv.freeCancelUntil);
+  const aPayer = rdv.depositCents + (rdv.produitsCents ?? 0);
+
+  const payer = async () => {
+    if (!onPayer) return;
+    setErreur('');
+    setMessage('');
+    setEnCours(true);
+    try {
+      const url = await onPayer();
+      naviguer(url);
+    } catch (e) {
+      // Créneau repris entre-temps : on propose directement d'en choisir un autre.
+      if ((e as { status?: number }).status === 409) setMode('deplacer');
+      setErreur((e as Error).message);
+      setEnCours(false);
+    }
+  };
 
   const agir = async (action: () => Promise<string>) => {
     setErreur('');
@@ -70,6 +96,10 @@ export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, on
         </p>
       )}
 
+      {impayee && (
+        <p className={styles.aide}>Votre rendez-vous n’est pas encore confirmé : réglez l’acompte{rdv.produitsCents ? ' et les produits' : ''} ({formatEuros(aPayer)}) pour le garder.</p>
+      )}
+
       {message && <p className={styles.ok} role="status">{message}</p>}
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
 
@@ -80,14 +110,26 @@ export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, on
         </div>
       )}
 
+      {impayee && mode === 'aucun' && (
+        <div className={styles.actions}>
+          <Button loading={enCours} loadingLabel="Ouverture du paiement…" onClick={payer}>Payer l’acompte ({formatEuros(aPayer)})</Button>
+          <Button variant="secondary" onClick={() => { setMessage(''); setErreur(''); setMode('deplacer'); }}>Changer de créneau</Button>
+          <Button variant="ghost" onClick={() => { setMessage(''); setErreur(''); setMode('annuler'); }}>Annuler</Button>
+        </div>
+      )}
+
       {mode === 'deplacer' && (
         <Deplacement rdv={rdv} formule={formule} enCours={enCours} onFermer={() => setMode('aucun')}
-          onChoisir={(start) => agir(async () => { await onDeplacer(start); return `Rendez-vous déplacé au ${dateLongue(start)}. Un e-mail de confirmation vous est envoyé.`; })} />
+          libelle={impayee ? 'Choisir ce créneau et payer' : undefined}
+          onChoisir={(start) => (impayee
+            // Pas encore payé : nouveau créneau, puis paiement tout de suite.
+            ? agir(async () => { await onDeplacer(start); await payer(); return ''; })
+            : agir(async () => { await onDeplacer(start); return `Rendez-vous déplacé au ${dateLongue(start)}. Un e-mail de confirmation vous est envoyé.`; }))} />
       )}
 
       {mode === 'annuler' && (
         <div className={styles.panneau}>
-          <p><strong>Confirmer l’annulation ?</strong> {annulationGratuite ? 'L’acompte vous sera remboursé sous quelques jours.' : 'L’acompte ne sera pas remboursé.'}</p>
+          <p><strong>Confirmer l’annulation ?</strong> {impayee ? 'Rien n’a été payé.' : annulationGratuite ? 'L’acompte vous sera remboursé sous quelques jours.' : 'L’acompte ne sera pas remboursé.'}</p>
           <div className={styles.actions}>
             <Button loading={enCours} loadingLabel="Annulation…"
               onClick={() => agir(async () => {
@@ -104,8 +146,8 @@ export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, on
   );
 }
 
-function Deplacement({ rdv, formule, enCours, onChoisir, onFermer }: {
-  rdv: RendezVous; formule?: Formule; enCours: boolean; onChoisir: (start: string) => void; onFermer: () => void;
+function Deplacement({ rdv, formule, enCours, onChoisir, onFermer, libelle = 'Confirmer le nouveau créneau' }: {
+  rdv: RendezVous; formule?: Formule; enCours: boolean; onChoisir: (start: string) => void; onFermer: () => void; libelle?: string;
 }) {
   const duree = Math.round((new Date(rdv.end).getTime() - new Date(rdv.start).getTime()) / 60000);
   const { address, lat, lng, prestationId } = rdv;
@@ -134,7 +176,7 @@ function Deplacement({ rdv, formule, enCours, onChoisir, onFermer }: {
         {jour && <SlotPicker title="Heure d'arrivée" slots={creneaux} selected={start} onSelect={setStart} emptyMessage="Plus aucun créneau ce jour-là." />}
       </div>
       <div className={styles.actions}>
-        <Button disabled={!start} loading={enCours} loadingLabel="Déplacement…" onClick={() => start && onChoisir(start)}>Confirmer le nouveau créneau</Button>
+        <Button disabled={!start} loading={enCours} loadingLabel="Déplacement…" onClick={() => start && onChoisir(start)}>{libelle}</Button>
         <Button variant="ghost" onClick={onFermer}>Fermer</Button>
       </div>
     </div>

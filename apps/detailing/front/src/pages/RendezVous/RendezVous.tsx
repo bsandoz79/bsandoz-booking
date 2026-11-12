@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { CarteRendezVous } from '../../components/CarteRendezVous/CarteRendezVous';
 import type { Formule } from '../../data/demo';
 import { getCatalog } from '../../services/api';
-import { annulerParLien, deplacerParLien, rendezVousParLien, type RendezVous as Rdv } from '../../services/compte';
+import { annulerParLien, deplacerParLien, payerParLien, rendezVousParLien, type RendezVous as Rdv } from '../../services/compte';
 import styles from '../Compte/Compte.module.css';
 
 /** /rendez-vous?jeton=… : gérer un rendez-vous sans compte, depuis le lien de l'e-mail de confirmation. */
@@ -42,7 +42,8 @@ export function RendezVous() {
       {rdv && (
         <CarteRendezVous rdv={rdv} formule={formules.find((f) => f.id === rdv.prestationId)}
           onDeplacer={async (start) => { await deplacerParLien(jeton, start); await charger(); }}
-          onAnnuler={async () => { const resultat = await annulerParLien(jeton); await charger(); return resultat; }} />
+          onAnnuler={async () => { const resultat = await annulerParLien(jeton); await charger(); return resultat; }}
+          onPayer={() => payerParLien(jeton)} />
       )}
       <p className={styles.aide}>Une question ? Répondez simplement à l'e-mail de confirmation.</p>
     </main>
