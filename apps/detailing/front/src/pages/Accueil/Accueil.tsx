@@ -6,6 +6,7 @@ import { CATEGORIES, FORMULES, prixMin, type Formule } from '../../data/demo';
 import { SITE } from '../../data/site';
 import { lignesTarifDeplacement, type ZonePublique } from '../../data/zone';
 import { getCatalog, getZone } from '../../services/api';
+import { regleFidelite, type RegleFidelite } from '../../services/fidelite';
 import { A_COMPLETER } from '../../services/contenu';
 import styles from './Accueil.module.css';
 
@@ -17,6 +18,8 @@ export function Accueil() {
   useEffect(() => { getCatalog().then((c) => { if (c.formules.length > 0) setFormules(c.formules); }).catch(() => undefined); }, []);
   const [zone, setZone] = useState<ZonePublique>();
   useEffect(() => { getZone().then(setZone).catch(() => undefined); }, []);
+  const [fidelite, setFidelite] = useState<RegleFidelite>();
+  useEffect(() => { regleFidelite().then(setFidelite).catch(() => undefined); }, []);
 
   const { accueil, etapes, faq, avis, realisations, communes } = contenu;
   const avisPublies = avis.filter((a) => a.texte.trim() !== '');
@@ -111,6 +114,16 @@ export function Accueil() {
           <p>Le prix exact du déplacement est calculé automatiquement à partir de votre adresse lors de la réservation.</p>
         </div>
       </section>
+
+      {fidelite?.actif && (
+        <section id="fidelite" className={`container ${styles.section}`} aria-labelledby="titre-fidelite">
+          <h2 id="titre-fidelite">Carte de fidélité</h2>
+          <p>
+            Au bout de {fidelite.tamponsRequis} prestations, la suivante bénéficie de <strong>{fidelite.remisePercent} % de remise</strong>. Les tampons se cumulent
+            automatiquement sur votre espace client, la remise s’applique d’elle-même à la réservation.
+          </p>
+        </section>
+      )}
 
       <section id="avis" className={`container ${styles.section}`} aria-labelledby="titre-avis">
         <h2 id="titre-avis">Avis clients</h2>

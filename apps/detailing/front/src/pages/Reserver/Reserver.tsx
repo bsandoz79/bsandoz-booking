@@ -196,6 +196,7 @@ export function Reserver() {
               <p>{formule?.name} · {brand} {model}</p>
               <p>{start && new Date(start).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</p>
               <p>{address?.label}</p>
+              <p className={styles.hint}>Carte de fidélité pleine ? La remise est déduite automatiquement du total et de l’acompte.</p>
               <label className={styles.check}><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> J'accepte les <a href="/cgv" target="_blank" rel="noreferrer">conditions générales de vente</a>.</label>
             </div>
           )}

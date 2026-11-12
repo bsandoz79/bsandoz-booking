@@ -25,6 +25,17 @@ describe('Espace pro', () => {
     expect(screen.getByRole('heading', { name: 'Prochains rendez-vous' })).toBeInTheDocument();
   });
 
+  it('ajoute un tampon de fidélité au client depuis le détail du rendez-vous', async () => {
+    await ouvrirConnecte();
+    await rubrique('Planning');
+    await userEvent.click(screen.getByRole('button', { name: 'Jour' }));
+    await userEvent.click(await screen.findByRole('button', { name: /Intérieur Éclat – Client démo A/ }));
+    const detail = screen.getByRole('region', { name: /Rendez-vous du/ });
+    expect(await within(detail).findByText('0 / 4')).toBeInTheDocument();
+    await userEvent.click(within(detail).getByRole('button', { name: 'Ajouter un tampon' }));
+    expect(await within(detail).findByText('1 / 4')).toBeInTheDocument();
+  });
+
   it('affiche le planning et le détail d’un rendez-vous avec les coordonnées du client', async () => {
     await ouvrirConnecte();
     await rubrique('Planning');
@@ -35,6 +46,16 @@ describe('Espace pro', () => {
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler le rendez-vous' }));
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler et rembourser l’acompte' }));
     expect(await within(detail).findByRole('status')).toHaveTextContent('Rendez-vous annulé, 8,70');
+  });
+
+  it('règle la carte de fidélité', async () => {
+    await ouvrirConnecte();
+    await rubrique('Réglages');
+    const remise = await screen.findByLabelText('Remise (%)');
+    await userEvent.clear(remise);
+    await userEvent.type(remise, '15');
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer la carte de fidélité' }));
+    expect(await screen.findByText('Carte de fidélité enregistrée.')).toBeInTheDocument();
   });
 
   it('modifie le tarif d’une prestation du catalogue', async () => {

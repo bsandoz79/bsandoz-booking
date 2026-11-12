@@ -31,6 +31,12 @@ describe('Espace client', () => {
     expect(screen.getByRole('link', { name: 'Mot de passe oublié ?' })).toHaveAttribute('href', '/compte/mot-de-passe');
   });
 
+  it('affiche la carte de fidélité du client', async () => {
+    await seConnecterDemo();
+    expect(screen.getByRole('img', { name: '2 tampons sur 4' })).toBeInTheDocument();
+    expect(screen.getByText('Encore 2 prestations avant 20 % de remise.')).toBeInTheDocument();
+  });
+
   it('affiche le rendez-vous à venir avec la limite d’annulation gratuite, puis l’annule', async () => {
     await seConnecterDemo();
     const carte = screen.getByRole('article', { name: 'Intérieur Signature' });

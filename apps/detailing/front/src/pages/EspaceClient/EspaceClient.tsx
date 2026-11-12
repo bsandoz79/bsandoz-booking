@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button, Field } from '@bsandoz/ui';
+import { CarteFidelite } from '../../components/CarteFidelite/CarteFidelite';
 import { CarteRendezVous } from '../../components/CarteRendezVous/CarteRendezVous';
 import type { Formule } from '../../data/demo';
 import { getCatalog } from '../../services/api';
+import { maCarteFidelite, type CarteFidelite as Carte } from '../../services/fidelite';
 import {
   annulerMonRendezVous, deplacerMonRendezVous, exporterMesDonnees, mesRendezVous, monCompte, reprendreSession,
   seConnecter, seDeconnecter, supprimerMonCompte, type Compte, type RendezVous,
@@ -75,6 +77,7 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
   const [formules, setFormules] = useState<Formule[]>([]);
   const [erreur, setErreur] = useState('');
   const [suppression, setSuppression] = useState(false);
+  const [fidelite, setFidelite] = useState<Carte>();
   const [maintenant] = useState(() => new Date());
 
   const recharger = useCallback(() => mesRendezVous().then(setRendezVous).catch((e: Error) => setErreur(e.message)), []);
@@ -82,6 +85,7 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
   useEffect(() => {
     monCompte().then(setCompte).catch((e: Error) => setErreur(e.message));
     getCatalog().then((c) => setFormules(c.formules)).catch(() => setFormules([]));
+    maCarteFidelite().then(setFidelite).catch(() => undefined);
     recharger();
   }, [recharger]);
 
@@ -119,6 +123,8 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
     <main className={`container ${styles.page}`}>
       <h1>Bonjour{compte ? ` ${compte.firstname}` : ''}</h1>
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
+
+      {fidelite?.actif && <CarteFidelite carte={fidelite} />}
 
       <section className={styles.section} aria-labelledby="titre-a-venir">
         <h2 id="titre-a-venir">Mes rendez-vous à venir</h2>

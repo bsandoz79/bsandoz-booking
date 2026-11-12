@@ -97,6 +97,7 @@
 - Kit back : frais de déplacement par tranches (`PalierDeplacement`, option `zone.paliers` et réglage `paliers` de l'espace pro, tranches triées et contrôlées), route publique `GET /booking/zone` (conditions de déplacement sans le point de départ). API : Abbeville, 5 km offerts, jusqu'à 15 km 5 €, 30 km 10 €, 50 km 20 €. Tests.
 - Site : frais de déplacement par tranches affichés sur l'accueil depuis `GET /booking/zone` (« Jusqu'à 5 km : offert », « De 5 km à 15 km : 5 € »…), éditeur de tranches dans Réglages → Zone d'intervention, même calcul en mode démo. Tests.
 - Kit back et API : carte de fidélité (module `Fidelite`) : tampon automatique à chaque prestation réalisée, ajustement par le pro, remise appliquée d'elle-même à la réservation suivante (en ligne ou par téléphone, hors déplacement, acompte recalculé), rendue si la réservation est annulée ou expire, règle par défaut 4 prestations / 20 % modifiable par le pro ; routes `/fidelite`, `/me/fidelite`, `/admin/fidelite/{userId}`, `/admin/settings/fidelite` ; table `loyalty_card` et colonne `reservation.loyalty_discount_cents` (migration). Tests unitaires et fonctionnels.
+- Site : carte de fidélité présentée sur l'accueil, affichée en tampons dans l'espace client, ajustable par le pro dans le détail d'un rendez-vous et réglable dans Réglages ; remise de fidélité indiquée sur les rendez-vous. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
