@@ -104,6 +104,7 @@
 - Accueil : prestations en onglets (Intérieur, Extérieur, Phares, À la carte) avec cartes « Ce qui est compris », durée et bouton Choisir qui présélectionne la formule ; frais de déplacement en cartes par tranche ; horaires de la semaine ; carte de fidélité façon carton tamponnée du logo ; version claire / nuit.
 - Kit : estimation publique des frais de déplacement pour une position (GET /api/v1/booking/zone/estimation), roadFactor publié dans GET /booking/zone.
 - Accueil : carte de la zone d'intervention (OpenStreetMap), un cercle par tranche autour d'Abbeville ; position demandée à l'arrivée sur la carte ou adresse à saisir, frais estimés et tranche mise en avant ; politique de confidentialité complétée.
+- Kit : bloc `StepCard` (étape repliable d'un parcours en accordéon : active, terminée avec résumé et « Modifier », à venir).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
