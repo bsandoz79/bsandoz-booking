@@ -186,7 +186,10 @@ export async function getSlots(date: string, durationMin: number, address: Addre
 /** Produits ajoutés à la réservation : identifiant et quantité. */
 export interface ProduitChoisi { id: string; quantite: number }
 
-export async function reserve(selection: Selection, start: string, address: Address, contact: Contact, acceptedTerms: boolean, produits: ProduitChoisi[] = []): Promise<ReservationResult> {
+/** « en_ligne » : tout payer maintenant (Stripe) ; « sur_place » : payer une fois la prestation faite. */
+export type ModePaiement = 'en_ligne' | 'sur_place';
+
+export async function reserve(selection: Selection, start: string, address: Address, contact: Contact, acceptedTerms: boolean, produits: ProduitChoisi[] = [], paiement?: ModePaiement): Promise<ReservationResult> {
   if (isDemo()) return { reservationId: 'demo', status: 'pending_payment', paymentUrl: '/confirmation?demo=1' };
   return http('/booking/reservations', {
     method: 'POST',
@@ -201,6 +204,7 @@ export async function reserve(selection: Selection, start: string, address: Addr
       ...contact,
       acceptedTerms,
       produits,
+      ...(paiement ? { paiement } : {}),
     }),
   });
 }

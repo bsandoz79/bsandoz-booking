@@ -21,6 +21,11 @@ export interface RendezVous {
   lng: number;
   totalCents: number;
   depositCents: number;
+  /** Mode de paiement choisi : true en ligne, false sur place (null : ancien fonctionnement avec acompte). */
+  paiementEnLigne?: boolean | null;
+  /** À payer (ou payé) en ligne, et à régler sur place. */
+  enLigneCents?: number;
+  surPlaceCents?: number;
   /** Remise de la carte de fidélité déjà déduite du total. */
   remiseFideliteCents?: number;
   /** Produits ajoutés, payés en ligne et apportés le jour du rendez-vous. */

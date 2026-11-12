@@ -84,21 +84,29 @@ describe('Parcours de réservation', () => {
     expect(screen.getByRole('heading', { name: 'Vos coordonnées' }).closest('section')).toHaveAttribute('aria-current', 'step');
 
     expect(screen.getByText(/ven\. 13 nov\..*Abbeville/)).toBeInTheDocument();
-    await userEvent.type(screen.getByLabelText('Prénom'), 'Camille');
-    await userEvent.type(screen.getByLabelText('Nom'), 'Martin');
-    await userEvent.type(screen.getByLabelText('E-mail'), 'camille@example.org');
+    await userEvent.type(screen.getByLabelText('Nom et prénom'), 'Camille Martin');
     await userEvent.type(screen.getByLabelText('Téléphone'), '0600000000');
+    await userEvent.type(screen.getByLabelText(/^E-mail/), 'camille@example.org');
+    await userEvent.type(screen.getByLabelText('Modèle du véhicule'), 'Peugeot 208 grise');
 
-    expect(screen.getByRole('button', { name: /Payer l'acompte \(7,50/ })).toBeDisabled();
+    // Entreprise : SIRET contrôlé (14 chiffres, ou 10 pour un n° BCE belge).
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Je réserve pour une entreprise' }));
+    await userEvent.type(screen.getByLabelText(/^Nom de l’entreprise/), 'Transports Martin');
+    await userEvent.type(screen.getByLabelText(/^SIRET/), '123');
+    expect(screen.getByText('SIRET : 14 chiffres ; BCE : 10 chiffres.')).toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText(/^SIRET/), '45678901234');
 
-    await userEvent.click(screen.getByRole('checkbox'));
-    await userEvent.click(screen.getByRole('button', { name: /Payer l'acompte \(7,50/ }));
+    // Pas d'acompte : sur place par défaut (rien à payer maintenant), ou tout en ligne.
+    await userEvent.click(screen.getByRole('checkbox', { name: /J'accepte les/ }));
+    expect(screen.getByRole('button', { name: 'Confirmer la réservation' })).toBeEnabled();
+    await userEvent.click(screen.getByRole('radio', { name: /En ligne, maintenant/ }));
+    await userEvent.click(screen.getByRole('button', { name: /^Payer 25,00/ }));
 
-    // Au clic sur « Payer » : les produits sont proposés dans une fenêtre, puis le paiement suit.
+    // Au clic : les produits sont proposés dans une fenêtre, puis le paiement suit.
     const fenetre = await screen.findByRole('dialog', { name: 'Un petit plus pour l’entretien ?' });
     expect(within(fenetre).getByRole('button', { name: 'Ajouter et payer' })).toBeDisabled();
     await userEvent.click(within(fenetre).getByRole('button', { name: 'Ajouter Microfibre' }));
-    await userEvent.click(within(fenetre).getByRole('button', { name: /Ajouter et payer \(12,50/ }));
+    await userEvent.click(within(fenetre).getByRole('button', { name: /Ajouter et payer \(30,00/ }));
 
     expect(await screen.findByRole('heading', { name: 'Merci, votre rendez-vous est réservé.' })).toBeInTheDocument();
     expect(screen.getByRole('note')).toHaveTextContent('Mode démonstration');

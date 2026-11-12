@@ -38,8 +38,9 @@ final class CreerCompteDepuisReservation
         if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
             throw new DomainError('Adresse e-mail invalide.');
         }
-        if (trim($firstname) === '' || trim($lastname) === '') {
-            throw new DomainError('Le prénom et le nom sont obligatoires.');
+        // Nom de famille facultatif : le site peut demander « Nom et prénom » dans un seul champ.
+        if (trim($firstname) === '') {
+            throw new DomainError('Le nom est obligatoire.');
         }
 
         $existing = $this->users->findByEmail($email);

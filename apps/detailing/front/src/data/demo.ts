@@ -24,7 +24,7 @@ export interface Formule {
 
 export interface OptionItem { id: string; name: string; description: string; priceCents: number; durationMin: number }
 
-/** Produit vendu avec la réservation (payé en ligne avec l'acompte, apporté le jour du rendez-vous). `stock` : quantité maximale. */
+/** Produit vendu avec la réservation (réglé avec la prestation, apporté le jour du rendez-vous). `stock` : quantité maximale. */
 export interface ProduitItem { id: string; name: string; description: string; priceCents: number; stock: number; photo: string | null }
 
 /** Produits de démonstration (mode hors API) : prix d'exemple, les vrais produits et prix sont saisis dans l'espace pro. */
@@ -88,6 +88,6 @@ export const prixMin = (formule: Formule) => Math.min(formule.basePriceCents, ..
 
 /** Règles de démonstration : départ d'Abbeville, 5 km offerts, puis 5 € jusqu'à 15 km, 10 € jusqu'à 30 km, 20 € jusqu'à 50 km. */
 export const DEMO_RULES = {
-  depositPercent: 30, freeRadiusKm: 5, pricePerKmCents: 0, maxDistanceKm: 50, origin: { lat: 50.1054, lng: 1.8357 },
+  depositPercent: 0, freeRadiusKm: 5, pricePerKmCents: 0, maxDistanceKm: 50, origin: { lat: 50.1054, lng: 1.8357 },
   paliers: [{ jusquaKm: 15, prixCents: 500 }, { jusquaKm: 30, prixCents: 1000 }, { jusquaKm: 50, prixCents: 2000 }],
 };

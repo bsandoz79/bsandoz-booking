@@ -36,13 +36,13 @@ export const CONTENU_PAR_DEFAUT: ContenuSite = {
   },
   etapes: [
     { titre: 'Choisissez votre prestation', texte: 'Intérieur, extérieur, phares ou soin à la carte : le prix s’affiche tout de suite, le même pour tous les véhicules.' },
-    { titre: 'Réservez un créneau', texte: 'Indiquez votre adresse, choisissez le jour et l’heure, réglez l’acompte en ligne.' },
+    { titre: 'Réservez un créneau', texte: 'Indiquez votre adresse, choisissez le jour et l’heure, payez en ligne ou sur place, sans acompte.' },
     { titre: 'Je viens chez vous', texte: 'J’arrive avec tout le matériel. Le solde se règle sur place, une fois le travail terminé.' },
   ],
   faq: [
     { question: 'Ai-je besoin de fournir l’eau ou l’électricité ?', reponse: 'Non, j’arrive avec le matériel nécessaire. Il suffit d’un emplacement où garer le véhicule.' },
-    { question: 'Comment fonctionne l’acompte ?', reponse: 'Un acompte de 30 % est demandé en ligne pour confirmer le rendez-vous. Le solde se règle sur place.' },
-    { question: 'Puis-je annuler ou déplacer mon rendez-vous ?', reponse: 'Oui, depuis le lien reçu par e-mail ou votre espace client. L’annulation est gratuite jusqu’à 48 h avant le rendez-vous : l’acompte vous est alors remboursé.' },
+    { question: 'Faut-il payer à la réservation ?', reponse: 'Non, aucun acompte n’est demandé. Vous choisissez : tout régler en ligne au moment de réserver, ou sur place une fois la prestation terminée.' },
+    { question: 'Puis-je annuler ou déplacer mon rendez-vous ?', reponse: 'Oui, depuis le lien reçu par e-mail ou votre espace client. L’annulation est gratuite jusqu’à 48 h avant le rendez-vous : si vous avez payé en ligne, vous êtes intégralement remboursé.' },
     { question: 'Combien de temps dure une prestation ?', reponse: 'Cela dépend de la formule et de l’état du véhicule : de 1 h à 1 h 30 pour un Éclat, jusqu’à 3 h 30 à 5 h pour une Excellence. Pour les formules longues, je réserve la demi-journée.' },
   ],
   avis: [],

@@ -35,6 +35,9 @@ final class VueReservation
             'remiseFideliteCents' => $r->remiseFidelite()->cents,
             'produits' => $r->produits(),
             'produitsCents' => $r->totalProduits()->cents,
+            'paiementEnLigne' => $r->paiementEnLigne(),
+            'enLigneCents' => $r->aPayerEnLigne()->cents,
+            'surPlaceCents' => $r->resteSurPlace()->cents,
             'freeCancelUntil' => $start->modify(sprintf('-%d hours', $rules->freeCancelHours))->setTimezone($utc)->format(DATE_ATOM),
         ];
     }

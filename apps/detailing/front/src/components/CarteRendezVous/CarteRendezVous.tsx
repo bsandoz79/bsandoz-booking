@@ -6,11 +6,11 @@ import type { RendezVous } from '../../services/compte';
 import styles from './CarteRendezVous.module.css';
 
 const STATUTS: Record<RendezVous['status'], string> = {
-  pending_payment: 'En attente de l’acompte',
+  pending_payment: 'En attente de paiement',
   confirmed: 'Confirmé',
   done: 'Terminé',
   cancelled: 'Annulé',
-  expired: 'Acompte non réglé',
+  expired: 'Paiement non réglé',
   no_show: 'Absent',
 };
 
@@ -31,8 +31,8 @@ interface Props {
 }
 
 /**
- * Un rendez-vous du client : détails, déplacement (nouveau créneau) et annulation (acompte remboursé si annulation
- * gratuite). Acompte non réglé : « Payer l'acompte » ; si le créneau a été repris entre-temps, le client en choisit un
+ * Un rendez-vous du client : détails, déplacement (nouveau créneau) et annulation (paiement en ligne remboursé si
+ * annulation gratuite). Paiement en ligne non réglé : « Payer » ; si le créneau a été repris entre-temps, le client en choisit un
  * autre puis paie. Il peut aussi changer de créneau ou annuler (rien n'a été payé).
  */
 export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, onDeplacer, onAnnuler, onPayer, naviguer = (url) => window.location.assign(url) }: Props) {
@@ -47,7 +47,9 @@ export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, on
   const modifiable = aVenir && rdv.status === 'confirmed';
   const impayee = aVenir && (rdv.status === 'pending_payment' || rdv.status === 'expired') && !!onPayer;
   const annulationGratuite = maintenant <= new Date(rdv.freeCancelUntil);
-  const aPayer = rdv.depositCents + (rdv.produitsCents ?? 0);
+  const aPayer = rdv.enLigneCents ?? rdv.depositCents + (rdv.produitsCents ?? 0);
+  const surPlace = rdv.surPlaceCents ?? rdv.totalCents - rdv.depositCents;
+  const payeEnLigne = rdv.status !== 'pending_payment' && rdv.status !== 'expired' && aPayer > 0;
 
   const payer = async () => {
     if (!onPayer) return;
@@ -86,18 +88,18 @@ export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, on
       </div>
       <p className={styles.date}>{dateLongue(rdv.start)}</p>
       {rdv.address && <p>{rdv.address}</p>}
-      {rdv.produits && rdv.produits.length > 0 && <p>Produits apportés le jour J : {rdv.produits.map((p) => `${p.quantite} × ${p.nom}`).join(', ')} (payés : {formatEuros(rdv.produitsCents ?? 0)})</p>}
-      <p className={styles.montants}>Total {formatEuros(rdv.totalCents)}{rdv.remiseFideliteCents ? ` (remise fidélité de ${formatEuros(rdv.remiseFideliteCents)} incluse)` : ''} · acompte {formatEuros(rdv.depositCents)} · solde à régler sur place</p>
+      {rdv.produits && rdv.produits.length > 0 && <p>Produits apportés le jour J : {rdv.produits.map((p) => `${p.quantite} × ${p.nom}`).join(', ')} ({formatEuros(rdv.produitsCents ?? 0)})</p>}
+      <p className={styles.montants}>Total {formatEuros(rdv.totalCents + (rdv.produitsCents ?? 0))}{rdv.remiseFideliteCents ? ` (remise fidélité de ${formatEuros(rdv.remiseFideliteCents)} incluse)` : ''}{payeEnLigne ? ` · payé en ligne : ${formatEuros(aPayer)}` : ''}{surPlace > 0 ? ` · à régler sur place : ${formatEuros(surPlace)}` : ''}</p>
       {modifiable && (
         <p className={styles.aide}>
           {annulationGratuite
-            ? `Annulation gratuite jusqu’au ${dateLongue(rdv.freeCancelUntil)} : l’acompte vous sera remboursé.`
-            : 'Le délai d’annulation gratuite est dépassé : en cas d’annulation, l’acompte reste dû.'}
+            ? `Annulation gratuite jusqu’au ${dateLongue(rdv.freeCancelUntil)}${payeEnLigne ? ' : ce que vous avez payé en ligne vous sera remboursé' : ''}.`
+            : payeEnLigne ? 'Le délai d’annulation gratuite est dépassé : en cas d’annulation, le paiement en ligne reste dû.' : 'Le délai d’annulation gratuite est dépassé : merci de prévenir au plus tôt en cas d’empêchement.'}
         </p>
       )}
 
       {impayee && (
-        <p className={styles.aide}>Votre rendez-vous n’est pas encore confirmé : réglez l’acompte{rdv.produitsCents ? ' et les produits' : ''} ({formatEuros(aPayer)}) pour le garder.</p>
+        <p className={styles.aide}>Votre rendez-vous n’est pas encore confirmé : réglez le paiement en ligne ({formatEuros(aPayer)}) pour le garder.</p>
       )}
 
       {message && <p className={styles.ok} role="status">{message}</p>}
@@ -112,7 +114,7 @@ export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, on
 
       {impayee && mode === 'aucun' && (
         <div className={styles.actions}>
-          <Button loading={enCours} loadingLabel="Ouverture du paiement…" onClick={payer}>Payer l’acompte ({formatEuros(aPayer)})</Button>
+          <Button loading={enCours} loadingLabel="Ouverture du paiement…" onClick={payer}>Payer ({formatEuros(aPayer)})</Button>
           <Button variant="secondary" onClick={() => { setMessage(''); setErreur(''); setMode('deplacer'); }}>Changer de créneau</Button>
           <Button variant="ghost" onClick={() => { setMessage(''); setErreur(''); setMode('annuler'); }}>Annuler</Button>
         </div>
@@ -129,12 +131,12 @@ export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, on
 
       {mode === 'annuler' && (
         <div className={styles.panneau}>
-          <p><strong>Confirmer l’annulation ?</strong> {impayee ? 'Rien n’a été payé.' : annulationGratuite ? 'L’acompte vous sera remboursé sous quelques jours.' : 'L’acompte ne sera pas remboursé.'}</p>
+          <p><strong>Confirmer l’annulation ?</strong> {impayee || !payeEnLigne ? 'Rien n’a été payé en ligne.' : annulationGratuite ? 'Ce que vous avez payé en ligne vous sera remboursé sous quelques jours.' : 'Le paiement en ligne ne sera pas remboursé.'}</p>
           <div className={styles.actions}>
             <Button loading={enCours} loadingLabel="Annulation…"
               onClick={() => agir(async () => {
                 const { refundable } = await onAnnuler();
-                return refundable ? 'Rendez-vous annulé. L’acompte vous sera remboursé.' : 'Rendez-vous annulé.';
+                return refundable ? 'Rendez-vous annulé. Le paiement en ligne vous sera remboursé.' : 'Rendez-vous annulé.';
               })}>
               Oui, annuler
             </Button>

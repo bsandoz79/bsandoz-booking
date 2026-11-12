@@ -47,7 +47,7 @@ final class CreerSessionAcompte
             throw new DomainError('Aucun acompte n\'est demandé pour cette réservation.');
         }
         $prestation = $this->prestations->get($reservation->prestationId())->name();
-        $libelle = sprintf($reservation->deposit()->cents > 0 ? 'Acompte : %s' : 'Réservation : %s', $prestation);
+        $libelle = sprintf($reservation->paiementEnLigne() !== true && $reservation->deposit()->cents > 0 ? 'Acompte : %s' : 'Réservation : %s', $prestation);
         if ($reservation->produits() !== []) {
             $libelle .= ' + ' . implode(', ', array_map(
                 static fn (array $p): string => $p['quantite'] > 1 ? sprintf('%d × %s', $p['quantite'], $p['nom']) : $p['nom'],

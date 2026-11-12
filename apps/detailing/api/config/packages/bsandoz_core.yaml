@@ -18,7 +18,8 @@ bsandoz_core:
         buffer_min: 30
         slot_step_min: 30
         free_cancel_hours: 48
-        deposit_percent: 30
+        # Plus d'acompte : le client paie tout en ligne ou tout sur place.
+        deposit_percent: 0
         hold_minutes: 10
     zone:
         # Départ d'Abbeville (centre-ville) : déplacement offert jusqu'à 5 km, puis par tranches, intervention jusqu'à 50 km
@@ -37,6 +38,9 @@ bsandoz_core:
 when@test:
     bsandoz_core:
         medias_dir: '%kernel.project_dir%/var/test-medias'
+        # Les scénarios des tests fonctionnels couvrent aussi le cas d'un acompte (30 %).
+        rules:
+            deposit_percent: 30
         zone:
             origin_lat: 49.8941
             origin_lng: 2.2958

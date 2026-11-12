@@ -43,6 +43,11 @@ class Reservation
         private ?array $produits = null,
         /** Nombre d'unités de la prestation (ex. véhicules) ; null : 1 (réservations antérieures). */
         private ?int $quantite = null,
+        /**
+         * Choix du client : true = tout payer en ligne (prestation et produits), false = sur place (seul l'acompte réglé,
+         * s'il y en a un, se paie en ligne) ; null : réservations antérieures (acompte et produits en ligne).
+         */
+        private ?bool $paiementEnLigne = null,
     ) {
     }
 
@@ -85,10 +90,22 @@ class Reservation
         return $total;
     }
 
-    /** Montant payé en ligne : acompte de la prestation + produits. */
+    public function paiementEnLigne(): ?bool { return $this->paiementEnLigne; }
+
+    /** Montant à payer en ligne : tout (prestation et produits), l'acompte seul, ou acompte et produits (ancien mode). */
     public function aPayerEnLigne(): Money
     {
-        return $this->deposit->add($this->totalProduits());
+        return match ($this->paiementEnLigne) {
+            true => $this->total->add($this->totalProduits()),
+            false => $this->deposit,
+            null => $this->deposit->add($this->totalProduits()),
+        };
+    }
+
+    /** Reste à régler sur place, une fois la prestation faite. */
+    public function resteSurPlace(): Money
+    {
+        return $this->total->add($this->totalProduits())->subtract($this->aPayerEnLigne());
     }
 
     public function blocks(\DateTimeImmutable $now): bool

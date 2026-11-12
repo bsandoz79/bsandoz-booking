@@ -109,6 +109,14 @@ final class SymfonyMailerNotifierTest extends TestCase
         self::assertNotSame('', (string) $this->dernier()->getTextBody());
     }
 
+    public function testConfirmationAvecPaiementSurPlace(): void
+    {
+        $this->notifier()->send('camille@example.test', 'booking_confirmed', [
+            'firstname' => 'Camille', 'start' => '2026-11-10T08:00:00+00:00', 'manageToken' => 't', 'enLigneCents' => 0, 'surPlaceCents' => 6900,
+        ]);
+        self::assertStringContainsString('À régler sur place, une fois la prestation terminée : 69,00', (string) $this->dernier()->getTextBody());
+    }
+
     public function testDemandeDeDevisAvecAdresseDeReponse(): void
     {
         $this->notifier()->send('pro@example.test', 'pro_contact_request', [
