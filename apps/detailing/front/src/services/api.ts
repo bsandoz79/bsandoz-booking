@@ -1,5 +1,5 @@
 import { DEMO_RULES, FORMULES, OPTIONS, tarifDe } from '../data/demo';
-import { fraisDeplacement, type ZonePublique } from '../data/zone';
+import { fraisDeplacement, type Estimation, type ZonePublique } from '../data/zone';
 import type { Plage } from '../data/vitrine';
 import type { Formule, OptionItem } from '../data/demo';
 
@@ -65,7 +65,7 @@ export async function http<T>(path: string, init: RequestInit = {}, token?: stri
 const query = (params: Record<string, string | number | undefined>) =>
   new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])).toString();
 
-const ZONE_DEMO: ZonePublique = { surPlace: false, freeRadiusKm: DEMO_RULES.freeRadiusKm, maxDistanceKm: DEMO_RULES.maxDistanceKm, pricePerKmCents: DEMO_RULES.pricePerKmCents, paliers: DEMO_RULES.paliers };
+const ZONE_DEMO: ZonePublique = { surPlace: false, freeRadiusKm: DEMO_RULES.freeRadiusKm, maxDistanceKm: DEMO_RULES.maxDistanceKm, pricePerKmCents: DEMO_RULES.pricePerKmCents, paliers: DEMO_RULES.paliers, roadFactor: 1.3 };
 
 /** Horaires de démonstration (identiques à `detailing:demo:charger`) : lundi–samedi 8 h–19 h, dimanche 10 h–18 h. */
 const HORAIRES_DEMO: Plage[] = [1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, startsAt: '08:00', endsAt: '19:00' })).concat([{ weekday: 7, startsAt: '10:00', endsAt: '18:00' }]);
@@ -94,6 +94,16 @@ function demoDistanceKm(a: Address): number {
   const dLat = rad(a.lat - lat), dLng = rad(a.lng - lng);
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(lat)) * Math.cos(rad(a.lat)) * Math.sin(dLng / 2) ** 2;
   return Math.round(2 * R * Math.asin(Math.sqrt(h)) * 1.3 * 10) / 10;
+}
+
+/** Frais de déplacement estimés pour une position (carte de la zone) ; la position n'est pas enregistrée. */
+export async function estimerDeplacement(lat: number, lng: number): Promise<Estimation> {
+  if (isDemo()) {
+    const distanceKm = demoDistanceKm({ label: '', lat, lng });
+    const dansZone = distanceKm <= ZONE_DEMO.maxDistanceKm;
+    return { distanceKm, dansZone, fraisCents: dansZone ? fraisDeplacement(ZONE_DEMO, distanceKm) : 0 };
+  }
+  return http(`/booking/zone/estimation?${query({ lat, lng })}`);
 }
 
 export async function getQuote(selection: Selection, address?: Address): Promise<Quote> {

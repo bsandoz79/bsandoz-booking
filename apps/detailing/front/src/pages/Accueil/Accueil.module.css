@@ -96,3 +96,5 @@ blockquote.card { margin: 0; }
 .fidelite { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: center; }
 .fideliteTexte { display: flex; flex-direction: column; gap: .75rem; }
 @media (min-width: 760px) { .fidelite { grid-template-columns: 1fr 1fr; } }
+.tranche[aria-current='true'] { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; background: var(--bs-color-primary-soft); }
+.tranche[aria-current='true']::after { content: 'Vous êtes ici'; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--bs-color-primary-dark); }

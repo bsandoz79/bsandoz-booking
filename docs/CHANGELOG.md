@@ -102,6 +102,8 @@
 - Logo Perfect Clean : bandeau du site, favicon, icônes de l'application, image de partage 1200×630 (réseaux sociaux, Google) ; logo source dans docs/marque.
 - Kit : horaires d'ouverture publics (GET /api/v1/booking/hours) ; variables de thème --bs-color-danger et --bs-color-primary-hover (thème sombre possible).
 - Accueil : prestations en onglets (Intérieur, Extérieur, Phares, À la carte) avec cartes « Ce qui est compris », durée et bouton Choisir qui présélectionne la formule ; frais de déplacement en cartes par tranche ; horaires de la semaine ; carte de fidélité façon carton tamponnée du logo ; version claire / nuit.
+- Kit : estimation publique des frais de déplacement pour une position (GET /api/v1/booking/zone/estimation), roadFactor publié dans GET /booking/zone.
+- Accueil : carte de la zone d'intervention (OpenStreetMap), un cercle par tranche autour d'Abbeville ; position demandée à l'arrivée sur la carte ou adresse à saisir, frais estimés et tranche mise en avant ; politique de confidentialité complétée.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

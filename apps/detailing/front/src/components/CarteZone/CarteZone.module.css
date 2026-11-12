@@ -1,0 +1,22 @@
+.bloc { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+@media (min-width: 900px) { .bloc { grid-template-columns: 3fr 2fr; align-items: start; } }
+.carte {
+  width: 100%; aspect-ratio: 4 / 3; min-height: 280px; max-height: 520px;
+  border-radius: var(--bs-radius-md); border: 1px solid var(--bs-color-border); overflow: hidden; background: var(--bs-color-bg);
+  z-index: 0; /* sous le bandeau collant */
+}
+/* Version nuit : fond de carte assombri. */
+:global([data-theme='nuit']) .carte :global(.leaflet-tile-pane) { filter: invert(1) hue-rotate(180deg) brightness(.85) contrast(.9); }
+.carte .etiquette {
+  background: var(--bs-color-surface); color: var(--bs-color-text); border: 1px solid var(--bs-color-border);
+  border-radius: var(--bs-radius-pill); padding: 1px 8px; font-weight: 700; font-size: .75rem; box-shadow: none;
+}
+.carte .etiquette::before { display: none; }
+.calcul { display: flex; flex-direction: column; gap: .75rem; padding: 1.25rem; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); }
+.calcul h3 { font-size: 1.05rem; }
+.info { font-size: .9rem; color: var(--bs-color-text-muted); }
+.position { align-self: flex-start; }
+.erreur { color: var(--bs-color-danger); font-weight: 600; }
+.resultat { padding: .75rem 1rem; border-radius: var(--bs-radius-sm); background: var(--bs-color-primary-soft); border-left: 4px solid var(--bs-color-primary); }
+.offert { border-left-color: var(--bs-color-success); }
+.horsZone { border-left-color: var(--bs-color-danger); }

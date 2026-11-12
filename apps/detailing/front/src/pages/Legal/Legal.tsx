@@ -106,6 +106,7 @@ export function Confidentialite() {
           <li>Nom, e-mail, téléphone et adresse d'intervention : organiser le rendez-vous, vous contacter et calculer le déplacement.</li>
           <li>Détails de la prestation (véhicule, options, notes) : préparer l'intervention.</li>
           <li>Paiement : traité directement par Stripe ; aucun numéro de carte n'est stocké sur ce site.</li>
+          <li>Position (carte de la zone d'intervention, seulement si vous l'autorisez) : estimer les frais de déplacement ; elle n'est pas enregistrée.</li>
         </ul>
         <p>Base légale : l'exécution du contrat (votre réservation). Le téléphone et l'adresse sont chiffrés dans notre base de données.</p>
       </section>
@@ -115,11 +116,11 @@ export function Confidentialite() {
       </section>
       <section>
         <h2>Destinataires</h2>
-        <p>Vos données ne sont ni vendues ni cédées. Elles sont accessibles à {SITE.brand} et à ses prestataires techniques : hébergement ({SITE.legal.host.split(',')[0]}), paiement (Stripe), recherche d'adresse (Base Adresse Nationale).</p>
+        <p>Vos données ne sont ni vendues ni cédées. Elles sont accessibles à {SITE.brand} et à ses prestataires techniques : hébergement ({SITE.legal.host.split(',')[0]}), paiement (Stripe), recherche d'adresse (Base Adresse Nationale), fond de carte (OpenStreetMap, qui reçoit l'adresse IP du visiteur pour afficher la carte).</p>
       </section>
       <section>
         <h2>Cookies</h2>
-        <p>Ce site n'utilise pas de cookie publicitaire ni de mesure d'audience. Un seul cookie technique, nécessaire au maintien de votre connexion à l'espace client, est déposé lorsque vous vous connectez.</p>
+        <p>Ce site n'utilise pas de cookie publicitaire ni de mesure d'audience. Un seul cookie technique, nécessaire au maintien de votre connexion à l'espace client, est déposé lorsque vous vous connectez. Le choix de la version claire ou nuit est retenu dans votre navigateur (stockage local), sans être transmis.</p>
       </section>
       <section>
         <h2>Vos droits</h2>

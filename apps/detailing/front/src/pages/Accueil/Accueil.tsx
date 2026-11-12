@@ -3,14 +3,15 @@ import { Link } from 'react-router-dom';
 import { formatEuros } from '@bsandoz/ui';
 import { useContenu } from '../../app/contenuContexte';
 import { CarteFidelite } from '../../components/CarteFidelite/CarteFidelite';
+import { CarteZone } from '../../components/CarteZone/CarteZone';
 import { CATEGORIES, FORMULES, OPTIONS, prixMin, type Category, type Formule, type OptionItem } from '../../data/demo';
 import { SITE } from '../../data/site';
 import { detailPrestation, jourIso, semaine, tranches, type Plage } from '../../data/vitrine';
-import type { ZonePublique } from '../../data/zone';
-import { getCatalog, getHoraires, getZone } from '../../services/api';
+import type { Estimation, ZonePublique } from '../../data/zone';
+import { estimerDeplacement, getCatalog, getHoraires, getZone, searchAddress } from '../../services/api';
 import { regleFidelite, type RegleFidelite } from '../../services/fidelite';
 import { A_COMPLETER } from '../../services/contenu';
-import { COMMUNES, PAGES_SEO } from '../../seo/donnees';
+import { COMMUNES, ENTREPRISE, PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
 import styles from './Accueil.module.css';
 
@@ -33,6 +34,7 @@ export function Accueil() {
   useEffect(() => { getHoraires().then(setHoraires).catch(() => undefined); }, []);
   const [aujourdhui] = useState(() => jourIso(new Date()));
   const [zone, setZone] = useState<ZonePublique>();
+  const [estimation, setEstimation] = useState<Estimation>();
   useEffect(() => { getZone().then(setZone).catch(() => undefined); }, []);
   const [fidelite, setFidelite] = useState<RegleFidelite>();
   useEffect(() => { regleFidelite().then(setFidelite).catch(() => undefined); }, []);
@@ -156,7 +158,8 @@ export function Accueil() {
               {zone && (
                 <ol className={styles.tranches} aria-label="Frais de déplacement par distance">
                   {tranches(zone).map((t) => (
-                    <li key={t.de} className={`${styles.tranche} ${t.offert ? styles.offert : ''}`}>
+                    <li key={t.de} aria-current={estimation && estimation.distanceKm > t.de && estimation.distanceKm <= (t.jusqua ?? Infinity) ? 'true' : undefined}
+                      className={`${styles.tranche} ${t.offert ? styles.offert : ''}`}>
                       <span className={styles.km}>{t.jusqua === undefined ? `Au-delà de ${t.de} km` : `${t.de} à ${t.jusqua} km`}</span>
                       <strong>{t.prix}</strong>
                     </li>
@@ -165,7 +168,11 @@ export function Accueil() {
               )}
             </>
           )}
-          <p className={styles.note}>Le prix exact du déplacement est calculé automatiquement à partir de votre adresse lors de la réservation.</p>
+          {zone && !zone.surPlace && (
+            <CarteZone zone={zone} centre={{ lat: ENTREPRISE.geo.latitude, lng: ENTREPRISE.geo.longitude }} ville={SITE.city}
+              estimer={estimerDeplacement} rechercherAdresse={searchAddress} onEstimation={setEstimation} />
+          )}
+          <p className={styles.note}>Cercles indicatifs (distance par la route). Le prix exact du déplacement est recalculé à partir de votre adresse lors de la réservation.</p>
           {communes.length > 0 && <p>Communes desservies : {communes.join(', ')}.</p>}
           <ul className={styles.communes} aria-label="Nettoyage de voiture par commune">
             {COMMUNES.map((c) => <li key={c.slug}><Link to={`/nettoyage-voiture/${c.slug}`}>Nettoyage voiture {c.nom}</Link></li>)}

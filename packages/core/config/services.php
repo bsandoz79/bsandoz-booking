@@ -91,6 +91,7 @@ use Bsandoz\Core\Booking\Application\GererRendezVousPro;
 use Bsandoz\Core\Booking\Application\ListerCreneaux;
 use Bsandoz\Core\Booking\Application\ListerJoursDisponibles;
 use Bsandoz\Core\Booking\Application\Occupations;
+use Bsandoz\Core\Booking\Application\EstimerDeplacement;
 use Bsandoz\Core\Booking\Application\Trajet;
 use Bsandoz\Core\Booking\Domain\Port\AvailabilityRepository;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
@@ -222,6 +223,7 @@ return static function (ContainerConfigurator $container): void {
     $services->set(DoctrineAvailabilityRepository::class);
     $services->alias(AvailabilityRepository::class, DoctrineAvailabilityRepository::class);
     $services->set(Trajet::class);
+    $services->set(EstimerDeplacement::class);
     $services->set(Occupations::class);
     $services->set(ListerCreneaux::class);
     $services->set(ListerJoursDisponibles::class);
