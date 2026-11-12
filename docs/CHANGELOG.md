@@ -88,6 +88,7 @@
 - Site detailing : application installable (manifest, icônes provisoires, icône iOS, raccourcis), service worker (réseau d'abord pour les pages, page hors connexion, cache des fichiers du build, API jamais en cache), enregistrement en production uniquement. Tests.
 - Kit back et API detailing : notifications push du pro (Web Push, VAPID) : abonnement des appareils (`POST|DELETE /admin/push`, clé publique `GET /push/key`), notification à chaque rendez-vous confirmé, annulé ou déplacé, abonnements expirés supprimés, envoi qui n'interrompt jamais la réservation, commande `bsandoz:push:cles`, désactivé sans clés ; dépendance `minishlink/web-push`, table `push_subscription` (migration). Tests unitaires et fonctionnels.
 - Site detailing : activation des notifications push par appareil dans l'espace pro (autorisation, abonnement avec la clé VAPID du serveur, désactivation, cas iPhone et notifications bloquées expliqués), affichage par le service worker. Tests.
+- API detailing : `public/.htaccess` pour Apache (o2switch) : routage vers Symfony, transmission de l'en-tête `Authorization` (jeton d'accès), HTTPS obligatoire, en-têtes de sécurité.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
@@ -96,3 +97,4 @@
 - Site detailing : nom du projet synchronisé dans `package-lock.json` ; import de `vite.config.ts` avec son extension dans `vitest.config.ts` (avertissement Vite).
 - Kit back : types des tableaux renvoyés précisés pour PHPStan niveau 8 (`ExporterDonnees`, `ListerCreneaux` → `list<TimeRange>`, `ListerJoursDisponibles` → dates `Y-m-d`, `PaymentGateway` → `{sessionId, url}` et événement décodé).
 - API detailing : CORS avec `allow_credentials` (le front envoie le cookie de renouvellement de session).
+- Site detailing : la redirection vers HTTPS du `.htaccess` n'était jamais atteinte (placée après la réécriture des routes) ; en-têtes de sécurité et cache long des fichiers du build ajoutés.
