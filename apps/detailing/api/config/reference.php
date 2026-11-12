@@ -1346,6 +1346,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         success_url?: scalar|Param|null, // Default: "/"
  *         cancel_url?: scalar|Param|null, // Default: "/"
  *     },
+ *     push?: array{ // Notifications push du pro (Web Push, clés VAPID générées par bsandoz:push:cles). Clés vides : désactivées.
+ *         vapid_public_key?: scalar|Param|null, // Default: "%env(default::BSANDOZ_VAPID_PUBLIC_KEY)%"
+ *         vapid_private_key?: scalar|Param|null, // Default: "%env(default::BSANDOZ_VAPID_PRIVATE_KEY)%"
+ *         subject?: scalar|Param|null, // Contact transmis aux services push (mailto: ou https:) ; par défaut mailto:<from_email>. // Default: null
+ *     },
  *     rules?: array{ // Règles de réservation (modifiables dans l'espace pro à partir de feature/core-admin).
  *         min_notice_hours?: int|Param, // Default: 24
  *         horizon_days?: int|Param, // Default: 60

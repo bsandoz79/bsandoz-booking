@@ -45,6 +45,9 @@ Tout code qui a besoin de « maintenant » reçoit le port `Shared\Domain\Clock`
 - `composer test` : PHPUnit, suites `unit` (`tests/Unit`, doubles en mémoire dans `tests/Double`) et `integration` (`tests/Integration`, Doctrine sur SQLite en mémoire).
 - `composer stan` : PHPStan niveau 8, configuré dans `phpstan.neon.dist`. Les classes encore `@todo` y ont une entrée `ignoreErrors` (dépendances injectées non lues) : la supprimer dès que la classe est implémentée.
 
+## Notifications push
+Module Notification : `GererAbonnementsPush` (abonner / désabonner un appareil), `NotifierProParPush` (envoi à tous les appareils, abonnements expirés supprimés), appelé par `NotificationsReservation` (rendez-vous confirmé, annulé, déplacé). Adaptateur `WebPushEnvoi` (minishlink/web-push, VAPID) configuré par `bsandoz_core.push` (`vapid_public_key`, `vapid_private_key`, `subject`, par défaut `mailto:<from_email>`) ; clés vides : désactivé. Commande `bsandoz:push:cles`. Routes : `GET /api/v1/push/key`, `POST|DELETE /api/v1/admin/push`.
+
 ## Mails et limitation des tentatives
 - Tant que `feature/core-notification` n'est pas faite, le port `Notifier` pointe sur `LogNotifier` : les mails (activation, mot de passe oublié…) sont écrits dans `var/log` au lieu d'être envoyés. Ne pas mettre en production dans cet état.
 - Le bundle déclare des limiteurs Symfony par adresse IP (`BsandozCoreBundle::RATE_LIMITS`) : réservation, activation, mot de passe oublié, gestion par lien. Ils utilisent le pool `cache.rate_limiter` ; les tests fonctionnels le vident au démarrage.

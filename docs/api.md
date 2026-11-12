@@ -103,6 +103,12 @@ Réservation d'un autre client : 404. Sans jeton : 401.
 - `GET /ical/{secret}.ics` : flux d'agenda du pro (rendez-vous confirmés, des 30 derniers jours à l'année à venir) à ajouter dans Google Agenda ou Apple Calendrier (« s'abonner par URL »). Secret faux : 404.
 - Cron toutes les 15 min : `php bin/console bsandoz:notifications:send` (expire les blocages de paiement dépassés et envoie les rappels de la veille, une seule fois par rendez-vous).
 
+## Notifications push du pro (Web Push)
+- `GET /push/key` → `{"publicKey": "…" | null}` : clé publique VAPID (null : notifications non configurées).
+- `POST /admin/push` (rôle pro) : corps = `PushSubscription` du navigateur, `{"endpoint", "keys": {"p256dh", "auth"}}` → 204. Le même appareil remplace son abonnement. Endpoint non https ou clés invalides : 422 ; notifications non configurées : 422.
+- `DELETE /admin/push` `{"endpoint"}` → 204.
+- Envoi à tous les appareils abonnés à chaque rendez-vous confirmé, annulé ou déplacé : `{"title", "body": "prestation · client · jour à HHhMM", "url": "/pro", "tag"}`. Un appareil désabonné (réponse 404 / 410 du service push) est supprimé ; une erreur d'envoi n'empêche jamais la réservation.
+
 ## Espace pro (`/admin`, rôle pro)
 Compte pro créé à l'installation : `php bin/console bsandoz:pro:creer contact@domaine.fr Prénom Nom` (mot de passe demandé), puis connexion par `/auth/login`. Client connecté : 403 ; sans jeton : 401.
 - `GET /admin/dashboard` → `{today, week, monthRevenueCents, monthBookings, pendingPayments, monthCancellationRate, next}`

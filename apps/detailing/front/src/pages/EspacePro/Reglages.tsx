@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { AddressInput, Button, Field, Toggle } from '@bsandoz/ui';
 import { searchAddress, type Address } from '../../services/api';
 import { enregistrerRegles, enregistrerZone, reglages, type Regles, type Zone } from '../../services/pro';
+import { NotificationsPro } from './Notifications';
 import styles from './Pro.module.css';
 
 const CHAMPS_REGLES: { cle: keyof Regles; label: string; aide: string }[] = [
@@ -32,6 +33,7 @@ export function ReglagesOnglet() {
 
   return (
     <>
+      <NotificationsPro />
       <FormulaireRegles initiales={regles} />
       <FormulaireZone initiale={zone} />
     </>
