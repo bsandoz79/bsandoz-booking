@@ -38,3 +38,4 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/reservation-3-etapes` : réservation en 3 étapes repliables (bloc `StepCard`), sans véhicule ; tranches de zone colorées ; communes en phrase ; lien « Fidélité » et carte du client connecté
 - [x] `feature/entete-compact` : en-tête sur une ligne, menu déroulant sur téléphone
 - [x] `feature/reservation-guidee` : chaque choix de la réservation amène à la partie suivante
+- [x] `feature/communes-repliees` : communes desservies repliées sur l'accueil
