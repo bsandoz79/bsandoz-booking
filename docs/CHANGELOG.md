@@ -77,6 +77,7 @@
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 - Kit front : bloc `Toggle` (interrupteur rôle `switch`, libellé et aide reliés, désactivable). Tests.
 - Kit front : bloc `DataTable` (tableau générique, tri par colonne avec `aria-sort`, message vide, ouverture d'une ligne, cartes sur mobile). Tests.
+- Kit front : bloc `PlanningView` (vues jour, semaine et mois, navigation, événements à cheval sur minuit, tons rendez-vous / secondaire / indisponibilité, pastille mobile), utilitaires `startOfWeek` et `eventsOfDay`. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
