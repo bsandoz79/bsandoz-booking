@@ -10,6 +10,8 @@
   --bs-color-border: #e1e5ee;
   --bs-color-disabled: #b9bcc8;
   --bs-color-success: #13794a;
+  --bs-color-danger: #b42318;
+  --bs-color-primary-hover: var(--bs-color-primary-dark); /* fond des boutons survolés (texte blanc) */
   --bs-radius-sm: 10px;
   --bs-radius-md: 16px;
   --bs-radius-pill: 999px;

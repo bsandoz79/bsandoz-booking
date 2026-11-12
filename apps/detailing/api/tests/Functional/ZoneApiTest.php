@@ -34,5 +34,15 @@ final class ZoneApiTest extends WebTestCase
         self::assertSame(['surPlace' => false, 'freeRadiusKm' => 5, 'maxDistanceKm' => 50, 'pricePerKmCents' => 0,
             'paliers' => [['jusquaKm' => 15, 'prixCents' => 500], ['jusquaKm' => 30, 'prixCents' => 1000]]], $zone);
         self::assertArrayNotHasKey('originLat', $zone, 'le point de départ n\'est pas publié');
+
+        // Horaires d'ouverture publiés (sans identifiant interne), lus par l'accueil du site.
+        $ouvertures = static::getContainer()->get(\Bsandoz\Core\Booking\Application\GererDisponibilites::class);
+        self::assertInstanceOf(\Bsandoz\Core\Booking\Application\GererDisponibilites::class, $ouvertures);
+        $ouvertures->definirHoraires([['weekday' => 1, 'startsAt' => '08:00', 'endsAt' => '19:00'], ['weekday' => 7, 'startsAt' => '10:00', 'endsAt' => '18:00']]);
+
+        $client->request('GET', '/api/v1/booking/hours');
+        self::assertResponseIsSuccessful();
+        self::assertSame([['weekday' => 1, 'startsAt' => '08:00', 'endsAt' => '19:00'], ['weekday' => 7, 'startsAt' => '10:00', 'endsAt' => '18:00']],
+            json_decode((string) $client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR));
     }
 }

@@ -4,6 +4,6 @@
 .control { min-height: 44px; padding: var(--bs-space-2) var(--bs-space-3); border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-sm); background: var(--bs-color-surface); color: var(--bs-color-text); font: inherit; transition: border-color var(--bs-transition); }
 textarea.control { min-height: 96px; resize: vertical; }
 .control:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 1px; border-color: var(--bs-color-primary); }
-.invalid { border-color: #b42318; }
+.invalid { border-color: var(--bs-color-danger); }
 .hint { margin: 0; font-size: 0.875rem; color: var(--bs-color-text-muted); }
-.error { margin: 0; font-size: 0.875rem; color: #b42318; font-weight: 600; }
+.error { margin: 0; font-size: 0.875rem; color: var(--bs-color-danger); font-weight: 600; }
