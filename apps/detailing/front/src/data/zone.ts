@@ -1,6 +1,28 @@
 /** Conditions de déplacement publiées par l'API (`GET /booking/zone`), sans le point de départ du pro. */
 export interface Palier { jusquaKm: number; prixCents: number }
-export interface ZonePublique { surPlace: boolean; freeRadiusKm: number; maxDistanceKm: number; pricePerKmCents: number; paliers: Palier[] }
+export interface ZonePublique {
+  surPlace: boolean; freeRadiusKm: number; maxDistanceKm: number; pricePerKmCents: number; paliers: Palier[];
+  /** Distance routière ÷ distance à vol d'oiseau (1,3 par défaut) : sert à tracer les cercles de la carte. */
+  roadFactor?: number;
+}
+
+/** Estimation des frais pour une position (`GET /booking/zone/estimation`). */
+export interface Estimation { distanceKm: number; dansZone: boolean; fraisCents: number }
+
+export interface Cercle { km: number; rayonM: number; fraisCents: number }
+
+/**
+ * Cercles de la carte : un par limite de tranche (rayon offert, chaque tranche, distance maximale), du plus petit au
+ * plus grand. Les distances étant routières, le rayon tracé est divisé par le facteur route / vol d'oiseau.
+ */
+export function cerclesZone(zone: ZonePublique): Cercle[] {
+  if (zone.surPlace) return [];
+  const facteur = zone.roadFactor && zone.roadFactor >= 1 ? zone.roadFactor : 1.3;
+  const limites = [zone.freeRadiusKm, ...zone.paliers.map((p) => p.jusquaKm), zone.maxDistanceKm]
+    .filter((km, i, t) => km > 0 && km <= zone.maxDistanceKm && t.indexOf(km) === i)
+    .sort((a, b) => a - b);
+  return limites.map((km) => ({ km, rayonM: Math.round((km / facteur) * 1000), fraisCents: fraisDeplacement(zone, km) }));
+}
 
 /** Frais de déplacement pour une distance routière (même règle que le kit back : rayon offert, tranches, puis prix au km). */
 export function fraisDeplacement(zone: ZonePublique, km: number): number {
