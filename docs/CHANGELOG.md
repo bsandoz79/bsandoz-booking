@@ -130,6 +130,7 @@
 - CI : vérifications seulement sur main et les pull requests (pas pour la seule documentation), vérification en cours annulée par un nouvel envoi, installations Composer et npm en cache, pour économiser les minutes GitHub Actions.
 - Adresse de contact par défaut contact@bsandoz.fr : coordonnées du site et `PRO_EMAIL` (demandes de devis et rendez-vous).
 - Bouton « Remonter en haut » déplacé en bas à droite.
+- Kit et API : mise en avant d'une prestation (`badge`, ex. « Le plus choisi »), réglable dans le Catalogue de l'espace pro ; migration `prestation.badge`.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
