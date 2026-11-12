@@ -19,7 +19,7 @@ use Twig\TwigFilter;
  * Mails rendus avec Twig : templates/emails/<modèle>.html.twig du kit (blocs « subject » et « body »),
  * surchargeables par l'application dans templates/bsandoz/emails/. Version texte déduite du HTML.
  * Variables communes : brand (nom affiché), front_url (liens vers le site), timezone (dates locales) ;
- * filtre « euros » pour les montants en centimes.
+ * filtre « euros » pour les montants en centimes. Clé de contexte « replyTo » : adresse de réponse du mail.
  * Un serveur de mail indisponible ou mal configuré ne bloque jamais l'action en cours (réservation, paiement…) :
  * l'échec est écrit dans le journal.
  */
@@ -65,6 +65,11 @@ final class SymfonyMailerNotifier implements Notifier
             ->subject($subject)
             ->html($html)
             ->text(self::texte($twig->renderBlock('body', $context)));
+        // « replyTo » dans le contexte : répondre au mail écrit directement à cette adresse (ex. demande de devis).
+        $replyTo = $context['replyTo'] ?? null;
+        if (is_string($replyTo) && filter_var($replyTo, FILTER_VALIDATE_EMAIL) !== false) {
+            $email->replyTo($replyTo);
+        }
 
         foreach ($attachments as $attachment) {
             $email->attach($attachment['content'], $attachment['name'], $attachment['mime']);

@@ -1,0 +1,15 @@
+{% extends '_base.html.twig' %}
+{% block subject %}Demande de devis : {{ nom }}{% if entreprise %} ({{ entreprise }}){% endif %}{% endblock %}
+{% block body %}
+<p>Nouvelle demande envoyée depuis le site :</p>
+<ul>
+    <li>Nom : <strong>{{ nom }}</strong></li>
+    {% if entreprise %}<li>Entreprise : {{ entreprise }}</li>{% endif %}
+    <li>E-mail : <a href="mailto:{{ email }}">{{ email }}</a></li>
+    {% if telephone %}<li>Téléphone : <a href="tel:{{ telephone|replace({' ': ''}) }}">{{ telephone }}</a></li>{% endif %}
+    {% for question, reponse in details %}<li>{{ question }} : {{ reponse }}</li>{% endfor %}
+</ul>
+<p><strong>Message :</strong></p>
+<p>{{ message|nl2br }}</p>
+<p>Répondez simplement à ce mail pour écrire au demandeur.</p>
+{% endblock %}

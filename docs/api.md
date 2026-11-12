@@ -69,6 +69,9 @@ Sous verrou d'agenda : devis recalculé côté serveur, créneau revérifié, co
 
 Cron : `php bin/console bsandoz:reservations:expirer` passe en « expirée » les réservations dont le blocage est dépassé.
 
+## POST /contact
+Public, 5 demandes par heure et par adresse IP. Corps : `{"nom", "email", "message", "telephone"?, "entreprise"?, "details"?: {"question": "réponse"}, "site"?}` → 204. Mail « Demande de devis » envoyé à `PRO_EMAIL` avec l'adresse du demandeur en « répondre à » ; `details` : 12 questions / réponses au plus (réponses vides ignorées). `site` : champ piège invisible, rempli = demande ignorée (robots). Champ manquant ou e-mail invalide : 422 ; `PRO_EMAIL` vide : 422 avec un message invitant à appeler ou écrire.
+
 ## GET /geo/search
 `/geo/search?q=12 rue de&limit=5` → `[{"label": "12 Rue … 80000 Amiens", "lat": 49.89, "lng": 2.29}]`. Base Adresse Nationale (api-adresse.data.gouv.fr, gratuite, sans clé), au moins 3 caractères, 10 résultats maximum, cache 1 jour (30 jours pour le géocodage d'une adresse complète). API indisponible : liste vide, jamais d'erreur.
 
