@@ -6,8 +6,8 @@ namespace Bsandoz\Core\Catalog\Domain\Model;
 
 use Bsandoz\Core\Shared\Domain\Money;
 
-/** Option ajoutable à une prestation (prix et temps en plus). */
-final class Option
+/** Option ajoutable à une prestation (prix et temps en plus). Pas « final » : Doctrine génère un proxy (lazy ghost) pour chaque entité. */
+class Option
 {
     public function __construct(
         public readonly string $id,

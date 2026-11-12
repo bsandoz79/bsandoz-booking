@@ -1,0 +1,95 @@
+# Déploiement de la démo Atelier Brillance sur o2switch (FTPS), après une CI verte sur main, ou à la demande.
+# Guide complet : docs/deploiement.md. Secrets et variables à créer dans GitHub (Settings → Secrets and variables → Actions).
+name: Déploiement
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      cible:
+        description: 'Que déployer ?'
+        type: choice
+        options: [tout, front, api]
+        default: tout
+
+concurrency:
+  group: deploiement-demo
+  cancel-in-progress: false
+
+jobs:
+  front:
+    name: Front (demo.bsandoz.fr)
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_dispatch' && inputs.cible != 'api')
+    runs-on: ubuntu-latest
+    environment: demo
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install
+        working-directory: packages/ui
+      - run: npm install
+        working-directory: apps/detailing/front
+      - name: Build (adresse de l'API en variable GitHub VITE_API_URL)
+        run: npm run build
+        working-directory: apps/detailing/front
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+      - name: Envoi FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: apps/detailing/front/dist/
+          server-dir: ${{ secrets.FTP_SERVER_DIR_FRONT }}
+
+  api:
+    name: API (api.demo.bsandoz.fr)
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_dispatch' && inputs.cible != 'front')
+    runs-on: ubuntu-latest
+    environment: demo
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '8.3', tools: composer }
+      - name: Dépendances de production (kit copié dans vendor, pas de lien symbolique)
+        working-directory: apps/detailing/api
+        run: composer install --no-dev --optimize-autoloader --classmap-authoritative --no-interaction --no-scripts --prefer-dist
+        env:
+          COMPOSER_MIRROR_PATH_REPOS: '1'
+      - name: Envoi FTPS (sans var/, tests ni secrets)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: apps/detailing/api/
+          server-dir: ${{ secrets.FTP_SERVER_DIR_API }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            var/**
+            tests/**
+            .env.local
+            .env.*.local
+            .env.test
+            phpunit.dist.xml
+            phpstan.neon.dist
+            .phpunit.cache/**
+      - name: Rappel
+        run: |
+          echo "Code envoyé. Sur le serveur (terminal cPanel ou SSH) : sh deploy/apres-envoi.sh — vide le cache et applique les migrations."

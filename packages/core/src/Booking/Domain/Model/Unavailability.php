@@ -6,8 +6,8 @@ namespace Bsandoz\Core\Booking\Domain\Model;
 
 use Bsandoz\Core\Shared\Domain\TimeRange;
 
-/** Indisponibilité du pro (congés, rendez-vous personnel…) : aucun créneau proposé pendant cette période. */
-final class Unavailability
+/** Indisponibilité du pro (congés, rendez-vous personnel…) : aucun créneau proposé pendant cette période. Pas « final » : Doctrine génère un proxy (lazy ghost) pour chaque entité. */
+class Unavailability
 {
     public readonly string $id;
 

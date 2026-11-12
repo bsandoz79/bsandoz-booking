@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Bsandoz\Core\Catalog\Domain\Model;
 
-final class Category
+// Pas « final » : Doctrine génère un proxy de chargement différé (lazy ghost) pour chaque entité.
+class Category
 {
     public function __construct(
         public readonly string $id,

@@ -6,8 +6,8 @@ namespace Bsandoz\Core\Booking\Domain\Model;
 
 use Bsandoz\Core\Shared\Domain\DomainError;
 
-/** Plage d'ouverture hebdomadaire, en heure locale (ex. lundi 08:00–12:00 ; « 24:00 » = minuit en fin de journée). */
-final class OpeningHour
+/** Plage d'ouverture hebdomadaire, en heure locale (ex. lundi 08:00–12:00 ; « 24:00 » = minuit en fin de journée). Pas « final » : Doctrine génère un proxy (lazy ghost) pour chaque entité. */
+class OpeningHour
 {
     public readonly string $id;
 
