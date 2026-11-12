@@ -12,3 +12,18 @@
 .badge { align-self: flex-start; background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); font-weight: 700; font-size: .75rem; padding: 2px 8px; border-radius: var(--bs-radius-pill); }
 .price { font-weight: 800; color: var(--bs-color-primary-dark); }
 .note { font-size: .8rem; color: var(--bs-color-text-muted); }
+.wide { max-width: 100%; }
+.selfStart { align-self: flex-start; }
+.band { background: var(--bs-color-surface); border-block: 1px solid var(--bs-color-border); }
+.steps { list-style: none; counter-reset: etape; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
+.step { counter-increment: etape; display: flex; flex-direction: column; gap: .5rem; }
+.step::before { content: counter(etape); display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--bs-color-primary); color: #fff; font-weight: 800; }
+.realisation { margin: 0; display: flex; flex-direction: column; gap: .5rem; }
+.realisation figcaption { font-weight: 600; }
+.beforeAfter { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.photo { aspect-ratio: 4 / 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .25rem; border-radius: var(--bs-radius-sm); background: var(--bs-color-bg); border: 1px dashed var(--bs-color-border); color: var(--bs-color-text-muted); font-size: .85rem; }
+.photo span:first-child { font-weight: 700; color: var(--bs-color-text); }
+.faq { display: flex; flex-direction: column; gap: .5rem; }
+.question { border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-bg); padding: .75rem 1rem; }
+.question summary { font-weight: 700; cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+.question p { margin-top: .5rem; }
