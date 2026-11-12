@@ -13,7 +13,7 @@ export interface ChoiceChipsProps {
   onChange: (value: string) => void;
 }
 
-/** Choix unique sous forme de pastilles (ex. type de véhicule, lieu du rendez-vous). */
+/** Choix unique sous forme de pastilles (ex. variante, lieu du rendez-vous). */
 export function ChoiceChips({ label, choices, value, onChange }: ChoiceChipsProps) {
   return (
     <div className={styles.group} role="radiogroup" aria-label={label}>

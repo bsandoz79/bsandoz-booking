@@ -6,7 +6,7 @@ describe('PriceSummary', () => {
     expect(formatEuros(12600).replace(/\s/g, ' ')).toBe('126,00 €');
   });
   it('affiche total et acompte', () => {
-    render(<PriceSummary lines={[{ label: 'Intérieur SUV', amountCents: 9900 }]} totalCents={9900} depositCents={2970} />);
+    render(<PriceSummary lines={[{ label: 'Prestation grand format', amountCents: 9900 }]} totalCents={9900} depositCents={2970} />);
     expect(screen.getByText('Total')).toBeInTheDocument();
     expect(screen.getByText('Acompte à la réservation')).toBeInTheDocument();
   });

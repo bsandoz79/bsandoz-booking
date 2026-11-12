@@ -74,6 +74,7 @@
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
+- Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
 - Réservation : deux plages d'ouverture qui se chevauchent ne produisent plus de créneaux en double.
 - Réservation : un pas de créneau nul ne fait plus tourner le calcul à l'infini, une vitesse nulle ne provoque plus de division par zéro (refusés à la création des règles et de la zone).
 - Site detailing : nom du projet synchronisé dans `package-lock.json` ; import de `vite.config.ts` avec son extension dans `vitest.config.ts` (avertissement Vite).
