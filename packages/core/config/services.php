@@ -160,6 +160,10 @@ return static function (ContainerConfigurator $container): void {
     $services->set(AgendaController::class)->public()->tag('controller.service_arguments')
         ->arg('$secret', param('bsandoz_core.ical_secret'));
     $services->set(SendNotificationsCommand::class);
+    $services->set(\Bsandoz\Core\Notification\Application\EnvoyerDemandeContact::class)
+        ->arg('$proEmail', param('bsandoz_core.mail.pro_email'));
+    $services->set(\Bsandoz\Core\Notification\Infrastructure\Http\ContactController::class)->public()->tag('controller.service_arguments')
+        ->arg('$contactLimiter', service('limiter.bsandoz_contact'));
     $services->set(NotificationsReservation::class)
         ->arg('$brand', param('bsandoz_core.mail.brand'))
         ->arg('$proEmail', param('bsandoz_core.mail.pro_email'))

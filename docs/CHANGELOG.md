@@ -119,6 +119,8 @@
 - Kit et API : payer l'acompte plus tard (`POST /me/reservations/{id}/payment`, `POST /booking/manage/{token}/payment`) : créneau revérifié et rebloqué, 409 s'il a été repris ; une réservation non payée peut changer de créneau ou être annulée.
 - Mon espace et lien de gestion : payer l'acompte plus tard, changer de créneau ou annuler une réservation non payée ; si le créneau a été repris, choix d'un autre créneau puis paiement.
 - Bouton clair / nuit rond : le soleil se couche et la lune se lève pendant que le ciel s'assombrit (et l'inverse).
+- Kit et API : demande de contact ou de devis (`POST /contact`), transmise au pro par mail avec l'adresse du demandeur en « répondre à », limitée à 5 par heure, champ piège contre les robots.
+- Page « Professionnels » (lien « Pro » du menu) : offre sur devis pour flottes, utilitaires, poids lourds et garages, formulaire de demande de devis envoyé au pro par mail, appel et e-mail directs.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

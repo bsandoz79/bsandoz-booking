@@ -163,6 +163,7 @@ final class BsandozCoreBundle extends AbstractBundle
         'bsandoz_activation' => 10,
         'bsandoz_forgot' => 5,
         'bsandoz_manage' => 30,
+        'bsandoz_contact' => 5,
     ];
 
     public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void

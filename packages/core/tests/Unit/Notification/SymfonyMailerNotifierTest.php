@@ -109,6 +109,18 @@ final class SymfonyMailerNotifierTest extends TestCase
         self::assertNotSame('', (string) $this->dernier()->getTextBody());
     }
 
+    public function testDemandeDeDevisAvecAdresseDeReponse(): void
+    {
+        $this->notifier()->send('pro@example.test', 'pro_contact_request', [
+            'nom' => 'Alex Martin', 'email' => 'alex@transport.test', 'telephone' => '06 00 00 00 00', 'entreprise' => 'Transports Martin',
+            'message' => "3 utilitaires\nà nettoyer", 'details' => ['Type de véhicules' => 'Utilitaires'], 'replyTo' => 'alex@transport.test',
+        ]);
+
+        self::assertSame('Demande de devis : Alex Martin (Transports Martin)', $this->dernier()->getSubject());
+        self::assertSame('alex@transport.test', $this->dernier()->getReplyTo()[0]->getAddress());
+        self::assertStringContainsString('Type de véhicules : Utilitaires', (string) $this->dernier()->getTextBody());
+    }
+
     public function testModeleSurchargeParLApplication(): void
     {
         $dir = sys_get_temp_dir() . '/bsandoz-mails-' . bin2hex(random_bytes(4));

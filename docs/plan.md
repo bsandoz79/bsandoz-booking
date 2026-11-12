@@ -42,3 +42,4 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/produits-upsell` : produits vendus avec la réservation (stock géré dans l'espace pro, payés avec l'acompte)
 - [x] `feature/nombre-vehicules` : plusieurs véhicules par réservation, options par véhicule, formules compactes
 - [x] `feature/payer-plus-tard` : acompte payable plus tard, créneau revérifié, changement de créneau et annulation d'une réservation non payée
+- [x] `feature/page-professionnels` : page Pro sur devis et formulaire de contact
