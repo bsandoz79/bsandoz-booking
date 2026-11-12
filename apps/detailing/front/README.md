@@ -16,3 +16,5 @@ Site React (Vite) du premier client, construit avec les blocs du kit `@bsandoz/u
 - `/` : accueil (prestations, comment ça marche, réalisations avant / après à fournir, zone d'intervention, avis à compléter, questions fréquentes).
 - `/reserver`, `/confirmation` : parcours de réservation.
 - `/mon-espace`, `/pro` : espaces client et pro.
+- `/mentions-legales`, `/cgv`, `/confidentialite` : pages légales (`src/pages/Legal`) reprenant `site.ts` ; identité de l'entreprise, droit de rétractation, médiateur et durée de conservation `[à compléter]`, textes à faire relire avant la mise en ligne.
+- Toute autre adresse : page introuvable.

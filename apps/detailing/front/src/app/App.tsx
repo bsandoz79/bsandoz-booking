@@ -5,6 +5,7 @@ import { Accueil } from '../pages/Accueil/Accueil';
 import { Confirmation } from '../pages/Confirmation/Confirmation';
 import { EspaceClient } from '../pages/EspaceClient/EspaceClient';
 import { EspacePro } from '../pages/EspacePro/EspacePro';
+import { Cgv, Confidentialite, MentionsLegales, PageIntrouvable } from '../pages/Legal/Legal';
 import { Reserver } from '../pages/Reserver/Reserver';
 
 export function AppRoutes() {
@@ -17,6 +18,10 @@ export function AppRoutes() {
         <Route path="/confirmation" element={<Confirmation />} />
         <Route path="/mon-espace" element={<EspaceClient />} />
         <Route path="/pro" element={<EspacePro />} />
+        <Route path="/mentions-legales" element={<MentionsLegales />} />
+        <Route path="/cgv" element={<Cgv />} />
+        <Route path="/confidentialite" element={<Confidentialite />} />
+        <Route path="*" element={<PageIntrouvable />} />
       </Routes>
       <Footer />
     </>
