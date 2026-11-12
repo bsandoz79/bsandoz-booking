@@ -118,6 +118,7 @@
 - Réservation : nombre de véhicules (− / +, 1 par défaut), même formule pour tous, options par véhicule, prix et durée recalculés ; formules en liste compacte sans description ; colonne plus étroite ; véhicules et options affichés dans le planning du pro.
 - Kit et API : payer l'acompte plus tard (`POST /me/reservations/{id}/payment`, `POST /booking/manage/{token}/payment`) : créneau revérifié et rebloqué, 409 s'il a été repris ; une réservation non payée peut changer de créneau ou être annulée.
 - Mon espace et lien de gestion : payer l'acompte plus tard, changer de créneau ou annuler une réservation non payée ; si le créneau a été repris, choix d'un autre créneau puis paiement.
+- Bouton clair / nuit rond : le soleil se couche et la lune se lève pendant que le ciel s'assombrit (et l'inverse).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

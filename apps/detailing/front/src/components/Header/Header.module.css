@@ -10,24 +10,27 @@
 .rond:hover { border-color: var(--bs-color-primary); }
 .menu { display: none; }
 
-/* Interrupteur clair / nuit : ciel de jour avec soleil, ciel de nuit étoilé avec lune ; le bouton glisse. */
-.interrupteur { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 999px; }
-.interrupteur:focus-visible { outline: 2px solid var(--bs-color-primary); outline-offset: 2px; }
-.piste { position: relative; display: block; width: 58px; height: 32px; border-radius: 999px; overflow: hidden;
-  background: linear-gradient(135deg, #8fd3ff, #4aa8f0); box-shadow: inset 0 1px 3px rgb(0 0 0 / .2); transition: background .4s ease; }
-.interrupteur[aria-pressed='true'] .piste { background: linear-gradient(135deg, #24365e, #0b1226); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .22); }
-.etoiles { position: absolute; inset: 0; opacity: 0; transition: opacity .4s ease;
+/* Bouton clair / nuit : un rond de ciel ; au changement, le soleil se couche et la lune se lève (roue d'un demi-tour). */
+.astre { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
+.astre:focus-visible { outline: 2px solid var(--bs-color-primary); outline-offset: 2px; }
+.ciel { position: relative; display: block; width: 44px; height: 44px; border-radius: 50%; overflow: hidden;
+  background: linear-gradient(180deg, #7cc7ff 0%, #bfe6ff 100%); box-shadow: inset 0 0 0 1.5px var(--bs-color-border);
+  transition: background .8s ease; }
+.astre[aria-pressed='true'] .ciel { background: linear-gradient(180deg, #0b1226 0%, #24365e 100%); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .22); }
+.etoiles { position: absolute; inset: 0; opacity: 0; transition: opacity .6s ease .3s;
   background:
-    radial-gradient(1.5px 1.5px at 12px 9px, #fff 99%, transparent),
-    radial-gradient(1px 1px at 22px 20px, #fff 99%, transparent),
-    radial-gradient(1.2px 1.2px at 9px 22px, #fff 99%, transparent),
-    radial-gradient(1px 1px at 28px 8px, #fff 99%, transparent); }
-.interrupteur[aria-pressed='true'] .etoiles { opacity: 1; }
-.bouton { position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
-  background: #fff; color: #f5a623; box-shadow: 0 2px 6px rgb(0 0 0 / .25); transition: transform .4s cubic-bezier(.65, 0, .35, 1), background .4s ease, color .4s ease; }
-.interrupteur[aria-pressed='true'] .bouton { transform: translateX(26px); background: #e8edf7; color: #2b3b63; }
-.interrupteur:hover .bouton { box-shadow: 0 2px 10px rgb(0 0 0 / .35); }
-@media (prefers-reduced-motion: reduce) { .piste, .etoiles, .bouton { transition: none; } }
+    radial-gradient(1.4px 1.4px at 10px 12px, #fff 99%, transparent),
+    radial-gradient(1px 1px at 32px 9px, #fff 99%, transparent),
+    radial-gradient(1.2px 1.2px at 34px 30px, #fff 99%, transparent),
+    radial-gradient(1px 1px at 14px 33px, #fff 99%, transparent); }
+.astre[aria-pressed='true'] .etoiles { opacity: 1; }
+.roue { position: absolute; left: 0; top: 0; width: 44px; height: 88px; transform-origin: 50% 50%;
+  transition: transform .8s cubic-bezier(.65, 0, .35, 1); }
+.astre[aria-pressed='true'] .roue { transform: rotate(180deg); }
+.soleil { position: absolute; left: 11px; top: 11px; color: #f5a623; filter: drop-shadow(0 0 4px rgb(255 200 80 / .8)); }
+.lune { position: absolute; left: 12px; top: 56px; color: #f3f1e4; transform: rotate(180deg); filter: drop-shadow(0 0 3px rgb(255 255 255 / .5)); }
+.astre:hover .ciel { box-shadow: inset 0 0 0 2px var(--bs-color-primary); }
+@media (prefers-reduced-motion: reduce) { .ciel, .etoiles, .roue { transition: none; } }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Téléphone : une seule ligne (logo, clair / nuit, Réserver, Menu) ; les liens s'ouvrent en dessous. */
