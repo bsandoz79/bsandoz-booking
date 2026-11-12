@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Bsandoz\Core\Notification\Infrastructure\Mailer;
 
 use Bsandoz\Core\Notification\Domain\Port\Notifier;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -17,10 +20,14 @@ use Twig\TwigFilter;
  * surchargeables par l'application dans templates/bsandoz/emails/. Version texte déduite du HTML.
  * Variables communes : brand (nom affiché), front_url (liens vers le site), timezone (dates locales) ;
  * filtre « euros » pour les montants en centimes.
+ * Un serveur de mail indisponible ou mal configuré ne bloque jamais l'action en cours (réservation, paiement…) :
+ * l'échec est écrit dans le journal.
  */
 final class SymfonyMailerNotifier implements Notifier
 {
     private Environment $twig;
+
+    private LoggerInterface $logger;
 
     public function __construct(
         private MailerInterface $mailer,
@@ -30,7 +37,9 @@ final class SymfonyMailerNotifier implements Notifier
         string $frontUrl,
         string $timezone,
         ?string $overrideDir = null,
+        ?LoggerInterface $logger = null,
     ) {
+        $this->logger = $logger ?? new NullLogger();
         $paths = [];
         if ($overrideDir !== null && is_dir($overrideDir)) {
             $paths[] = $overrideDir;
@@ -61,7 +70,11 @@ final class SymfonyMailerNotifier implements Notifier
             $email->attach($attachment['content'], $attachment['name'], $attachment['mime']);
         }
 
-        $this->mailer->send($email);
+        try {
+            $this->mailer->send($email);
+        } catch (TransportExceptionInterface $e) {
+            $this->logger->error('Mail « {modele} » non envoyé à {destinataire} : {erreur}', ['modele' => $template, 'destinataire' => $to, 'erreur' => $e->getMessage()]);
+        }
     }
 
     /** Version texte : liens gardés entre parenthèses, balises retirées, espaces resserrés. */

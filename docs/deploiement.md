@@ -25,12 +25,13 @@ BSANDOZ_VAPID_PUBLIC_KEY=        # php bin/console bsandoz:push:cles (notificati
 BSANDOZ_VAPID_PRIVATE_KEY=
 FRONT_URL=https://demo.bsandoz.fr
 CORS_ALLOW_ORIGIN='^https://demo\.bsandoz\.fr$'
-MAILER_DSN="smtp://no-reply%40demo.bsandoz.fr:MOTDEPASSE@mail.demo.bsandoz.fr:465"   # boîte mail créée dans cPanel
-MAILER_FROM=no-reply@demo.bsandoz.fr
+MAILER_DSN="smtp://no-reply%40bsandoz.fr:MOTDEPASSE@muguet.o2switch.net:465"   # boîte mail cPanel ; hôte = nom du serveur o2switch (certificat valide), pas mail.<domaine>
+MAILER_FROM=no-reply@bsandoz.fr
 PRO_EMAIL=                       # adresse du pro, prévenu de chaque rendez-vous
 STRIPE_SECRET_KEY=               # tableau de bord Stripe → Développeurs → Clés API (sk_test_… pour la démo)
 STRIPE_WEBHOOK_SECRET=           # voir § 5
 ```
+Un mail qui ne part pas ne bloque pas la réservation : l'erreur est écrite dans `public/error_log`.
 Le mot de passe de la base, s'il contient des caractères spéciaux, doit être encodé (`@` → `%40`, `:` → `%3A`…).
 
 ## 3. GitHub (une seule fois)
