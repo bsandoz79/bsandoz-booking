@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AddressInput, Calendar, ChoiceChips, PriceSummary, SlotPicker, StepCard, type StepCardStatus, formatEuros } from '@bsandoz/ui';
 import type { Category, Formule, OptionItem, ProduitItem } from '../../data/demo';
@@ -102,7 +102,10 @@ export function Reserver() {
   }, [day, address, dureeMin, formule]);
 
   // Parcours guidé : chaque choix ouvre la partie suivante et y amène le visiteur (ou passe à l'étape suivante).
-  const allerA = (id: string) => { defilerVers(id); };
+  // Un seul défilement en attente à la fois, annulé si le visiteur quitte la page.
+  const defilementEnCours = useRef<() => void>(undefined);
+  useEffect(() => () => defilementEnCours.current?.(), []);
+  const allerA = (id: string) => { defilementEnCours.current?.(); defilementEnCours.current = defilerVers(id); };
   const etapeSuivante = (i: number) => { setError(''); setStep(i); };
 
   /** Un changement de prestation peut changer la durée : l'heure choisie est à revoir. */

@@ -139,3 +139,4 @@
 - Style : plus d'encadrés à barre de couleur sur le côté (résultat de la carte de zone, message de la carte de fidélité, options d'une formule, produits) ; résultat de la carte avec le prix du déplacement en grand.
 - Déplacement d'un rendez-vous de plusieurs véhicules : durée recalculée pour tous les véhicules.
 - Créneaux : le battement réglé (rangement) s'applique aussi après les rendez-vous déjà pris (avant, seulement avant eux) : avec 30 min, un rendez-vous 08:00–09:30 laisse le suivant à 10:00, trajet en plus ; battement par défaut porté à 30 min.
+- Réservation guidée : le défilement automatique en attente s'arrête quand on quitte la page (erreur après la fin des tests sur la CI).
