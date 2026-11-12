@@ -1,4 +1,4 @@
-import { act, render as rendre, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render as rendre, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { cerclesZone, type ZonePublique } from '../../data/zone';
@@ -83,5 +83,14 @@ describe('CarteZone', () => {
     act(() => surVisible([{ isIntersecting: true }]));
     expect(await screen.findByText('Localisation refusée : indiquez votre adresse.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Utiliser ma position' })).toBeInTheDocument();
+  });
+
+  it('sur téléphone, indique d’utiliser deux doigts quand on glisse la carte avec un seul', () => {
+    vi.stubGlobal('matchMedia', () => ({ matches: true }));
+    render(<CarteZone zone={ZONE} centre={CENTRE} ville="Abbeville" estimer={vi.fn()} rechercherAdresse={async () => []} />);
+    const carte = screen.getByRole('region', { name: /Carte de la zone/ });
+
+    fireEvent.touchMove(carte, { touches: [{ clientX: 10, clientY: 10 }] });
+    expect(screen.getByText('Utilisez deux doigts pour déplacer la carte')).toBeInTheDocument();
   });
 });

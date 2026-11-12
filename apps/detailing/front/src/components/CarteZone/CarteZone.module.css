@@ -25,3 +25,10 @@
 .offert { color: var(--bs-color-success); }
 .horsZone { color: var(--bs-color-danger); }
 .devis { align-self: flex-start; margin-top: .5rem; }
+
+/* Téléphone : indication quand on essaie de déplacer la carte avec un seul doigt. */
+.cadre { position: relative; }
+.indice { position: absolute; inset: 0; z-index: 500; display: grid; place-items: center; margin: 0; padding: 1rem; text-align: center;
+  border-radius: var(--bs-radius-md); background: rgb(8 14 26 / .55); color: #fff; font-weight: 700; pointer-events: none; animation: indice .2s ease; }
+@keyframes indice { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .indice { animation: none; } }
