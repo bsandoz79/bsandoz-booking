@@ -29,3 +29,6 @@
 .question p { margin-top: .5rem; }
 .categorie { display: flex; flex-direction: column; gap: .75rem; }
 .categorie h4 { font-size: 1.05rem; }
+.image { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--bs-radius-sm); }
+.etoiles { color: #b8860b; letter-spacing: 2px; }
+blockquote.card { margin: 0; }

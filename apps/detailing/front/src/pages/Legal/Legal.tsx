@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { useContenu } from '../../app/contenuContexte';
 import { SITE } from '../../data/site';
 import styles from './Legal.module.css';
 
@@ -18,28 +19,28 @@ function PageLegale({ titre, children }: { titre: string; children: ReactNode })
 }
 
 export function MentionsLegales() {
-  const l = SITE.legal;
+  const { legal: l, coordonnees } = useContenu().contenu;
   return (
     <PageLegale titre="Mentions légales">
       <section>
         <h2>Éditeur du site</h2>
         <ul>
           <li>Nom commercial : {SITE.brand}</li>
-          <li>Responsable : {l.owner}</li>
-          <li>Statut : {l.status}</li>
+          <li>Responsable : {l.responsable}</li>
+          <li>Statut : {l.statut}</li>
           <li>SIRET : {l.siret}</li>
-          <li>TVA intracommunautaire : {l.vat}</li>
-          <li>Adresse : {l.address}</li>
-          <li>Téléphone : {SITE.phone} · E-mail : {SITE.email}</li>
+          <li>TVA intracommunautaire : {l.tva}</li>
+          <li>Adresse : {l.adresse}</li>
+          <li>Téléphone : {coordonnees.telephone} · E-mail : {coordonnees.email}</li>
         </ul>
       </section>
       <section>
         <h2>Directeur de la publication</h2>
-        <p>{l.owner}</p>
+        <p>{l.responsable}</p>
       </section>
       <section>
         <h2>Hébergement</h2>
-        <p>{l.host}</p>
+        <p>{SITE.legal.host}</p>
       </section>
       <section>
         <h2>Propriété intellectuelle</h2>
@@ -54,6 +55,7 @@ export function MentionsLegales() {
 }
 
 export function Cgv() {
+  const { legal, coordonnees } = useContenu().contenu;
   return (
     <PageLegale titre="Conditions générales de vente">
       <section>
@@ -74,7 +76,7 @@ export function Cgv() {
       </section>
       <section>
         <h2>5. Droit de rétractation</h2>
-        <p>[à compléter : régime applicable à faire valider (prestation de service à date déterminée, article L221-28 du Code de la consommation).]</p>
+        <p>{legal.retractation}</p>
       </section>
       <section>
         <h2>6. Déroulement de la prestation</h2>
@@ -82,18 +84,19 @@ export function Cgv() {
       </section>
       <section>
         <h2>7. Réclamations et médiation</h2>
-        <p>Toute réclamation peut être adressée à {SITE.email}. En cas de litige, vous pouvez recourir gratuitement au médiateur de la consommation : {SITE.legal.mediator}.</p>
+        <p>Toute réclamation peut être adressée à {coordonnees.email}. En cas de litige, vous pouvez recourir gratuitement au médiateur de la consommation : {legal.mediateur}.</p>
       </section>
     </PageLegale>
   );
 }
 
 export function Confidentialite() {
+  const { legal, coordonnees } = useContenu().contenu;
   return (
     <PageLegale titre="Politique de confidentialité">
       <section>
         <h2>Responsable du traitement</h2>
-        <p>{SITE.brand} ({SITE.legal.owner}), joignable à {SITE.email}.</p>
+        <p>{SITE.brand} ({legal.responsable}), joignable à {coordonnees.email}.</p>
       </section>
       <section>
         <h2>Données collectées et utilisation</h2>
@@ -106,7 +109,7 @@ export function Confidentialite() {
       </section>
       <section>
         <h2>Durée de conservation</h2>
-        <p>Durée de conservation : [à compléter]. Lorsque vous supprimez votre compte, vos données personnelles sont anonymisées ; seules les informations nécessaires à la comptabilité sont conservées pendant la durée légale.</p>
+        <p>Durée de conservation : {legal.conservation}. Lorsque vous supprimez votre compte, vos données personnelles sont anonymisées ; seules les informations nécessaires à la comptabilité sont conservées pendant la durée légale.</p>
       </section>
       <section>
         <h2>Destinataires</h2>
@@ -118,7 +121,7 @@ export function Confidentialite() {
       </section>
       <section>
         <h2>Vos droits</h2>
-        <p>Vous disposez d'un droit d'accès, de rectification, d'effacement et de portabilité. Depuis votre espace client, vous pouvez télécharger vos données et supprimer votre compte. Vous pouvez aussi nous écrire à {SITE.email}, ou saisir la CNIL (cnil.fr).</p>
+        <p>Vous disposez d'un droit d'accès, de rectification, d'effacement et de portabilité. Depuis votre espace client, vous pouvez télécharger vos données et supprimer votre compte. Vous pouvez aussi nous écrire à {coordonnees.email}, ou saisir la CNIL (cnil.fr).</p>
       </section>
     </PageLegale>
   );
