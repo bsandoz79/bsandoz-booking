@@ -17,7 +17,7 @@ async function charger(reponses: Record<string, Reponse | Reponse[]>) {
   return import('./compte');
 }
 
-const appels = () => fetchMock.mock.calls.map(([url, init]: [string, RequestInit]) => ({
+const appels = () => (fetchMock.mock.calls as [string, RequestInit][]).map(([url, init]) => ({
   route: `${init.method ?? 'GET'} ${url.replace('https://api.exemple.test/api/v1', '')}`,
   auth: (init.headers as Record<string, string>).Authorization,
   body: init.body ? JSON.parse(String(init.body)) : undefined,
