@@ -57,6 +57,15 @@ final class BsandozCoreBundle extends AbstractBundle
                         ->scalarNode('cancel_url')->defaultValue('/')->end()
                     ->end()
                 ->end()
+                ->arrayNode('push')
+                    ->info('Notifications push du pro (Web Push, clés VAPID générées par bsandoz:push:cles). Clés vides : désactivées.')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('vapid_public_key')->defaultValue('%env(default::BSANDOZ_VAPID_PUBLIC_KEY)%')->end()
+                        ->scalarNode('vapid_private_key')->defaultValue('%env(default::BSANDOZ_VAPID_PRIVATE_KEY)%')->end()
+                        ->scalarNode('subject')->defaultNull()->info('Contact transmis aux services push (mailto: ou https:) ; par défaut mailto:<from_email>.')->end()
+                    ->end()
+                ->end()
                 ->arrayNode('rules')
                     ->info('Règles de réservation (modifiables dans l\'espace pro à partir de feature/core-admin).')
                     ->addDefaultsIfNotSet()
@@ -86,7 +95,7 @@ final class BsandozCoreBundle extends AbstractBundle
             ->end();
     }
 
-    /** @param array{timezone: string, encryption_key: string|null, ical_secret: string|null, mail: array{from_email: string, from_name: string, brand: string, front_url: string|null, pro_email: string|null}, payment: array{stripe_secret_key: string|null, stripe_webhook_secret: string|null, success_url: string, cancel_url: string}, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
+    /** @param array{timezone: string, encryption_key: string|null, ical_secret: string|null, mail: array{from_email: string, from_name: string, brand: string, front_url: string|null, pro_email: string|null}, payment: array{stripe_secret_key: string|null, stripe_webhook_secret: string|null, success_url: string, cancel_url: string}, push: array{vapid_public_key: string|null, vapid_private_key: string|null, subject: string|null}, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->parameters()
@@ -101,6 +110,9 @@ final class BsandozCoreBundle extends AbstractBundle
             ->set('bsandoz_core.payment.stripe_webhook_secret', $config['payment']['stripe_webhook_secret'])
             ->set('bsandoz_core.payment.success_url', $config['payment']['success_url'])
             ->set('bsandoz_core.payment.cancel_url', $config['payment']['cancel_url'])
+            ->set('bsandoz_core.push.vapid_public_key', $config['push']['vapid_public_key'] ?? '')
+            ->set('bsandoz_core.push.vapid_private_key', $config['push']['vapid_private_key'] ?? '')
+            ->set('bsandoz_core.push.subject', $config['push']['subject'] ?? 'mailto:' . $config['mail']['from_email'])
             ->set('bsandoz_core.encryption_key', $config['encryption_key'])
             ->set('bsandoz_core.rules', $config['rules'])
             ->set('bsandoz_core.zone', $config['zone'] ?? null);

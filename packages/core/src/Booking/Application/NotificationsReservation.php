@@ -8,13 +8,15 @@ use Bsandoz\Core\Auth\Domain\Model\User;
 use Bsandoz\Core\Auth\Domain\Port\UserRepository;
 use Bsandoz\Core\Booking\Domain\Model\Reservation;
 use Bsandoz\Core\Catalog\Domain\Port\PrestationRepository;
+use Bsandoz\Core\Notification\Application\NotifierProParPush;
+use Bsandoz\Core\Notification\Domain\Model\MessagePush;
 use Bsandoz\Core\Notification\Domain\Port\Notifier;
 use Bsandoz\Core\Notification\Domain\Service\IcsGenerator;
 use Bsandoz\Core\Shared\Domain\Money;
 use Bsandoz\Core\Shared\Domain\NotFound;
 
 /**
- * Mails d'une réservation, au client et au pro (si son adresse est configurée).
+ * Mails d'une réservation, au client et au pro (si son adresse est configurée), et notification push sur les appareils du pro.
  * Le contenu (dates locales, montants, liens) est mis en forme par les modèles Twig du Notifier.
  */
 final class NotificationsReservation
@@ -26,6 +28,8 @@ final class NotificationsReservation
         private IcsGenerator $ics,
         private string $brand,
         private ?string $proEmail = null,
+        private ?NotifierProParPush $push = null,
+        private string $timezone = 'UTC',
     ) {
     }
 
@@ -35,6 +39,7 @@ final class NotificationsReservation
         [$user, $context] = $this->contexte($reservation);
         $this->notifier->send($user->email(), 'booking_confirmed', $context + ['manageToken' => $manageToken], [$this->piece($reservation, $context)]);
         $this->auPro('pro_new_booking', $context);
+        $this->pousser('Nouveau rendez-vous', $reservation, $context);
     }
 
     public function annulee(Reservation $reservation, bool $refundable): void
@@ -42,6 +47,7 @@ final class NotificationsReservation
         [$user, $context] = $this->contexte($reservation);
         $this->notifier->send($user->email(), 'booking_cancelled', $context + ['refundable' => $refundable]);
         $this->auPro('pro_booking_cancelled', $context + ['refundable' => $refundable]);
+        $this->pousser('Rendez-vous annulé', $reservation, $context);
     }
 
     public function deplacee(Reservation $reservation, \DateTimeImmutable $previousStart): void
@@ -50,6 +56,7 @@ final class NotificationsReservation
         $context['previousStart'] = self::iso($previousStart);
         $this->notifier->send($user->email(), 'booking_moved', $context, [$this->piece($reservation, $context)]);
         $this->auPro('pro_booking_moved', $context);
+        $this->pousser('Rendez-vous déplacé', $reservation, $context);
     }
 
     /** Rendez-vous pris par téléphone : lien de paiement de l'acompte envoyé au client. */
@@ -117,6 +124,28 @@ final class NotificationsReservation
     {
         if ($this->proEmail !== null && $this->proEmail !== '') {
             $this->notifier->send($this->proEmail, $template, $context);
+        }
+    }
+
+    /**
+     * Notification push au pro : « prestation · client · jour à HHhMM » (heure locale du pro). N'échoue jamais.
+     *
+     * @param array<string, mixed> $context
+     */
+    private function pousser(string $titre, Reservation $r, array $context): void
+    {
+        if ($this->push === null) {
+            return;
+        }
+        $debut = $r->period()->start->setTimezone(new \DateTimeZone($this->timezone));
+        $jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+        $mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+        $quand = sprintf('%s %d %s à %sh%s', $jours[(int) $debut->format('N') - 1], (int) $debut->format('j'), $mois[(int) $debut->format('n') - 1], $debut->format('H'), $debut->format('i'));
+        $texte = implode(' · ', array_filter([$context['prestation'] ?? '', $context['client'] ?? '', $quand], static fn (mixed $v): bool => is_string($v) && $v !== ''));
+        try {
+            ($this->push)(new MessagePush($titre, $texte, '/pro', 'rdv-' . $r->id()));
+        } catch (\Throwable) {
+            // Une notification manquée ne doit jamais faire échouer la réservation (le mail au pro reste envoyé).
         }
     }
 

@@ -68,6 +68,9 @@ Sans clés, la réservation fonctionne mais `paymentError` indique que le paieme
 - Agenda de l'artisan : `BSANDOZ_ICAL_SECRET` dans `.env.local`, puis abonnement à `https://api.demo.bsandoz.fr/api/v1/ical/<secret>.ics` depuis Google Agenda / iPhone.
 - Cron cPanel (toutes les 15 min) : `php bin/console bsandoz:notifications:send`.
 
+## Notifications push du pro
+`php bin/console bsandoz:push:cles` affiche les deux clés VAPID à copier dans `.env.local` (`BSANDOZ_VAPID_PUBLIC_KEY`, `BSANDOZ_VAPID_PRIVATE_KEY`). Le pro active ensuite les notifications sur chacun de ses appareils depuis l'espace pro. Sans clés, les notifications sont désactivées (les mails au pro restent envoyés). Sous Windows, si la génération échoue : définir `OPENSSL_CONF` vers `extras/ssl/openssl.cnf` du dossier de PHP. Migration : `Version20261112100000` (table `push_subscription`).
+
 ## Compte pro
 `php bin/console bsandoz:pro:creer contact@domaine.fr Prénom Nom` crée le compte de l'artisan (mot de passe demandé sans affichage). Il se connecte comme un client, et accède en plus à `/api/v1/admin` : réglages, catalogue, horaires, congés, planning, rendez-vous par téléphone, tableau de bord. Les réglages faits dans l'espace pro remplacent ceux de `config/packages/bsandoz_core.yaml`.
 

@@ -40,6 +40,14 @@ use Bsandoz\Core\Booking\Infrastructure\Http\ManageController;
 use Bsandoz\Core\Notification\Domain\Port\Notifier;
 use Bsandoz\Core\Booking\Application\NotificationsReservation;
 use Bsandoz\Core\Notification\Application\EnvoyerRappels;
+use Bsandoz\Core\Notification\Application\GererAbonnementsPush;
+use Bsandoz\Core\Notification\Application\NotifierProParPush;
+use Bsandoz\Core\Notification\Domain\Port\AbonnementsPush;
+use Bsandoz\Core\Notification\Domain\Port\EnvoiPush;
+use Bsandoz\Core\Notification\Infrastructure\Console\ClesPushCommand;
+use Bsandoz\Core\Notification\Infrastructure\Http\PushController;
+use Bsandoz\Core\Notification\Infrastructure\Persistence\DoctrineAbonnementsPush;
+use Bsandoz\Core\Notification\Infrastructure\Push\WebPushEnvoi;
 use Bsandoz\Core\Notification\Application\FluxAgendaPro;
 use Bsandoz\Core\Notification\Infrastructure\Http\AgendaController;
 use Bsandoz\Core\Notification\Domain\Port\JournalNotifications;
@@ -139,7 +147,22 @@ return static function (ContainerConfigurator $container): void {
     $services->set(SendNotificationsCommand::class);
     $services->set(NotificationsReservation::class)
         ->arg('$brand', param('bsandoz_core.mail.brand'))
-        ->arg('$proEmail', param('bsandoz_core.mail.pro_email'));
+        ->arg('$proEmail', param('bsandoz_core.mail.pro_email'))
+        ->arg('$push', service(NotifierProParPush::class))
+        ->arg('$timezone', param('bsandoz_core.timezone'));
+    $services->set(WebPushEnvoi::class)->args([
+        param('bsandoz_core.push.vapid_public_key'),
+        param('bsandoz_core.push.vapid_private_key'),
+        param('bsandoz_core.push.subject'),
+        service('logger')->nullOnInvalid(),
+    ]);
+    $services->alias(EnvoiPush::class, WebPushEnvoi::class);
+    $services->set(DoctrineAbonnementsPush::class);
+    $services->alias(AbonnementsPush::class, DoctrineAbonnementsPush::class);
+    $services->set(GererAbonnementsPush::class);
+    $services->set(NotifierProParPush::class);
+    $services->set(PushController::class)->public()->tag('controller.service_arguments');
+    $services->set(ClesPushCommand::class);
 
     // Auth (comptes et liens envoyés par mail)
     $services->set(DoctrineUserRepository::class);

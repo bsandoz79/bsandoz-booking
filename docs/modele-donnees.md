@@ -16,7 +16,7 @@
 | reservation_option | Booking | reservation_id, option_id, price_cents |
 | payment | Payment | id, reservation_id, provider_session_id (unique), amount_cents, refunded_cents, status (pending/paid/partially_refunded/refunded), paid_at, created_at (UTC) |
 | notification | Notification | id, type (reminder…), reservation_id (unique par type), sent_at (UTC) : journal des notifications programmées déjà envoyées |
-| push_subscription | Notification | user_id, endpoint, p256dh, auth |
+| push_subscription | Notification | id, user_id, endpoint (unique par appareil), public_key (p256dh), auth_token, created_at (UTC) : appareils du pro abonnés aux notifications push |
 | setting | Admin | setting_key (« rules », « zone »), value JSON, updated_at (UTC) : réglages du pro, prioritaires sur la configuration |
 | audit_log | Admin | user_id, action, target, created_at, ip |
 
