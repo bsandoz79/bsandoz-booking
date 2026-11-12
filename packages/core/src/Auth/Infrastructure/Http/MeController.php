@@ -12,6 +12,8 @@ use Bsandoz\Core\Booking\Application\AnnulerReservation;
 use Bsandoz\Core\Booking\Application\DeplacerReservation;
 use Bsandoz\Core\Booking\Application\MesReservations;
 use Bsandoz\Core\Booking\Domain\Model\Reservation;
+use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
+use Bsandoz\Core\Booking\Infrastructure\Http\VueReservation;
 use Bsandoz\Core\Shared\Infrastructure\Http\InvalidRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,6 +35,7 @@ final class MeController
         private DeplacerReservation $deplacer,
         private ExporterDonnees $exporter,
         private SupprimerCompte $supprimer,
+        private SettingsProvider $settings,
     ) {
     }
 
@@ -71,7 +74,7 @@ final class MeController
     #[Route('/reservations', name: 'bsandoz_me_reservations', methods: ['GET'])]
     public function reservations(#[CurrentUser] SecurityUser $user): JsonResponse
     {
-        return new JsonResponse(array_map(self::vue(...), ($this->mesReservations)($user->id())));
+        return new JsonResponse(array_map(fn (Reservation $r): array => VueReservation::enTableau($r, $this->settings->rules()), ($this->mesReservations)($user->id())));
     }
 
     #[Route('/reservations/{id}', name: 'bsandoz_me_reservation_cancel', methods: ['DELETE'])]
@@ -91,23 +94,5 @@ final class MeController
         ($this->deplacer)($id, $start, $user->id());
 
         return new Response(null, Response::HTTP_NO_CONTENT);
-    }
-
-    /** @return array<string, mixed> */
-    private static function vue(Reservation $r): array
-    {
-        $utc = new \DateTimeZone('UTC');
-
-        return [
-            'id' => $r->id(),
-            'status' => $r->status()->value,
-            'prestationId' => $r->prestationId(),
-            'optionIds' => $r->optionIds(),
-            'start' => $r->period()->start->setTimezone($utc)->format(DATE_ATOM),
-            'end' => $r->period()->end->setTimezone($utc)->format(DATE_ATOM),
-            'address' => $r->address(),
-            'totalCents' => $r->total()->cents,
-            'depositCents' => $r->deposit()->cents,
-        ];
     }
 }

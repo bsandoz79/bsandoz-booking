@@ -71,19 +71,6 @@ final class ManageController
     /** @return array<string, mixed> */
     private function vue(Reservation $r): array
     {
-        $rules = $this->settings->rules();
-
-        return [
-            'id' => $r->id(),
-            'status' => $r->status()->value,
-            'prestationId' => $r->prestationId(),
-            'optionIds' => $r->optionIds(),
-            'start' => $r->period()->start->setTimezone(new \DateTimeZone('UTC'))->format(DATE_ATOM),
-            'end' => $r->period()->end->setTimezone(new \DateTimeZone('UTC'))->format(DATE_ATOM),
-            'address' => $r->address(),
-            'totalCents' => $r->total()->cents,
-            'depositCents' => $r->deposit()->cents,
-            'freeCancelUntil' => $r->period()->start->modify(sprintf('-%d hours', $rules->freeCancelHours))->setTimezone(new \DateTimeZone('UTC'))->format(DATE_ATOM),
-        ];
+        return VueReservation::enTableau($r, $this->settings->rules());
     }
 }
