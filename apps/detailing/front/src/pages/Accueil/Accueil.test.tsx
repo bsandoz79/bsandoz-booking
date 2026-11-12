@@ -14,7 +14,7 @@ describe('Accueil', () => {
       expect(screen.getByRole('heading', { level: 3, name: categorie })).toBeInTheDocument();
     }
     expect(screen.getByRole('heading', { level: 4, name: 'Intérieur Signature' })).toBeInTheDocument();
-    expect(screen.getByText(/rayon de 5 km/)).toBeInTheDocument();
+    expect(screen.getAllByText(/rayon de 5 km/).length).toBeGreaterThan(0);
   });
 
   it('n’invente aucun avis ni photo', () => {

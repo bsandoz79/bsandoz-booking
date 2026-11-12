@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ContenuProvider } from './ContenuContext';
 import { Footer } from '../components/Footer/Footer';
 import { Header } from '../components/Header/Header';
 import { Accueil } from '../pages/Accueil/Accueil';
@@ -12,7 +13,7 @@ import { Reserver } from '../pages/Reserver/Reserver';
 
 export function AppRoutes() {
   return (
-    <>
+    <ContenuProvider>
       <Header />
       <Routes>
         <Route path="/" element={<Accueil />} />
@@ -29,7 +30,7 @@ export function AppRoutes() {
         <Route path="*" element={<PageIntrouvable />} />
       </Routes>
       <Footer />
-    </>
+    </ContenuProvider>
   );
 }
 

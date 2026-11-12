@@ -39,6 +39,11 @@ use Bsandoz\Core\Booking\Application\ReservationParJeton;
 use Bsandoz\Core\Booking\Infrastructure\Http\ManageController;
 use Bsandoz\Core\Notification\Domain\Port\Notifier;
 use Bsandoz\Core\Booking\Application\NotificationsReservation;
+use Bsandoz\Core\Admin\Application\GererContenuSite;
+use Bsandoz\Core\Admin\Application\GererMedias;
+use Bsandoz\Core\Admin\Domain\Port\StockageMedias;
+use Bsandoz\Core\Admin\Infrastructure\Http\SiteController;
+use Bsandoz\Core\Admin\Infrastructure\Medias\DossierMedias;
 use Bsandoz\Core\Notification\Application\EnvoyerRappels;
 use Bsandoz\Core\Notification\Application\GererAbonnementsPush;
 use Bsandoz\Core\Notification\Application\NotifierProParPush;
@@ -220,6 +225,12 @@ return static function (ContainerConfigurator $container): void {
     $services->set(CreerComptePro::class);
     $services->set(CreerCompteProCommand::class);
     $services->set(AdminController::class)->public()->tag('controller.service_arguments');
+    // Contenu modifiable du site et photos (dossier servi par le serveur web)
+    $services->set(GererContenuSite::class);
+    $services->set(DossierMedias::class)->args([param('bsandoz_core.medias_dir')]);
+    $services->alias(StockageMedias::class, DossierMedias::class);
+    $services->set(GererMedias::class);
+    $services->set(SiteController::class)->public()->tag('controller.service_arguments');
     $services->set(AdminCatalogueController::class)->public()->tag('controller.service_arguments');
     $services->set(AdminAgendaController::class)->public()->tag('controller.service_arguments');
     $services->set(CreneauxController::class)->public()->tag('controller.service_arguments');

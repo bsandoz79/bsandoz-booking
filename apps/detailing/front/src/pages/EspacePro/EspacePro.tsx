@@ -3,6 +3,7 @@ import { Button, Field } from '@bsandoz/ui';
 import { reprendreSession, rolesSession, seConnecter, seDeconnecter } from '../../services/compte';
 import { CatalogueOnglet } from './Catalogue';
 import { HorairesOnglet } from './Horaires';
+import { MonSiteOnglet } from './MonSite';
 import { PlanningOnglet } from './Planning';
 import { RdvTelephoneOnglet } from './RdvTelephone';
 import { ReglagesOnglet } from './Reglages';
@@ -15,6 +16,7 @@ const ONGLETS = [
   { id: 'telephone', label: 'Rendez-vous par téléphone' },
   { id: 'catalogue', label: 'Catalogue' },
   { id: 'horaires', label: 'Horaires et congés' },
+  { id: 'site', label: 'Mon site' },
   { id: 'reglages', label: 'Réglages' },
 ] as const;
 type Onglet = (typeof ONGLETS)[number]['id'];
@@ -51,6 +53,7 @@ export function EspacePro() {
       {onglet === 'telephone' && <RdvTelephoneOnglet />}
       {onglet === 'catalogue' && <CatalogueOnglet />}
       {onglet === 'horaires' && <HorairesOnglet />}
+      {onglet === 'site' && <MonSiteOnglet />}
       {onglet === 'reglages' && <ReglagesOnglet />}
     </main>
   );

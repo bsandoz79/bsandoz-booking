@@ -1332,6 +1332,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type BsandozCoreConfig = array{
  *     timezone?: scalar|Param|null, // Default: "Europe/Paris"
  *     encryption_key?: scalar|Param|null, // Clé de chiffrement de l'adresse et du téléphone (64 caractères hexadécimaux), propre au client. // Default: "%env(default::BSANDOZ_ENCRYPTION_KEY)%"
+ *     medias_dir?: scalar|Param|null, // Dossier des photos envoyées par le pro, servi par le serveur web sous /medias/. // Default: "%kernel.project_dir%/public/medias"
  *     ical_secret?: scalar|Param|null, // Secret de l'adresse du flux d'agenda du pro (au moins 32 caractères) : /api/v1/ical/<secret>.ics. // Default: "%env(default::BSANDOZ_ICAL_SECRET)%"
  *     mail?: array{ // Mails envoyés aux clients et au pro (modèles Twig du kit, surchargeables dans templates/bsandoz/emails/).
  *         from_email?: scalar|Param|null, // Default: "no-reply@localhost"

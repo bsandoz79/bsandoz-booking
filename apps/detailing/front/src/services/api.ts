@@ -49,7 +49,8 @@ export class ApiError extends Error {
 
 /** Appel JSON à l'API ; `token` = jeton d'accès (espace client / pro). Erreur problem+json → ApiError avec `detail`. */
 export async function http<T>(path: string, init: RequestInit = {}, token?: string): Promise<T> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json', Accept: 'application/json' };
+  // Envoi de fichier (FormData) : le navigateur fixe lui-même le Content-Type multipart.
+  const headers: Record<string, string> = init.body instanceof FormData ? { Accept: 'application/json' } : { 'Content-Type': 'application/json', Accept: 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
   const res = await fetch(`${API_URL}/api/v1${path}`, { credentials: 'include', ...init, headers });
   if (!res.ok) {

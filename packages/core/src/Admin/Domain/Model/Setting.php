@@ -9,6 +9,8 @@ class Setting
 {
     public const REGLES = 'rules';
     public const ZONE = 'zone';
+    /** Contenu éditorial du site (textes, coordonnées, FAQ, avis, photos). */
+    public const CONTENU = 'site';
 
     /** @param array<string, mixed> $value */
     public function __construct(

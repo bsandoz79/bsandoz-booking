@@ -32,6 +32,7 @@ bsandoz_core:
 # Tests : zone fixe (Amiens, 15 km offerts, 0,50 €/km, 60 km max) sur laquelle reposent les scénarios des tests fonctionnels.
 when@test:
     bsandoz_core:
+        medias_dir: '%kernel.project_dir%/var/test-medias'
         zone:
             origin_lat: 49.8941
             origin_lng: 2.2958
