@@ -4,7 +4,8 @@ import { formatEuros } from '@bsandoz/ui';
 import { useContenu } from '../../app/contenuContexte';
 import { CATEGORIES, FORMULES, prixMin, type Formule } from '../../data/demo';
 import { SITE } from '../../data/site';
-import { getCatalog } from '../../services/api';
+import { lignesTarifDeplacement, type ZonePublique } from '../../data/zone';
+import { getCatalog, getZone } from '../../services/api';
 import { A_COMPLETER } from '../../services/contenu';
 import styles from './Accueil.module.css';
 
@@ -14,6 +15,8 @@ export function Accueil() {
   // Catalogue réel (API) dès qu'il est chargé ; données de démonstration en attendant ou si l'API ne répond pas.
   const [formules, setFormules] = useState<Formule[]>(FORMULES);
   useEffect(() => { getCatalog().then((c) => { if (c.formules.length > 0) setFormules(c.formules); }).catch(() => undefined); }, []);
+  const [zone, setZone] = useState<ZonePublique>();
+  useEffect(() => { getZone().then(setZone).catch(() => undefined); }, []);
 
   const { accueil, etapes, faq, avis, realisations, communes } = contenu;
   const avisPublies = avis.filter((a) => a.texte.trim() !== '');
@@ -96,10 +99,14 @@ export function Accueil() {
       <section id="zone" className={styles.band} aria-labelledby="titre-zone">
         <div className={`container ${styles.section}`}>
           <h2 id="titre-zone">Zone d’intervention</h2>
-          <p>
-            Je me déplace autour de <strong>{SITE.city}</strong>, jusqu’à {SITE.maxDistanceKm} km : le déplacement est offert dans un rayon de{' '}
-            {SITE.freeRadiusKm} km, puis calculé selon la distance.
-          </p>
+          {zone?.surPlace ? (
+            <p>Les prestations se font sur place, à <strong>{SITE.city}</strong>.</p>
+          ) : (
+            <>
+              <p>Je me déplace autour de <strong>{SITE.city}</strong>{zone ? `, jusqu’à ${String(zone.maxDistanceKm).replace('.', ',')} km` : ''}. Frais de déplacement :</p>
+              {zone && <ul className={styles.tarifs}>{lignesTarifDeplacement(zone).map((l) => <li key={l}>{l}</li>)}</ul>}
+            </>
+          )}
           {communes.length > 0 && <p>Communes desservies : {communes.join(', ')}.</p>}
           <p>Le prix exact du déplacement est calculé automatiquement à partir de votre adresse lors de la réservation.</p>
         </div>
