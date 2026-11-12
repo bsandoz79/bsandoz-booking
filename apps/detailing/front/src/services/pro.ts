@@ -106,7 +106,7 @@ const demoRdv = (id: string, jours: number, heure: number, duree: number, presta
   const tarif = tarifDe(f);
   return {
     id, status, start: debut.toISOString(), end: new Date(debut.getTime() + duree * 60000).toISOString(), prestationId, prestation: f.name,
-    variante: null, optionIds: [], clientId: `client-${id}`, client: { name: client, email: 'client@example.org', phone: '06 00 00 00 00' },
+    variante: null, optionIds: [], clientId: `client-${id}`, client: { name: client, email: 'client@example.org', phone: '01 02 03 04 05' },
     address: '1 Place Max Lejeune 80100 Abbeville', totalCents: tarif.priceCents, depositCents: Math.ceil(tarif.priceCents * 0.3), travelFeeCents: 0,
     notes: '', metierData: {},
   };

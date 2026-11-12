@@ -48,7 +48,7 @@ export function MonSiteOnglet() {
 
       <Rubrique titre="Coordonnées">
         <div className={styles.grille}>
-          <Field label="Téléphone" type="tel" {...champ('coordonnees', 'telephone')} />
+          <Field label="Téléphone" type="tel" placeholder="01 02 03 04 05" {...champ('coordonnees', 'telephone')} />
           <Field label="E-mail" type="email" {...champ('coordonnees', 'email')} />
           <Field label="Ville ou adresse affichée" {...champ('coordonnees', 'adresse')} />
           <Field label="Horaires affichés" {...champ('coordonnees', 'horaires')} />

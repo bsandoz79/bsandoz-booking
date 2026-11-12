@@ -113,7 +113,7 @@ export function RdvTelephoneOnglet() {
           <Field label="Prénom" required {...champ('firstname')} />
           <Field label="Nom" required {...champ('lastname')} />
           <Field label="E-mail" type="email" required {...champ('email')} />
-          <Field label="Téléphone" type="tel" required {...champ('phone')} />
+          <Field label="Téléphone" type="tel" required placeholder="01 02 03 04 05" {...champ('phone')} />
         </div>
         <Field label="Précisions" multiline rows={2} {...champ('notes')} />
         <Toggle label="Envoyer un lien de paiement de l’acompte" checked={lienAcompte} onChange={setLienAcompte}
