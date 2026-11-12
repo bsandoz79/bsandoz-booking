@@ -5,9 +5,9 @@
  * - API (autre domaine ou /api/) : jamais mise en cache (données personnelles, créneaux en temps réel).
  * - Notifications push (espace pro) : affichage et ouverture de la page indiquée.
  */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = `perfect-clean-${VERSION}`;
-const A_PRECHARGER = ['/', '/offline.html', '/manifest.webmanifest', '/icon-192.png', '/favicon.svg'];
+const A_PRECHARGER = ['/', '/offline.html', '/manifest.webmanifest', '/icon-192.png', '/favicon.png', '/logo.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(A_PRECHARGER)).then(() => self.skipWaiting()));
