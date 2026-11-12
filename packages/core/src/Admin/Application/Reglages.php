@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bsandoz\Core\Admin\Application;
 
 use Bsandoz\Core\Booking\Domain\Model\BookingRules;
+use Bsandoz\Core\Booking\Domain\Model\PalierDeplacement;
 use Bsandoz\Core\Booking\Domain\Model\Zone;
 use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\Money;
@@ -62,10 +63,34 @@ final class Reglages
             maxDistanceKm: self::float($z, 'maxDistanceKm'),
             roadFactor: self::float($z, 'roadFactor', 1.3),
             averageSpeedKmh: self::float($z, 'averageSpeedKmh', 50.0),
+            paliers: self::paliers($z['paliers'] ?? []),
         );
     }
 
-    /** @return array<string, float|int> */
+    /**
+     * Tranches au format {jusquaKm, prixCents}, triées par distance.
+     *
+     * @return list<PalierDeplacement>
+     */
+    public static function paliers(mixed $paliers): array
+    {
+        if (!is_array($paliers) || !array_is_list($paliers)) {
+            throw new DomainError('« paliers » doit être une liste de tranches {jusquaKm, prixCents}.');
+        }
+        $liste = [];
+        foreach ($paliers as $p) {
+            if (!is_array($p)) {
+                throw new DomainError('Chaque tranche doit être un objet {jusquaKm, prixCents}.');
+            }
+            /** @var array<string, mixed> $p */
+            $liste[] = new PalierDeplacement(self::float($p, 'jusquaKm'), Money::cents(self::int($p, 'prixCents')));
+        }
+        usort($liste, static fn (PalierDeplacement $a, PalierDeplacement $b): int => $a->jusquaKm <=> $b->jusquaKm);
+
+        return $liste;
+    }
+
+    /** @return array<string, mixed> */
     public static function zoneEnTableau(Zone $z): array
     {
         return [
@@ -76,6 +101,7 @@ final class Reglages
             'maxDistanceKm' => $z->maxDistanceKm,
             'roadFactor' => $z->roadFactor,
             'averageSpeedKmh' => $z->averageSpeedKmh,
+            'paliers' => array_map(static fn (PalierDeplacement $p): array => ['jusquaKm' => $p->jusquaKm, 'prixCents' => $p->prix->cents], $z->paliers),
         ];
     }
 

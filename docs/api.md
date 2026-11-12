@@ -43,6 +43,9 @@ Variante : celle que le module métier déduit de `metierData`, sinon `variante`
 ```
 Adresse hors zone : `inZone: false`, pas de frais de déplacement (la réservation sera refusée).
 
+## GET /booking/zone
+Public, conditions de déplacement à afficher : `{"surPlace": false, "freeRadiusKm", "maxDistanceKm", "pricePerKmCents", "paliers": [{"jusquaKm", "prixCents"}]}` ou `{"surPlace": true}`. Le point de départ n'est pas publié.
+
 ## GET /booking/days et /booking/slots
 Paramètres : `duration` (minutes, devis compris options), `lat` / `lng` (obligatoires pour une activité à domicile, contrôle de zone), `prestation` (facultatif : si elle est à durée incertaine, seuls les débuts de demi-journée libres sont proposés).
 - `/booking/days?month=2026-11&duration=150&lat=49.89&lng=2.29` → `["2026-11-03", "2026-11-10"]`
@@ -117,7 +120,7 @@ Réservation d'un autre client : 404. Sans jeton : 401.
 ## Espace pro (`/admin`, rôle pro)
 Compte pro créé à l'installation : `php bin/console bsandoz:pro:creer contact@domaine.fr Prénom Nom` (mot de passe demandé), puis connexion par `/auth/login`. Client connecté : 403 ; sans jeton : 401.
 - `GET /admin/dashboard` → `{today, week, monthRevenueCents, monthBookings, pendingPayments, monthCancellationRate, next}`
-- `GET /admin/settings` → `{rules, zone, timezone}` ; `PUT /admin/settings/rules` `{minNoticeHours, horizonDays, bufferMin, slotStepMin, freeCancelHours, depositPercent, depositFixedCents, holdMinutes}` ; `PUT /admin/settings/zone` `{"zone": {originLat, originLng, freeRadiusKm, pricePerKmCents, maxDistanceKm, roadFactor?, averageSpeedKmh?} | null}` (null : activité sur place). Valeurs incohérentes : 422.
+- `GET /admin/settings` → `{rules, zone, timezone}` ; `PUT /admin/settings/rules` `{minNoticeHours, horizonDays, bufferMin, slotStepMin, freeCancelHours, depositPercent, depositFixedCents, holdMinutes}` ; `PUT /admin/settings/zone` `{"zone": {originLat, originLng, freeRadiusKm, pricePerKmCents, maxDistanceKm, roadFactor?, averageSpeedKmh?, paliers?: [{jusquaKm, prixCents}]} | null}` (null : activité sur place ; `paliers` : frais par tranches au-delà du rayon offert, par distance croissante ; au-delà de la dernière tranche, prix de celle-ci plus `pricePerKmCents` par km). Valeurs incohérentes : 422.
 - `GET /admin/catalog` → `{prestations, options}` (actives ou non) ; `POST` / `PUT /admin/catalog/prestations[/{id}]` `{name, description, basePriceCents, baseDurationMin, active, categoryId, position, occupePlage, tarifs: {variante: {priceCents, durationMin}}, optionIds}` ; `DELETE /admin/catalog/prestations/{id}` (désactive) ; `POST` / `PUT /admin/catalog/options[/{id}]` `{name, description, priceCents, durationMin, active}`.
 - `GET` / `PUT /admin/availability/hours` `{"hours": [{weekday, startsAt, endsAt}]}` (remplace la semaine) ; `GET /admin/availability/unavailabilities?from=&to=`, `POST` `{start, end, reason}`, `DELETE …/{id}`.
 - `GET /admin/reservations?from=AAAA-MM-JJ&to=AAAA-MM-JJ` → planning avec le client ; `POST /admin/reservations` (même corps que `/booking/reservations`, plus `sendDepositLink`) → rendez-vous pris par téléphone, confirmé tout de suite ou lien d'acompte envoyé par mail ; `PATCH /admin/reservations/{id}` `{"status": "done" | "no_show"}` ; `POST …/{id}/cancel` `{"refund": bool}` ; `POST …/{id}/refund` `{"amountCents"?}`.

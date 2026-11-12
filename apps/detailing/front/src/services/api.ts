@@ -1,4 +1,5 @@
 import { DEMO_RULES, FORMULES, OPTIONS, tarifDe } from '../data/demo';
+import { fraisDeplacement, type ZonePublique } from '../data/zone';
 import type { Formule, OptionItem } from '../data/demo';
 
 /**
@@ -63,6 +64,14 @@ export async function http<T>(path: string, init: RequestInit = {}, token?: stri
 const query = (params: Record<string, string | number | undefined>) =>
   new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])).toString();
 
+const ZONE_DEMO: ZonePublique = { surPlace: false, freeRadiusKm: DEMO_RULES.freeRadiusKm, maxDistanceKm: DEMO_RULES.maxDistanceKm, pricePerKmCents: DEMO_RULES.pricePerKmCents, paliers: DEMO_RULES.paliers };
+
+/** Conditions de déplacement à afficher (rayon offert, tranches, distance maximale). */
+export async function getZone(): Promise<ZonePublique> {
+  if (isDemo()) return ZONE_DEMO;
+  return http('/booking/zone');
+}
+
 export async function getCatalog(): Promise<{ formules: Formule[]; options: OptionItem[] }> {
   if (isDemo()) return { formules: FORMULES, options: OPTIONS };
   return http('/catalog');
@@ -93,7 +102,7 @@ export async function getQuote(selection: Selection, address?: Address): Promise
   if (address) {
     const km = demoDistanceKm(address);
     inZone = km <= DEMO_RULES.maxDistanceKm;
-    travelFeeCents = inZone ? Math.ceil(Math.max(0, km - DEMO_RULES.freeRadiusKm)) * DEMO_RULES.pricePerKmCents : 0;
+    travelFeeCents = inZone ? fraisDeplacement(ZONE_DEMO, km) : 0;
     if (travelFeeCents > 0) lines.push({ label: 'Frais de déplacement', amountCents: travelFeeCents });
   }
   const totalCents = lines.reduce((s, l) => s + l.amountCents, 0);

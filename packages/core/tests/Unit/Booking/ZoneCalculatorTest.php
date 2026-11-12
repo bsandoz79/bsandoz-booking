@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Bsandoz\Core\Tests\Unit\Booking;
 
+use Bsandoz\Core\Booking\Domain\Model\PalierDeplacement;
 use Bsandoz\Core\Booking\Domain\Model\Zone;
 use Bsandoz\Core\Booking\Domain\Service\ZoneCalculator;
 use Bsandoz\Core\Shared\Domain\Money;
+use Bsandoz\Core\Shared\Domain\DomainError;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class ZoneCalculatorTest extends TestCase
@@ -119,5 +122,48 @@ final class ZoneCalculatorTest extends TestCase
         self::assertSame($nord, $sud);
         self::assertSame($est, $ouest);
         self::assertLessThan($nord, $est, 'un degré de longitude est plus court qu\'un degré de latitude à 45° N');
+    }
+
+    /** Tranches façon Abbeville : 5 km offerts, jusqu'à 15 km 5 €, 30 km 10 €, 50 km 20 €, puis 0,50 €/km jusqu'à 60 km. */
+    private static function zoneParPaliers(): Zone
+    {
+        return new Zone(self::LAT, self::LNG, 5, Money::cents(50), 60, 1.0, 50, [
+            new PalierDeplacement(15, Money::cents(500)),
+            new PalierDeplacement(30, Money::cents(1000)),
+            new PalierDeplacement(50, Money::cents(2000)),
+        ]);
+    }
+
+    /** @return iterable<string, array{float, bool, int}> */
+    public static function distancesParPaliers(): iterable
+    {
+        yield 'dans le rayon offert' => [3.0, true, 0];
+        yield 'première tranche' => [10.0, true, 500];
+        yield 'deuxième tranche' => [20.0, true, 1000];
+        yield 'troisième tranche' => [40.0, true, 2000];
+        yield 'au-delà de la dernière tranche : prix au km en plus' => [55.0, true, 2000 + 5 * 50];
+        yield 'hors zone' => [70.0, false, 0];
+    }
+
+    #[DataProvider('distancesParPaliers')]
+    public function testFraisParPaliers(float $km, bool $dansLaZone, int $fraisCents): void
+    {
+        $quote = $this->calculator->quote(self::zoneParPaliers(), self::LAT + $km / 111.195, self::LNG);
+
+        self::assertEqualsWithDelta($km, $quote->distanceKm, 0.15);
+        self::assertSame($dansLaZone, $quote->inZone);
+        self::assertSame($fraisCents, $quote->travelFee->cents);
+    }
+
+    public function testPaliersDansLOrdreAuDelaDuRayonOffert(): void
+    {
+        $this->expectException(DomainError::class);
+        new Zone(self::LAT, self::LNG, 5, Money::cents(0), 50, 1.0, 50, [new PalierDeplacement(30, Money::cents(1000)), new PalierDeplacement(15, Money::cents(500))]);
+    }
+
+    public function testPalierDansLeRayonOffertRefuse(): void
+    {
+        $this->expectException(DomainError::class);
+        new Zone(self::LAT, self::LNG, 5, Money::cents(0), 50, 1.0, 50, [new PalierDeplacement(5, Money::cents(500))]);
     }
 }
