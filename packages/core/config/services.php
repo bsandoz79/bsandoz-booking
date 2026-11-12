@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Bsandoz\Core\Admin\Application\GererReglages;
+use Bsandoz\Core\Admin\Domain\Port\SettingRepository;
+use Bsandoz\Core\Admin\Infrastructure\Persistence\DoctrineSettingRepository;
+use Bsandoz\Core\Booking\Infrastructure\Settings\DatabaseSettingsProvider;
 use Bsandoz\Core\Auth\Application\ExporterDonnees;
 use Bsandoz\Core\Auth\Application\RenouvelerSession;
 use Bsandoz\Core\Auth\Application\SeConnecter;
@@ -58,6 +62,14 @@ use Bsandoz\Core\Booking\Application\RechercherAdresse;
 use Bsandoz\Core\Booking\Domain\Port\Geocoder;
 use Bsandoz\Core\Booking\Infrastructure\Geo\ApiAdresseGeocoder;
 use Bsandoz\Core\Booking\Infrastructure\Http\GeoController;
+use Bsandoz\Core\Admin\Application\TableauDeBord;
+use Bsandoz\Core\Admin\Infrastructure\Http\AdminController;
+use Bsandoz\Core\Booking\Infrastructure\Http\AdminAgendaController;
+use Bsandoz\Core\Catalog\Infrastructure\Http\AdminCatalogueController;
+use Bsandoz\Core\Auth\Application\CreerComptePro;
+use Bsandoz\Core\Auth\Infrastructure\Console\CreerCompteProCommand;
+use Bsandoz\Core\Booking\Application\GererDisponibilites;
+use Bsandoz\Core\Booking\Application\GererRendezVousPro;
 use Bsandoz\Core\Booking\Application\ListerCreneaux;
 use Bsandoz\Core\Booking\Application\ListerJoursDisponibles;
 use Bsandoz\Core\Booking\Application\Occupations;
@@ -72,6 +84,7 @@ use Bsandoz\Core\Booking\Infrastructure\Persistence\DoctrineAvailabilityReposito
 use Bsandoz\Core\Booking\Infrastructure\Persistence\DoctrineReservationRepository;
 use Bsandoz\Core\Booking\Infrastructure\Settings\ConfiguredSettingsProvider;
 use Bsandoz\Core\Catalog\Application\CalculerDevis;
+use Bsandoz\Core\Catalog\Application\GererCatalogue;
 use Bsandoz\Core\Catalog\Application\ListerCatalogue;
 use Bsandoz\Core\Catalog\Domain\Port\OptionRepository;
 use Bsandoz\Core\Catalog\Domain\Port\PrestationRepository;
@@ -161,7 +174,12 @@ return static function (ContainerConfigurator $container): void {
     $services->set(ZoneCalculator::class);
     $services->set(ConfiguredSettingsProvider::class)
         ->args([param('bsandoz_core.rules'), param('bsandoz_core.zone'), param('bsandoz_core.timezone')]);
-    $services->alias(SettingsProvider::class, ConfiguredSettingsProvider::class);
+    // Réglages du pro en base (table setting), repli sur la configuration
+    $services->set(DoctrineSettingRepository::class);
+    $services->alias(SettingRepository::class, DoctrineSettingRepository::class);
+    $services->set(DatabaseSettingsProvider::class);
+    $services->alias(SettingsProvider::class, DatabaseSettingsProvider::class);
+    $services->set(GererReglages::class);
 
     // Booking (créneaux)
     $services->set(CreneauCalculator::class);
@@ -173,6 +191,14 @@ return static function (ContainerConfigurator $container): void {
     $services->set(Occupations::class);
     $services->set(ListerCreneaux::class);
     $services->set(ListerJoursDisponibles::class);
+    $services->set(GererDisponibilites::class);
+    $services->set(GererRendezVousPro::class);
+    $services->set(TableauDeBord::class);
+    $services->set(CreerComptePro::class);
+    $services->set(CreerCompteProCommand::class);
+    $services->set(AdminController::class)->public()->tag('controller.service_arguments');
+    $services->set(AdminCatalogueController::class)->public()->tag('controller.service_arguments');
+    $services->set(AdminAgendaController::class)->public()->tag('controller.service_arguments');
     $services->set(CreneauxController::class)->public()->tag('controller.service_arguments');
 
     // Booking (réservations)
@@ -215,5 +241,6 @@ return static function (ContainerConfigurator $container): void {
     $services->alias(OptionRepository::class, DoctrineOptionRepository::class);
     $services->set(ListerCatalogue::class);
     $services->set(CalculerDevis::class);
+    $services->set(GererCatalogue::class);
     $services->set(CatalogController::class)->public()->tag('controller.service_arguments');
 };

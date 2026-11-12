@@ -52,6 +52,13 @@ final class NotificationsReservation
         $this->auPro('pro_booking_moved', $context);
     }
 
+    /** Rendez-vous pris par téléphone : lien de paiement de l'acompte envoyé au client. */
+    public function lienAcompte(Reservation $reservation, string $paymentUrl): void
+    {
+        [$user, $context] = $this->contexte($reservation);
+        $this->notifier->send($user->email(), 'deposit_link', $context + ['paymentUrl' => $paymentUrl]);
+    }
+
     public function rappel(Reservation $reservation, ?string $manageToken): void
     {
         [$user, $context] = $this->contexte($reservation);

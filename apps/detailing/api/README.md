@@ -67,3 +67,6 @@ Sans clés, la réservation fonctionne mais `paymentError` indique que le paieme
 - Textes : modèles du kit (`packages/core/templates/emails/`), à surcharger en copiant un fichier dans `templates/bsandoz/emails/`.
 - Agenda de l'artisan : `BSANDOZ_ICAL_SECRET` dans `.env.local`, puis abonnement à `https://api.demo.bsandoz.fr/api/v1/ical/<secret>.ics` depuis Google Agenda / iPhone.
 - Cron cPanel (toutes les 15 min) : `php bin/console bsandoz:notifications:send`.
+
+## Compte pro
+`php bin/console bsandoz:pro:creer contact@domaine.fr Prénom Nom` crée le compte de l'artisan (mot de passe demandé sans affichage). Il se connecte comme un client, et accède en plus à `/api/v1/admin` : réglages, catalogue, horaires, congés, planning, rendez-vous par téléphone, tableau de bord. Les réglages faits dans l'espace pro remplacent ceux de `config/packages/bsandoz_core.yaml`.

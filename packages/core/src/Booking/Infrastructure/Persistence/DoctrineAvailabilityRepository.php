@@ -7,6 +7,7 @@ namespace Bsandoz\Core\Booking\Infrastructure\Persistence;
 use Bsandoz\Core\Booking\Domain\Model\OpeningHour;
 use Bsandoz\Core\Booking\Domain\Model\Unavailability;
 use Bsandoz\Core\Booking\Domain\Port\AvailabilityRepository;
+use Bsandoz\Core\Shared\Domain\NotFound;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class DoctrineAvailabilityRepository implements AvailabilityRepository
@@ -23,8 +24,13 @@ final class DoctrineAvailabilityRepository implements AvailabilityRepository
 
     public function unavailabilities(\DateTimeImmutable $from, \DateTimeImmutable $to): array
     {
-        /** @var list<Unavailability> $rows */
-        $rows = $this->em->createQueryBuilder()
+        return array_map(static fn (Unavailability $u) => $u->period, $this->unavailabilityList($from, $to));
+    }
+
+    public function unavailabilityList(\DateTimeImmutable $from, \DateTimeImmutable $to): array
+    {
+        /** @var list<Unavailability> */
+        return $this->em->createQueryBuilder()
             ->select('u')
             ->from(Unavailability::class, 'u')
             ->where('u.period.start < :to')
@@ -34,8 +40,6 @@ final class DoctrineAvailabilityRepository implements AvailabilityRepository
             ->orderBy('u.period.start', 'ASC')
             ->getQuery()
             ->getResult();
-
-        return array_map(static fn (Unavailability $u) => $u->period, $rows);
     }
 
     public function saveOpeningHour(OpeningHour $openingHour): void
@@ -44,9 +48,29 @@ final class DoctrineAvailabilityRepository implements AvailabilityRepository
         $this->em->flush();
     }
 
+    public function replaceOpeningHours(array $openingHours): void
+    {
+        $this->em->wrapInTransaction(function () use ($openingHours): void {
+            foreach ($this->em->getRepository(OpeningHour::class)->findAll() as $existant) {
+                $this->em->remove($existant);
+            }
+            $this->em->flush();
+            foreach ($openingHours as $openingHour) {
+                $this->em->persist($openingHour);
+            }
+        });
+    }
+
     public function saveUnavailability(Unavailability $unavailability): void
     {
         $this->em->persist($unavailability);
+        $this->em->flush();
+    }
+
+    public function removeUnavailability(string $id): void
+    {
+        $unavailability = $this->em->find(Unavailability::class, $id) ?? throw new NotFound('Indisponibilité introuvable.');
+        $this->em->remove($unavailability);
         $this->em->flush();
     }
 }

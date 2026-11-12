@@ -62,4 +62,29 @@ final class DoctrineAvailabilityRepositoryTest extends DoctrineTestCase
         self::assertSame(32, strlen($a->id));
         self::assertNotSame($a->id, $b->id);
     }
+
+    public function testRemplacerLaSemaine(): void
+    {
+        $this->repository->saveOpeningHour(new OpeningHour(1, '08:00', '12:00'));
+        $this->repository->saveOpeningHour(new OpeningHour(2, '08:00', '12:00'));
+
+        $this->repository->replaceOpeningHours([new OpeningHour(5, '09:00', '17:00')]);
+        $this->reload();
+
+        $hours = $this->repository->openingHours();
+        self::assertCount(1, $hours);
+        self::assertSame(5, $hours[0]->weekday);
+    }
+
+    public function testListerEtSupprimerUneIndisponibilite(): void
+    {
+        $this->repository->saveUnavailability(new Unavailability(new TimeRange(self::utc('2026-12-24 00:00'), self::utc('2026-12-26 00:00')), 'Noël', 'u-1'));
+        $this->reload();
+
+        $liste = $this->repository->unavailabilityList(self::utc('2026-12-01 00:00'), self::utc('2027-01-01 00:00'));
+        self::assertSame('Noël', $liste[0]->reason);
+
+        $this->repository->removeUnavailability('u-1');
+        self::assertSame([], $this->repository->unavailabilityList(self::utc('2026-12-01 00:00'), self::utc('2027-01-01 00:00')));
+    }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bsandoz\Core\Catalog\Domain\Model;
 
+use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\Money;
 
 /**
@@ -42,6 +43,51 @@ class Prestation
     public function position(): int { return $this->position; }
     /** Vrai si la durée est incertaine : la prestation bloque toute la demi-journée. */
     public function occupePlage(): bool { return $this->occupePlage; }
+
+    /** Modification depuis l'espace pro. @throws DomainError nom vide ou durée nulle */
+    public function modifier(
+        string $name,
+        string $description,
+        Money $basePrice,
+        int $baseDurationMin,
+        bool $active,
+        ?string $categoryId,
+        int $position,
+        bool $occupePlage,
+    ): void {
+        if (trim($name) === '') {
+            throw new DomainError('Le nom de la prestation est obligatoire.');
+        }
+        if ($baseDurationMin < 1) {
+            throw new DomainError('La durée de la prestation doit être d\'au moins une minute.');
+        }
+        $this->name = trim($name);
+        $this->description = $description;
+        $this->basePrice = $basePrice;
+        $this->baseDurationMin = $baseDurationMin;
+        $this->active = $active;
+        $this->categoryId = $categoryId;
+        $this->position = $position;
+        $this->occupePlage = $occupePlage;
+    }
+
+    /** @param list<Tarif> $tarifs remplace tous les tarifs par variante */
+    public function remplacerTarifs(array $tarifs): void
+    {
+        $this->tarifs = [];
+        foreach ($tarifs as $tarif) {
+            if ($tarif->durationMin < 1) {
+                throw new DomainError(sprintf('La durée du tarif « %s » doit être d\'au moins une minute.', $tarif->variante));
+            }
+            $this->addTarif($tarif);
+        }
+    }
+
+    /** @param list<string> $optionIds remplace les options autorisées */
+    public function remplacerOptions(array $optionIds): void
+    {
+        $this->optionIds = array_values(array_unique($optionIds));
+    }
 
     public function addTarif(Tarif $tarif): void
     {

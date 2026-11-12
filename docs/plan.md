@@ -20,7 +20,7 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/core-securite-donnees` : chiffrement de l'adresse et du téléphone en base (clé propre au client)
 - [x] `feature/core-payment` : Stripe Checkout (`paymentUrl` de `POST /booking/reservations`), webhook signé et idempotent, remboursement
 - [x] `feature/core-notification` : mails Twig (remplace le notifier de journal utilisé en attendant), .ics, flux iCal, commande cron des rappels
-- [ ] `feature/core-admin` : CRUD prestations, options, tarifs, horaires, indisponibilités, règles, zone, paramètres ; tableau de bord
+- [x] `feature/core-admin` : CRUD prestations, options, tarifs, horaires, indisponibilités, règles, zone, paramètres ; tableau de bord
 
 ## 2. Kit front
 - [x] `feature/ui-calendar` : Calendar et SlotPicker écrits et testés (à compléter : navigation clavier par flèches)
