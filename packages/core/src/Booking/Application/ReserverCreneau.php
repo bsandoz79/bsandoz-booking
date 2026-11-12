@@ -99,6 +99,7 @@ final class ReserverCreneau
                 $remise->cents > 0 ? $remise : null,
                 $produits === [] ? null : $produits,
                 $c->quantite,
+                $c->paiementEnLigne,
             );
 
             if ($reservation->aPayerEnLigne()->cents === 0) {

@@ -8,7 +8,7 @@
     {% if prestation is defined and prestation %}<li>Prestation : {{ prestation }}</li>{% endif %}
     <li>Client : {{ client }}{% if phone is defined and phone %} – {{ phone }}{% endif %}</li>
     {% if address is defined and address %}<li>Adresse : {{ address }}</li>{% endif %}
-    <li>Total : {{ totalCents|euros }}{% if depositCents is defined and depositCents > 0 %} (acompte réglé : {{ depositCents|euros }}){% endif %}</li>
+    <li>Total : {{ totalCents|euros }}{% if enLigneCents is defined %}{% if enLigneCents > 0 %} (réglé en ligne : {{ enLigneCents|euros }}{% if surPlaceCents > 0 %}, reste sur place : {{ surPlaceCents|euros }}{% endif %}){% else %} (à régler sur place){% endif %}{% elseif depositCents is defined and depositCents > 0 %} (acompte réglé : {{ depositCents|euros }}){% endif %}</li>
     {% if notes is defined and notes %}<li>Informations : {{ notes }}</li>{% endif %}
 </ul>
 {% endblock %}

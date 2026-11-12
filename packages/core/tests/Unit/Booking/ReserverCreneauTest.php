@@ -101,11 +101,12 @@ final class ReserverCreneauTest extends TestCase
         string $address = '1 rue de l\'Exemple',
         string $email = 'camille@example.test',
         array $produits = [],
+        ?bool $paiementEnLigne = null,
     ): ReserverCreneauCommand {
         return new ReserverCreneauCommand(
             $prestation, [], [], new \DateTimeImmutable($start, new \DateTimeZone('Europe/Paris')),
             $address, $lat, $lat === null ? null : self::LNG,
-            $email, 'Camille', 'Martin', '0600000000', 'Portail bleu', $cgv, null, $produits,
+            $email, 'Camille', 'Martin', '0600000000', 'Portail bleu', $cgv, null, $produits, 1, $paiementEnLigne,
         );
     }
 
@@ -263,5 +264,33 @@ final class ReserverCreneauTest extends TestCase
         } catch (\Bsandoz\Core\Shared\Domain\NotFound) {
         }
         self::assertSame(1, $depot->get('micro')->stock());
+    }
+
+    public function testSansAcomptePaiementSurPlaceConfirmeTout(): void
+    {
+        $depot = new \Bsandoz\Core\Tests\Double\InMemoryProduitRepository(new \Bsandoz\Core\Catalog\Domain\Model\Produit('micro', 'Microfibre', Money::cents(600), 5));
+        $resultat = ($this->reserver(depositPercent: null, stock: new \Bsandoz\Core\Catalog\Application\StockProduits($depot)))(self::command(produits: ['micro' => 1], paiementEnLigne: false));
+
+        self::assertSame(ReservationStatus::Confirmed, $resultat->status, 'rien à payer en ligne');
+        $r = $this->reservations->get('r-1');
+        self::assertSame([0, 10600], [$r->aPayerEnLigne()->cents, $r->resteSurPlace()->cents], 'prestation et produit réglés sur place');
+    }
+
+    public function testPaiementEnLigneDeLaTotalite(): void
+    {
+        $resultat = ($this->reserver(depositPercent: null))(self::command(paiementEnLigne: true));
+
+        self::assertSame(ReservationStatus::PendingPayment, $resultat->status, 'en attente du paiement en ligne');
+        $r = $this->reservations->get('r-1');
+        self::assertSame([10000, 0], [$r->aPayerEnLigne()->cents, $r->resteSurPlace()->cents]);
+    }
+
+    public function testNomEnUnSeulChamp(): void
+    {
+        ($this->reserver())(new ReserverCreneauCommand(
+            'fiable', [], [], new \DateTimeImmutable('2026-11-10 09:00', new \DateTimeZone('Europe/Paris')),
+            'adresse', self::LAT, self::LNG, 'alex@example.test', 'Alex Martin', '', '0600000000', '', true,
+        ));
+        self::assertSame('Alex Martin', $this->users->get('u-1')->firstname());
     }
 }

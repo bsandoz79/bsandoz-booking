@@ -100,6 +100,8 @@ final class NotificationsReservation
             'prestation' => $prestation,
             'totalCents' => $r->total()->cents,
             'depositCents' => $r->deposit()->cents,
+            'enLigneCents' => $r->aPayerEnLigne()->cents,
+            'surPlaceCents' => $r->resteSurPlace()->cents,
             'notes' => $r->notes(),
         ]];
     }

@@ -15,6 +15,7 @@ final class ReserverCreneauCommand
      * @param string|null $variante variante explicite, si le module métier ne la déduit pas
      * @param array<string, int> $produits produits ajoutés : identifiant → quantité
      * @param int $quantite nombre d'unités de la prestation (ex. véhicules)
+     * @param bool|null $paiementEnLigne true : tout payer en ligne ; false : sur place ; null : acompte (et produits) en ligne
      */
     public function __construct(
         public readonly string $prestationId,
@@ -33,6 +34,7 @@ final class ReserverCreneauCommand
         public readonly ?string $variante = null,
         public readonly array $produits = [],
         public readonly int $quantite = 1,
+        public readonly ?bool $paiementEnLigne = null,
     ) {
     }
 
@@ -41,7 +43,7 @@ final class ReserverCreneauCommand
     {
         return new self(
             $this->prestationId, $this->optionIds, $this->metierData, $this->start, $this->address, $this->lat, $this->lng,
-            $this->email, $this->firstname, $this->lastname, $this->phone, $this->notes, true, $this->variante, $this->produits, $this->quantite,
+            $this->email, $this->firstname, $this->lastname, $this->phone, $this->notes, true, $this->variante, $this->produits, $this->quantite, $this->paiementEnLigne,
         );
     }
 }

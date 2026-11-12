@@ -76,3 +76,6 @@ Copier `apps/detailing` en `apps/<client>`, ajouter ses deux jobs dans `deploy.y
 
 ## Mettre à jour le catalogue de démonstration déjà chargé
 `php bin/console detailing:demo:charger --mettre-a-jour` aligne les prestations de démonstration (retrouvées par leur nom) sur les données du code : prix, durées, descriptions, options proposées, mise en avant. Les options manquantes sont créées, les anciennes ne sont plus proposées ; catégorie, position, activation et tarifs par variante choisis dans l'espace pro sont conservés, les autres prestations ne sont pas touchées.
+
+## Paiement sans acompte
+Par défaut, aucun acompte (`deposit_percent: 0`) : le client choisit de tout payer en ligne ou sur place. Si un pourcentage d'acompte a déjà été enregistré dans l'espace pro (Réglages → Règles de réservation), le remettre à 0.
