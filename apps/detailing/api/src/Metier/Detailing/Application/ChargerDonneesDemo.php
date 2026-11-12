@@ -33,17 +33,16 @@ final class ChargerDonneesDemo
 
         $prestations = DonneesDemo::prestations();
         foreach ($prestations as $position => $p) {
-            $premier = reset($p['tarifs']);
             $this->catalogue->enregistrerPrestation([
                 'name' => $p['name'],
                 'description' => $p['description'],
-                'basePriceCents' => $premier['priceCents'],
-                'baseDurationMin' => $premier['durationMin'],
+                'basePriceCents' => $p['priceCents'],
+                'baseDurationMin' => $p['durationMin'],
                 'active' => true,
                 'categoryId' => $p['category'],
                 'position' => $position,
                 'occupePlage' => $p['occupePlage'],
-                'tarifs' => $p['tarifs'],
+                'tarifs' => [],
                 'optionIds' => array_map(static fn (string $cle): string => $ids[$cle], $p['options']),
             ]);
         }

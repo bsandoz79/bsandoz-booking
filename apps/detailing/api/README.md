@@ -1,4 +1,4 @@
-# Atelier Brillance – API
+# Perfect Clean – API
 
 Application Symfony du client detailing. Elle installe le kit `bsandoz/core` et ajoute le module métier `src/Metier/Detailing`.
 

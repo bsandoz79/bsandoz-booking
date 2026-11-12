@@ -24,7 +24,7 @@ final class AgendaApiTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'text/calendar; charset=utf-8');
-        self::assertStringContainsString('X-WR-CALNAME:Atelier Brillance', (string) $client->getResponse()->getContent());
+        self::assertStringContainsString('X-WR-CALNAME:Perfect Clean', (string) $client->getResponse()->getContent());
     }
 
     public function testMauvaisSecretEn404(): void

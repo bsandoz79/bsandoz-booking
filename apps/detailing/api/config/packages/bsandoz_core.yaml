@@ -1,11 +1,11 @@
-# Réglages du kit bsandoz/core pour Atelier Brillance (démonstration).
-# Seront modifiables dans l'espace pro (branche feature/core-admin).
+# Réglages du kit bsandoz/core pour Perfect Clean (démonstration).
+# Valeurs par défaut : le pro les modifie dans son espace (règles de réservation, zone), prioritaires sur ce fichier.
 bsandoz_core:
     timezone: 'Europe/Paris'
     mail:
         from_email: '%env(MAILER_FROM)%'
-        from_name: 'Atelier Brillance'
-        brand: 'Atelier Brillance'
+        from_name: 'Perfect Clean'
+        brand: 'Perfect Clean'
         front_url: '%env(FRONT_URL)%'
         pro_email: '%env(default::PRO_EMAIL)%'
     payment:
@@ -21,9 +21,20 @@ bsandoz_core:
         deposit_percent: 30
         hold_minutes: 10
     zone:
-        # Point de départ de démonstration (Amiens), comme les données de démo du front.
-        origin_lat: 49.8941
-        origin_lng: 2.2958
-        free_radius_km: 15
+        # Départ d'Abbeville (centre-ville) ; déplacement offert jusqu'à 5 km, intervention jusqu'à 50 km.
+        # Les frais par tranches (5-15 km : 5 €, 15-30 km : 10 €, 30-50 km : 20 €) arrivent avec feature/zone-paliers.
+        origin_lat: 50.1054
+        origin_lng: 1.8357
+        free_radius_km: 5
         price_per_km_cents: 50
-        max_distance_km: 60
+        max_distance_km: 50
+
+# Tests : zone fixe (Amiens, 15 km offerts, 0,50 €/km, 60 km max) sur laquelle reposent les scénarios des tests fonctionnels.
+when@test:
+    bsandoz_core:
+        zone:
+            origin_lat: 49.8941
+            origin_lng: 2.2958
+            free_radius_km: 15
+            price_per_km_cents: 50
+            max_distance_km: 60
