@@ -29,6 +29,12 @@ final class Money
         return new self($this->cents + $other->cents);
     }
 
+    /** @throws DomainError si le résultat serait négatif */
+    public function subtract(self $other): self
+    {
+        return new self($this->cents - $other->cents);
+    }
+
     public function multiply(int $factor): self
     {
         return new self($this->cents * $factor);

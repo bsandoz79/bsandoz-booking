@@ -61,6 +61,15 @@ final class BsandozCoreBundle extends AbstractBundle
                         ->scalarNode('cancel_url')->defaultValue('/')->end()
                     ->end()
                 ->end()
+                ->arrayNode('fidelite')
+                    ->info('Carte de fidélité par défaut (le pro la règle ensuite dans son espace) : après N prestations, X % sur la suivante.')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('actif')->defaultTrue()->end()
+                        ->integerNode('tampons_requis')->defaultValue(4)->min(1)->max(50)->end()
+                        ->integerNode('remise_percent')->defaultValue(20)->min(1)->max(100)->end()
+                    ->end()
+                ->end()
                 ->arrayNode('push')
                     ->info('Notifications push du pro (Web Push, clés VAPID générées par bsandoz:push:cles). Clés vides : désactivées.')
                     ->addDefaultsIfNotSet()
@@ -109,13 +118,16 @@ final class BsandozCoreBundle extends AbstractBundle
             ->end();
     }
 
-    /** @param array{timezone: string, medias_dir: string, encryption_key: string|null, ical_secret: string|null, mail: array{from_email: string, from_name: string, brand: string, front_url: string|null, pro_email: string|null}, payment: array{stripe_secret_key: string|null, stripe_webhook_secret: string|null, success_url: string, cancel_url: string}, push: array{vapid_public_key: string|null, vapid_private_key: string|null, subject: string|null}, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
+    /** @param array{timezone: string, medias_dir: string, encryption_key: string|null, ical_secret: string|null, mail: array{from_email: string, from_name: string, brand: string, front_url: string|null, pro_email: string|null}, payment: array{stripe_secret_key: string|null, stripe_webhook_secret: string|null, success_url: string, cancel_url: string}, fidelite: array{actif: bool, tampons_requis: int, remise_percent: int}, push: array{vapid_public_key: string|null, vapid_private_key: string|null, subject: string|null}, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->parameters()
             ->set('bsandoz_core.timezone', $config['timezone'])
             ->set('bsandoz_core.ical_secret', $config['ical_secret'])
             ->set('bsandoz_core.medias_dir', $config['medias_dir'])
+            ->set('bsandoz_core.fidelite.actif', $config['fidelite']['actif'])
+            ->set('bsandoz_core.fidelite.tampons_requis', $config['fidelite']['tampons_requis'])
+            ->set('bsandoz_core.fidelite.remise_percent', $config['fidelite']['remise_percent'])
             ->set('bsandoz_core.mail.from_email', $config['mail']['from_email'])
             ->set('bsandoz_core.mail.from_name', $config['mail']['from_name'])
             ->set('bsandoz_core.mail.brand', $config['mail']['brand'])

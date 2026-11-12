@@ -25,6 +25,7 @@ final class DoctrineMappings
             'BsandozNotification' => ['dir' => $src . '/Notification/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Notification\Domain\Model'],
             'BsandozAdmin' => ['dir' => $src . '/Admin/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Admin\Domain\Model'],
             'BsandozBooking' => ['dir' => $src . '/Booking/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Booking\Domain\Model'],
+            'BsandozFidelite' => ['dir' => $src . '/Fidelite/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Fidelite\Domain\Model'],
         ];
     }
 

@@ -11,6 +11,7 @@ use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Catalog\Domain\Port\PrestationRepository;
 use Bsandoz\Core\Payment\Application\CreerSessionAcompte;
 use Bsandoz\Core\Payment\Application\RembourserAcompte;
+use Bsandoz\Core\Fidelite\Application\GererFidelite;
 use Bsandoz\Core\Shared\Domain\Clock;
 use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\Money;
@@ -31,6 +32,7 @@ final class GererRendezVousPro
         private RembourserAcompte $rembourser,
         private NotificationsReservation $notifications,
         private Clock $clock,
+        private ?GererFidelite $fidelite = null,
     ) {
     }
 
@@ -59,6 +61,10 @@ final class GererRendezVousPro
             default => throw new DomainError('Statut attendu : « done » (fait) ou « no_show » (absent).'),
         };
         $this->reservations->save($r);
+        // Prestation réalisée : un tampon (sauf pour la prestation remisée, qui clôt la carte).
+        if ($statut === ReservationStatus::Done->value && $r->remiseFidelite()->cents === 0) {
+            $this->fidelite?->tamponner($r->userId());
+        }
     }
 
     /**
@@ -70,6 +76,9 @@ final class GererRendezVousPro
         $r = $this->reservations->get($id);
         $r->cancelByPro($this->clock->now());
         $this->reservations->save($r);
+        if ($r->remiseFidelite()->cents > 0) {
+            $this->fidelite?->rendreRemise($r->userId());
+        }
         $rembourse = $rembourser ? ($this->rembourser)($r->id()) : Money::zero();
         $this->notifications->annulee($r, $rembourse->cents > 0);
 
@@ -138,7 +147,9 @@ final class GererRendezVousPro
             'prestation' => $prestation,
             'variante' => $r->variante(),
             'optionIds' => $r->optionIds(),
+            'clientId' => $r->userId(),
             'client' => $client,
+            'remiseFideliteCents' => $r->remiseFidelite()->cents,
             'address' => $r->address(),
             'lat' => $r->lat(),
             'lng' => $r->lng(),

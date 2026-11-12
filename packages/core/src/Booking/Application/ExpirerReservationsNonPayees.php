@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bsandoz\Core\Booking\Application;
 
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
+use Bsandoz\Core\Fidelite\Application\GererFidelite;
 use Bsandoz\Core\Shared\Domain\Clock;
 
 /**
@@ -16,6 +17,7 @@ final class ExpirerReservationsNonPayees
     public function __construct(
         private ReservationRepository $reservations,
         private Clock $clock,
+        private ?GererFidelite $fidelite = null,
     ) {
     }
 
@@ -26,6 +28,10 @@ final class ExpirerReservationsNonPayees
         foreach ($expired as $reservation) {
             $reservation->expire();
             $this->reservations->save($reservation);
+            // Remise de fidélité non payée : la carte redevient pleine (reprise si le paiement arrive quand même).
+            if ($reservation->remiseFidelite()->cents > 0) {
+                $this->fidelite?->rendreRemise($reservation->userId());
+            }
         }
 
         return count($expired);
