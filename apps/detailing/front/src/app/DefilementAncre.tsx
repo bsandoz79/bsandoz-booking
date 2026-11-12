@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { defilerVers } from './defilement';
 
 /**
  * Liens vers une section (« /#fidelite ») : la page défile jusqu'à la section, même si elle s'affiche un peu après
@@ -9,15 +10,7 @@ export function DefilementAncre() {
   const { pathname, hash } = useLocation();
   useEffect(() => {
     if (!hash) return;
-    const id = decodeURIComponent(hash.slice(1));
-    const reduit = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    let essais = 0;
-    const minuterie = window.setInterval(() => {
-      const cible = document.getElementById(id);
-      if (cible) { cible.scrollIntoView?.({ behavior: reduit ? 'auto' : 'smooth', block: 'start' }); window.clearInterval(minuterie); }
-      else if (++essais > 30) window.clearInterval(minuterie);
-    }, 100);
-    return () => window.clearInterval(minuterie);
+    return defilerVers(decodeURIComponent(hash.slice(1)));
   }, [pathname, hash]);
   return null;
 }

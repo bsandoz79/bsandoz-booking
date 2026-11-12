@@ -36,6 +36,14 @@ describe('Parcours de réservation', () => {
     expect(bouton('Choisir le créneau')).toBeEnabled();
   });
 
+  it('passe tout seul à « Où et quand ? » quand la formule n’a pas d’option à proposer', async () => {
+    render(<MemoryRouter><Reserver /></MemoryRouter>);
+    await userEvent.click(screen.getByRole('radio', { name: 'Soins à la carte' }));
+    await userEvent.click(await screen.findByRole('button', { name: /Ciel de toit/ }));
+    expect(screen.getByRole('heading', { name: 'Où et quand ?' }).closest('section')).toHaveAttribute('aria-current', 'step');
+    expect(screen.getByRole('button', { name: 'Modifier : Que faut-il nettoyer ?' })).toBeInTheDocument();
+  });
+
   it('présélectionne la formule choisie sur l’accueil', async () => {
     render(<MemoryRouter initialEntries={['/reserver?formule=ext-signature']}><Reserver /></MemoryRouter>);
     expect(await screen.findByRole('radio', { name: 'Nettoyage extérieur' })).toHaveAttribute('aria-checked', 'true');
@@ -55,8 +63,9 @@ describe('Parcours de réservation', () => {
     await userEvent.click(await screen.findByRole('option', { name: /Abbeville/ }));
     expect(await screen.findByText(/déplacement offert/)).toBeInTheDocument();
     await userEvent.click(await screen.findByRole('button', { name: /vendredi 13 novembre 2026/ }));
+    // Choisir l'heure ouvre directement l'étape des coordonnées.
     await userEvent.click(await screen.findByRole('button', { name: '10:30' }));
-    await userEvent.click(bouton('Mes coordonnées'));
+    expect(screen.getByRole('heading', { name: 'Vos coordonnées' }).closest('section')).toHaveAttribute('aria-current', 'step');
 
     expect(screen.getByText(/ven\. 13 nov\..*Abbeville/)).toBeInTheDocument();
     await userEvent.type(screen.getByLabelText('Prénom'), 'Camille');
