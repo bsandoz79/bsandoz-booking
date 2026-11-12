@@ -158,6 +158,8 @@ final class SessionApiTest extends WebTestCase
 
         $this->request('GET', '/api/v1/me/reservations', token: $token);
         self::assertSame(['r-1'], array_column($this->json(), 'id'));
+        self::assertArrayHasKey('freeCancelUntil', $this->json()[0]);
+        self::assertArrayHasKey('lat', $this->json()[0]);
 
         $this->request('DELETE', '/api/v1/me/reservations/r-autre', token: $token);
         self::assertResponseStatusCodeSame(404, 'la réservation d\'un autre client est introuvable');

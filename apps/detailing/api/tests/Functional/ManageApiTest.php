@@ -74,6 +74,7 @@ final class ManageApiTest extends WebTestCase
         self::assertSame('pending_payment', $vue['status']);
         self::assertSame('2026-11-10T08:00:00+00:00', $vue['start']);
         self::assertSame('2026-11-08T08:00:00+00:00', $vue['freeCancelUntil'], '48 h avant');
+        self::assertSame([self::LAT, self::LNG], [$vue['lat'], $vue['lng']], 'coordonnées pour chercher un nouveau créneau');
         self::assertSame(6900, $vue['totalCents']);
     }
 

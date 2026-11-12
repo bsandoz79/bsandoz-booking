@@ -69,7 +69,7 @@ Mot de passe : 10 caractères minimum, au moins une lettre et un chiffre (sinon 
 
 ## Gérer mon rendez-vous (`/booking/manage/{token}`)
 `manageToken` est renvoyé par `POST /booking/reservations` (et sera mis dans les mails). Valable jusqu'à la fin du rendez-vous.
-- `GET` → `{"id", "status", "prestationId", "optionIds", "start", "end", "address", "totalCents", "depositCents", "freeCancelUntil"}`
+- `GET` → `{"id", "status", "prestationId", "optionIds", "start", "end", "address", "lat", "lng", "totalCents", "depositCents", "freeCancelUntil"}` (`lat` / `lng` : pour chercher un nouveau créneau avec `/booking/slots`)
 - `PATCH` `{"start"}` → déplace vers un créneau libre (réservation confirmée, au moins 48 h avant) et renvoie la réservation.
 - `DELETE` → annule et renvoie `{"refundable": bool}` (acompte remboursable si annulation gratuite).
 Lien inconnu ou expiré : 404.
@@ -85,7 +85,7 @@ Le jeton d'accès s'envoie en `Authorization: Bearer …`. Plusieurs appareils p
 
 ## Espace client (`/me`, rôle client)
 - `GET /me` → `{"id", "email", "firstname", "lastname", "phone", "roles"}`
-- `GET /me/reservations` → mes réservations (de la plus récente à la plus ancienne)
+- `GET /me/reservations` → mes réservations (de la plus récente à la plus ancienne), au même format que `GET /booking/manage/{token}`
 - `PATCH /me/reservations/{id}` `{"start"}` → 204 (déplacement, mêmes règles que le lien de gestion) ; `DELETE /me/reservations/{id}` → `{"refundable"}`
 - `GET /me/export` → toutes mes données en JSON (fichier `mes-donnees.json`)
 - `DELETE /me` → 204 : compte anonymisé, sessions fermées, accès coupé immédiatement ; refusé (422) s'il reste un rendez-vous à venir.

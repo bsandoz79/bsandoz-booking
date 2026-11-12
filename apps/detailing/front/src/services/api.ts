@@ -47,8 +47,11 @@ export class ApiError extends Error {
   }
 }
 
-async function http<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}/api/v1${path}`, { headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, credentials: 'include', ...init });
+/** Appel JSON à l'API ; `token` = jeton d'accès (espace client / pro). Erreur problem+json → ApiError avec `detail`. */
+export async function http<T>(path: string, init: RequestInit = {}, token?: string): Promise<T> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json', Accept: 'application/json' };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(`${API_URL}/api/v1${path}`, { credentials: 'include', ...init, headers });
   if (!res.ok) {
     const probleme = (await res.json().catch(() => null)) as { detail?: string } | null;
     throw new ApiError(probleme?.detail ?? 'Une erreur est survenue. Merci de réessayer.', res.status);

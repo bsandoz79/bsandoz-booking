@@ -1,0 +1,13 @@
+.carte { background: var(--bs-color-surface); border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); padding: 1.25rem; display: flex; flex-direction: column; gap: .5rem; }
+.entete { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem; }
+.entete h3 { font-size: 1.15rem; }
+.statut { font-size: .8rem; font-weight: 700; padding: 2px 10px; border-radius: var(--bs-radius-pill); background: var(--bs-color-bg); color: var(--bs-color-text-muted); }
+.confirmed { background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); }
+.date { font-weight: 600; }
+.date::first-letter { text-transform: uppercase; }
+.montants, .aide { font-size: .9rem; color: var(--bs-color-text-muted); }
+.actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+.panneau { border-top: 1px solid var(--bs-color-border); padding-top: 1rem; margin-top: .5rem; display: flex; flex-direction: column; gap: .75rem; }
+.calendrier { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+.ok { color: var(--bs-color-success); font-weight: 600; }
+.erreur { color: #a3122f; font-weight: 600; }
