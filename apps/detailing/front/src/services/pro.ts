@@ -1,4 +1,4 @@
-import { DEMO_RULES, FORMULES, OPTIONS, tarifDe } from '../data/demo';
+import { DEMO_RULES, FORMULES, OPTIONS, tarifDe, PRODUITS } from '../data/demo';
 import { isDemo, type Address, type Contact } from './api';
 import { authHttp } from './compte';
 
@@ -33,6 +33,9 @@ export interface RendezVousPro {
   totalCents: number;
   depositCents: number;
   remiseFideliteCents?: number;
+  /** Produits à apporter, déjà payés en ligne. */
+  produits?: { id: string; nom: string; prixCents: number; quantite: number }[];
+  produitsCents?: number;
   travelFeeCents: number;
   notes: string;
   metierData: Record<string, unknown>;
@@ -53,6 +56,9 @@ export interface PrestationPro {
   tarifs: Record<string, Tarif>;
   optionIds: string[];
 }
+
+/** Produit vendu avec les réservations ; stock à 0 ou inactif : plus proposé sur le site. */
+export interface ProduitPro { id?: string; name: string; description: string; priceCents: number; stock: number; active: boolean; position: number; photo: string | null }
 
 export interface OptionPro { id?: string; name: string; description: string; priceCents: number; durationMin: number; active: boolean }
 
@@ -113,6 +119,7 @@ const demo = {
     return { id: f.id, name: f.name, description: f.description, basePriceCents: f.basePriceCents, baseDurationMin: f.baseDurationMin, active: true, categoryId: f.category, position: i, occupePlage: !!f.occupePlage, tarifs: f.tarifs, optionIds: f.optionIds };
   }),
   options: OPTIONS.map((o): OptionPro => ({ ...o, active: true })),
+  produits: PRODUITS.map(({ photo, ...p }, i): ProduitPro => ({ ...p, photo, active: true, position: i })),
   horaires: [1, 2, 3, 4, 5].flatMap((j) => [{ weekday: j, startsAt: '08:00', endsAt: '12:00' }, { weekday: j, startsAt: '13:30', endsAt: '18:00' }]).concat([{ weekday: 6, startsAt: '08:00', endsAt: '12:00' }]) as Plage[],
   indisponibilites: [] as Indisponibilite[],
   reglages: {
@@ -201,6 +208,22 @@ export async function enregistrerOption(o: OptionPro): Promise<OptionPro> {
     return enregistree;
   }
   return authHttp(id ? `/admin/catalog/options/${encodeURIComponent(id)}` : '/admin/catalog/options', { method: id ? 'PUT' : 'POST', ...json(donnees) });
+}
+
+// ——— Produits ———
+export async function produits(): Promise<ProduitPro[]> {
+  if (isDemo()) return demo.produits;
+  return (await authHttp<{ produits?: ProduitPro[] }>('/admin/catalog')).produits ?? [];
+}
+
+export async function enregistrerProduit(p: ProduitPro): Promise<ProduitPro> {
+  const { id, ...donnees } = p;
+  if (isDemo()) {
+    const enregistre = { ...donnees, id: id ?? `pr${demoId++}` };
+    demo.produits = id ? demo.produits.map((x) => (x.id === id ? enregistre : x)) : [...demo.produits, enregistre];
+    return enregistre;
+  }
+  return authHttp(id ? `/admin/catalog/produits/${encodeURIComponent(id)}` : '/admin/catalog/produits', { method: id ? 'PUT' : 'POST', ...json(donnees) });
 }
 
 // ——— Horaires et congés ———

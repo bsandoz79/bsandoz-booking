@@ -8,6 +8,7 @@ use Bsandoz\Core\Booking\Domain\Model\OpeningHour;
 use Bsandoz\Core\Booking\Domain\Model\Reservation;
 use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
 use Bsandoz\Core\Catalog\Domain\Model\Prestation;
+use Bsandoz\Core\Catalog\Domain\Model\Produit;
 use Bsandoz\Core\Shared\Domain\Money;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -38,6 +39,7 @@ final class ReservationApiTest extends WebTestCase
 
         $em->persist(new OpeningHour(2, '08:00', '12:00'));
         $em->persist(new Prestation('interieur', 'Intérieur', Money::cents(6900), 90));
+        $em->persist(new Produit('micro', 'Microfibre', Money::cents(600), 3));
         $em->flush();
     }
 
@@ -133,5 +135,29 @@ final class ReservationApiTest extends WebTestCase
         $tester->execute([]);
 
         self::assertStringContainsString('0 réservation(s) expirée(s)', $tester->getDisplay(), 'horloge figée : le blocage court encore');
+    }
+
+    public function testProduitsAjoutesPayesAvecLAcompte(): void
+    {
+        $this->reserve(['produits' => [['id' => 'micro', 'quantite' => 2]]]);
+
+        self::assertResponseStatusCodeSame(201);
+        $resultat = $this->json();
+        self::assertSame([6900, 2070, 1200], [$resultat['totalCents'], $resultat['depositCents'], $resultat['produitsCents']]);
+
+        $em = $this->em();
+        $em->clear();
+        $reservation = $em->find(Reservation::class, $resultat['reservationId']);
+        self::assertInstanceOf(Reservation::class, $reservation);
+        self::assertSame([['id' => 'micro', 'nom' => 'Microfibre', 'prixCents' => 600, 'quantite' => 2]], $reservation->produits());
+        self::assertSame(3270, $reservation->aPayerEnLigne()->cents);
+        self::assertSame(1, $em->find(Produit::class, 'micro')?->stock());
+    }
+
+    public function testStockInsuffisantEn422(): void
+    {
+        $this->reserve(['produits' => [['id' => 'micro', 'quantite' => 5]]]);
+        self::assertResponseStatusCodeSame(422);
+        self::assertStringContainsString('Il ne reste que 3', (string) $this->client->getResponse()->getContent());
     }
 }

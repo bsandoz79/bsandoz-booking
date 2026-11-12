@@ -111,6 +111,8 @@
 - En-tête sur une seule ligne sur téléphone : logo réduit, bouton clair / nuit, « Réserver » et menu déroulant pour les liens.
 - Réservation guidée : chaque choix affiche la partie suivante et y fait défiler la page ; formule sans option et choix de l'heure passent seuls à l'étape suivante.
 - Accueil : liste des communes desservies repliée derrière « Voir les communes desservies ».
+- Kit et API : produits vendus avec la réservation (catalogue avec stock géré dans l'espace pro, payés en entier en ligne avec l'acompte, remis en stock si la réservation est annulée ou expire) ; migration `catalog_product` et `reservation.products`.
+- Site : produits proposés juste avant le paiement (« À ajouter à votre commande ? », quantités dans la limite du stock), payés avec l'acompte ; onglet « Produits » dans l'espace pro (prix, stock, photo, retrait) ; produits à apporter dans le planning et dans « Mon espace ».
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

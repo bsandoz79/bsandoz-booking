@@ -51,6 +51,7 @@ final class BookingController
             'status' => $resultat->status->value,
             'totalCents' => $resultat->total->cents,
             'depositCents' => $resultat->deposit->cents,
+            'produitsCents' => $resultat->produits->cents ?? 0,
             'holdExpiresAt' => $resultat->holdExpiresAt?->format(DATE_ATOM),
             'manageToken' => $resultat->manageToken,
             'paymentUrl' => $paymentUrl,

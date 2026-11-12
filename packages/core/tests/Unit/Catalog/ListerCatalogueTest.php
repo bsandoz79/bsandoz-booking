@@ -70,7 +70,7 @@ final class ListerCatalogueTest extends TestCase
     public function testCatalogueVide(): void
     {
         self::assertSame(
-            ['formules' => [], 'options' => []],
+            ['formules' => [], 'options' => [], 'produits' => []],
             (new ListerCatalogue(new InMemoryPrestationRepository(), new InMemoryOptionRepository()))(),
         );
     }

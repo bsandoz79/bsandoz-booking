@@ -60,6 +60,7 @@ export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, on
       </div>
       <p className={styles.date}>{dateLongue(rdv.start)}</p>
       {rdv.address && <p>{rdv.address}</p>}
+      {rdv.produits && rdv.produits.length > 0 && <p>Produits apportés le jour J : {rdv.produits.map((p) => `${p.quantite} × ${p.nom}`).join(', ')} (payés : {formatEuros(rdv.produitsCents ?? 0)})</p>}
       <p className={styles.montants}>Total {formatEuros(rdv.totalCents)}{rdv.remiseFideliteCents ? ` (remise fidélité de ${formatEuros(rdv.remiseFideliteCents)} incluse)` : ''} · acompte {formatEuros(rdv.depositCents)} · solde à régler sur place</p>
       {modifiable && (
         <p className={styles.aide}>

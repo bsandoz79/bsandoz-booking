@@ -6,6 +6,7 @@ namespace Bsandoz\Core\Booking\Application;
 
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Fidelite\Application\GererFidelite;
+use Bsandoz\Core\Catalog\Application\StockProduits;
 use Bsandoz\Core\Shared\Domain\Clock;
 
 /**
@@ -18,6 +19,7 @@ final class ExpirerReservationsNonPayees
         private ReservationRepository $reservations,
         private Clock $clock,
         private ?GererFidelite $fidelite = null,
+        private ?StockProduits $stock = null,
     ) {
     }
 
@@ -32,6 +34,8 @@ final class ExpirerReservationsNonPayees
             if ($reservation->remiseFidelite()->cents > 0) {
                 $this->fidelite?->rendreRemise($reservation->userId());
             }
+            // Produits non payés : de nouveau en vente (repris si le paiement arrive quand même).
+            $this->stock?->remettre($reservation->produits());
         }
 
         return count($expired);

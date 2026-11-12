@@ -21,6 +21,8 @@ final class ReservationCreee
         public readonly Money $total,
         public readonly ?\DateTimeImmutable $holdExpiresAt,
         public readonly string $manageToken,
+        /** Produits ajoutés, payés en ligne avec l'acompte. */
+        public readonly ?Money $produits = null,
     ) {
     }
 }

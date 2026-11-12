@@ -11,7 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Corps de POST /api/v1/booking/reservations :
  * {"prestationId", "optionIds": [], "metierData": {}, "variante"?, "start": "2026-11-10T08:00:00+00:00",
- *  "address": {"label", "lat", "lng"} | null, "firstname", "lastname", "email", "phone", "notes"?, "acceptedTerms": true}
+ *  "address": {"label", "lat", "lng"} | null, "firstname", "lastname", "email", "phone", "notes"?, "acceptedTerms": true,
+ *  "produits"?: [{"id", "quantite"}]}
  */
 final class ReservationRequest
 {
@@ -40,6 +41,7 @@ final class ReservationRequest
         }
 
         [$label, $lat, $lng] = self::address($body['address'] ?? null);
+        $produits = self::produits($body['produits'] ?? []);
 
         /** @var list<string> $optionIds */
         /** @var array<string, mixed> $metierData */
@@ -58,7 +60,25 @@ final class ReservationRequest
             self::string($body, 'notes', required: false),
             ($body['acceptedTerms'] ?? false) === true,
             $variante,
+            $produits,
         );
+    }
+
+    /** @return array<string, int> identifiant → quantité (quantités d'un même produit additionnées) */
+    private static function produits(mixed $produits): array
+    {
+        if (!is_array($produits) || !array_is_list($produits)) {
+            throw new InvalidRequest('« produits » doit être une liste [{id, quantite}].');
+        }
+        $quantites = [];
+        foreach ($produits as $p) {
+            if (!is_array($p) || !is_string($p['id'] ?? null) || !is_int($p['quantite'] ?? null)) {
+                throw new InvalidRequest('« produits » doit être une liste [{id, quantite}].');
+            }
+            $quantites[$p['id']] = ($quantites[$p['id']] ?? 0) + $p['quantite'];
+        }
+
+        return $quantites;
     }
 
     /** @param array<mixed> $body */

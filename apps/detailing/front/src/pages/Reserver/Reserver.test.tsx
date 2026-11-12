@@ -73,7 +73,11 @@ describe('Parcours de réservation', () => {
     await userEvent.type(screen.getByLabelText('E-mail'), 'camille@example.org');
     await userEvent.type(screen.getByLabelText('Téléphone'), '0600000000');
 
-    const payer = screen.getByRole('button', { name: /Payer l'acompte \(7,50/ });
+    expect(screen.getByRole('button', { name: /Payer l'acompte \(7,50/ })).toBeDisabled();
+
+    // Produit ajouté juste avant le paiement : payé avec l'acompte.
+    await userEvent.click(screen.getByRole('button', { name: 'Ajouter Microfibre' }));
+    const payer = screen.getByRole('button', { name: /Payer l’acompte et les produits \(12,50/ });
     expect(payer).toBeDisabled();
     await userEvent.click(screen.getByRole('checkbox'));
     await userEvent.click(payer);

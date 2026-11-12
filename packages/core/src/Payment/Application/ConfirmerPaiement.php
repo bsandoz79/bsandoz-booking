@@ -15,6 +15,7 @@ use Bsandoz\Core\Payment\Domain\Port\PaymentGateway;
 use Bsandoz\Core\Payment\Domain\Port\PaymentRepository;
 use Bsandoz\Core\Payment\Domain\SignatureInvalide;
 use Bsandoz\Core\Fidelite\Application\GererFidelite;
+use Bsandoz\Core\Catalog\Application\StockProduits;
 use Bsandoz\Core\Shared\Domain\Clock;
 
 /**
@@ -35,6 +36,7 @@ final class ConfirmerPaiement
         private NotificationsReservation $notifications,
         private Clock $clock,
         private ?GererFidelite $fidelite = null,
+        private ?StockProduits $stock = null,
     ) {
     }
 
@@ -61,6 +63,10 @@ final class ConfirmerPaiement
                 // Paiement arrivé après l'expiration : la remise de fidélité rendue à l'expiration est reprise.
                 if ($reservation->status() === ReservationStatus::Expired && $reservation->remiseFidelite()->cents > 0) {
                     $this->fidelite?->reprendreRemise($reservation->userId());
+                }
+                // Idem pour les produits remis en stock à l'expiration : ils sont payés, ils sont repris.
+                if ($reservation->status() === ReservationStatus::Expired) {
+                    $this->stock?->reprendre($reservation->produits());
                 }
                 $reservation->confirm();
                 $this->reservations->save($reservation);

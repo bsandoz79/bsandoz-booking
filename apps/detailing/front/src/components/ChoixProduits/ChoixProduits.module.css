@@ -1,0 +1,21 @@
+.bloc { display: flex; flex-direction: column; gap: .75rem; padding: 1rem; border-radius: var(--bs-radius-md); background: var(--bs-color-primary-soft); }
+.titre { font-size: 1.1rem; }
+.intro { font-size: .9rem; color: var(--bs-color-text-muted); }
+.liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+.produit { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: .75rem; padding: .6rem; border-radius: var(--bs-radius-sm); background: var(--bs-color-surface); border: 1.5px solid var(--bs-color-border); }
+.choisi { border-color: var(--bs-color-primary); }
+.photo { width: 64px; height: 64px; border-radius: var(--bs-radius-sm); object-fit: cover; display: grid; place-items: center; background: var(--bs-color-bg); color: var(--bs-color-primary); font-size: 1.4rem; }
+.texte { display: flex; flex-direction: column; gap: .1rem; min-width: 0; }
+.description { font-size: .82rem; color: var(--bs-color-text-muted); }
+.prix { font-weight: 700; }
+.ajouter { min-height: 44px; padding: 0 1rem; }
+.quantite { display: flex; align-items: center; border: 1.5px solid var(--bs-color-border); border-radius: var(--bs-radius-pill); }
+.quantite button { width: 44px; height: 44px; border: 0; background: none; color: var(--bs-color-text); font: inherit; font-size: 1.2rem; cursor: pointer; }
+.quantite button:disabled { opacity: .35; cursor: not-allowed; }
+.quantite output { min-width: 1.5rem; text-align: center; font-weight: 700; }
+.total { font-size: .95rem; }
+@media (max-width: 420px) {
+  .produit { grid-template-columns: 48px 1fr; }
+  .photo { width: 48px; height: 48px; }
+  .ajouter, .quantite { grid-column: 1 / -1; justify-self: end; }
+}

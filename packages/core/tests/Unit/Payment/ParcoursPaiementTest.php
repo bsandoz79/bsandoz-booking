@@ -60,6 +60,7 @@ final class ParcoursPaiementTest extends TestCase
     private ConfirmerPaiement $confirmer;
     private AnnulerReservation $annuler;
     private RembourserAcompte $rembourser;
+    private \Bsandoz\Core\Tests\Double\InMemoryProduitRepository $produits;
 
     protected function setUp(): void
     {
@@ -70,6 +71,8 @@ final class ParcoursPaiementTest extends TestCase
         $this->notifier = new RecordingNotifier();
         $this->gateway = new FakePaymentGateway();
         $users = new InMemoryUserRepository();
+        $this->produits = new \Bsandoz\Core\Tests\Double\InMemoryProduitRepository(new \Bsandoz\Core\Catalog\Domain\Model\Produit('micro', 'Microfibre', Money::cents(600), 5));
+        $stock = new \Bsandoz\Core\Catalog\Application\StockProduits($this->produits);
 
         $settings = new ConfiguredSettingsProvider(
             [
@@ -89,18 +92,19 @@ final class ParcoursPaiementTest extends TestCase
 
         $notifications = new NotificationsReservation($this->notifier, $users, $prestations, new IcsGenerator(), 'Marque', 'pro@example.test');
 
-        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation($users, $this->tokens, $this->notifier, new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, $this->tokens, $notifications, new SequenceIdGenerator('r'), $this->clock);
+        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation($users, $this->tokens, $this->notifier, new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, $this->tokens, $notifications, new SequenceIdGenerator('r'), $this->clock, stock: $stock);
         $this->session = new CreerSessionAcompte($this->reservations, $users, $prestations, $this->gateway, $this->payments, new SequenceIdGenerator('pay'), $this->clock, 'https://site.test/confirmation?reservation={reservationId}', 'https://site.test/reserver?annule={reservationId}');
-        $this->confirmer = new ConfirmerPaiement($this->gateway, $this->payments, $this->reservations, $occupations, $this->tokens, $notifications, $this->clock);
+        $this->confirmer = new ConfirmerPaiement($this->gateway, $this->payments, $this->reservations, $occupations, $this->tokens, $notifications, $this->clock, stock: $stock);
         $this->rembourser = new RembourserAcompte($this->payments, $this->gateway);
-        $this->annuler = new AnnulerReservation($this->reservations, $settings, $this->rembourser, $notifications, $this->clock);
+        $this->annuler = new AnnulerReservation($this->reservations, $settings, $this->rembourser, $notifications, $this->clock, stock: $stock);
     }
 
-    private function reserver(string $email = 'camille@example.test', string $heure = '09:00'): string
+    /** @param array<string, int> $produits */
+    private function reserver(string $email = 'camille@example.test', string $heure = '09:00', array $produits = []): string
     {
         return ($this->reserver)(new ReserverCreneauCommand(
             'p', [], [], new \DateTimeImmutable('2026-11-10 ' . $heure, new \DateTimeZone('Europe/Paris')),
-            '', null, null, $email, 'Camille', 'Martin', '0600000000', '', true,
+            '', null, null, $email, 'Camille', 'Martin', '0600000000', '', true, null, $produits,
         ))->reservationId;
     }
 
@@ -253,5 +257,21 @@ final class ParcoursPaiementTest extends TestCase
     {
         self::assertSame(0, ($this->rembourser)($this->reserver())->cents);
         self::assertSame([], $this->gateway->refunds);
+    }
+
+    public function testProduitsPayesAvecLAcompteEtRembourserALAnnulationGratuite(): void
+    {
+        $id = $this->reserver(produits: ['micro' => 2]);
+        ($this->session)($id);
+
+        self::assertSame(4200, $this->gateway->checkouts[0]['amount'], 'acompte 30 € + 2 microfibres 12 €');
+        self::assertSame('Acompte : Nettoyage + 2 × Microfibre', $this->gateway->checkouts[0]['description']);
+        self::assertSame(3, $this->produits->get('micro')->stock());
+
+        $this->payer('cs_test_1');
+        ($this->annuler)($id, 'u-1');
+
+        self::assertSame(4200, $this->gateway->refunds[0]['amount'] ?? null, 'acompte et produits remboursés');
+        self::assertSame(5, $this->produits->get('micro')->stock(), 'produits remis en stock');
     }
 }

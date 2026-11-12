@@ -55,7 +55,7 @@ final class ReserverCreneauTest extends TestCase
         $this->tokens = new InMemoryTokenService($this->clock);
     }
 
-    private function reserver(?int $depositPercent = 30, bool $surPlace = false, ?\Bsandoz\Core\Fidelite\Application\GererFidelite $fidelite = null): ReserverCreneau
+    private function reserver(?int $depositPercent = 30, bool $surPlace = false, ?\Bsandoz\Core\Fidelite\Application\GererFidelite $fidelite = null, ?\Bsandoz\Core\Catalog\Application\StockProduits $stock = null): ReserverCreneau
     {
         $settings = new ConfiguredSettingsProvider(
             [
@@ -88,10 +88,11 @@ final class ReserverCreneauTest extends TestCase
             new CreerCompteDepuisReservation($this->users, $this->tokens, new RecordingNotifier(), new SequenceIdGenerator('u'), $this->clock),
             $this->reservations, $settings, $this->tokens,
             new \Bsandoz\Core\Booking\Application\NotificationsReservation(new RecordingNotifier(), $this->users, $prestations, new \Bsandoz\Core\Notification\Domain\Service\IcsGenerator(), 'Marque'),
-            new SequenceIdGenerator('r'), $this->clock, $fidelite,
+            new SequenceIdGenerator('r'), $this->clock, $fidelite, $stock,
         );
     }
 
+    /** @param array<string, int> $produits */
     private static function command(
         string $start = '2026-11-10 09:00',
         string $prestation = 'fiable',
@@ -99,11 +100,12 @@ final class ReserverCreneauTest extends TestCase
         ?float $lat = self::LAT,
         string $address = '1 rue de l\'Exemple',
         string $email = 'camille@example.test',
+        array $produits = [],
     ): ReserverCreneauCommand {
         return new ReserverCreneauCommand(
             $prestation, [], [], new \DateTimeImmutable($start, new \DateTimeZone('Europe/Paris')),
             $address, $lat, $lat === null ? null : self::LNG,
-            $email, 'Camille', 'Martin', '0600000000', 'Portail bleu', $cgv,
+            $email, 'Camille', 'Martin', '0600000000', 'Portail bleu', $cgv, null, $produits,
         );
     }
 
@@ -215,5 +217,51 @@ final class ReserverCreneauTest extends TestCase
 
         self::assertSame(ReservationStatus::PendingPayment, $resultat->status);
         self::assertSame('', $this->reservations->get('r-1')->address());
+    }
+
+    public function testProduitsAjoutesPayesEnLigneAvecLAcompteEtRetiresDuStock(): void
+    {
+        $depot = new \Bsandoz\Core\Tests\Double\InMemoryProduitRepository(
+            new \Bsandoz\Core\Catalog\Domain\Model\Produit('micro', 'Microfibre', Money::cents(600), 5),
+            new \Bsandoz\Core\Catalog\Domain\Model\Produit('vitres', 'Lave-vitres', Money::cents(900), 2),
+        );
+        $stock = new \Bsandoz\Core\Catalog\Application\StockProduits($depot);
+
+        $resultat = ($this->reserver(stock: $stock))(self::command(produits: ['micro' => 2, 'vitres' => 1]));
+
+        $r = $this->reservations->get('r-1');
+        self::assertSame(10000, $r->total()->cents, 'les produits ne changent pas le prix de la prestation');
+        self::assertSame(2100, $r->totalProduits()->cents);
+        self::assertSame(5100, $r->aPayerEnLigne()->cents, 'acompte 30 € + produits 21 €');
+        self::assertSame(2100, $resultat->produits?->cents);
+        self::assertSame([3, 1], [$depot->get('micro')->stock(), $depot->get('vitres')->stock()]);
+    }
+
+    public function testSansAcompteLesProduitsSontQuandMemePayesEnLigne(): void
+    {
+        $depot = new \Bsandoz\Core\Tests\Double\InMemoryProduitRepository(new \Bsandoz\Core\Catalog\Domain\Model\Produit('micro', 'Microfibre', Money::cents(600), 5));
+
+        $resultat = ($this->reserver(depositPercent: null, stock: new \Bsandoz\Core\Catalog\Application\StockProduits($depot)))(self::command(produits: ['micro' => 1]));
+
+        self::assertSame(ReservationStatus::PendingPayment, $resultat->status);
+        self::assertSame(600, $this->reservations->get('r-1')->aPayerEnLigne()->cents);
+    }
+
+    public function testStockInsuffisantAucuneReservation(): void
+    {
+        $depot = new \Bsandoz\Core\Tests\Double\InMemoryProduitRepository(new \Bsandoz\Core\Catalog\Domain\Model\Produit('micro', 'Microfibre', Money::cents(600), 1));
+
+        try {
+            ($this->reserver(stock: new \Bsandoz\Core\Catalog\Application\StockProduits($depot)))(self::command(produits: ['micro' => 3]));
+            self::fail('stock insuffisant attendu');
+        } catch (DomainError $e) {
+            self::assertSame('Il ne reste que 1 « Microfibre » en stock.', $e->getMessage());
+        }
+        try {
+            $this->reservations->get('r-1');
+            self::fail('aucune réservation attendue');
+        } catch (\Bsandoz\Core\Shared\Domain\NotFound) {
+        }
+        self::assertSame(1, $depot->get('micro')->stock());
     }
 }

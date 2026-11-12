@@ -12,6 +12,7 @@ use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
 use Bsandoz\Core\Catalog\Application\CalculerDevis;
+use Bsandoz\Core\Catalog\Application\StockProduits;
 use Bsandoz\Core\Fidelite\Application\GererFidelite;
 use Bsandoz\Core\Shared\Domain\Clock;
 use Bsandoz\Core\Shared\Domain\DomainError;
@@ -24,8 +25,9 @@ use Bsandoz\Core\Shared\Domain\TimeRange;
  *  1. recalcule le devis côté serveur (prix, variante, zone) ;
  *  2. revérifie que le créneau demandé fait toujours partie des créneaux libres ;
  *  3. crée ou retrouve le compte du client ; carte de fidélité pleine : remise déduite des prestations (hors déplacement) ;
- *  4. enregistre la réservation : bloquée holdMinutes en attente de l'acompte, ou confirmée si aucun acompte n'est demandé ;
- *  5. émet le jeton « gérer mon rendez-vous » (voir, annuler, déplacer sans compte), valable jusqu'à la fin du rendez-vous.
+ *  4. retire du stock les produits ajoutés (payés en entier en ligne avec l'acompte) ;
+ *  5. enregistre la réservation : bloquée holdMinutes en attente du paiement en ligne, ou confirmée s'il n'y a rien à payer ;
+ *  6. émet le jeton « gérer mon rendez-vous » (voir, annuler, déplacer sans compte), valable jusqu'à la fin du rendez-vous.
  * La session de paiement de l'acompte est créée ensuite (feature/core-payment).
  */
 final class ReserverCreneau
@@ -43,6 +45,7 @@ final class ReserverCreneau
         private IdGenerator $ids,
         private Clock $clock,
         private ?GererFidelite $fidelite = null,
+        private ?StockProduits $stock = null,
     ) {
     }
 
@@ -64,6 +67,9 @@ final class ReserverCreneau
         if (!$devis->inZone) {
             throw new DomainError('Cette adresse est en dehors de la zone d\'intervention.');
         }
+        if ($c->produits !== [] && $this->stock === null) {
+            throw new DomainError('La vente de produits n\'est pas disponible.');
+        }
 
         return $this->reservations->dansVerrouAgenda(function () use ($c, $devis, $aDomicile): ReservationCreee {
             $slot = $this->creneauDisponible($c, $devis->durationMin);
@@ -73,6 +79,7 @@ final class ReserverCreneau
             $remise = $this->fidelite?->utiliserRemise($userId, $devis->total->subtract($devis->travelFee)) ?? Money::zero();
             $total = $devis->total->subtract($remise);
             $acompte = $remise->cents === 0 ? $devis->deposit : $this->acompte($total);
+            $produits = $c->produits === [] || $this->stock === null ? [] : $this->stock->retirer($c->produits);
 
             $reservation = new Reservation(
                 $this->ids->generate(),
@@ -90,9 +97,10 @@ final class ReserverCreneau
                 $c->metierData,
                 trim($c->notes),
                 $remise->cents > 0 ? $remise : null,
+                $produits === [] ? null : $produits,
             );
 
-            if ($acompte->cents === 0) {
+            if ($reservation->aPayerEnLigne()->cents === 0) {
                 $reservation->confirm();
             } else {
                 Reservation::hold($reservation, $now, $this->settings->rules()->holdMinutes);
@@ -105,7 +113,7 @@ final class ReserverCreneau
                 $this->notifications->confirmee($reservation, $manageToken);
             }
 
-            return new ReservationCreee($reservation->id(), $reservation->status(), $reservation->deposit(), $reservation->total(), $reservation->holdExpiresAt(), $manageToken);
+            return new ReservationCreee($reservation->id(), $reservation->status(), $reservation->deposit(), $reservation->total(), $reservation->holdExpiresAt(), $manageToken, $reservation->totalProduits());
         });
     }
 

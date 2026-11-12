@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AddressInput, Calendar, ChoiceChips, OptionCard, PriceSummary, SlotPicker, StepCard, type StepCardStatus, formatEuros } from '@bsandoz/ui';
-import type { Category, Formule, OptionItem } from '../../data/demo';
+import type { Category, Formule, OptionItem, ProduitItem } from '../../data/demo';
 import { CATEGORIES, tarifDe } from '../../data/demo';
 import type { Address, Quote, Selection, Slot } from '../../services/api';
 import { getAvailableDays, getCatalog, getQuote, getSlots, reserve, searchAddress } from '../../services/api';
 import { PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
 import { defilerVers } from '../../app/defilement';
+import { ChoixProduits } from '../../components/ChoixProduits/ChoixProduits';
 import styles from './Reserver.module.css';
 
 const currentMonth = () => new Date().toISOString().slice(0, 7);
@@ -27,6 +28,8 @@ export function Reserver() {
   const [step, setStep] = useState(0);
   const [formules, setFormules] = useState<Formule[]>([]);
   const [options, setOptions] = useState<OptionItem[]>([]);
+  const [produits, setProduits] = useState<ProduitItem[]>([]);
+  const [quantites, setQuantites] = useState<Record<string, number>>({});
   const [category, setCategory] = useState<Category>();
   const [formuleId, setFormuleId] = useState<string>();
   const [optionIds, setOptionIds] = useState<string[]>([]);
@@ -61,6 +64,7 @@ export function Reserver() {
     getCatalog().then((c) => {
       setFormules(c.formules);
       setOptions(c.options);
+      setProduits(c.produits);
       const f = c.formules.find((x) => x.id === choisie);
       if (f) { setCategory(f.category as Category); setFormuleId(f.id); }
     }).catch((e: Error) => setError(e.message));
@@ -91,7 +95,8 @@ export function Reserver() {
     if (!selection || !address || !start) return;
     setSending(true);
     try {
-      const resultat = await reserve(selection, start, address, contact, terms);
+      const choisis = Object.entries(quantites).filter(([, q]) => q > 0).map(([id, quantite]) => ({ id, quantite }));
+      const resultat = await reserve(selection, start, address, contact, terms, choisis);
       if (resultat.paymentUrl?.startsWith('/')) {
         navigate(resultat.paymentUrl);
       } else if (resultat.paymentUrl) {
@@ -116,9 +121,14 @@ export function Reserver() {
     start && new Date(start).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
     address?.label,
   ].filter(Boolean).join(', ');
-  const libelleBouton = step === ETAPES.length - 1
-    ? `Payer l'acompte${quote ? ` (${formatEuros(quote.depositCents)})` : ''}`
-    : BOUTONS[step];
+  // Produits : payés en entier avec l'acompte.
+  const totalProduits = produits.reduce((t, p) => t + p.priceCents * (quantites[p.id] ?? 0), 0);
+  const aPayer = (quote?.depositCents ?? 0) + totalProduits;
+  const libelleBouton = step < ETAPES.length - 1
+    ? BOUTONS[step]
+    : totalProduits === 0
+      ? `Payer l'acompte${quote ? ` (${formatEuros(quote.depositCents)})` : ''}`
+      : `Payer ${quote?.depositCents ? 'l’acompte et les produits' : 'les produits'} (${formatEuros(aPayer)})`;
 
   return (
     <main className={`container ${styles.page}`}>
@@ -195,6 +205,8 @@ export function Reserver() {
             <label className={styles.field}>E-mail<input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} autoComplete="email" /></label>
             <label className={styles.field}>Précisions (véhicule, accès, parking, prise électrique…)<textarea rows={3} value={contact.notes} onChange={(e) => setContact({ ...contact, notes: e.target.value })} /></label>
             <p className={styles.hint}>Un espace client sera créé pour suivre vos rendez-vous : vous recevrez un lien pour choisir votre mot de passe. Carte de fidélité pleine ? La remise est déduite automatiquement du total et de l’acompte.</p>
+            <ChoixProduits produits={produits} quantites={quantites}
+              onChange={(id, q) => setQuantites({ ...quantites, [id]: Math.max(0, q) })} />
             <label className={styles.check}><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> J'accepte les <a href="/cgv" target="_blank" rel="noreferrer">conditions générales de vente</a>.</label>
           </StepCard>
 
@@ -203,7 +215,7 @@ export function Reserver() {
           <div className={styles.barre}>
             {quote && (
               <div className={styles.total}>
-                <span className={styles.totalLibelle}>{step === 0 ? 'Total estimé' : 'Total'}, acompte {formatEuros(quote.depositCents)}</span>
+                <span className={styles.totalLibelle}>{step === 0 ? 'Total estimé' : 'Total'}, acompte {formatEuros(quote.depositCents)}{totalProduits > 0 ? ` + produits ${formatEuros(totalProduits)}` : ''}</span>
                 <strong className={styles.totalMontant}>{formatEuros(quote.totalCents)}</strong>
                 <a href="#detail-prix" className={styles.detail}>Détail du prix</a>
               </div>

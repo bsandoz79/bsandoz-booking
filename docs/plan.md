@@ -39,3 +39,4 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/entete-compact` : en-tête sur une ligne, menu déroulant sur téléphone
 - [x] `feature/reservation-guidee` : chaque choix de la réservation amène à la partie suivante
 - [x] `feature/communes-repliees` : communes desservies repliées sur l'accueil
+- [x] `feature/produits-upsell` : produits vendus avec la réservation (stock géré dans l'espace pro, payés avec l'acompte)
