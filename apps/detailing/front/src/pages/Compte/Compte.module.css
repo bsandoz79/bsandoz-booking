@@ -1,0 +1,11 @@
+.page { padding-block: 2rem 4rem; display: flex; flex-direction: column; gap: 1.5rem; max-width: 760px; }
+.page h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
+.page h2 { font-size: 1.3rem; }
+.formulaire { background: var(--bs-color-surface); border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; max-width: 460px; }
+.section { display: flex; flex-direction: column; gap: .75rem; }
+.liste { display: flex; flex-direction: column; gap: 1rem; }
+.actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.aide { font-size: .9rem; color: var(--bs-color-text-muted); }
+.ok { color: var(--bs-color-success); font-weight: 600; }
+.erreur { color: #a3122f; font-weight: 600; }
+.danger { border: 1px solid #a3122f33; border-radius: var(--bs-radius-md); padding: 1rem; display: flex; flex-direction: column; gap: .75rem; }

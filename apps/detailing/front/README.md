@@ -18,6 +18,8 @@ Contrat : `docs/api.md`. Le parcours envoie la prestation, la variante (type de 
 ## Pages
 - `/` : accueil (prestations, comment ça marche, réalisations avant / après à fournir, zone d'intervention, avis à compléter, questions fréquentes).
 - `/reserver`, `/confirmation` : parcours de réservation.
-- `/mon-espace`, `/pro` : espaces client et pro.
+- `/mon-espace` : espace client (connexion ; rendez-vous à venir et historique ; déplacer, annuler avec remboursement de l'acompte si l'annulation est gratuite ; télécharger ses données ; supprimer son compte ; déconnexion). La session est reprise au chargement grâce au cookie de renouvellement ; le jeton d'accès reste en mémoire (jamais dans le stockage du navigateur).
+- Liens des e-mails (chemins utilisés par les modèles de mails du kit) : `/compte/activer?jeton=` (premier mot de passe), `/compte/mot-de-passe` (demande de lien, puis `?jeton=` pour le nouveau mot de passe), `/rendez-vous?jeton=` (gérer un rendez-vous sans compte).
+- `/pro` : espace pro.
 - `/mentions-legales`, `/cgv`, `/confidentialite` : pages légales (`src/pages/Legal`) reprenant `site.ts` ; identité de l'entreprise, droit de rétractation, médiateur et durée de conservation `[à compléter]`, textes à faire relire avant la mise en ligne.
 - Toute autre adresse : page introuvable.
