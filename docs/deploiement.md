@@ -40,11 +40,11 @@ Settings → Environments → créer l'environnement **demo**, puis dedans :
 - **Variable** : `VITE_API_URL` = `https://api.demo.bsandoz.fr` (sans `/api/v1`). Vide : le site est construit en mode démonstration.
 
 ## 4. Premier déploiement
-1. GitHub → Actions → Déploiement → Run workflow (tout). Le premier envoi de l'API est long (dossier `vendor` complet) ; les suivants n'envoient que les fichiers modifiés.
+1. GitHub → Actions → Déploiement → Run workflow (tout). L'API est envoyée en une seule archive `api.zip` (avec `deploy/apres-envoi.sh`) : quelques minutes au plus.
 2. cPanel → Terminal :
    ```sh
    cd ~/api.demo.bsandoz.fr
-   sh deploy/apres-envoi.sh                          # cache, migrations, vérification
+   sh deploy/apres-envoi.sh                          # décompresse api.zip ; s'arrête si .env.local manque (§ 2), le relancer ensuite
    php bin/console bsandoz:pro:creer contact@bsandoz.fr Prénom Nom   # compte pro (mot de passe demandé)
    php bin/console detailing:demo:charger           # catalogue et horaires de démonstration (base vide uniquement)
    ```
@@ -67,7 +67,7 @@ Copier le secret de signature (`whsec_…`) dans `STRIPE_WEBHOOK_SECRET`, puis r
 - Sur téléphone : « Ajouter à l'écran d'accueil » installe l'application.
 
 ## 7. Mises à jour
-Push sur `main` → CI → déploiement automatique. Si l'API a changé : `sh deploy/apres-envoi.sh` dans le terminal cPanel (l'adresse IP de GitHub n'est pas autorisée en SSH chez o2switch, d'où cette étape manuelle). Le site, lui, est à jour immédiatement.
+Push sur `main` → CI → déploiement automatique. Si l'API a changé : `sh deploy/apres-envoi.sh` dans le terminal cPanel (décompresse la nouvelle archive, vide le cache, applique les migrations) (l'adresse IP de GitHub n'est pas autorisée en SSH chez o2switch, d'où cette étape manuelle). Le site, lui, est à jour immédiatement.
 
 ## Nouveau client
 Copier `apps/detailing` en `apps/<client>`, ajouter ses deux jobs dans `deploy.yml` (avec son propre environnement GitHub et ses secrets), créer ses sous-domaines, sa base et son `.env.local` (nouvelles clés : chaque client a les siennes).
