@@ -13,6 +13,7 @@ import { RendezVous } from '../pages/RendezVous/RendezVous';
 import { Cgv, Confidentialite, MentionsLegales, PageIntrouvable } from '../pages/Legal/Legal';
 import { Reserver } from '../pages/Reserver/Reserver';
 import { Professionnels } from '../pages/Professionnels/Professionnels';
+import { Devis } from '../pages/Professionnels/Devis';
 
 export function AppRoutes() {
   return (
@@ -23,6 +24,7 @@ export function AppRoutes() {
         <Route path="/" element={<Accueil />} />
         <Route path="/reserver" element={<Reserver />} />
         <Route path="/professionnels" element={<Professionnels />} />
+        <Route path="/devis" element={<Devis />} />
         <Route path="/nettoyage-voiture/:commune" element={<Commune />} />
         <Route path="/confirmation" element={<Confirmation />} />
         <Route path="/mon-espace" element={<EspaceClient />} />

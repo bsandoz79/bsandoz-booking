@@ -22,3 +22,19 @@ describe('Page Professionnels', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('Merci, votre demande est envoyée.');
   });
 });
+
+describe('Page Devis', () => {
+  it('reprend l’adresse hors zone et envoie la demande d’un particulier', async () => {
+    render(<MemoryRouter initialEntries={['/devis?adresse=10%20Rue%20de%20Rivoli%2075001%20Paris']}><AppRoutes /></MemoryRouter>);
+    expect(screen.getByRole('heading', { level: 1, name: 'Demander un devis' })).toBeInTheDocument();
+    expect(await screen.findByText(/au-delà de 50 km autour de Abbeville/)).toBeInTheDocument();
+    expect(screen.getByLabelText('Adresse d’intervention')).toHaveValue('10 Rue de Rivoli 75001 Paris');
+
+    await userEvent.type(screen.getByLabelText(/^Nom et prénom/), 'Camille Martin');
+    await userEvent.type(screen.getByLabelText(/^E-mail/), 'camille@example.org');
+    await userEvent.selectOptions(screen.getByLabelText('Prestation souhaitée'), 'Nettoyage intérieur');
+    await userEvent.type(screen.getByLabelText(/^Votre besoin/), 'Intérieur complet.');
+    await userEvent.click(screen.getByRole('button', { name: 'Envoyer ma demande' }));
+    expect(await screen.findByRole('status')).toHaveTextContent('Merci, votre demande est envoyée.');
+  });
+});

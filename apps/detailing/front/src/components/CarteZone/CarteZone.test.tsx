@@ -1,5 +1,6 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render as rendre, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { cerclesZone, type ZonePublique } from '../../data/zone';
 import { CarteZone } from './CarteZone';
 
@@ -9,6 +10,9 @@ vi.mock('leaflet', () => {
   return { default: chaine, ...{ map: chaine, tileLayer: chaine, circle: chaine, tooltip: chaine, circleMarker: chaine, latLng: chaine, latLngBounds: chaine } };
 });
 vi.mock('leaflet/dist/leaflet.css', () => ({}));
+
+/** La carte contient un lien « Demander un devis » : rendu dans un routeur. */
+const render = (ui: React.ReactElement) => rendre(<MemoryRouter>{ui}</MemoryRouter>);
 
 const ZONE: ZonePublique = {
   surPlace: false, freeRadiusKm: 5, maxDistanceKm: 50, pricePerKmCents: 0, roadFactor: 1.3,
@@ -61,7 +65,8 @@ describe('CarteZone', () => {
 
     act(() => surVisible([{ isIntersecting: true }]));
     await waitFor(() => expect(estimer).toHaveBeenCalledWith(49.89, 2.29));
-    expect(await screen.findByRole('status')).toHaveTextContent(/Sur devis.*au-delà de 50 km : contactez-moi pour un devis/);
+    expect(await screen.findByRole('status')).toHaveTextContent(/Sur devis.*au-delà de 50 km : je viens sur devis/);
+    expect(screen.getByRole('link', { name: 'Demander un devis' })).toHaveAttribute('href', '/devis');
   });
 
   it('propose l’adresse quand la localisation est refusée', async () => {

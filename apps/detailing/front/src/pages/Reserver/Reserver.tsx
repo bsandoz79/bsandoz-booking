@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { AddressInput, Button, Calendar, ChoiceChips, Dialog, PriceSummary, SlotPicker, StepCard, type StepCardStatus, formatEuros } from '@bsandoz/ui';
 import type { Category, Formule, OptionItem, ProduitItem } from '../../data/demo';
 import { CATEGORIES, tarifDe } from '../../data/demo';
@@ -239,7 +239,12 @@ export function Reserver() {
               hint="Choisissez votre adresse dans la liste pour calculer le déplacement." />
             {address && quote && (quote.inZone
               ? <p className={styles.ok}>✓ Je me déplace chez vous{quote.travelFeeCents > 0 ? ` (frais de déplacement : ${formatEuros(quote.travelFeeCents)})` : ', déplacement offert'}.</p>
-              : <p className={styles.error}>Cette adresse est hors de ma zone d'intervention. Contactez-moi pour en parler.</p>)}
+              : (
+                <div className={styles.horsZone} role="status">
+                  <p><strong>Cette adresse est au-delà de ma zone de réservation en ligne.</strong> Je peux tout de même venir, sur devis.</p>
+                  <Link className="btn" to={`/devis?adresse=${encodeURIComponent(address.label)}`}>Demander un devis</Link>
+                </div>
+              ))}
             {dansZone && quote && (
               <div id="resa-calendrier" className={`${styles.dateTime} ${styles.ancre}`}>
                 <Calendar month={month} minMonth={currentMonth()} availableDays={days} selected={day}

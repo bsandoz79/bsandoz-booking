@@ -40,6 +40,7 @@
 .hint { font-size: 0.85rem; color: var(--bs-color-text-muted); }
 .ok { color: var(--bs-color-success); font-weight: 600; }
 .error { color: var(--bs-color-danger); font-weight: 600; }
+.horsZone { display: flex; flex-direction: column; gap: .75rem; align-items: flex-start; }
 .check { display: flex; gap: 0.5rem; align-items: flex-start; }
 .info { margin-top: 1rem; padding: .75rem 1rem; border-radius: var(--bs-radius-sm); background: var(--bs-color-primary-soft); color: var(--bs-color-text); }
 

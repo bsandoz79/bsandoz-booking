@@ -104,6 +104,20 @@ describe('Parcours de réservation', () => {
     expect(screen.getByRole('note')).toHaveTextContent('Mode démonstration');
   });
 
+  it('adresse au-delà de la zone : propose de demander un devis', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({
+      features: [{ properties: { label: '10 Rue de Rivoli 75001 Paris' }, geometry: { coordinates: [2.36, 48.856] } }],
+    }))));
+    render(<MemoryRouter initialEntries={['/reserver?formule=ext-signature']}><Reserver /></MemoryRouter>);
+    await screen.findByRole('radio', { name: /Extérieur Signature/, checked: true });
+    await userEvent.click(bouton('Choisir le créneau'));
+    await userEvent.type(screen.getByRole('combobox', { name: /Adresse de l'intervention/ }), '10 rue de rivoli');
+    await userEvent.click(await screen.findByRole('option', { name: /Paris/ }));
+
+    expect(await screen.findByText(/au-delà de ma zone de réservation en ligne/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Demander un devis' })).toHaveAttribute('href', '/devis?adresse=10%20Rue%20de%20Rivoli%2075001%20Paris');
+  });
+
   it('prévient quand le paiement de l’acompte a été abandonné', () => {
     render(<MemoryRouter initialEntries={['/reserver?paiement=annule&reservation=r1']}><AppRoutes /></MemoryRouter>);
     expect(screen.getByRole('status')).toHaveTextContent('paiement de l\'acompte a été annulé');

@@ -89,6 +89,13 @@ export const PAGES_SEO: PageSeo[] = [
     h1: 'Espace professionnels',
     texte: 'Flottes, utilitaires, poids lourds, garages : intervention sur site à Abbeville et alentours, autonome en eau et en électricité. Tarif sur devis selon le nombre de véhicules et la fréquence, ponctuelle ou régulière.',
   },
+  {
+    chemin: '/devis',
+    titre: 'Demander un devis de nettoyage de voiture | Perfect Clean',
+    description: 'Adresse éloignée d’Abbeville, plusieurs véhicules ou besoin particulier : demandez un devis de nettoyage de voiture à domicile.',
+    h1: 'Demander un devis',
+    texte: 'Au-delà de la zone de réservation en ligne, ou pour un besoin particulier, Perfect Clean se déplace sur devis : décrivez votre demande, réponse par e-mail ou par téléphone.',
+  },
   ...COMMUNES.map(pageCommune),
   { chemin: '/mentions-legales', titre: 'Mentions légales | Perfect Clean', description: 'Mentions légales du site Perfect Clean, nettoyage de voiture à domicile à Abbeville.', h1: 'Mentions légales', texte: '' },
   { chemin: '/cgv', titre: 'Conditions générales de vente | Perfect Clean', description: 'Conditions générales de vente : prix, acompte, annulation et déroulement des prestations de nettoyage de voiture à domicile.', h1: 'Conditions générales de vente', texte: '' },

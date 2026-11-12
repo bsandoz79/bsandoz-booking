@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { Circle, CircleMarker, Map as CarteLeaflet } from 'leaflet';
 import { AddressInput, formatEuros } from '@bsandoz/ui';
 import { cerclesZone, couleurTranche, type Estimation, type ZonePublique } from '../../data/zone';
@@ -143,8 +144,11 @@ export function CarteZone({ zone, centre, ville, estimer, rechercherAdresse, onE
             <span className={styles.resultatDetail}>
               {estimation.dansZone
                 ? `Vous êtes à environ ${km(estimation.distanceKm)} de route de ${ville}.`
-                : `Vous êtes à environ ${km(estimation.distanceKm)} de ${ville}, au-delà de ${zone.maxDistanceKm} km : contactez-moi pour un devis.`}
+                : `Vous êtes à environ ${km(estimation.distanceKm)} de ${ville}, au-delà de ${zone.maxDistanceKm} km : je viens sur devis.`}
             </span>
+            {!estimation.dansZone && (
+              <Link className={`btn ${styles.devis}`} to={adresse ? `/devis?adresse=${encodeURIComponent(adresse.label)}` : '/devis'}>Demander un devis</Link>
+            )}
           </div>
         )}
       </div>
