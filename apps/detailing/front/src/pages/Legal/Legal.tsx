@@ -1,0 +1,135 @@
+import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import { SITE } from '../../data/site';
+import styles from './Legal.module.css';
+
+/**
+ * Pages légales. Les informations d'identité de l'entreprise restent « [à compléter] » tant qu'elles ne sont pas fournies ;
+ * les textes sont à faire relire avant la mise en ligne réelle.
+ */
+function PageLegale({ titre, children }: { titre: string; children: ReactNode }) {
+  return (
+    <main className={`container ${styles.page}`}>
+      <h1>{titre}</h1>
+      {children}
+      <p className={styles.maj}>Dernière mise à jour : [à compléter]</p>
+    </main>
+  );
+}
+
+export function MentionsLegales() {
+  const l = SITE.legal;
+  return (
+    <PageLegale titre="Mentions légales">
+      <section>
+        <h2>Éditeur du site</h2>
+        <ul>
+          <li>Nom commercial : {SITE.brand}</li>
+          <li>Responsable : {l.owner}</li>
+          <li>Statut : {l.status}</li>
+          <li>SIRET : {l.siret}</li>
+          <li>TVA intracommunautaire : {l.vat}</li>
+          <li>Adresse : {l.address}</li>
+          <li>Téléphone : {SITE.phone} · E-mail : {SITE.email}</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Directeur de la publication</h2>
+        <p>{l.owner}</p>
+      </section>
+      <section>
+        <h2>Hébergement</h2>
+        <p>{l.host}</p>
+      </section>
+      <section>
+        <h2>Propriété intellectuelle</h2>
+        <p>Les textes, photos et éléments graphiques de ce site appartiennent à {SITE.brand} ou sont utilisés avec autorisation. Toute reproduction sans accord préalable est interdite.</p>
+      </section>
+      <section>
+        <h2>Données personnelles</h2>
+        <p>Voir la <Link to="/confidentialite">politique de confidentialité</Link>.</p>
+      </section>
+    </PageLegale>
+  );
+}
+
+export function Cgv() {
+  return (
+    <PageLegale titre="Conditions générales de vente">
+      <section>
+        <h2>1. Objet</h2>
+        <p>Les présentes conditions s'appliquent aux prestations de {SITE.activity.toLowerCase()} réservées sur ce site auprès de {SITE.brand}.</p>
+      </section>
+      <section>
+        <h2>2. Prix</h2>
+        <p>Les prix sont affichés en euros toutes taxes comprises avant la réservation. Ils dépendent de la prestation, du véhicule (ou du nombre de places du canapé) et des options choisies. Le déplacement est offert jusqu'à {SITE.freeRadiusKm} km ; au-delà, des frais de déplacement calculés à partir de l'adresse sont indiqués avant la validation.</p>
+      </section>
+      <section>
+        <h2>3. Réservation et acompte</h2>
+        <p>La réservation est confirmée après le paiement en ligne d'un acompte de {SITE.depositPercent} % du prix total, par carte bancaire via notre prestataire de paiement sécurisé (Stripe). Un e-mail de confirmation est envoyé avec un lien pour gérer le rendez-vous. Le solde est réglé sur place à la fin de la prestation.</p>
+      </section>
+      <section>
+        <h2>4. Annulation et report</h2>
+        <p>Vous pouvez annuler ou déplacer votre rendez-vous depuis le lien reçu par e-mail ou votre espace client. Jusqu'à {SITE.freeCancelHours} heures avant le rendez-vous, l'annulation est gratuite et l'acompte est remboursé. Au-delà, l'acompte reste acquis. En cas d'empêchement de notre part, le rendez-vous est reporté à une date convenue ensemble ou l'acompte est intégralement remboursé.</p>
+      </section>
+      <section>
+        <h2>5. Droit de rétractation</h2>
+        <p>[à compléter : régime applicable à faire valider (prestation de service à date déterminée, article L221-28 du Code de la consommation).]</p>
+      </section>
+      <section>
+        <h2>6. Déroulement de la prestation</h2>
+        <p>Le client s'assure que le véhicule (ou le canapé) est accessible à l'adresse et à l'heure prévues. La durée affichée est une estimation ; certaines prestations occupent une demi-journée.</p>
+      </section>
+      <section>
+        <h2>7. Réclamations et médiation</h2>
+        <p>Toute réclamation peut être adressée à {SITE.email}. En cas de litige, vous pouvez recourir gratuitement au médiateur de la consommation : {SITE.legal.mediator}.</p>
+      </section>
+    </PageLegale>
+  );
+}
+
+export function Confidentialite() {
+  return (
+    <PageLegale titre="Politique de confidentialité">
+      <section>
+        <h2>Responsable du traitement</h2>
+        <p>{SITE.brand} ({SITE.legal.owner}), joignable à {SITE.email}.</p>
+      </section>
+      <section>
+        <h2>Données collectées et utilisation</h2>
+        <ul>
+          <li>Nom, e-mail, téléphone et adresse d'intervention : organiser le rendez-vous, vous contacter et calculer le déplacement.</li>
+          <li>Détails de la prestation (véhicule, options, notes) : préparer l'intervention.</li>
+          <li>Paiement : traité directement par Stripe ; aucun numéro de carte n'est stocké sur ce site.</li>
+        </ul>
+        <p>Base légale : l'exécution du contrat (votre réservation). Le téléphone et l'adresse sont chiffrés dans notre base de données.</p>
+      </section>
+      <section>
+        <h2>Durée de conservation</h2>
+        <p>Durée de conservation : [à compléter]. Lorsque vous supprimez votre compte, vos données personnelles sont anonymisées ; seules les informations nécessaires à la comptabilité sont conservées pendant la durée légale.</p>
+      </section>
+      <section>
+        <h2>Destinataires</h2>
+        <p>Vos données ne sont ni vendues ni cédées. Elles sont accessibles à {SITE.brand} et à ses prestataires techniques : hébergement ({SITE.legal.host.split(',')[0]}), paiement (Stripe), recherche d'adresse (Base Adresse Nationale).</p>
+      </section>
+      <section>
+        <h2>Cookies</h2>
+        <p>Ce site n'utilise pas de cookie publicitaire ni de mesure d'audience. Un seul cookie technique, nécessaire au maintien de votre connexion à l'espace client, est déposé lorsque vous vous connectez.</p>
+      </section>
+      <section>
+        <h2>Vos droits</h2>
+        <p>Vous disposez d'un droit d'accès, de rectification, d'effacement et de portabilité. Depuis votre espace client, vous pouvez télécharger vos données et supprimer votre compte. Vous pouvez aussi nous écrire à {SITE.email}, ou saisir la CNIL (cnil.fr).</p>
+      </section>
+    </PageLegale>
+  );
+}
+
+export function PageIntrouvable() {
+  return (
+    <main className={`container ${styles.page}`}>
+      <h1>Page introuvable</h1>
+      <p>La page demandée n'existe pas ou a été déplacée.</p>
+      <p><Link to="/" className="btn">Retour à l'accueil</Link></p>
+    </main>
+  );
+}

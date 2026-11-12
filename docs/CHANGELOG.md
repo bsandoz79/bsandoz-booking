@@ -79,6 +79,8 @@
 - Kit front : bloc `DataTable` (tableau générique, tri par colonne avec `aria-sort`, message vide, ouverture d'une ligne, cartes sur mobile). Tests.
 - Kit front : bloc `PlanningView` (vues jour, semaine et mois, navigation, événements à cheval sur minuit, tons rendez-vous / secondaire / indisponibilité, pastille mobile), utilitaires `startOfWeek` et `eventsOfDay`. Tests.
 - API detailing : commande `detailing:demo:charger` (cas d'usage `ChargerDonneesDemo`) : catalogue, options et horaires de démonstration chargés via les cas d'usage du kit, formule « Complet » à durée incertaine, sans effet si le catalogue n'est pas vide. Tests fonctionnels.
+- Site detailing : accueil enrichi (comment ça marche, réalisations avant / après à fournir, zone d'intervention, avis `[à compléter]`, questions fréquentes, carte canapé), informations du site centralisées dans `src/data/site.ts`, pied de page relié, README du front. Tests.
+- Site detailing : pages légales (mentions légales, CGV, politique de confidentialité) reprenant acompte, délai d'annulation et zone, informations d'identité `[à compléter]`, page introuvable. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
