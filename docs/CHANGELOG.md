@@ -76,6 +76,7 @@
 - Kit front : bloc `AddressInput` (autocomplétion d'adresse, motif ARIA combobox, recherche fournie par l'application, délai et longueur minimale réglables, réponses dans le désordre ignorées, clavier). Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 - Kit front : bloc `Toggle` (interrupteur rôle `switch`, libellé et aide reliés, désactivable). Tests.
+- Kit front : bloc `DataTable` (tableau générique, tri par colonne avec `aria-sort`, message vide, ouverture d'une ligne, cartes sur mobile). Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
