@@ -38,6 +38,10 @@ export interface RendezVousPro {
   /** Produits à apporter, déjà payés en ligne. */
   produits?: { id: string; nom: string; prixCents: number; quantite: number }[];
   produitsCents?: number;
+  /** Mode de paiement : true en ligne, false sur place (null : ancien fonctionnement avec acompte). */
+  paiementEnLigne?: boolean | null;
+  enLigneCents?: number;
+  surPlaceCents?: number;
   travelFeeCents: number;
   notes: string;
   metierData: Record<string, unknown>;

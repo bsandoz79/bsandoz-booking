@@ -12,7 +12,7 @@ export interface ChoixProduitsProps {
 }
 
 /**
- * Produits proposés juste avant le paiement : payés en entier avec l'acompte, apportés le jour du rendez-vous.
+ * Produits proposés juste avant de confirmer : réglés avec la prestation (en ligne ou sur place), apportés le jour du rendez-vous.
  * « Ajouter », puis − / + dans la limite du stock.
  */
 export function ChoixProduits({ produits, quantites, onChange, avecTitre = true }: ChoixProduitsProps) {
@@ -22,7 +22,7 @@ export function ChoixProduits({ produits, quantites, onChange, avecTitre = true 
   return (
     <section className={`${styles.bloc} ${avecTitre ? styles.avecTitre : ''}`} {...(avecTitre ? { 'aria-labelledby': 'titre-produits' } : { 'aria-label': 'Produits proposés' })}>
       {avecTitre && <h3 id="titre-produits" className={styles.titre}>À ajouter à votre commande ?</h3>}
-      {avecTitre && <p className={styles.intro}>Mes produits d’entretien, réglés maintenant avec l’acompte : je vous les apporte le jour du rendez-vous.</p>}
+      {avecTitre && <p className={styles.intro}>Mes produits d’entretien, réglés avec la prestation : je vous les apporte le jour du rendez-vous.</p>}
       <ul className={styles.liste}>
         {produits.map((p) => {
           const q = quantites[p.id] ?? 0;

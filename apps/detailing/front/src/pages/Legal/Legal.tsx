@@ -69,12 +69,12 @@ export function Cgv() {
         <p>Les prix sont affichés en euros toutes taxes comprises avant la réservation. Ils dépendent de la prestation et des options choisies ; un supplément peut s'appliquer pour un véhicule très sale ou des poils d'animaux. Le déplacement est offert jusqu'à {SITE.freeRadiusKm} km ; au-delà, des frais de déplacement calculés à partir de l'adresse sont indiqués avant la validation.</p>
       </section>
       <section>
-        <h2>3. Réservation et acompte</h2>
-        <p>La réservation est confirmée après le paiement en ligne d'un acompte de {SITE.depositPercent} % du prix total, par carte bancaire via notre prestataire de paiement sécurisé (Stripe). Un e-mail de confirmation est envoyé avec un lien pour gérer le rendez-vous. Le solde est réglé sur place à la fin de la prestation.</p>
+        <h2>3. Réservation et paiement</h2>
+        <p>Aucun acompte n'est demandé. À la réservation, vous choisissez de régler sur place, une fois la prestation terminée, ou de payer la totalité en ligne par carte bancaire, Apple Pay ou Google Pay, via notre prestataire de paiement sécurisé (Stripe). Payée sur place, la réservation est confirmée aussitôt ; payée en ligne, elle l'est dès le paiement reçu. Un e-mail de confirmation est envoyé avec un lien pour gérer le rendez-vous.</p>
       </section>
       <section>
         <h2>4. Annulation et report</h2>
-        <p>Vous pouvez annuler ou déplacer votre rendez-vous depuis le lien reçu par e-mail ou votre espace client. Jusqu'à {SITE.freeCancelHours} heures avant le rendez-vous, l'annulation est gratuite et l'acompte est remboursé. Au-delà, l'acompte reste acquis. En cas d'empêchement de notre part, le rendez-vous est reporté à une date convenue ensemble ou l'acompte est intégralement remboursé.</p>
+        <p>Vous pouvez annuler ou déplacer votre rendez-vous depuis le lien reçu par e-mail ou votre espace client. Jusqu'à {SITE.freeCancelHours} heures avant le rendez-vous, l'annulation est gratuite et ce qui a été payé en ligne est intégralement remboursé. Au-delà, les sommes réglées en ligne restent acquises. En cas d'empêchement de notre part, le rendez-vous est reporté à une date convenue ensemble ou ce qui a été payé est intégralement remboursé.</p>
       </section>
       <section>
         <h2>5. Droit de rétractation</h2>

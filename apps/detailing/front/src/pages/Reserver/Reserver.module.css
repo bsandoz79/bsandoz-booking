@@ -41,7 +41,19 @@
 .ok { color: var(--bs-color-success); font-weight: 600; }
 .error { color: var(--bs-color-danger); font-weight: 600; }
 .horsZone { display: flex; flex-direction: column; gap: .75rem; align-items: flex-start; }
-.check { display: flex; gap: 0.5rem; align-items: flex-start; }
+.check { display: flex; gap: 0.5rem; align-items: center; min-height: 44px; }
+.check input { width: 1.25rem; height: 1.25rem; accent-color: var(--bs-color-text); }
+.facultatif { font-weight: 400; color: var(--bs-color-text-muted); }
+.entreprise { display: flex; flex-direction: column; gap: 1rem; }
+.precision summary { cursor: pointer; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; display: flex; align-items: center; }
+.precision[open] summary { margin-bottom: .5rem; }
+/* Mode de paiement : deux choix en cartes. */
+.paiement { border: 0; margin: 0; padding: 1rem 0 0; border-top: 1px solid var(--bs-color-border); display: flex; flex-direction: column; gap: .5rem; }
+.paiement legend { font-weight: 700; font-size: 1.05rem; padding: 0; margin-bottom: .5rem; }
+.modePaiement { display: grid; grid-template-columns: auto 1fr; gap: .75rem; align-items: start; padding: .9rem 1rem; border: 1.5px solid var(--bs-color-border); border-radius: var(--bs-radius-md); cursor: pointer; }
+.modePaiement input { width: 1.25rem; height: 1.25rem; margin: .15rem 0 0; accent-color: var(--bs-color-text); }
+.modePaiement > span { display: flex; flex-direction: column; gap: .15rem; }
+.modeChoisi { border-color: var(--bs-color-text); }
 .info { margin-top: 1rem; padding: .75rem 1rem; border-radius: var(--bs-radius-sm); background: var(--bs-color-primary-soft); color: var(--bs-color-text); }
 
 /* Barre du total et du bouton principal, collée en bas de l'écran pendant tout le parcours. */

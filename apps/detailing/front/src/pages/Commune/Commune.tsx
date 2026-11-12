@@ -33,7 +33,7 @@ export function Commune() {
 
       <section aria-labelledby="titre-comment" className={styles.section}>
         <h2 id="titre-comment">Comment ça se passe à {commune.nom} ?</h2>
-        <p>Vous choisissez la prestation et le créneau en ligne, réglez un acompte, et je viens à l’adresse indiquée — devant chez vous ou sur votre lieu de travail — avec tout le matériel, autonome en eau et en électricité. Le solde se règle sur place.</p>
+        <p>Vous choisissez la prestation et le créneau en ligne, payez en ligne ou sur place, et je viens à l’adresse indiquée — devant chez vous ou sur votre lieu de travail — avec tout le matériel, autonome en eau et en électricité. Aucun acompte n’est demandé.</p>
       </section>
 
       <section aria-labelledby="titre-voisines" className={styles.section}>

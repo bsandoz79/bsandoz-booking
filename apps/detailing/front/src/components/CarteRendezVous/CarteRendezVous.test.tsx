@@ -11,14 +11,14 @@ const impaye: RendezVous = {
 };
 
 describe('CarteRendezVous : acompte non réglé', () => {
-  it('propose de payer l’acompte et les produits, puis ouvre la page de paiement', async () => {
+  it('propose de payer en ligne ce qui reste dû, puis ouvre la page de paiement', async () => {
     const naviguer = vi.fn();
     const onPayer = vi.fn(async () => 'https://paiement.test/cs_1');
     render(<CarteRendezVous rdv={impaye} maintenant={MAINTENANT} onDeplacer={vi.fn()} onAnnuler={vi.fn()} onPayer={onPayer} naviguer={naviguer} />);
 
-    expect(screen.getByText('Acompte non réglé')).toBeInTheDocument();
-    expect(screen.getByText(/pas encore confirmé : réglez l’acompte et les produits \(13,70\s€\)/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: /Payer l’acompte \(13,70/ }));
+    expect(screen.getByText('Paiement non réglé')).toBeInTheDocument();
+    expect(screen.getByText(/pas encore confirmé : réglez le paiement en ligne \(13,70\s€\)/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /^Payer \(13,70/ }));
 
     expect(onPayer).toHaveBeenCalledOnce();
     expect(naviguer).toHaveBeenCalledWith('https://paiement.test/cs_1');
@@ -28,7 +28,7 @@ describe('CarteRendezVous : acompte non réglé', () => {
     const erreur = Object.assign(new Error('Ce créneau n’est plus disponible : choisissez-en un autre, puis réglez l’acompte.'), { status: 409 });
     render(<CarteRendezVous rdv={impaye} maintenant={MAINTENANT} onDeplacer={vi.fn()} onAnnuler={vi.fn()} onPayer={async () => { throw erreur; }} naviguer={vi.fn()} />);
 
-    await userEvent.click(screen.getByRole('button', { name: /Payer l’acompte/ }));
+    await userEvent.click(screen.getByRole('button', { name: /^Payer \(/ }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('plus disponible');
     expect(screen.getByText('Choisissez un nouveau créneau.')).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe('CarteRendezVous : acompte non réglé', () => {
   it('peut être annulée sans rien à rembourser', async () => {
     render(<CarteRendezVous rdv={impaye} maintenant={MAINTENANT} onDeplacer={vi.fn()} onAnnuler={vi.fn(async () => ({ refundable: false }))} onPayer={vi.fn()} />);
     await userEvent.click(screen.getByRole('button', { name: 'Annuler' }));
-    expect(screen.getByText(/Rien n’a été payé/)).toBeInTheDocument();
+    expect(screen.getByText(/Rien n’a été payé en ligne/)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Oui, annuler' }));
     expect(await screen.findByRole('status')).toHaveTextContent('Rendez-vous annulé.');
   });

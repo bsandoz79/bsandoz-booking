@@ -4,7 +4,7 @@ import { AddressInput, Button, Calendar, ChoiceChips, Dialog, PriceSummary, Slot
 import type { Category, Formule, OptionItem, ProduitItem } from '../../data/demo';
 import { CATEGORIES, tarifDe } from '../../data/demo';
 import type { Address, Quote, Selection, Slot } from '../../services/api';
-import { getAvailableDays, getCatalog, getQuote, getSlots, reserve, searchAddress } from '../../services/api';
+import { getAvailableDays, getCatalog, getQuote, getSlots, reserve, searchAddress, type ModePaiement } from '../../services/api';
 import { PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
 import { defilerVers } from '../../app/defilement';
@@ -36,7 +36,7 @@ export function Reserver() {
   const [options, setOptions] = useState<OptionItem[]>([]);
   const [produits, setProduits] = useState<ProduitItem[]>([]);
   const [quantites, setQuantites] = useState<Record<string, number>>({});
-  // Produits proposés une fois, dans une fenêtre, au clic sur « Payer » (non merci / ajouter et payer).
+  // Produits proposés une fois, dans une fenêtre, au clic sur le bouton final (non merci / ajouter).
   const [proposition, setProposition] = useState<'jamais' | 'ouverte' | 'vue'>('jamais');
   const [category, setCategory] = useState<Category>();
   const [formuleId, setFormuleId] = useState<string>();
@@ -49,7 +49,11 @@ export function Reserver() {
   const [day, setDay] = useState<string>();
   const [slots, setSlots] = useState<Slot[]>([]);
   const [start, setStart] = useState<string>();
-  const [contact, setContact] = useState({ firstname: '', lastname: '', email: '', phone: '', notes: '' });
+  const [contact, setContact] = useState({ nom: '', email: '', phone: '', notes: '' });
+  const [modele, setModele] = useState('');
+  const [entreprise, setEntreprise] = useState({ active: false, nom: '', siret: '', adresse: '' });
+  // Pas d'acompte : le client paie tout en ligne maintenant, ou tout sur place une fois la prestation faite.
+  const [paiement, setPaiement] = useState<ModePaiement>('sur_place');
   const [terms, setTerms] = useState(false);
   const [quote, setQuote] = useState<Quote>();
   const [error, setError] = useState('');
@@ -113,7 +117,10 @@ export function Reserver() {
   /** Un changement de prestation peut changer la durée : l'heure choisie est à revoir. */
   const changerPrestation = (maj: () => void) => { maj(); setStart(undefined); };
 
-  const contactOk = !!(contact.firstname && contact.lastname && /\S+@\S+\.\S+/.test(contact.email) && contact.phone);
+  // SIRET (14 chiffres) ou numéro d'entreprise belge (BCE, 10 chiffres).
+  const siretOk = /^(\d{14}|\d{10})$/.test(entreprise.siret.replace(/[\s.]/g, ''));
+  const entrepriseOk = !entreprise.active || (entreprise.nom.trim() !== '' && siretOk);
+  const contactOk = !!(contact.nom.trim() && /\S+@\S+\.\S+/.test(contact.email) && contact.phone.trim() && modele.trim()) && entrepriseOk;
   const canNext = [!!(category && formule), dansZone && !!start, contactOk && terms][step];
 
   const next = async () => {
@@ -128,7 +135,11 @@ export function Reserver() {
     setSending(true);
     try {
       const choisis = Object.entries(choix).filter(([, q]) => q > 0).map(([id, quantite]) => ({ id, quantite }));
-      const resultat = await reserve(selection, start, address, contact, terms, choisis);
+      // Modèle et entreprise : données transmises au pro avec la réservation (sans changer le devis).
+      const details: Record<string, unknown> = { ...selection.metierData, modele: modele.trim() };
+      if (entreprise.active) Object.assign(details, { entreprise: entreprise.nom.trim(), siret: entreprise.siret.replace(/[\s.]/g, ''), adresseFacturation: entreprise.adresse.trim() || address.label });
+      const resultat = await reserve({ ...selection, metierData: details }, start, address,
+        { firstname: contact.nom.trim(), lastname: '', email: contact.email, phone: contact.phone, notes: contact.notes }, terms, choisis, paiement);
       if (resultat.paymentUrl?.startsWith('/')) {
         navigate(resultat.paymentUrl);
       } else if (resultat.paymentUrl) {
@@ -158,12 +169,14 @@ export function Reserver() {
   ].filter(Boolean).join(', ');
   // Produits : payés en entier avec l'acompte.
   const totalProduits = produits.reduce((t, p) => t + p.priceCents * (quantites[p.id] ?? 0), 0);
-  const aPayer = (quote?.depositCents ?? 0) + totalProduits;
+  const totalGeneral = (quote?.totalCents ?? 0) + totalProduits;
+  // En ligne : tout ; sur place : seulement l'acompte s'il y en a un (réglage du pro), le reste une fois la prestation faite.
+  const aPayer = paiement === 'en_ligne' ? totalGeneral : (quote?.depositCents ?? 0);
   const libelleBouton = step < ETAPES.length - 1
     ? BOUTONS[step]
-    : totalProduits === 0
-      ? `Payer l'acompte${quote ? ` (${formatEuros(quote.depositCents)})` : ''}`
-      : `Payer ${quote?.depositCents ? 'l’acompte et les produits' : 'les produits'} (${formatEuros(aPayer)})`;
+    : aPayer > 0 ? `Payer ${formatEuros(aPayer)}` : 'Confirmer la réservation';
+  const libelleTotal = step === 0 ? 'Total estimé' : paiement === 'en_ligne' && step === 2 ? 'Total, payé en ligne'
+    : quote?.depositCents ? `Total, acompte ${formatEuros(quote.depositCents)} en ligne` : 'Total, à régler sur place';
 
   return (
     <main className={`container ${styles.page}`}>
@@ -261,15 +274,40 @@ export function Reserver() {
           </StepCard>
 
           <StepCard number={3} title={ETAPES[2]} status={statut(2)}>
-            <p className={styles.hint}>Pour confirmer le rendez-vous et vous prévenir la veille.</p>
-            <div className={styles.duo}>
-              <label className={styles.field}>Prénom<input value={contact.firstname} onChange={(e) => setContact({ ...contact, firstname: e.target.value })} autoComplete="given-name" /></label>
-              <label className={styles.field}>Nom<input value={contact.lastname} onChange={(e) => setContact({ ...contact, lastname: e.target.value })} autoComplete="family-name" /></label>
-            </div>
+            <p className={styles.hint}>Pour confirmer le rendez-vous et vous prévenir le jour J.</p>
+            <label className={styles.field}>Nom et prénom<input value={contact.nom} onChange={(e) => setContact({ ...contact, nom: e.target.value })} autoComplete="name" /></label>
             <label className={styles.field}>Téléphone<input type="tel" value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} autoComplete="tel" placeholder="01 02 03 04 05" /></label>
-            <label className={styles.field}>E-mail<input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} autoComplete="email" /></label>
-            <label className={styles.field}>Précisions (véhicule, accès, parking, prise électrique…)<textarea rows={3} value={contact.notes} onChange={(e) => setContact({ ...contact, notes: e.target.value })} /></label>
-            <p className={styles.hint}>Un espace client sera créé pour suivre vos rendez-vous : vous recevrez un lien pour choisir votre mot de passe. Carte de fidélité pleine ? La remise est déduite automatiquement du total et de l’acompte.</p>
+            <label className={styles.field}><span>E-mail <span className={styles.facultatif}>pour recevoir le récapitulatif</span></span><input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} autoComplete="email" /></label>
+            <label className={styles.field}>Modèle du véhicule<input value={modele} onChange={(e) => setModele(e.target.value)} placeholder="Ex. Peugeot 208 grise" /></label>
+
+            <label className={styles.check}><input type="checkbox" checked={entreprise.active} onChange={(e) => setEntreprise({ ...entreprise, active: e.target.checked })} /> Je réserve pour une entreprise</label>
+            {entreprise.active && (
+              <div className={styles.entreprise}>
+                <label className={styles.field}>Nom de l’entreprise<input value={entreprise.nom} onChange={(e) => setEntreprise({ ...entreprise, nom: e.target.value })} autoComplete="organization" />
+                  <span className={styles.hint}>Le récapitulatif sera établi à ce nom.</span></label>
+                <label className={styles.field}>SIRET ou n° BCE (Belgique)<input inputMode="numeric" value={entreprise.siret} onChange={(e) => setEntreprise({ ...entreprise, siret: e.target.value })} aria-invalid={entreprise.siret !== '' && !siretOk} />
+                  <span className={entreprise.siret !== '' && !siretOk ? styles.error : styles.hint}>{entreprise.siret !== '' && !siretOk ? 'SIRET : 14 chiffres ; BCE : 10 chiffres.' : '14 chiffres pour identifier votre entreprise.'}</span></label>
+                <label className={styles.field}><span>Adresse de facturation <span className={styles.facultatif}>facultatif</span></span><input value={entreprise.adresse} onChange={(e) => setEntreprise({ ...entreprise, adresse: e.target.value })} placeholder="Adresse du lavage si vide" autoComplete="street-address" /></label>
+              </div>
+            )}
+
+            <details className={styles.precision} open={contact.notes !== '' || undefined}>
+              <summary>Ajouter une précision pour le pro</summary>
+              <label className={styles.field}><span className={styles.srOnly}>Précision</span><textarea rows={3} value={contact.notes} placeholder="Code portail, accès, parking…" onChange={(e) => setContact({ ...contact, notes: e.target.value })} /></label>
+            </details>
+
+            <fieldset className={styles.paiement}>
+              <legend>Comment souhaitez-vous régler ?</legend>
+              <label className={`${styles.modePaiement} ${paiement === 'sur_place' ? styles.modeChoisi : ''}`}>
+                <input type="radio" name="paiement" checked={paiement === 'sur_place'} onChange={() => setPaiement('sur_place')} />
+                <span><strong>Sur place</strong><span className={styles.hint}>Rien à payer maintenant : vous réglez une fois le lavage terminé.</span></span>
+              </label>
+              <label className={`${styles.modePaiement} ${paiement === 'en_ligne' ? styles.modeChoisi : ''}`}>
+                <input type="radio" name="paiement" checked={paiement === 'en_ligne'} onChange={() => setPaiement('en_ligne')} />
+                <span><strong>En ligne, maintenant</strong><span className={styles.hint}>Carte, Apple Pay ou Google Pay : tout est réglé, rien à payer sur place.</span></span>
+              </label>
+            </fieldset>
+            <p className={styles.hint}><strong>Un empêchement ?</strong> Vous pourrez décaler ou annuler depuis le lien reçu par e-mail ou dans « Mon espace ». Carte de fidélité pleine ? La remise est déduite automatiquement.</p>
             <label className={styles.check}><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> J'accepte les <a href="/cgv" target="_blank" rel="noreferrer">conditions générales de vente</a>.</label>
           </StepCard>
 
@@ -278,8 +316,8 @@ export function Reserver() {
           <div className={styles.barre}>
             {quote && (
               <div className={styles.total}>
-                <span className={styles.totalLibelle}>{step === 0 ? 'Total estimé' : 'Total'}, acompte {formatEuros(quote.depositCents)}{totalProduits > 0 ? ` + produits ${formatEuros(totalProduits)}` : ''}</span>
-                <strong className={styles.totalMontant}>{formatEuros(quote.totalCents)}</strong>
+                <span className={styles.totalLibelle}>{libelleTotal}</span>
+                <strong className={styles.totalMontant}>{formatEuros(totalGeneral)}</strong>
                 <a href="#detail-prix" className={styles.detail}>Détail du prix</a>
               </div>
             )}
@@ -291,18 +329,20 @@ export function Reserver() {
 
         {quote && (
           <aside className={styles.summary} id="detail-prix">
-            <PriceSummary lines={quote.lines} totalCents={quote.totalCents} depositCents={quote.depositCents}
-              footnote={`Durée estimée : ${Math.round(quote.durationMin / 60 * 10) / 10} h. Solde à régler sur place.`} />
+            <PriceSummary lines={quote.lines} totalCents={quote.totalCents} depositCents={paiement === 'sur_place' ? quote.depositCents : undefined}
+              footnote={`Durée estimée : ${Math.round(quote.durationMin / 60 * 10) / 10} h. ${paiement === 'en_ligne' ? 'Payé en ligne à la réservation.' : 'À régler sur place, une fois la prestation terminée.'}`} />
           </aside>
         )}
       </div>
       <Dialog open={proposition === 'ouverte'} title="Un petit plus pour l’entretien ?" onClose={() => setProposition('jamais')}
-        description="Mes produits, réglés maintenant avec l’acompte : je vous les apporte le jour du rendez-vous."
+        description={paiement === 'en_ligne' ? 'Mes produits, réglés maintenant avec la prestation : je vous les apporte le jour du rendez-vous.' : 'Mes produits, réglés sur place avec la prestation : je vous les apporte le jour du rendez-vous.'}
         actions={(
           <>
             <Button variant="ghost" onClick={() => { setQuantites({}); setProposition('vue'); void payer({}); }}>Non merci</Button>
             <Button disabled={totalProduits === 0} onClick={() => { setProposition('vue'); void payer(quantites); }}>
-              {totalProduits === 0 ? 'Ajouter et payer' : `Ajouter et payer (${formatEuros(aPayer)})`}
+              {paiement === 'en_ligne'
+                ? (totalProduits === 0 ? 'Ajouter et payer' : `Ajouter et payer (${formatEuros(aPayer)})`)
+                : (totalProduits === 0 ? 'Ajouter' : `Ajouter (${formatEuros(totalProduits)})`)}
             </Button>
           </>
         )}>

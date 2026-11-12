@@ -19,9 +19,9 @@ describe('Pages légales', () => {
     expect(screen.getByText(/SIRET/)).toHaveTextContent('[à compléter]');
   });
 
-  it('reprend l’acompte et le délai d’annulation dans les CGV', () => {
+  it('reprend le paiement au choix et le délai d’annulation dans les CGV', () => {
     ouvrir('/cgv');
-    expect(screen.getByText(/acompte de 30 %/)).toBeInTheDocument();
+    expect(screen.getByText(/Aucun acompte n'est demandé/)).toBeInTheDocument();
     expect(screen.getByText(/Jusqu'à 48 heures avant/)).toBeInTheDocument();
   });
 

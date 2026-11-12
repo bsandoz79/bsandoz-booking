@@ -78,7 +78,7 @@ export const PAGES_SEO: PageSeo[] = [
   {
     chemin: '/reserver',
     titre: 'Réserver un nettoyage de voiture à domicile – Abbeville | Perfect Clean',
-    description: 'Choisissez votre prestation, votre adresse et votre créneau : nettoyage de voiture à domicile à Abbeville et alentours, acompte en ligne, solde sur place.',
+    description: 'Choisissez votre prestation, votre adresse et votre créneau : nettoyage de voiture à domicile à Abbeville et alentours, paiement en ligne ou sur place, sans acompte.',
     h1: 'Réserver un nettoyage de voiture à domicile',
     texte: 'Choisissez la prestation (intérieur, extérieur, phares ou soin à la carte), indiquez votre adresse pour calculer le déplacement, puis le jour et l’heure qui vous conviennent.',
   },
@@ -98,7 +98,7 @@ export const PAGES_SEO: PageSeo[] = [
   },
   ...COMMUNES.map(pageCommune),
   { chemin: '/mentions-legales', titre: 'Mentions légales | Perfect Clean', description: 'Mentions légales du site Perfect Clean, nettoyage de voiture à domicile à Abbeville.', h1: 'Mentions légales', texte: '' },
-  { chemin: '/cgv', titre: 'Conditions générales de vente | Perfect Clean', description: 'Conditions générales de vente : prix, acompte, annulation et déroulement des prestations de nettoyage de voiture à domicile.', h1: 'Conditions générales de vente', texte: '' },
+  { chemin: '/cgv', titre: 'Conditions générales de vente | Perfect Clean', description: 'Conditions générales de vente : prix, paiement, annulation et déroulement des prestations de nettoyage de voiture à domicile.', h1: 'Conditions générales de vente', texte: '' },
   { chemin: '/confidentialite', titre: 'Politique de confidentialité | Perfect Clean', description: 'Données personnelles collectées lors d’une réservation et vos droits.', h1: 'Politique de confidentialité', texte: '' },
 ];
 
