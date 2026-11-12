@@ -1,0 +1,21 @@
+{
+  "name": "Atelier Brillance – Detailing à domicile",
+  "short_name": "Atelier Brillance",
+  "description": "Réservez votre detailing auto ou le nettoyage de votre canapé, à domicile.",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f1b2d",
+  "theme_color": "#0f1b2d",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Réserver", "url": "/reserver" },
+    { "name": "Mon espace", "url": "/mon-espace" },
+    { "name": "Espace pro", "url": "/pro" }
+  ]
+}
