@@ -13,6 +13,7 @@
 .puce:focus-visible { outline: 2px solid var(--bs-color-primary); outline-offset: 2px; }
 .prestations legend { font-weight: 600; font-size: .9rem; margin-bottom: .35rem; }
 .piege { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.aide { font-weight: 400; font-size: .85rem; color: var(--bs-color-text-muted); }
 .note { font-size: .85rem; color: var(--bs-color-text-muted); }
 .ok { font-weight: 700; color: var(--bs-color-success); }
 .erreur { font-weight: 600; color: var(--bs-color-danger); }

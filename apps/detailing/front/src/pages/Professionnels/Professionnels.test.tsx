@@ -14,6 +14,10 @@ describe('Page Professionnels', () => {
     expect(envoyer).toBeDisabled();
     await userEvent.type(screen.getByLabelText(/^Nom et prénom/), 'Alex Martin');
     await userEvent.type(screen.getByLabelText(/^E-mail/), 'alex@transport.test');
+    await userEvent.type(screen.getByLabelText(/^Nom de l’entreprise/), 'Transports Martin');
+    await userEvent.type(screen.getByLabelText(/^SIRET/), '123');
+    expect(screen.getByText('SIRET : 14 chiffres ; BCE : 10 chiffres.')).toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText(/^SIRET/), '45678901234');
     await userEvent.selectOptions(screen.getByLabelText('Type de véhicules'), 'Utilitaires');
     await userEvent.selectOptions(screen.getByLabelText('Type de véhicules'), 'Autre');
     await userEvent.type(screen.getByLabelText('Précisez le type de véhicules'), 'Camping-cars');

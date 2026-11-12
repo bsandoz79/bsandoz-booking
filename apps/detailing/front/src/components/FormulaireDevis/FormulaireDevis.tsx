@@ -16,7 +16,7 @@ export interface FormulaireDevisProps {
   placeholder?: string;
 }
 
-const vide = { entreprise: '', nom: '', email: '', telephone: '', type: '', typeAutre: '', nombre: '', frequence: '', adresse: '', message: '', site: '' };
+const vide = { entreprise: '', siret: '', facturation: '', nom: '', email: '', telephone: '', type: '', typeAutre: '', nombre: '', frequence: '', adresse: '', message: '', site: '' };
 
 /** Demande de devis envoyée au pro par mail (POST /contact), avec un champ piège invisible contre les robots. */
 export function FormulaireDevis({ variante, adresseInitiale = '', placeholder }: FormulaireDevisProps) {
@@ -26,7 +26,10 @@ export function FormulaireDevis({ variante, adresseInitiale = '', placeholder }:
   const [erreur, setErreur] = useState('');
   const pro = variante === 'pro';
   const choixPrestations = pro ? PRESTATIONS_PRO : CATEGORIES.map((c) => c.label);
-  const valide = f.nom.trim() !== '' && /\S+@\S+\.\S+/.test(f.email) && f.message.trim() !== '';
+  // Professionnel : entreprise et SIRET (14 chiffres) ou n° BCE belge (10 chiffres), comme à la réservation.
+  const siret = f.siret.replace(/[\s.]/g, '');
+  const siretOk = /^(\d{14}|\d{10})$/.test(siret);
+  const valide = f.nom.trim() !== '' && /\S+@\S+\.\S+/.test(f.email) && f.message.trim() !== '' && (!pro || (f.entreprise.trim() !== '' && siretOk));
 
   const envoyer = async (e: FormEvent) => {
     e.preventDefault();
@@ -38,7 +41,7 @@ export function FormulaireDevis({ variante, adresseInitiale = '', placeholder }:
       await envoyerDemandeContact({
         nom: f.nom, email: f.email, telephone: f.telephone, entreprise: pro ? f.entreprise : '', message: f.message, site: f.site,
         details: pro
-          ? { 'Demande': 'Professionnel', 'Type de véhicules': type, 'Nombre de véhicules': f.nombre, 'Fréquence souhaitée': f.frequence,
+          ? { 'Demande': 'Professionnel', 'SIRET / BCE': siret, 'Adresse de facturation': f.facturation, 'Type de véhicules': type, 'Nombre de véhicules': f.nombre, 'Fréquence souhaitée': f.frequence,
               'Adresse d’intervention': f.adresse, 'Prestations souhaitées': prestations.join(', ') }
           : { 'Demande': 'Particulier', 'Prestations souhaitées': prestations.join(', '), 'Nombre de véhicules': f.nombre, 'Adresse d’intervention': f.adresse },
       });
@@ -58,7 +61,18 @@ export function FormulaireDevis({ variante, adresseInitiale = '', placeholder }:
   return (
     <form className={styles.formulaire} onSubmit={envoyer} noValidate>
       <div className={styles.grille}>
-        {pro && <label className={styles.champ}>Entreprise<input {...champ('entreprise')} autoComplete="organization" /></label>}
+        {pro && (
+          <label className={styles.champ}>Nom de l’entreprise *<input {...champ('entreprise')} autoComplete="organization" required />
+            <span className={styles.aide}>Le devis sera établi à ce nom.</span></label>
+        )}
+        {pro && (
+          <label className={styles.champ}>SIRET ou n° BCE (Belgique) *<input inputMode="numeric" {...champ('siret')} required aria-invalid={f.siret !== '' && !siretOk} />
+            <span className={f.siret !== '' && !siretOk ? styles.erreur : styles.aide}>{f.siret !== '' && !siretOk ? 'SIRET : 14 chiffres ; BCE : 10 chiffres.' : '14 chiffres pour identifier votre entreprise.'}</span></label>
+        )}
+        {pro && (
+          <label className={styles.champ}><span>Adresse de facturation <span className={styles.facultatif}>(facultatif)</span></span>
+            <input {...champ('facturation')} placeholder="Adresse d’intervention si vide" autoComplete="street-address" /></label>
+        )}
         <label className={styles.champ}>Nom et prénom *<input {...champ('nom')} autoComplete="name" required /></label>
         <label className={styles.champ}>E-mail *<input type="email" {...champ('email')} autoComplete="email" required /></label>
         <label className={styles.champ}>Téléphone<input type="tel" {...champ('telephone')} autoComplete="tel" placeholder="01 02 03 04 05" /></label>

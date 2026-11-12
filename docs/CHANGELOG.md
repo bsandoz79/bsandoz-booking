@@ -134,6 +134,7 @@
 - Catalogue de démonstration aligné sur le site actuel : options Poils d'animaux, Véhicule très sale, Désodorisant (Éclat), Deuxième véhicule (phares) ; durées de réservation 1 h 30 / 2 h 30 / 3 h 30 ; listes « ce qui est compris » avec désodorisant offert ; Signature « Le plus choisi » ; accroche « Un habitacle comme au premier jour » ; commande `detailing:demo:charger --mettre-a-jour` pour un catalogue déjà chargé.
 - Kit et API : paiement au choix (`paiement` : en ligne pour la totalité, ou sur place), plus d'acompte par défaut, nom de famille facultatif ; mails et vues avec « réglé en ligne » / « à régler sur place » ; migration `reservation.online_payment`.
 - Réservation : étape « Vos coordonnées » reprise (nom et prénom, modèle du véhicule, réservation pour une entreprise avec SIRET, précision repliable) et paiement au choix sans acompte ; textes du site, CGV, espace client et planning mis à jour.
+- Demande de devis professionnel : nom de l'entreprise, SIRET ou n° BCE (contrôlé) et adresse de facturation facultative, comme à la réservation pour une entreprise.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
