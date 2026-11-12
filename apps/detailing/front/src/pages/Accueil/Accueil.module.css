@@ -33,8 +33,6 @@
 .etoiles { color: #b8860b; letter-spacing: 2px; }
 blockquote.card { margin: 0; }
 .tarifs { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: .25rem; }
-.communes { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .25rem 1rem; }
-.communes a { display: inline-flex; min-height: 44px; align-items: center; }
 
 /* Prestations : onglets par catégorie, cartes avec le détail de ce qui est compris. */
 .onglets { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .25rem; scrollbar-width: thin; }

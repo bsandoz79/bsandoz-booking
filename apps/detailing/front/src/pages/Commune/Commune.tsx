@@ -39,7 +39,7 @@ export function Commune() {
       <section aria-labelledby="titre-voisines" className={styles.section}>
         <h2 id="titre-voisines">Également autour d’Abbeville</h2>
         <ul className={styles.voisines}>
-          {voisines.map((c) => <li key={c.slug}><Link to={`/nettoyage-voiture/${c.slug}`}>Nettoyage voiture {c.nom}</Link></li>)}
+          {voisines.map((c) => <li key={c.slug}><Link to={`/nettoyage-voiture/${c.slug}`}>{c.nom}</Link></li>)}
         </ul>
       </section>
     </main>

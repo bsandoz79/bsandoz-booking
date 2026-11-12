@@ -29,7 +29,7 @@ describe('référencement local', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Nettoyage de voiture à domicile à Le Crotoy' })).toBeInTheDocument();
     expect(document.title).toBe('Nettoyage voiture à domicile Le Crotoy | Perfect Clean');
     expect(screen.getByRole('link', { name: 'Réserver un créneau à Le Crotoy' })).toHaveAttribute('href', '/reserver');
-    expect(screen.getByRole('link', { name: 'Nettoyage voiture Abbeville' })).toHaveAttribute('href', '/nettoyage-voiture/abbeville');
+    expect(screen.getByRole('link', { name: 'Abbeville' })).toHaveAttribute('href', '/nettoyage-voiture/abbeville');
     unmount();
 
     render(<MemoryRouter initialEntries={['/nettoyage-voiture/paris']}><AppRoutes /></MemoryRouter>);
@@ -39,6 +39,7 @@ describe('référencement local', () => {
   it('relie l’accueil aux pages des communes', () => {
     render(<MemoryRouter><AppRoutes /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1, name: 'Nettoyage de voiture à domicile à Abbeville' })).toBeInTheDocument();
-    expect(screen.getByRole('list', { name: 'Nettoyage de voiture par commune' }).querySelectorAll('a')).toHaveLength(COMMUNES.length);
+    for (const c of COMMUNES) expect(screen.getByRole('link', { name: c.nom })).toHaveAttribute('href', `/nettoyage-voiture/${c.slug}`);
+    expect(screen.queryByText(/Nettoyage voiture Abbeville/)).not.toBeInTheDocument();
   });
 });

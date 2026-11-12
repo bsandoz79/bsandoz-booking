@@ -40,6 +40,7 @@ export function Accueil() {
   useEffect(() => { regleFidelite().then(setFidelite).catch(() => undefined); }, []);
 
   const { accueil, etapes, faq, avis, realisations, communes } = contenu;
+  const nomsCommunes = [...new Set([...COMMUNES.map((c) => c.nom), ...communes.map((c) => c.trim()).filter(Boolean)])];
   const avisPublies = avis.filter((a) => a.texte.trim() !== '');
 
   return (
@@ -174,10 +175,13 @@ export function Accueil() {
               estimer={estimerDeplacement} rechercherAdresse={searchAddress} onEstimation={setEstimation} />
           )}
           <p className={styles.note}>Cercles indicatifs (distance par la route). Le prix exact du déplacement est recalculé à partir de votre adresse lors de la réservation.</p>
-          {communes.length > 0 && <p>Communes desservies : {communes.join(', ')}.</p>}
-          <ul className={styles.communes} aria-label="Nettoyage de voiture par commune">
-            {COMMUNES.map((c) => <li key={c.slug}><Link to={`/nettoyage-voiture/${c.slug}`}>Nettoyage voiture {c.nom}</Link></li>)}
-          </ul>
+          {/* Une phrase normale plutôt qu'une liste de mots-clés : chaque commune qui a sa page est un lien (utile à Google). */}
+          <p>Communes desservies, entre autres :{' '}
+            {nomsCommunes.map((nom, i) => {
+              const page = COMMUNES.find((c) => c.nom.toLowerCase() === nom.toLowerCase());
+              return <span key={nom}>{i > 0 && ', '}{page ? <Link to={`/nettoyage-voiture/${page.slug}`}>{nom}</Link> : nom}</span>;
+            })}.
+          </p>
         </div>
       </section>
 
