@@ -26,7 +26,7 @@ Contrat : `docs/api.md`. Le parcours envoie la prestation, la variante (type de 
 - Toute autre adresse : page introuvable.
 
 ## Application installable (PWA)
-- `public/manifest.webmanifest` (nom, couleurs, icônes `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, raccourcis Réserver / Mon espace / Espace pro), `apple-touch-icon.png` pour iOS. Icônes provisoires (monogramme « PC ») à remplacer par le logo réel.
+- `public/manifest.webmanifest` (nom, couleurs, icônes `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, raccourcis Réserver / Mon espace / Espace pro), `apple-touch-icon.png` pour iOS. Icônes, `favicon.png`, `logo.png` (bandeau) et `partage.png` (image de partage 1200×630) générés depuis le logo Perfect Clean (`docs/marque/logo-perfect-clean.png`).
 - `public/sw.js`, enregistré en production seulement (`src/pwa/serviceWorker.ts`) : pages en réseau d'abord avec repli hors connexion (`offline.html`), fichiers du build en cache, API jamais mise en cache. Changer `VERSION` dans `sw.js` vide les anciens caches.
 - `public/.htaccess` : `sw.js` et le manifest servis sans cache navigateur.
 - Notifications push du pro : rubrique Réglages de l'espace pro → « Activer les notifications » sur chaque appareil (`src/services/push.ts`). Nécessite les clés VAPID côté API ; sur iPhone, le site doit d'abord être ajouté à l'écran d'accueil (iOS 16.4 ou plus). Le service worker affiche la notification et ouvre l'espace pro au toucher.
