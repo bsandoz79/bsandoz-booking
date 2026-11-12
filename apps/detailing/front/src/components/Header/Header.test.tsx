@@ -26,6 +26,19 @@ describe('Header', () => {
     expect(await screen.findByRole('link', { name: 'Fidélité' })).toHaveAttribute('href', '/#fidelite');
   });
 
+  it('ouvre et referme le menu sur téléphone', async () => {
+    render(<MemoryRouter><Header /></MemoryRouter>);
+    const menu = screen.getByRole('button', { name: 'Menu' });
+    expect(menu).toHaveAttribute('aria-expanded', 'false');
+    await userEvent.click(menu);
+    expect(menu).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.keyboard('{Escape}');
+    expect(menu).toHaveAttribute('aria-expanded', 'false');
+    await userEvent.click(menu);
+    await userEvent.click(screen.getByRole('link', { name: 'Mon espace' }));
+    expect(menu).toHaveAttribute('aria-expanded', 'false');
+  });
+
   it('affiche le logo comme lien vers l’accueil', () => {
     render(<MemoryRouter><Header /></MemoryRouter>);
     expect(screen.getByRole('link', { name: 'Perfect Clean' })).toHaveAttribute('href', '/');

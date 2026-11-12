@@ -9,4 +9,4 @@ a { color: var(--bs-color-primary-dark); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn--ghost { background: transparent; color: var(--bs-color-text); border: 1.5px solid var(--bs-color-border); }
 /* Sections atteintes par un lien (« /#fidelite ») : pas cachées sous l'en-tête collé en haut. */
-main section[id] { scroll-margin-top: 8rem; }
+main section[id] { scroll-margin-top: 5rem; }

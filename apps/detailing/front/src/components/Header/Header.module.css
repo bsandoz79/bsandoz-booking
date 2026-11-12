@@ -1,18 +1,24 @@
 .header { background: var(--bs-color-surface); border-bottom: 1px solid var(--bs-color-border); position: sticky; top: 0; z-index: 10; }
-.inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.75rem; flex-wrap: wrap; }
-.brand { display: inline-flex; line-height: 0; }
-.brand img { height: 52px; width: auto; }
-.nav { display: flex; align-items: center; gap: 1.25rem; font-weight: 600; margin-left: auto; }
-.nav a:not(:global(.btn)) { color: var(--bs-color-text); text-decoration: none; white-space: nowrap; }
+.inner { display: flex; align-items: center; gap: 1rem; padding-block: 0.5rem; flex-wrap: wrap; }
+.brand { display: inline-flex; line-height: 0; margin-right: auto; }
 /* Logo sur pastille blanche : lisible aussi en version nuit. */
-.brand img { background: #fff; border-radius: 10px; padding: 2px 4px; box-sizing: content-box; }
-.theme { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); font-size: 1.2rem; cursor: pointer; }
-.theme:hover { border-color: var(--bs-color-primary); }
+.brand img { height: 48px; width: auto; background: #fff; border-radius: 10px; padding: 2px 4px; box-sizing: content-box; }
+.nav { display: flex; align-items: center; gap: 1.25rem; font-weight: 600; }
+.nav a { color: var(--bs-color-text); text-decoration: none; white-space: nowrap; }
+.actions { display: flex; align-items: center; gap: .75rem; }
+.rond { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); font-size: 1.2rem; cursor: pointer; }
+.rond:hover { border-color: var(--bs-color-primary); }
+.menu { display: none; }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.theme { order: 3; }
-/* Mobile : logo et bouton clair / nuit sur la première ligne, liens sur toute la largeur en dessous. */
-@media (max-width: 640px) {
-  .theme { order: 0; margin-left: auto; }
-  .nav { width: 100%; margin-left: 0; justify-content: space-between; gap: .5rem; font-size: .92rem; }
-  .nav :global(.btn) { padding: 0 1rem; }
+
+/* Téléphone : une seule ligne (logo, clair / nuit, Réserver, Menu) ; les liens s'ouvrent en dessous. */
+@media (max-width: 760px) {
+  .inner { gap: .5rem; }
+  .brand img { height: 40px; }
+  .actions { gap: .5rem; }
+  .reserver { padding: 0 1.1rem; min-height: 44px; }
+  .menu { display: inline-grid; }
+  .nav { display: none; order: 3; width: 100%; flex-direction: column; align-items: stretch; gap: 0; padding-bottom: .25rem; }
+  .nav.ouvert { display: flex; }
+  .nav a { display: flex; align-items: center; min-height: 48px; padding-inline: .25rem; border-top: 1px solid var(--bs-color-border); }
 }
