@@ -35,4 +35,36 @@ final class PrixCalculatorTest extends TestCase
         $this->expectException(DomainError::class);
         (new PrixCalculator())->calculer($p, null, [new Option('x', 'Moteur', Money::cents(2000), 30)], Money::zero(), 30, null);
     }
+
+    public function testPlusieursVehiculesMemeFormuleEtOptionsParVehicule(): void
+    {
+        $poils = new Option('poils', 'Poils d\'animaux', Money::cents(1000), 30);
+        $sale = new Option('sale', 'Très sale', Money::cents(1000), 20);
+        $p = new Prestation('int', 'Éclat', Money::cents(2900), 90);
+        $p->addOption($poils);
+        $p->addOption($sale);
+
+        // 3 véhicules : poils sur 2 d'entre eux, très sale sur 1 ; déplacement compté une fois.
+        $devis = (new PrixCalculator())->calculer($p, null, [$poils, $sale, $poils], Money::cents(500), 30, null, 3);
+
+        self::assertSame([['Éclat × 3', 8700], ['Poils d\'animaux × 2', 2000], ['Très sale', 1000], ['Frais de déplacement', 500]],
+            array_map(static fn (array $l): array => [$l['label'], $l['price']->cents], $devis->lines));
+        self::assertSame(12200, $devis->total->cents);
+        self::assertSame(90 * 3 + 30 * 2 + 20, $devis->durationMin);
+    }
+
+    public function testUneOptionAuPlusUneFoisParVehicule(): void
+    {
+        $poils = new Option('poils', 'Poils', Money::cents(1000), 30);
+        $p = new Prestation('int', 'Éclat', Money::cents(2900), 90);
+        $p->addOption($poils);
+        $this->expectException(DomainError::class);
+        (new PrixCalculator())->calculer($p, null, [$poils, $poils], Money::zero(), 30, null, 1);
+    }
+
+    public function testQuantiteLimitee(): void
+    {
+        $this->expectException(DomainError::class);
+        (new PrixCalculator())->calculer(new Prestation('int', 'Éclat', Money::cents(2900), 90), null, [], Money::zero(), 30, null, 6);
+    }
 }

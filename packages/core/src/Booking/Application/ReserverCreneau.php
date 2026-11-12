@@ -63,7 +63,7 @@ final class ReserverCreneau
             throw new DomainError('L\'adresse d\'intervention est obligatoire.');
         }
 
-        $devis = ($this->calculerDevis)($c->prestationId, $c->optionIds, $c->metierData, $c->lat, $c->lng, $c->variante);
+        $devis = ($this->calculerDevis)($c->prestationId, $c->optionIds, $c->metierData, $c->lat, $c->lng, $c->variante, $c->quantite);
         if (!$devis->inZone) {
             throw new DomainError('Cette adresse est en dehors de la zone d\'intervention.');
         }
@@ -86,7 +86,7 @@ final class ReserverCreneau
                 $userId,
                 $c->prestationId,
                 $devis->variante,
-                array_values(array_unique($c->optionIds)),
+                $c->optionIds, // une entrée par unité concernée (doublons possibles)
                 $slot,
                 $aDomicile ? trim($c->address) : '',
                 $c->lat ?? 0.0,
@@ -98,6 +98,7 @@ final class ReserverCreneau
                 trim($c->notes),
                 $remise->cents > 0 ? $remise : null,
                 $produits === [] ? null : $produits,
+                $c->quantite,
             );
 
             if ($reservation->aPayerEnLigne()->cents === 0) {

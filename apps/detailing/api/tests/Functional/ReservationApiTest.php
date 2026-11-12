@@ -160,4 +160,18 @@ final class ReservationApiTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
         self::assertStringContainsString('Il ne reste que 3', (string) $this->client->getResponse()->getContent());
     }
+
+    public function testPlusieursVehiculesUneFormulePourTous(): void
+    {
+        $this->reserve(['quantite' => 2]);
+
+        self::assertResponseStatusCodeSame(201);
+        $resultat = $this->json();
+        self::assertSame([13800, 4140], [$resultat['totalCents'], $resultat['depositCents']], '2 × 69 €, acompte 30 %');
+
+        $reservation = $this->em()->find(Reservation::class, $resultat['reservationId']);
+        self::assertInstanceOf(Reservation::class, $reservation);
+        self::assertSame(2, $reservation->quantite());
+        self::assertSame(180, $reservation->period()->minutes(), 'durée doublée');
+    }
 }
