@@ -45,7 +45,7 @@ final class ChargerDemoTest extends WebTestCase
         $tester = $this->commande();
         $tester->execute([]);
         $tester->assertCommandIsSuccessful();
-        self::assertStringContainsString('15 prestations, 6 options et 7 plages', $tester->getDisplay());
+        self::assertStringContainsString('15 prestations, 5 options et 7 plages', $tester->getDisplay());
 
         $this->client->request('GET', '/api/v1/catalog');
         self::assertResponseIsSuccessful();
@@ -53,7 +53,7 @@ final class ChargerDemoTest extends WebTestCase
         $noms = array_column($catalogue['formules'], 'name');
         self::assertCount(15, $noms);
         self::assertSame(['Intérieur Éclat', 'Intérieur Signature', 'Intérieur Excellence', 'Extérieur Éclat'], array_slice($noms, 0, 4));
-        self::assertCount(6, $catalogue['options']);
+        self::assertCount(5, $catalogue['options']);
 
         $excellence = $catalogue['formules'][2];
         self::assertTrue($excellence['occupePlage'], 'durée incertaine : demi-journée');
@@ -82,5 +82,27 @@ final class ChargerDemoTest extends WebTestCase
 
         $this->client->request('GET', '/api/v1/catalog');
         self::assertCount(15, $this->json()['formules']);
+    }
+
+    public function testMetAJourUnCatalogueDejaCharge(): void
+    {
+        $this->commande()->execute([]);
+        /** @var \Bsandoz\Core\Catalog\Application\GererCatalogue $catalogue */
+        $catalogue = static::getContainer()->get(\Bsandoz\Core\Catalog\Application\GererCatalogue::class);
+        // Le pro avait changé le prix d'Éclat et ajouté sa propre prestation.
+        $eclat = array_values(array_filter($catalogue->lister()['prestations'], static fn (array $p): bool => $p['name'] === 'Intérieur Éclat'))[0];
+        $catalogue->enregistrerPrestation(['basePriceCents' => 3500] + $eclat, (string) $eclat['id']);
+        $catalogue->enregistrerPrestation(['name' => 'Ma prestation', 'basePriceCents' => 1000, 'baseDurationMin' => 30, 'categoryId' => 'carte']);
+
+        $tester = $this->commande();
+        $tester->execute(['--mettre-a-jour' => true]);
+        $tester->assertCommandIsSuccessful();
+        self::assertStringContainsString('15 prestations mises à jour, 0 options créées', $tester->getDisplay());
+
+        $this->client->request('GET', '/api/v1/catalog');
+        $formules = array_column($this->json()['formules'], null, 'name');
+        self::assertSame(2900, $formules['Intérieur Éclat']['basePriceCents'], 'prix de démonstration rétabli');
+        self::assertCount(3, $formules['Intérieur Éclat']['optionIds'], 'poils, très sale, désodorisant');
+        self::assertArrayHasKey('Ma prestation', $formules, 'prestation du pro conservée');
     }
 }

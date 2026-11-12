@@ -16,12 +16,11 @@ final class DonneesDemo
     public static function options(): array
     {
         return [
-            'tres-sale-int' => ['name' => 'Poils d\'animaux ou véhicule très sale', 'description' => 'Supplément pour un intérieur demandant plus de temps.', 'priceCents' => 1000, 'durationMin' => 30],
+            'poils' => ['name' => 'Poils d\'animaux', 'description' => 'Retrait des poils incrustés dans les sièges et les moquettes.', 'priceCents' => 1000, 'durationMin' => 30],
+            'tres-sale-int' => ['name' => 'Véhicule très sale', 'description' => 'Supplément pour un intérieur demandant plus de temps.', 'priceCents' => 1000, 'durationMin' => 30],
+            'desodorisant' => ['name' => 'Désodorisant', 'description' => 'Désodorisant laissé dans le véhicule.', 'priceCents' => 400, 'durationMin' => 0],
             'tres-sale-ext' => ['name' => 'Véhicule très sale', 'description' => 'Supplément pour une carrosserie très encrassée.', 'priceCents' => 1000, 'durationMin' => 20],
-            'teinture-tapis' => ['name' => 'Teinture des tapis', 'description' => 'Redonne leur couleur aux tapis de sol.', 'priceCents' => 1000, 'durationMin' => 30],
-            'cuir-longue-duree' => ['name' => 'Protection longue durée des cuirs', 'description' => 'Soin nourrissant qui protège les cuirs dans le temps.', 'priceCents' => 1000, 'durationMin' => 15],
-            'impermeabilisation' => ['name' => 'Imperméabilisation des textiles', 'description' => 'Protège sièges et moquettes des taches et liquides.', 'priceCents' => 1000, 'durationMin' => 15],
-            'anti-buee' => ['name' => 'Traitement anti-buée', 'description' => 'Vitres intérieures traitées contre la buée.', 'priceCents' => 1000, 'durationMin' => 10],
+            'deuxieme-vehicule' => ['name' => 'Deuxième véhicule', 'description' => 'Rénovation des phares d\'un deuxième véhicule, le même jour.', 'priceCents' => 4000, 'durationMin' => 90],
         ];
     }
 
@@ -29,20 +28,20 @@ final class DonneesDemo
      * Prestations par catégorie (interieur, exterieur, optique, carte) ; `occupePlage` = durée incertaine (3 h 30 ou plus
      * selon l'état du véhicule) : la prestation bloque la demi-journée et n'est proposée qu'en début de demi-journée libre.
      *
-     * @return list<array{name: string, description: string, category: string, occupePlage: bool, priceCents: int, durationMin: int, options: list<string>}>
+     * @return list<array{name: string, description: string, category: string, occupePlage: bool, priceCents: int, durationMin: int, options: list<string>, badge?: string}>
      */
     public static function prestations(): array
     {
-        $interieur = ['tres-sale-int', 'impermeabilisation', 'anti-buee', 'cuir-longue-duree'];
+        $interieur = ['poils', 'tres-sale-int'];
 
         return [
-            ['name' => 'Intérieur Éclat', 'description' => 'Aspiration complète, surfaces nettoyées en profondeur, vitres intérieures, parfum d\'ambiance. Durée : 1 h à 1 h 30.', 'category' => 'interieur', 'occupePlage' => false, 'priceCents' => 2900, 'durationMin' => 90, 'options' => $interieur],
-            ['name' => 'Intérieur Signature', 'description' => 'Éclat, plus shampoing des sièges, tapis et moquettes, coffre, contours de portes, pare-brise intérieur, entretien des cuirs et de l\'alcantara, imperméabilisation des textiles. Durée : 2 h 30 à 3 h 30.', 'category' => 'interieur', 'occupePlage' => true, 'priceCents' => 6900, 'durationMin' => 210, 'options' => $interieur],
-            ['name' => 'Intérieur Excellence', 'description' => 'Signature, plus désinfection à la vapeur, joints rénovés, soin nourrissant des cuirs, protection des plastiques, ceintures, traitement anti-buée. Durée : 3 h 30 à 5 h.', 'category' => 'interieur', 'occupePlage' => true, 'priceCents' => 8900, 'durationMin' => 300, 'options' => ['tres-sale-int', 'teinture-tapis']],
+            ['name' => 'Intérieur Éclat', 'description' => 'Nettoyage approfondi des surfaces, aspiration minutieuse de l\'habitacle, nettoyage des vitres intérieures, parfum d\'ambiance. Durée : 1 h à 1 h 30.', 'category' => 'interieur', 'occupePlage' => false, 'priceCents' => 2900, 'durationMin' => 90, 'options' => [...$interieur, 'desodorisant']],
+            ['name' => 'Intérieur Signature', 'description' => 'Éclat, shampooing des tapis et moquettes, contours de portes (intérieur / extérieur / coffre), nettoyage du pare-brise intérieur, nettoyage du coffre, shampooing des sièges à l\'injecteur-extracteur, entretien des cuirs à la main, entretien de l\'alcantara à la main, imperméabilisation textile, désodorisant voiture offert. Durée : 2 h 30 à 3 h 30.', 'category' => 'interieur', 'occupePlage' => true, 'priceCents' => 6900, 'durationMin' => 150, 'options' => $interieur, 'badge' => 'Le plus choisi'],
+            ['name' => 'Intérieur Excellence', 'description' => 'Signature, désinfection intégrale à la vapeur, rénovation et entretien des joints, soin nourrissant longue durée des cuirs, protection des plastiques, nettoyage des ceintures, traitement anti-buée, désodorisant voiture offert. Durée : 3 h 30 à 5 h.', 'category' => 'interieur', 'occupePlage' => true, 'priceCents' => 8900, 'durationMin' => 210, 'options' => $interieur],
             ['name' => 'Extérieur Éclat', 'description' => 'Prélavage à la mousse active, lavage à la main, séchage microfibre, vitres. Durée : 1 h à 1 h 30.', 'category' => 'exterieur', 'occupePlage' => false, 'priceCents' => 2500, 'durationMin' => 90, 'options' => ['tres-sale-ext']],
             ['name' => 'Extérieur Signature', 'description' => 'Éclat, plus jantes nettoyées en profondeur, passages de roues, séchage complet, pneus lustrés. Durée : 1 h 30 à 2 h.', 'category' => 'exterieur', 'occupePlage' => false, 'priceCents' => 4500, 'durationMin' => 120, 'options' => ['tres-sale-ext']],
             ['name' => 'Extérieur Excellence', 'description' => 'Signature, plus prélavage renforcé, joints de portes, démoustiquage, plastiques et joints extérieurs rénovés, dégoudronnage. Durée : 2 h 30 à 3 h 30.', 'category' => 'exterieur', 'occupePlage' => true, 'priceCents' => 7000, 'durationMin' => 210, 'options' => ['tres-sale-ext']],
-            ['name' => 'Rénovation des phares', 'description' => 'Les deux phares retrouvent leur transparence, sans remplacement : meilleure visibilité et contrôle technique serein. Prix pour la paire.', 'category' => 'optique', 'occupePlage' => false, 'priceCents' => 4500, 'durationMin' => 60, 'options' => []],
+            ['name' => 'Rénovation des phares', 'description' => 'Les deux phares retrouvent leur transparence, sans remplacement : meilleure visibilité et contrôle technique serein. Prix pour la paire. Durée : environ 1 h 30.', 'category' => 'optique', 'occupePlage' => false, 'priceCents' => 4500, 'durationMin' => 90, 'options' => ['deuxieme-vehicule']],
             ['name' => 'Shampoing des sièges', 'description' => 'Sièges en tissu nettoyés à l\'injecteur-extracteur.', 'category' => 'carte', 'occupePlage' => false, 'priceCents' => 3900, 'durationMin' => 60, 'options' => []],
             ['name' => 'Nettoyage des cuirs', 'description' => 'Cuirs nettoyés et entretenus à la main.', 'category' => 'carte', 'occupePlage' => false, 'priceCents' => 3500, 'durationMin' => 60, 'options' => []],
             ['name' => 'Moquettes et tapis de sol', 'description' => 'Shampoing complet des moquettes et des tapis.', 'category' => 'carte', 'occupePlage' => false, 'priceCents' => 3500, 'durationMin' => 60, 'options' => []],

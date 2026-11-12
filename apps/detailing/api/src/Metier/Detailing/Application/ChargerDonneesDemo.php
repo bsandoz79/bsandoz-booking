@@ -42,6 +42,7 @@ final class ChargerDonneesDemo
                 'categoryId' => $p['category'],
                 'position' => $position,
                 'occupePlage' => $p['occupePlage'],
+                'badge' => $p['badge'] ?? null,
                 'tarifs' => [],
                 'optionIds' => array_map(static fn (string $cle): string => $ids[$cle], $p['options']),
             ]);
@@ -50,5 +51,59 @@ final class ChargerDonneesDemo
         $plages = $this->disponibilites->definirHoraires(DonneesDemo::horaires());
 
         return ['charge' => true, 'prestations' => count($prestations), 'options' => count($ids), 'plages' => count($plages)];
+    }
+
+    /**
+     * Catalogue déjà chargé : aligne les prestations de démonstration (retrouvées par leur nom) sur les données actuelles
+     * (prix, durée, description, options proposées). Les options manquantes sont créées ; les anciennes options ne
+     * sont plus proposées par ces prestations (gardées pour l'historique). Catégorie, position, activation et tarifs par
+     * variante choisis par le pro sont conservés ; les autres prestations ne sont pas touchées.
+     *
+     * @return array{prestations: int, options: int}
+     */
+    public function mettreAJour(): array
+    {
+        $catalogue = $this->catalogue->lister();
+
+        $ids = [];
+        $creees = 0;
+        foreach (DonneesDemo::options() as $cle => $option) {
+            $existante = null;
+            foreach ($catalogue['options'] as $o) {
+                if (($o['name'] ?? null) === $option['name'] && ($o['description'] ?? null) === $option['description']) {
+                    $existante = $o;
+                    break;
+                }
+            }
+            $id = is_string($existante['id'] ?? null) ? $existante['id'] : null;
+            $creees += $id === null ? 1 : 0;
+            $ids[$cle] = (string) $this->catalogue->enregistrerOption($option + ['active' => true], $id)['id'];
+        }
+
+        $alignees = 0;
+        foreach (DonneesDemo::prestations() as $p) {
+            foreach ($catalogue['prestations'] as $existante) {
+                if (($existante['name'] ?? null) !== $p['name'] || !is_string($existante['id'] ?? null)) {
+                    continue;
+                }
+                $this->catalogue->enregistrerPrestation([
+                    'name' => $p['name'],
+                    'description' => $p['description'],
+                    'basePriceCents' => $p['priceCents'],
+                    'baseDurationMin' => $p['durationMin'],
+                    'active' => $existante['active'] ?? true,
+                    'categoryId' => $existante['categoryId'] ?? $p['category'],
+                    'position' => $existante['position'] ?? 0,
+                    'occupePlage' => $p['occupePlage'],
+                    'badge' => $p['badge'] ?? null,
+                    'tarifs' => $existante['tarifs'] ?? [],
+                    'optionIds' => array_map(static fn (string $cle): string => $ids[$cle], $p['options']),
+                ], $existante['id']);
+                ++$alignees;
+                break;
+            }
+        }
+
+        return ['prestations' => $alignees, 'options' => $creees];
     }
 }
