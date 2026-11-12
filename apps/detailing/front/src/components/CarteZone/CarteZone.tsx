@@ -39,6 +39,16 @@ export function CarteZone({ zone, centre, ville, estimer, rechercherAdresse, onE
   const [estimation, setEstimation] = useState<Estimation>();
   const [erreur, setErreur] = useState('');
   const cercles = cerclesZone(zone);
+  // Téléphone : un doigt fait défiler la page, deux doigts déplacent et zooment la carte ; on l'indique au besoin.
+  const [tactile] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(pointer: coarse)').matches);
+  const [indice, setIndice] = useState(false);
+  const minuterieIndice = useRef<number>(undefined);
+  useEffect(() => () => window.clearTimeout(minuterieIndice.current), []);
+  const montrerIndice = () => {
+    setIndice(true);
+    window.clearTimeout(minuterieIndice.current);
+    minuterieIndice.current = window.setTimeout(() => setIndice(false), 1600);
+  };
 
   // Arrivée sur la section : chargement de la carte et demande de position (une seule fois).
   useEffect(() => {
@@ -79,8 +89,7 @@ export function CarteZone({ zone, centre, ville, estimer, rechercherAdresse, onE
     let annule = false;
     void Promise.all([import('leaflet'), import('leaflet/dist/leaflet.css')]).then(([L]) => {
       if (annule || !conteneurCarte.current || carte.current) return;
-      const mobile = window.matchMedia('(pointer: coarse)').matches;
-      const map = L.map(conteneurCarte.current, { scrollWheelZoom: false, dragging: !mobile, attributionControl: true })
+      const map = L.map(conteneurCarte.current, { scrollWheelZoom: false, dragging: !tactile, touchZoom: true, attributionControl: true })
         .setView([centre.lat, centre.lng], 9);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
@@ -123,7 +132,10 @@ export function CarteZone({ zone, centre, ville, estimer, rechercherAdresse, onE
 
   return (
     <div ref={racine} className={styles.bloc}>
-      <div ref={conteneurCarte} className={styles.carte} aria-label={`Carte de la zone d’intervention autour de ${ville} : ${cercles.map((c) => `${c.km} km ${prix(c.fraisCents)}`).join(', ')}, au-delà sur devis`} role="region" />
+      <div className={styles.cadre} onTouchMove={(e) => { if (tactile && e.touches.length === 1) montrerIndice(); }}>
+        <div ref={conteneurCarte} className={styles.carte} aria-label={`Carte de la zone d’intervention autour de ${ville} : ${cercles.map((c) => `${c.km} km ${prix(c.fraisCents)}`).join(', ')}, au-delà sur devis`} role="region" />
+        {indice && <p className={styles.indice} aria-hidden="true">Utilisez deux doigts pour déplacer la carte</p>}
+      </div>
 
       <div className={styles.calcul}>
         <h3>Combien coûte le déplacement chez vous ?</h3>

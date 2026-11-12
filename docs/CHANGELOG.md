@@ -145,3 +145,4 @@
 - Déplacement d'un rendez-vous de plusieurs véhicules : durée recalculée pour tous les véhicules.
 - Créneaux : le battement réglé (rangement) s'applique aussi après les rendez-vous déjà pris (avant, seulement avant eux) : avec 30 min, un rendez-vous 08:00–09:30 laisse le suivant à 10:00, trajet en plus ; battement par défaut porté à 30 min.
 - Réservation guidée : le défilement automatique en attente s'arrête quand on quitte la page (erreur après la fin des tests sur la CI).
+- Carte de la zone sur téléphone : indication « Utilisez deux doigts pour déplacer la carte » quand on la glisse avec un seul doigt (un doigt fait défiler la page).
