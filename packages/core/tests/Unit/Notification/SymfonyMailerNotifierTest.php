@@ -7,7 +7,9 @@ namespace Bsandoz\Core\Tests\Unit\Notification;
 use Bsandoz\Core\Notification\Infrastructure\Mailer\SymfonyMailerNotifier;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\AbstractLogger;
 use Symfony\Component\Mailer\Envelope;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\RawMessage;
@@ -122,5 +124,31 @@ final class SymfonyMailerNotifierTest extends TestCase
 
         self::assertSame('Bienvenue chez Marque', $this->dernier()->getSubject());
         self::assertStringContainsString('Texte personnalisé', (string) $this->dernier()->getTextBody());
+    }
+
+    public function testServeurDeMailEnPanneNeBloquePasEtEstJournalise(): void
+    {
+        $mailer = new class implements MailerInterface {
+            public function send(RawMessage $message, ?Envelope $envelope = null): void
+            {
+                throw new TransportException('Connection could not be established');
+            }
+        };
+        $journal = new class extends AbstractLogger {
+            /** @var list<string> */
+            public array $erreurs = [];
+
+            public function log($level, \Stringable|string $message, array $context = []): void
+            {
+                $this->erreurs[] = $level . ' ' . strtr((string) $message, ['{modele}' => (string) $context['modele'], '{erreur}' => (string) $context['erreur']]);
+            }
+        };
+
+        (new SymfonyMailerNotifier($mailer, 'contact@marque.test', 'Marque', 'Marque', 'https://site.test/', 'Europe/Paris', null, $journal))
+            ->send('camille@example.test', 'activation', ['firstname' => 'Camille', 'token' => 't']);
+
+        self::assertCount(1, $journal->erreurs);
+        self::assertStringStartsWith('error Mail « activation »', $journal->erreurs[0]);
+        self::assertStringContainsString('Connection could not be established', $journal->erreurs[0]);
     }
 }
