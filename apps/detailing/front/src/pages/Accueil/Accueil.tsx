@@ -9,7 +9,8 @@ import { SITE } from '../../data/site';
 import { detailPrestation, jourIso, semaine, tranches, type Plage } from '../../data/vitrine';
 import { couleurTranche, type Estimation, type ZonePublique } from '../../data/zone';
 import { estimerDeplacement, getCatalog, getHoraires, getZone, searchAddress } from '../../services/api';
-import { regleFidelite, type RegleFidelite } from '../../services/fidelite';
+import { estConnecte, reprendreSession } from '../../services/compte';
+import { maCarteFidelite, messageCarte, regleFidelite, type CarteFidelite as Carte, type RegleFidelite } from '../../services/fidelite';
 import { A_COMPLETER } from '../../services/contenu';
 import { COMMUNES, ENTREPRISE, PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
@@ -38,6 +39,15 @@ export function Accueil() {
   useEffect(() => { getZone().then(setZone).catch(() => undefined); }, []);
   const [fidelite, setFidelite] = useState<RegleFidelite>();
   useEffect(() => { regleFidelite().then(setFidelite).catch(() => undefined); }, []);
+  // Client connecté (ou session à reprendre) : sa vraie carte, tamponnée, à la place de l'exemple.
+  const [maCarte, setMaCarte] = useState<Carte>();
+  const fideliteActive = !!fidelite?.actif;
+  useEffect(() => {
+    if (!fideliteActive) return;
+    (estConnecte() ? Promise.resolve(true) : reprendreSession())
+      .then((ok) => (ok ? maCarteFidelite().then(setMaCarte) : undefined))
+      .catch(() => undefined);
+  }, [fideliteActive]);
 
   const { accueil, etapes, faq, avis, realisations, communes } = contenu;
   const nomsCommunes = [...new Set([...COMMUNES.map((c) => c.nom), ...communes.map((c) => c.trim()).filter(Boolean)])];
@@ -205,14 +215,18 @@ export function Accueil() {
         <section id="fidelite" className={styles.band} aria-labelledby="titre-fidelite">
           <div className={`container ${styles.section} ${styles.fidelite}`}>
             <div className={styles.fideliteTexte}>
-              <h2 id="titre-fidelite">Carte de fidélité</h2>
+              <h2 id="titre-fidelite">{maCarte ? 'Votre carte de fidélité' : 'Carte de fidélité'}</h2>
               <p>
                 Au bout de {fidelite.tamponsRequis} prestations, la suivante bénéficie de <strong>{fidelite.remisePercent} % de remise</strong>. Chaque
                 prestation terminée ajoute un tampon sur votre carte, et la remise s’applique d’elle-même à la réservation.
               </p>
-              <p className={styles.note}>Votre carte est visible à tout moment dans « Mon espace ».</p>
+              {maCarte
+                ? <p className={styles.messageCarte} role="status">{messageCarte(maCarte)}</p>
+                : <p className={styles.note}>Déjà client ? <Link to="/mon-espace">Connectez-vous</Link> pour voir votre carte et vos tampons.</p>}
             </div>
-            <CarteFidelite carte={{ ...fidelite, tampons: Math.min(2, fidelite.tamponsRequis - 1), remiseDisponible: false }} titre="Carte de fidélité" exemple />
+            {maCarte
+              ? <CarteFidelite carte={maCarte} titre="Votre carte de fidélité" />
+              : <CarteFidelite carte={{ ...fidelite, tampons: Math.min(2, fidelite.tamponsRequis - 1), remiseDisponible: false }} titre="Carte de fidélité" exemple />}
           </div>
         </section>
       )}

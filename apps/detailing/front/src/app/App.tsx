@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ContenuProvider } from './ContenuContext';
+import { DefilementAncre } from './DefilementAncre';
 import { Footer } from '../components/Footer/Footer';
 import { Header } from '../components/Header/Header';
 import { Accueil } from '../pages/Accueil/Accueil';
@@ -15,6 +16,7 @@ import { Reserver } from '../pages/Reserver/Reserver';
 export function AppRoutes() {
   return (
     <ContenuProvider>
+      <DefilementAncre />
       <Header />
       <Routes>
         <Route path="/" element={<Accueil />} />

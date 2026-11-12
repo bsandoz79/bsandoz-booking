@@ -107,6 +107,7 @@
 - Kit : bloc `StepCard` (étape repliable d'un parcours en accordéon : active, terminée avec résumé et « Modifier », à venir).
 - Réservation en 3 étapes repliables (prestation, où et quand, coordonnées) avec total et bouton collés en bas de l'écran ; le véhicule n'est plus demandé.
 - Zone d'intervention : cartes des tranches et cercles de la carte en vert, jaune, orange et rouge, traits en tirets.
+- Menu : lien « Fidélité » vers la carte de fidélité de l'accueil, qui affiche la carte tamponnée du client connecté (sinon un exemple) ; défilement jusqu'à la section visée ; sur mobile, bouton clair / nuit à côté du logo.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

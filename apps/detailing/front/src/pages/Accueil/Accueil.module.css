@@ -95,6 +95,7 @@ blockquote.card { margin: 0; }
 /* Fidélité : texte et exemple de carte côte à côte sur grand écran. */
 .fidelite { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: center; }
 .fideliteTexte { display: flex; flex-direction: column; gap: .75rem; }
+.messageCarte { font-weight: 700; padding: .75rem 1rem; border-radius: var(--bs-radius-sm); background: var(--bs-color-surface); border-left: 4px solid var(--bs-color-success); }
 @media (min-width: 760px) { .fidelite { grid-template-columns: 1fr 1fr; } }
 .tranche[aria-current='true'] { outline: 3px solid var(--bs-color-text); outline-offset: 3px; }
 .tranche[aria-current='true']::after { content: 'Vous êtes ici'; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--bs-color-text); }
