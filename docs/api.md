@@ -46,8 +46,11 @@ Adresse hors zone : `inZone: false`, pas de frais de déplacement (la réservati
 ## GET /booking/hours
 Public, mis en cache 5 min. Horaires d'ouverture à afficher sur le site : `[{"weekday": 1, "startsAt": "08:00", "endsAt": "19:00"}, …]` (1 = lundi … 7 = dimanche ; un jour absent = fermé). Modifiés par le pro via `PUT /admin/availability/hours`.
 
+## GET /booking/zone/estimation?lat=&lng=
+Public. Frais de déplacement estimés pour une position (carte de la zone sur le site), même calcul que le devis : `{"distanceKm": 19.9, "dansZone": true, "fraisCents": 1000}`, ou `{"surPlace": true}`. 400 si `lat` / `lng` manquent. La position n'est pas enregistrée et le point de départ du pro n'est jamais renvoyé.
+
 ## GET /booking/zone
-Public, conditions de déplacement à afficher : `{"surPlace": false, "freeRadiusKm", "maxDistanceKm", "pricePerKmCents", "paliers": [{"jusquaKm", "prixCents"}]}` ou `{"surPlace": true}`. Le point de départ n'est pas publié.
+Public, conditions de déplacement à afficher : `{"surPlace": false, "freeRadiusKm", "maxDistanceKm", "pricePerKmCents", "roadFactor", "paliers": [{"jusquaKm", "prixCents"}]}` ou `{"surPlace": true}`. Le point de départ n'est pas publié.
 
 ## GET /booking/days et /booking/slots
 Paramètres : `duration` (minutes, devis compris options), `lat` / `lng` (obligatoires pour une activité à domicile, contrôle de zone), `prestation` (facultatif : si elle est à durée incertaine, seuls les débuts de demi-journée libres sont proposés).
