@@ -27,7 +27,7 @@ FRONT_URL=https://demo.bsandoz.fr
 CORS_ALLOW_ORIGIN='^https://demo\.bsandoz\.fr$'
 MAILER_DSN="smtp://no-reply%40bsandoz.fr:MOTDEPASSE@muguet.o2switch.net:465"   # boîte mail cPanel ; hôte = nom du serveur o2switch (certificat valide), pas mail.<domaine>
 MAILER_FROM=no-reply@bsandoz.fr
-PRO_EMAIL=                       # adresse du pro, prévenu de chaque rendez-vous
+PRO_EMAIL=contact@bsandoz.fr      # adresse du pro (demandes de devis et rendez-vous), prévenu de chaque rendez-vous
 STRIPE_SECRET_KEY=               # tableau de bord Stripe → Développeurs → Clés API (sk_test_… pour la démo)
 STRIPE_WEBHOOK_SECRET=           # voir § 5
 ```
