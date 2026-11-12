@@ -70,3 +70,6 @@ Sans clés, la réservation fonctionne mais `paymentError` indique que le paieme
 
 ## Compte pro
 `php bin/console bsandoz:pro:creer contact@domaine.fr Prénom Nom` crée le compte de l'artisan (mot de passe demandé sans affichage). Il se connecte comme un client, et accède en plus à `/api/v1/admin` : réglages, catalogue, horaires, congés, planning, rendez-vous par téléphone, tableau de bord. Les réglages faits dans l'espace pro remplacent ceux de `config/packages/bsandoz_core.yaml`.
+
+## Données de démonstration
+`php bin/console detailing:demo:charger` charge, sur une base dont le catalogue est vide, les prestations (Intérieur, Extérieur, Complet, Nettoyage de canapé ; tarifs par type de véhicule ou nombre de places), les options et les horaires (lundi au vendredi 8h-12h et 13h30-18h, samedi 8h-12h) de démonstration, via les cas d'usage du kit. « Complet » a une durée incertaine (`occupePlage`) : elle bloque la demi-journée. Si le catalogue contient déjà des prestations, rien n'est modifié. Les valeurs sont dans `src/Metier/Detailing/Application/DonneesDemo.php` ; l'artisan les remplace ensuite dans son espace pro.
