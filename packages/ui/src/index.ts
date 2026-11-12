@@ -8,3 +8,4 @@ export * from './blocks/PriceSummary';
 export * from './blocks/Stepper';
 export * from './blocks/Button';
 export * from './blocks/Field';
+export * from './blocks/AddressInput';

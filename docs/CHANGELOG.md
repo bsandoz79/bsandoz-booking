@@ -73,6 +73,7 @@
 - API : espace pro `/api/v1/admin` (`AdminController` : tableau de bord et réglages ; `AdminCatalogueController` ; `AdminAgendaController` : horaires, indisponibilités, planning, rendez-vous par téléphone, statut, annulation, remboursement), réservé à `ROLE_PRO` ; utilitaire `Json` (corps et dates). API detailing : migration `setting`, tests fonctionnels de l'espace pro.
 - Kit front : navigation au clavier du `Calendar` (un seul jour atteignable par Tab, flèches, semaines, Début / Fin), utilitaire `addDays`. Tests.
 - Kit front : blocs `Button` (principal, secondaire, discret ; chargement accessible ; pleine largeur) et `Field` (libellé, aide et erreur reliés au champ, obligatoire, zone de texte). Tests.
+- Kit front : bloc `AddressInput` (autocomplétion d'adresse, motif ARIA combobox, recherche fournie par l'application, délai et longueur minimale réglables, réponses dans le désordre ignorées, clavier). Tests.
 - CI : job « Detailing – API » (installation, `lint:container`, PHPStan, PHPUnit).
 
 ### Corrigé
