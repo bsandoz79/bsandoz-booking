@@ -1,10 +1,40 @@
-/* Thème du client : surcharge les variables du kit (--bs-*) et ajoute les siennes. */
+/*
+ * Thème du client : surcharge les variables du kit (--bs-*) et ajoute les siennes.
+ * Deux versions : claire (par défaut) et nuit (`<html data-theme="nuit">`, posé avant l'affichage par le script de
+ * index.html selon le choix enregistré ou, à défaut, le réglage du téléphone / de l'ordinateur).
+ */
 :root {
+  color-scheme: light;
   --bs-color-primary: #1677d2;  /* bleu clair lisible : contraste AA avec le texte blanc */
   --bs-color-primary-dark: #0b5fae;
+  --bs-color-primary-hover: #0b5fae;
   --bs-color-primary-soft: #e7f3ff;
   --bs-color-text: #0f1b2d;
   --bs-color-bg: #f5f8fc;
-  --brand-navy: #0f1b2d;
+  --bs-color-danger: #a3122f;
+  --brand-navy: #0f1b2d;        /* bandeaux sombres (accueil, pied de page) */
+  --brand-on-navy: #dfe6f2;
+  --brand-accent: #9fd0ff;      /* surtitres sur fond sombre */
+  --brand-paper: #fbf6ea;       /* carte de fidélité en carton */
+  --brand-paper-ink: #153468;
   --brand-container: 72rem;
+}
+
+:root[data-theme='nuit'] {
+  color-scheme: dark;
+  --bs-color-primary: #1677d2;          /* fond des boutons : texte blanc toujours lisible */
+  --bs-color-primary-dark: #8cc8ff;     /* liens, prix, textes d'accent sur fond sombre */
+  --bs-color-primary-hover: #0b5fae;
+  --bs-color-primary-soft: #16304f;
+  --bs-color-text: #e7edf6;
+  --bs-color-text-muted: #a9b6ca;
+  --bs-color-surface: #142033;
+  --bs-color-bg: #0b1422;
+  --bs-color-border: #2a3a52;
+  --bs-color-disabled: #4f5d73;
+  --bs-color-success: #5fd39d;
+  --bs-color-danger: #ff8f9f;
+  --brand-navy: #060d18;
+  --brand-on-navy: #c9d4e5;
+  --brand-paper: #efe7d3;
 }

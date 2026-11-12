@@ -100,6 +100,8 @@
 - Site : carte de fidélité présentée sur l'accueil, affichée en tampons dans l'espace client, ajustable par le pro dans le détail d'un rendez-vous et réglable dans Réglages ; remise de fidélité indiquée sur les rendez-vous. Tests.
 - Site : référencement local sur Abbeville : une page par commune desservie (`/nettoyage-voiture/<commune>`, 16 communes), pages HTML pré-générées au build (titre, description, adresse canonique, Open Graph, contenu lisible sans JavaScript), données structurées schema.org `AutoWash` (zone, horaires, prix), `sitemap.xml` et `robots.txt`, titre principal « Nettoyage de voiture à domicile à Abbeville », titres mis à jour pendant la navigation. Tests.
 - Logo Perfect Clean : bandeau du site, favicon, icônes de l'application, image de partage 1200×630 (réseaux sociaux, Google) ; logo source dans docs/marque.
+- Kit : horaires d'ouverture publics (GET /api/v1/booking/hours) ; variables de thème --bs-color-danger et --bs-color-primary-hover (thème sombre possible).
+- Accueil : prestations en onglets (Intérieur, Extérieur, Phares, À la carte) avec cartes « Ce qui est compris », durée et bouton Choisir qui présélectionne la formule ; frais de déplacement en cartes par tranche ; horaires de la semaine ; carte de fidélité façon carton tamponnée du logo ; version claire / nuit.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

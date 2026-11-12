@@ -1,6 +1,12 @@
 .header { background: var(--bs-color-surface); border-bottom: 1px solid var(--bs-color-border); position: sticky; top: 0; z-index: 10; }
 .inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.75rem; flex-wrap: wrap; }
 .brand { display: inline-flex; line-height: 0; }
-.brand img { height: 56px; width: auto; }
+.brand img { height: 52px; width: auto; }
 .nav { display: flex; align-items: center; gap: 1.25rem; font-weight: 600; }
-.nav a:not(:global(.btn)) { color: var(--bs-color-text); text-decoration: none; }
+.nav a:not(:global(.btn)) { color: var(--bs-color-text); text-decoration: none; white-space: nowrap; }
+/* Logo sur pastille blanche : lisible aussi en version nuit. */
+.brand img { background: #fff; border-radius: 10px; padding: 2px 4px; box-sizing: content-box; }
+.theme { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); font-size: 1.2rem; cursor: pointer; }
+.theme:hover { border-color: var(--bs-color-primary); }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 480px) { .nav { gap: .75rem; } }

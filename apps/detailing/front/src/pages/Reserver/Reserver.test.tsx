@@ -41,6 +41,17 @@ describe('Parcours de réservation', () => {
     expect(screen.getAllByText(/69,00/).length).toBeGreaterThan(0);
   });
 
+  it('présélectionne la formule choisie sur l’accueil', async () => {
+    render(<MemoryRouter initialEntries={['/reserver?formule=ext-signature']}><Reserver /></MemoryRouter>);
+    expect(await screen.findByRole('radio', { name: 'Nettoyage extérieur' })).toHaveAttribute('aria-checked', 'true');
+    await userEvent.click(continuer());
+    await userEvent.type(screen.getByLabelText('Marque'), 'Peugeot');
+    await userEvent.type(screen.getByLabelText('Modèle'), '208');
+    await userEvent.click(screen.getByRole('radio', { name: 'Citadine' }));
+    await userEvent.click(continuer());
+    expect(await screen.findByRole('button', { name: /Extérieur Signature/, pressed: true })).toBeInTheDocument();
+  });
+
   it('va jusqu’au paiement de l’acompte (démo) : extérieur, adresse, créneau, coordonnées, CGV', async () => {
     render(<MemoryRouter initialEntries={['/reserver']}><AppRoutes /></MemoryRouter>);
 

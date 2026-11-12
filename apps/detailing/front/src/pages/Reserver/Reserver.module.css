@@ -11,7 +11,7 @@
 .dateTime { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
 .hint { font-size: 0.85rem; color: var(--bs-color-text-muted); }
 .ok { color: var(--bs-color-success); font-weight: 600; }
-.error { color: #a3122f; font-weight: 600; }
+.error { color: var(--bs-color-danger); font-weight: 600; }
 .check { display: flex; gap: 0.5rem; align-items: flex-start; }
 .actions { display: flex; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
 .actions :global(.btn):last-child { margin-left: auto; }

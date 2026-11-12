@@ -43,6 +43,9 @@ Variante : celle que le module métier déduit de `metierData`, sinon `variante`
 ```
 Adresse hors zone : `inZone: false`, pas de frais de déplacement (la réservation sera refusée).
 
+## GET /booking/hours
+Public, mis en cache 5 min. Horaires d'ouverture à afficher sur le site : `[{"weekday": 1, "startsAt": "08:00", "endsAt": "19:00"}, …]` (1 = lundi … 7 = dimanche ; un jour absent = fermé). Modifiés par le pro via `PUT /admin/availability/hours`.
+
 ## GET /booking/zone
 Public, conditions de déplacement à afficher : `{"surPlace": false, "freeRadiusKm", "maxDistanceKm", "pricePerKmCents", "paliers": [{"jusquaKm", "prixCents"}]}` ou `{"surPlace": true}`. Le point de départ n'est pas publié.
 

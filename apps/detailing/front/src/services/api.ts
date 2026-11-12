@@ -1,5 +1,6 @@
 import { DEMO_RULES, FORMULES, OPTIONS, tarifDe } from '../data/demo';
 import { fraisDeplacement, type ZonePublique } from '../data/zone';
+import type { Plage } from '../data/vitrine';
 import type { Formule, OptionItem } from '../data/demo';
 
 /**
@@ -65,6 +66,15 @@ const query = (params: Record<string, string | number | undefined>) =>
   new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])).toString();
 
 const ZONE_DEMO: ZonePublique = { surPlace: false, freeRadiusKm: DEMO_RULES.freeRadiusKm, maxDistanceKm: DEMO_RULES.maxDistanceKm, pricePerKmCents: DEMO_RULES.pricePerKmCents, paliers: DEMO_RULES.paliers };
+
+/** Horaires de démonstration (identiques à `detailing:demo:charger`) : lundi–samedi 8 h–19 h, dimanche 10 h–18 h. */
+const HORAIRES_DEMO: Plage[] = [1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, startsAt: '08:00', endsAt: '19:00' })).concat([{ weekday: 7, startsAt: '10:00', endsAt: '18:00' }]);
+
+/** Horaires d'ouverture publiés (1 = lundi … 7 = dimanche). */
+export async function getHoraires(): Promise<Plage[]> {
+  if (isDemo()) return HORAIRES_DEMO;
+  return http('/booking/hours');
+}
 
 /** Conditions de déplacement à afficher (rayon offert, tranches, distance maximale). */
 export async function getZone(): Promise<ZonePublique> {
