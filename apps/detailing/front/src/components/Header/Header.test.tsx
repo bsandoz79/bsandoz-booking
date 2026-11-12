@@ -1,0 +1,28 @@
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
+import { Header } from './Header';
+
+describe('Header', () => {
+  afterEach(() => { delete document.documentElement.dataset.theme; localStorage.clear(); });
+
+  it('bascule entre la version claire et la version nuit, et retient le choix', async () => {
+    render(<MemoryRouter><Header /></MemoryRouter>);
+    const bouton = screen.getByRole('button', { name: 'Version nuit' });
+    expect(bouton).toHaveAttribute('aria-pressed', 'false');
+
+    await userEvent.click(bouton);
+    expect(document.documentElement.dataset.theme).toBe('nuit');
+    expect(localStorage.getItem('theme')).toBe('nuit');
+    expect(bouton).toHaveAttribute('aria-pressed', 'true');
+
+    await userEvent.click(bouton);
+    expect(document.documentElement.dataset.theme).toBe('clair');
+    expect(localStorage.getItem('theme')).toBe('clair');
+  });
+
+  it('affiche le logo comme lien vers l’accueil', () => {
+    render(<MemoryRouter><Header /></MemoryRouter>);
+    expect(screen.getByRole('link', { name: 'Perfect Clean' })).toHaveAttribute('href', '/');
+  });
+});

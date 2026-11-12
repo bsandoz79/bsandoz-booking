@@ -10,4 +10,4 @@
 .panneau { border-top: 1px solid var(--bs-color-border); padding-top: 1rem; margin-top: .5rem; display: flex; flex-direction: column; gap: .75rem; }
 .calendrier { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
 .ok { color: var(--bs-color-success); font-weight: 600; }
-.erreur { color: #a3122f; font-weight: 600; }
+.erreur { color: var(--bs-color-danger); font-weight: 600; }

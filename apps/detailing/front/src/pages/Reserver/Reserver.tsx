@@ -56,8 +56,15 @@ export function Reserver() {
   const dureeMin = quote?.durationMin;
 
   useEffect(() => {
-    getCatalog().then((c) => { setFormules(c.formules); setOptions(c.options); }).catch((e: Error) => setError(e.message));
-  }, []);
+    // « Choisir » sur l'accueil : /reserver?formule=<id> présélectionne la catégorie et la formule.
+    const choisie = params.get('formule');
+    getCatalog().then((c) => {
+      setFormules(c.formules);
+      setOptions(c.options);
+      const f = c.formules.find((x) => x.id === choisie);
+      if (f) { setCategory(f.category as Category); setFormuleId(f.id); }
+    }).catch((e: Error) => setError(e.message));
+  }, [params]);
   useEffect(() => {
     if (selection) getQuote(selection, address).then(setQuote).catch((e: Error) => setError(e.message));
   }, [selection, address]);

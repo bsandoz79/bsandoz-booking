@@ -17,13 +17,17 @@ Contrat : `docs/api.md`. Le parcours envoie la prestation, la variante (type de 
 - `src/data/demo.ts` : catalogue de démonstration Perfect Clean (identique à `php bin/console detailing:demo:charger` côté API) : 4 catégories (`CATEGORIES` : intérieur, extérieur, rénovation des phares, soins à la carte), un prix unique par formule (`basePriceCents`) sauf si l'artisan définit des prix par type de véhicule (`tarifs`), options à 10 €.
 
 ## Pages
-- `/` : accueil (prestations, comment ça marche, réalisations avant / après à fournir, zone d'intervention, avis à compléter, questions fréquentes).
+- `/` : accueil (prestations en onglets par catégorie : une carte par formule avec prix, durée, « Ce qui est compris » et bouton « Choisir » vers `/reserver?formule=<id>` qui présélectionne la formule ; options de la catégorie ; comment ça marche ; réalisations avant / après à fournir ; zone d'intervention avec une carte par tranche de frais de déplacement ; horaires de la semaine lus sur l'API (`GET /booking/hours`), jour courant mis en avant ; exemple de carte de fidélité ; avis à compléter ; questions fréquentes). Mise en forme dans `src/data/vitrine.ts` : la liste « Ce qui est compris » est tirée de la description saisie dans le Catalogue, éléments séparés par des virgules (au moins 3, sinon la phrase est affichée telle quelle), « Durée : … » en fin de description devient la durée affichée.
 - `/reserver`, `/confirmation` : parcours de réservation.
 - `/mon-espace` : espace client (connexion ; rendez-vous à venir et historique ; déplacer, annuler avec remboursement de l'acompte si l'annulation est gratuite ; télécharger ses données ; supprimer son compte ; déconnexion). La session est reprise au chargement grâce au cookie de renouvellement ; le jeton d'accès reste en mémoire (jamais dans le stockage du navigateur).
 - Liens des e-mails (chemins utilisés par les modèles de mails du kit) : `/compte/activer?jeton=` (premier mot de passe), `/compte/mot-de-passe` (demande de lien, puis `?jeton=` pour le nouveau mot de passe), `/rendez-vous?jeton=` (gérer un rendez-vous sans compte).
 - `/pro` : espace pro (compte avec le rôle pro, créé par `php bin/console bsandoz:pro:creer`) : tableau de bord, planning jour / semaine / mois avec le détail d'un rendez-vous (appeler, itinéraire, terminé, absent, annuler avec ou sans remboursement, rembourser), rendez-vous pris par téléphone (confirmé tout de suite ou lien d'acompte envoyé), catalogue (prestations avec tarif par type de véhicule ou nombre de places, durée incertaine, options), horaires de la semaine et congés, règles de réservation et zone d'intervention (ou activité sur place). Service : `src/services/pro.ts`. En mode démo, la connexion ouvre aussi l'espace pro.
 - `/mentions-legales`, `/cgv`, `/confidentialite` : pages légales (`src/pages/Legal`) reprenant `site.ts` ; identité de l'entreprise, droit de rétractation, médiateur et durée de conservation `[à compléter]`, textes à faire relire avant la mise en ligne.
 - Toute autre adresse : page introuvable.
+
+## Version claire / nuit
+- Bouton ☾ / ☀ dans le bandeau (`src/app/theme.ts`) : choix enregistré dans le navigateur ; sans choix, suit le réglage de l'appareil. Le script de `index.html` pose `data-theme` avant l'affichage (pas de flash).
+- Couleurs dans `src/styles/theme.css` : `:root` (clair) et `:root[data-theme='nuit']`, qui surchargent les variables `--bs-*` du kit et `--brand-*`. Aucune couleur en dur dans les composants (sauf texte blanc sur bouton et carte de fidélité, papier dans les deux versions).
 
 ## Application installable (PWA)
 - `public/manifest.webmanifest` (nom, couleurs, icônes `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, raccourcis Réserver / Mon espace / Espace pro), `apple-touch-icon.png` pour iOS. Icônes, `favicon.png`, `logo.png` (bandeau) et `partage.png` (image de partage 1200×630) générés depuis le logo Perfect Clean (`docs/marque/logo-perfect-clean.png`).
@@ -32,8 +36,9 @@ Contrat : `docs/api.md`. Le parcours envoie la prestation, la variante (type de 
 - Notifications push du pro : rubrique Réglages de l'espace pro → « Activer les notifications » sur chaque appareil (`src/services/push.ts`). Nécessite les clés VAPID côté API ; sur iPhone, le site doit d'abord être ajouté à l'écran d'accueil (iOS 16.4 ou plus). Le service worker affiche la notification et ouvre l'espace pro au toucher.
 
 ## Carte de fidélité (`src/services/fidelite.ts`)
-- Accueil : présentation de la règle (ex. 4 prestations, 20 % sur la suivante), masquée si la fidélité est désactivée.
-- Espace client : carte en tampons et message (« Encore 2 prestations avant 20 % de remise »).
+- Composant `CarteFidelite` : carte en carton (couleurs `--brand-paper`), une case par prestation tamponnée du logo (`public/tampon.png`, généré depuis le logo), case « −20 % » dorée quand la remise est disponible ; le dernier tampon arrive avec une animation (coupée si `prefers-reduced-motion`).
+- Accueil : présentation de la règle (ex. 4 prestations, 20 % sur la suivante) avec un exemple de carte, masquée si la fidélité est désactivée.
+- Espace client : carte tamponnée et message (« Encore 2 prestations avant 20 % de remise »).
 - Espace pro : dans le détail d'un rendez-vous, carte du client avec « Ajouter / Retirer un tampon » ; règle dans Réglages → Carte de fidélité. Le tampon automatique et la remise sont gérés par l'API.
 
 ## Référencement local (Abbeville)

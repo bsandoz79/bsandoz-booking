@@ -1,11 +1,11 @@
 .hero { background: var(--brand-navy); color: #fff; padding-block: 4rem; }
-.eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: .8rem; color: #9fd0ff; font-weight: 700; }
+.eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: .8rem; color: var(--brand-accent); font-weight: 700; }
 .title { font-size: clamp(2rem, 5vw, 3.25rem); margin-top: .75rem; max-width: 18ch; }
-.lead { margin-top: 1rem; max-width: 52ch; color: #dfe6f2; font-size: 1.1rem; }
+.lead { margin-top: 1rem; max-width: 52ch; color: var(--brand-on-navy); font-size: 1.1rem; }
 .ctas { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1.5rem; }
 .ctas :global(.btn--ghost) { color: #fff; border-color: rgba(255,255,255,.5); }
 .args { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; font-size: .9rem; }
-.args li::before { content: '✓ '; color: #9fd0ff; }
+.args li::before { content: "✓ "; color: var(--brand-accent); }
 .section { padding-block: 3rem; display: flex; flex-direction: column; gap: 1.25rem; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
 .card { background: var(--bs-color-surface); border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); padding: 1.25rem; display: flex; flex-direction: column; gap: .5rem; }
@@ -35,3 +35,64 @@ blockquote.card { margin: 0; }
 .tarifs { margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: .25rem; }
 .communes { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .25rem 1rem; }
 .communes a { display: inline-flex; min-height: 44px; align-items: center; }
+
+/* Prestations : onglets par catégorie, cartes avec le détail de ce qui est compris. */
+.onglets { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .25rem; scrollbar-width: thin; }
+.onglet {
+  flex: 0 0 auto; min-height: 44px; padding: 0 1.1rem; border-radius: var(--bs-radius-pill);
+  border: 1.5px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text);
+  font: inherit; font-weight: 700; cursor: pointer; transition: background var(--bs-transition), border-color var(--bs-transition);
+}
+.onglet:hover { border-color: var(--bs-color-primary); }
+.onglet[aria-selected='true'] { background: var(--bs-color-primary); border-color: var(--bs-color-primary); color: #fff; }
+.panneau { display: flex; flex-direction: column; gap: 1.25rem; }
+.intro { color: var(--bs-color-text-muted); }
+.cartes { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; align-items: stretch; }
+.formule {
+  position: relative; display: flex; flex-direction: column; gap: .6rem; padding: 1.5rem 1.25rem 1.25rem;
+  background: var(--bs-color-surface); border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md);
+}
+.formule h3 { font-size: 1.15rem; }
+.vedette { border: 2px solid var(--bs-color-primary); box-shadow: 0 12px 28px -14px rgb(22 119 210 / 55%); }
+.vedette .badge { position: absolute; top: -.8rem; left: 1.25rem; background: var(--bs-color-primary); color: #fff; }
+.prix { font-size: 2rem; font-weight: 800; color: var(--bs-color-primary-dark); line-height: 1; }
+.duree { align-self: flex-start; font-size: .85rem; font-weight: 600; padding: 2px 10px; border-radius: var(--bs-radius-pill); background: var(--bs-color-primary-soft); }
+.compris { font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; color: var(--bs-color-text-muted); }
+.inclus { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .35rem; flex: 1; }
+.inclus li { position: relative; padding-left: 1.6rem; }
+.inclus li::before {
+  content: '✓'; position: absolute; left: 0; top: .1rem; width: 1.15rem; height: 1.15rem; border-radius: 50%;
+  display: grid; place-items: center; font-size: .7rem; font-weight: 800; background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark);
+}
+.choisir { margin-top: auto; }
+.options { border: 1px dashed var(--bs-color-border); border-radius: var(--bs-radius-md); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: .5rem; }
+.options h3 { font-size: 1rem; }
+.options ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .4rem 1.5rem; }
+.options li { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px dotted var(--bs-color-border); padding-block: .25rem; }
+.options strong { color: var(--bs-color-primary-dark); white-space: nowrap; }
+
+/* Frais de déplacement : une carte par tranche, reliées par une ligne de distance. */
+.tranches { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .75rem; }
+.tranche {
+  position: relative; display: flex; flex-direction: column; gap: .25rem; padding: 1rem; text-align: center;
+  background: var(--bs-color-bg); border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md);
+  border-top: 4px solid var(--bs-color-primary);
+}
+.tranche strong { font-size: 1.35rem; }
+.km { font-size: .85rem; color: var(--bs-color-text-muted); font-weight: 600; }
+.offert { border-top-color: var(--bs-color-success); }
+.offert strong { color: var(--bs-color-success); }
+
+/* Horaires : semaine en liste, jour courant mis en avant. */
+.horaires { list-style: none; margin: 0; padding: 0; max-width: 520px; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); overflow: hidden; }
+.horaires li { display: flex; justify-content: space-between; gap: 1rem; padding: .7rem 1.1rem; border-bottom: 1px solid var(--bs-color-border); }
+.horaires li:last-child { border-bottom: 0; }
+.jour { font-weight: 700; }
+.jour em { font-style: normal; font-weight: 600; font-size: .8rem; color: var(--bs-color-primary-dark); }
+.aujourdhui { background: var(--bs-color-primary-soft); }
+.ferme span:last-child { color: var(--bs-color-text-muted); }
+
+/* Fidélité : texte et exemple de carte côte à côte sur grand écran. */
+.fidelite { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: center; }
+.fideliteTexte { display: flex; flex-direction: column; gap: .75rem; }
+@media (min-width: 760px) { .fidelite { grid-template-columns: 1fr 1fr; } }

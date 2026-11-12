@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { formatEuros } from '@bsandoz/ui';
 import { useContenu } from '../../app/contenuContexte';
-import { CATEGORIES, FORMULES, prixMin, type Formule } from '../../data/demo';
+import { CarteFidelite } from '../../components/CarteFidelite/CarteFidelite';
+import { CATEGORIES, FORMULES, OPTIONS, prixMin, type Category, type Formule, type OptionItem } from '../../data/demo';
 import { SITE } from '../../data/site';
-import { lignesTarifDeplacement, type ZonePublique } from '../../data/zone';
-import { getCatalog, getZone } from '../../services/api';
+import { detailPrestation, jourIso, semaine, tranches, type Plage } from '../../data/vitrine';
+import type { ZonePublique } from '../../data/zone';
+import { getCatalog, getHoraires, getZone } from '../../services/api';
 import { regleFidelite, type RegleFidelite } from '../../services/fidelite';
 import { A_COMPLETER } from '../../services/contenu';
 import { COMMUNES, PAGES_SEO } from '../../seo/donnees';
@@ -18,7 +20,18 @@ export function Accueil() {
   useSeo(PAGES_SEO[0].titre, PAGES_SEO[0].description);
   // Catalogue réel (API) dès qu'il est chargé ; données de démonstration en attendant ou si l'API ne répond pas.
   const [formules, setFormules] = useState<Formule[]>(FORMULES);
-  useEffect(() => { getCatalog().then((c) => { if (c.formules.length > 0) setFormules(c.formules); }).catch(() => undefined); }, []);
+  const [options, setOptions] = useState<OptionItem[]>(OPTIONS);
+  useEffect(() => {
+    getCatalog().then((c) => { if (c.formules.length > 0) { setFormules(c.formules); setOptions(c.options); } }).catch(() => undefined);
+  }, []);
+  const categories = CATEGORIES.filter((c) => formules.some((f) => f.category === c.value));
+  const [onglet, setOnglet] = useState<Category>('interieur');
+  const categorie = categories.find((c) => c.value === onglet) ?? categories[0];
+  const formulesOnglet = formules.filter((f) => f.category === categorie?.value);
+  const optionsOnglet = options.filter((o) => formulesOnglet.some((f) => f.optionIds.includes(o.id)));
+  const [horaires, setHoraires] = useState<Plage[]>();
+  useEffect(() => { getHoraires().then(setHoraires).catch(() => undefined); }, []);
+  const [aujourdhui] = useState(() => jourIso(new Date()));
   const [zone, setZone] = useState<ZonePublique>();
   useEffect(() => { getZone().then(setZone).catch(() => undefined); }, []);
   const [fidelite, setFidelite] = useState<RegleFidelite>();
@@ -48,24 +61,54 @@ export function Accueil() {
 
       <section id="prestations" className={`container ${styles.section}`} aria-labelledby="titre-prestations">
         <h2 id="titre-prestations">Prestations</h2>
-        {CATEGORIES.filter((c) => formules.some((f) => f.category === c.value)).map((c) => (
-          <div key={c.value} className={styles.categorie}>
-            <h3>{c.label}</h3>
-            <p className={styles.note}>{c.description}</p>
-            <div className={styles.grid}>
-              {formules.filter((f) => f.category === c.value).map((f) => (
-                <article key={f.id} className={styles.card}>
-                  {f.badge && <span className={styles.badge}>{f.badge}</span>}
-                  <h4>{f.name}</h4>
-                  <p>{f.description}</p>
-                  <p className={styles.price}>{formatEuros(prixMin(f))}</p>
-                </article>
-              ))}
+        <p className={styles.note}>Même prix quel que soit le véhicule. Choisissez une catégorie pour voir le détail de chaque formule.</p>
+        <div role="tablist" aria-label="Catégories de prestations" className={styles.onglets} onKeyDown={(e: KeyboardEvent) => {
+          if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+          const i = categories.findIndex((c) => c.value === categorie?.value);
+          const suivante = categories[(i + (e.key === 'ArrowRight' ? 1 : categories.length - 1)) % categories.length];
+          setOnglet(suivante.value);
+          document.getElementById(`onglet-${suivante.value}`)?.focus();
+        }}>
+          {categories.map((c) => (
+            <button key={c.value} id={`onglet-${c.value}`} type="button" role="tab" aria-selected={c.value === categorie?.value} aria-controls="panneau-prestations"
+              tabIndex={c.value === categorie?.value ? 0 : -1} className={styles.onglet} onClick={() => setOnglet(c.value)}>
+              {c.label}
+            </button>
+          ))}
+        </div>
+        {categorie && (
+          <div id="panneau-prestations" role="tabpanel" aria-labelledby={`onglet-${categorie.value}`} className={styles.panneau}>
+            <p className={styles.intro}>{categorie.description}</p>
+            <div className={styles.cartes}>
+              {formulesOnglet.map((f) => {
+                const detail = detailPrestation(f.description);
+                return (
+                  <article key={f.id} className={`${styles.formule} ${f.badge ? styles.vedette : ''}`}>
+                    {f.badge && <span className={styles.badge}>{f.badge}</span>}
+                    <h3>{f.name}</h3>
+                    <p className={styles.prix}>{formatEuros(prixMin(f))}</p>
+                    {detail.duree && <p className={styles.duree}><span aria-hidden="true">⏱</span> {detail.duree}</p>}
+                    {detail.inclus.length > 0 ? (
+                      <>
+                        <p className={styles.compris}>Ce qui est compris</p>
+                        <ul className={styles.inclus}>{detail.inclus.map((e) => <li key={e}>{e}</li>)}</ul>
+                      </>
+                    ) : <p>{detail.texte}</p>}
+                    <Link to={`/reserver?formule=${encodeURIComponent(f.id)}`} className={`btn ${f.badge ? '' : 'btn--ghost'} ${styles.choisir}`} aria-label={`Choisir ${f.name}`}>
+                      Choisir
+                    </Link>
+                  </article>
+                );
+              })}
             </div>
+            {optionsOnglet.length > 0 && (
+              <div className={styles.options}>
+                <h3>Options</h3>
+                <ul>{optionsOnglet.map((o) => <li key={o.id}><span>{o.name}</span><strong>+ {formatEuros(o.priceCents)}</strong></li>)}</ul>
+              </div>
+            )}
           </div>
-        ))}
-        <p className={styles.note}>Supplément de 10 € pour les poils d’animaux ou un véhicule très sale. Même prix quel que soit le véhicule.</p>
-        <Link to="/reserver" className={`btn ${styles.selfStart}`}>Calculer mon prix</Link>
+        )}
       </section>
 
       {etapes.length > 0 && (
@@ -109,25 +152,56 @@ export function Accueil() {
             <p>Les prestations se font sur place, à <strong>{SITE.city}</strong>.</p>
           ) : (
             <>
-              <p>Je me déplace autour de <strong>{SITE.city}</strong>{zone ? `, jusqu’à ${String(zone.maxDistanceKm).replace('.', ',')} km` : ''}. Frais de déplacement :</p>
-              {zone && <ul className={styles.tarifs}>{lignesTarifDeplacement(zone).map((l) => <li key={l}>{l}</li>)}</ul>}
+              <p>Je me déplace chez vous ou au travail autour de <strong>{SITE.city}</strong>{zone ? `, jusqu’à ${String(zone.maxDistanceKm).replace('.', ',')} km` : ''}. Frais de déplacement selon la distance :</p>
+              {zone && (
+                <ol className={styles.tranches} aria-label="Frais de déplacement par distance">
+                  {tranches(zone).map((t) => (
+                    <li key={t.de} className={`${styles.tranche} ${t.offert ? styles.offert : ''}`}>
+                      <span className={styles.km}>{t.jusqua === undefined ? `Au-delà de ${t.de} km` : `${t.de} à ${t.jusqua} km`}</span>
+                      <strong>{t.prix}</strong>
+                    </li>
+                  ))}
+                </ol>
+              )}
             </>
           )}
+          <p className={styles.note}>Le prix exact du déplacement est calculé automatiquement à partir de votre adresse lors de la réservation.</p>
           {communes.length > 0 && <p>Communes desservies : {communes.join(', ')}.</p>}
           <ul className={styles.communes} aria-label="Nettoyage de voiture par commune">
             {COMMUNES.map((c) => <li key={c.slug}><Link to={`/nettoyage-voiture/${c.slug}`}>Nettoyage voiture {c.nom}</Link></li>)}
           </ul>
-          <p>Le prix exact du déplacement est calculé automatiquement à partir de votre adresse lors de la réservation.</p>
         </div>
       </section>
 
+      {horaires && horaires.length > 0 && (
+        <section id="horaires" className={`container ${styles.section}`} aria-labelledby="titre-horaires">
+          <h2 id="titre-horaires">Horaires</h2>
+          <ul className={styles.horaires}>
+            {semaine(horaires).map((j) => (
+              <li key={j.weekday} className={`${j.weekday === aujourdhui ? styles.aujourdhui : ''} ${j.plages.length === 0 ? styles.ferme : ''}`}
+                aria-current={j.weekday === aujourdhui ? 'date' : undefined}>
+                <span className={styles.jour}>{j.jour}{j.weekday === aujourdhui && <em> · aujourd’hui</em>}</span>
+                <span>{j.plages.length > 0 ? j.plages.join(', ') : 'Fermé'}</span>
+              </li>
+            ))}
+          </ul>
+          <p className={styles.note}>Uniquement sur rendez-vous, aux créneaux proposés en ligne.</p>
+        </section>
+      )}
+
       {fidelite?.actif && (
-        <section id="fidelite" className={`container ${styles.section}`} aria-labelledby="titre-fidelite">
-          <h2 id="titre-fidelite">Carte de fidélité</h2>
-          <p>
-            Au bout de {fidelite.tamponsRequis} prestations, la suivante bénéficie de <strong>{fidelite.remisePercent} % de remise</strong>. Les tampons se cumulent
-            automatiquement sur votre espace client, la remise s’applique d’elle-même à la réservation.
-          </p>
+        <section id="fidelite" className={styles.band} aria-labelledby="titre-fidelite">
+          <div className={`container ${styles.section} ${styles.fidelite}`}>
+            <div className={styles.fideliteTexte}>
+              <h2 id="titre-fidelite">Carte de fidélité</h2>
+              <p>
+                Au bout de {fidelite.tamponsRequis} prestations, la suivante bénéficie de <strong>{fidelite.remisePercent} % de remise</strong>. Chaque
+                prestation terminée ajoute un tampon sur votre carte, et la remise s’applique d’elle-même à la réservation.
+              </p>
+              <p className={styles.note}>Votre carte est visible à tout moment dans « Mon espace ».</p>
+            </div>
+            <CarteFidelite carte={{ ...fidelite, tampons: Math.min(2, fidelite.tamponsRequis - 1), remiseDisponible: false }} titre="Carte de fidélité" exemple />
+          </div>
         </section>
       )}
 
