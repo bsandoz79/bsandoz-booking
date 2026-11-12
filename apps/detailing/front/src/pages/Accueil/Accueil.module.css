@@ -27,3 +27,5 @@
 .question { border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-bg); padding: .75rem 1rem; }
 .question summary { font-weight: 700; cursor: pointer; min-height: 44px; display: flex; align-items: center; }
 .question p { margin-top: .5rem; }
+.categorie { display: flex; flex-direction: column; gap: .75rem; }
+.categorie h4 { font-size: 1.05rem; }

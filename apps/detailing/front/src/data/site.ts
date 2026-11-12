@@ -1,5 +1,5 @@
 /**
- * Informations du site (marque fictive de démonstration). Tout ce qui n'est pas connu reste « [à compléter] » :
+ * Informations du site Perfect Clean. Tout ce qui n'est pas connu reste « [à compléter] » :
  * ne jamais inventer d'avis, de chiffres ni de coordonnées.
  */
 import { DEMO_RULES } from './demo';
@@ -7,13 +7,13 @@ import { DEMO_RULES } from './demo';
 const A_COMPLETER = '[à compléter]';
 
 export const SITE = {
-  brand: 'Atelier Brillance',
-  activity: 'Detailing auto et canapés à domicile',
+  brand: 'Perfect Clean',
+  activity: 'Detailing et nettoyage auto à domicile',
   /** Ville de départ des déplacements (point d'origine de la zone dans l'API). */
-  city: 'Amiens',
+  city: 'Abbeville',
   phone: A_COMPLETER,
   email: A_COMPLETER,
-  hours: A_COMPLETER,
+  hours: 'du lundi au samedi de 8 h à 19 h, le dimanche de 10 h à 18 h',
   freeRadiusKm: DEMO_RULES.freeRadiusKm,
   maxDistanceKm: DEMO_RULES.maxDistanceKm,
   pricePerKmCents: DEMO_RULES.pricePerKmCents,

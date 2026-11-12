@@ -1,4 +1,4 @@
-import { DEMO_RULES, FORMULES, OPTIONS } from '../data/demo';
+import { DEMO_RULES, FORMULES, OPTIONS, tarifDe } from '../data/demo';
 import { isDemo, type Address, type Contact } from './api';
 import { authHttp } from './compte';
 
@@ -90,30 +90,29 @@ const demoDebut = (jours: number, heure: number) => {
 const demoRdv = (id: string, jours: number, heure: number, duree: number, prestationId: string, client: string, status: RendezVousPro['status'] = 'confirmed'): RendezVousPro => {
   const debut = demoDebut(jours, heure);
   const f = FORMULES.find((x) => x.id === prestationId) ?? FORMULES[0];
-  const tarif = Object.values(f.tarifs)[0];
+  const tarif = tarifDe(f);
   return {
     id, status, start: debut.toISOString(), end: new Date(debut.getTime() + duree * 60000).toISOString(), prestationId, prestation: f.name,
-    variante: Object.keys(f.tarifs)[0], optionIds: [], client: { name: client, email: 'client@example.org', phone: '06 00 00 00 00' },
-    address: '10 Rue de la République 80000 Amiens', totalCents: tarif.priceCents, depositCents: Math.ceil(tarif.priceCents * 0.3), travelFeeCents: 0,
+    variante: null, optionIds: [], client: { name: client, email: 'client@example.org', phone: '06 00 00 00 00' },
+    address: '1 Place Max Lejeune 80100 Abbeville', totalCents: tarif.priceCents, depositCents: Math.ceil(tarif.priceCents * 0.3), travelFeeCents: 0,
     notes: '', metierData: {},
   };
 };
 const demo = {
   rdv: [
-    demoRdv('d1', 0, 9, 90, 'interieur', 'Client démo A'),
-    demoRdv('d2', 1, 14, 150, 'complet', 'Client démo B'),
-    demoRdv('d3', 3, 8, 60, 'canape', 'Client démo C', 'pending_payment'),
+    demoRdv('d1', 0, 9, 90, 'int-eclat', 'Client démo A'),
+    demoRdv('d2', 1, 14, 210, 'int-signature', 'Client démo B'),
+    demoRdv('d3', 3, 8, 120, 'ext-signature', 'Client démo C', 'pending_payment'),
   ],
   prestations: FORMULES.map((f, i): PrestationPro => {
-    const premier = Object.values(f.tarifs)[0];
-    return { id: f.id, name: f.name, description: f.description, basePriceCents: premier.priceCents, baseDurationMin: premier.durationMin, active: true, categoryId: f.category, position: i, occupePlage: !!f.occupePlage, tarifs: f.tarifs, optionIds: f.optionIds };
+    return { id: f.id, name: f.name, description: f.description, basePriceCents: f.basePriceCents, baseDurationMin: f.baseDurationMin, active: true, categoryId: f.category, position: i, occupePlage: !!f.occupePlage, tarifs: f.tarifs, optionIds: f.optionIds };
   }),
   options: OPTIONS.map((o): OptionPro => ({ ...o, active: true })),
   horaires: [1, 2, 3, 4, 5].flatMap((j) => [{ weekday: j, startsAt: '08:00', endsAt: '12:00' }, { weekday: j, startsAt: '13:30', endsAt: '18:00' }]).concat([{ weekday: 6, startsAt: '08:00', endsAt: '12:00' }]) as Plage[],
   indisponibilites: [] as Indisponibilite[],
   reglages: {
     rules: { minNoticeHours: 24, horizonDays: 60, bufferMin: 15, slotStepMin: 30, freeCancelHours: 48, depositPercent: DEMO_RULES.depositPercent, depositFixedCents: 0, holdMinutes: 10 },
-    zone: { originLat: 49.8941, originLng: 2.2958, freeRadiusKm: DEMO_RULES.freeRadiusKm, pricePerKmCents: DEMO_RULES.pricePerKmCents, maxDistanceKm: DEMO_RULES.maxDistanceKm },
+    zone: { originLat: DEMO_RULES.origin.lat, originLng: DEMO_RULES.origin.lng, freeRadiusKm: DEMO_RULES.freeRadiusKm, pricePerKmCents: DEMO_RULES.pricePerKmCents, maxDistanceKm: DEMO_RULES.maxDistanceKm },
     timezone: 'Europe/Paris',
   } as Reglages,
 };
@@ -161,7 +160,7 @@ export async function rembourser(id: string, amountCents?: number): Promise<{ re
 export async function ajouterRendezVous(n: NouveauRendezVous): Promise<{ reservationId: string; status: string; paymentUrl: string | null }> {
   if (isDemo()) {
     const f = FORMULES.find((x) => x.id === n.prestationId) ?? FORMULES[0];
-    const tarif = f.tarifs[n.variante] ?? Object.values(f.tarifs)[0];
+    const tarif = tarifDe(f, n.variante);
     const id = `d${demoId++}`;
     demo.rdv.push({
       ...demoRdv(id, 0, 8, tarif.durationMin, f.id, `${n.contact.firstname} ${n.contact.lastname}`, n.sendDepositLink ? 'pending_payment' : 'confirmed'),

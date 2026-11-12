@@ -33,7 +33,7 @@ describe('Espace client', () => {
 
   it('affiche le rendez-vous à venir avec la limite d’annulation gratuite, puis l’annule', async () => {
     await seConnecterDemo();
-    const carte = screen.getByRole('article', { name: 'Complet' });
+    const carte = screen.getByRole('article', { name: 'Intérieur Signature' });
     expect(within(carte).getByText(/mardi 17 novembre 2026/)).toBeInTheDocument();
     expect(within(carte).getByText(/Annulation gratuite jusqu’au dimanche 15 novembre 2026/)).toBeInTheDocument();
 
@@ -45,7 +45,7 @@ describe('Espace client', () => {
 
   it('déplace le rendez-vous sur un nouveau créneau (demi-journée pour une formule à durée incertaine)', async () => {
     await seConnecterDemo();
-    const carte = screen.getByRole('article', { name: 'Complet' });
+    const carte = screen.getByRole('article', { name: 'Intérieur Signature' });
     await userEvent.click(within(carte).getByRole('button', { name: 'Déplacer' }));
     await userEvent.click(await within(carte).findByRole('button', { name: /vendredi 20 novembre 2026/ }));
     expect(await within(carte).findAllByRole('button', { name: /^(08:30|13:30)$/ })).toHaveLength(2);
@@ -90,7 +90,7 @@ describe('Liens reçus par e-mail', () => {
 
   it('gère un rendez-vous sans compte depuis le lien, et signale un lien incomplet', async () => {
     const { unmount } = ouvrir('/rendez-vous?jeton=abc');
-    expect(await screen.findByRole('article', { name: 'Complet' })).toBeInTheDocument();
+    expect(await screen.findByRole('article', { name: 'Intérieur Signature' })).toBeInTheDocument();
     unmount();
     ouvrir('/rendez-vous');
     expect(screen.getByRole('alert')).toHaveTextContent('Ce lien est incomplet');

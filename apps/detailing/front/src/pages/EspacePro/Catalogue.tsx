@@ -1,22 +1,18 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { Button, DataTable, Field, Toggle, formatEuros } from '@bsandoz/ui';
-import { VEHICLE_TYPES } from '../../data/demo';
+import { CATEGORIES as CATEGORIES_SITE, VEHICLE_TYPES } from '../../data/demo';
 import { catalogue, enregistrerOption, enregistrerPrestation, type OptionPro, type PrestationPro, type Tarif } from '../../services/pro';
 import styles from './Pro.module.css';
 
-/** Variantes de tarif du métier detailing : type de véhicule, ou nombre de places du canapé. */
-const VARIANTES: Record<string, { value: string; label: string }[]> = {
-  auto: VEHICLE_TYPES,
-  canape: [{ value: 'canape_2', label: 'Canapé 2 places' }, { value: 'canape_3', label: 'Canapé 3 places' }, { value: 'canape_4', label: 'Canapé 4 places et plus' }],
-};
-const CATEGORIES = [{ value: 'auto', label: 'Véhicule' }, { value: 'canape', label: 'Canapé' }];
+/** Catégories du site (intérieur, extérieur, phares, soins à la carte). */
+const CATEGORIES: { value: string; label: string }[] = CATEGORIES_SITE;
 
 const euros = (cents: number) => (cents / 100).toFixed(2).replace('.', ',');
 const centimes = (texte: string) => Math.round(Number(texte.replace(',', '.').replace(/\s/g, '')) * 100);
 const prixValide = (texte: string) => /^\d+([.,]\d{1,2})?$/.test(texte.trim());
 
 const nouvellePrestation = (position: number): PrestationPro => ({
-  name: '', description: '', basePriceCents: 0, baseDurationMin: 60, active: true, categoryId: 'auto', position, occupePlage: false, tarifs: {}, optionIds: [],
+  name: '', description: '', basePriceCents: 0, baseDurationMin: 60, active: true, categoryId: 'interieur', position, occupePlage: false, tarifs: {}, optionIds: [],
 });
 
 export function CatalogueOnglet() {
@@ -84,28 +80,32 @@ function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
   initiale: PrestationPro; options: OptionPro[]; onAnnuler: () => void; onEnregistree: (p: PrestationPro) => void;
 }) {
   const [p, setP] = useState(initiale);
+  const [prix, setPrix] = useState(initiale.id ? euros(initiale.basePriceCents) : '');
+  const [duree, setDuree] = useState(String(initiale.baseDurationMin));
+  const [parVehicule, setParVehicule] = useState(Object.keys(initiale.tarifs).length > 0);
   const [tarifs, setTarifs] = useState<Record<string, { prix: string; duree: string }>>(() =>
     Object.fromEntries(Object.entries(initiale.tarifs).map(([v, t]) => [v, { prix: euros(t.priceCents), duree: String(t.durationMin) }])));
   const [erreur, setErreur] = useState('');
   const [enCours, setEnCours] = useState(false);
-  const variantes = VARIANTES[p.categoryId ?? 'auto'] ?? [];
 
-  const tarifsValides = Object.values(tarifs).filter((t) => t.prix || t.duree).every((t) => prixValide(t.prix) && /^\d+$/.test(t.duree) && Number(t.duree) > 0);
-  const valide = p.name.trim() !== '' && tarifsValides && Object.values(tarifs).some((t) => t.prix && t.duree);
+  const dureeValide = (d: string) => /^\d+$/.test(d) && Number(d) > 0;
+  const tarifsValides = !parVehicule || Object.values(tarifs).filter((t) => t.prix || t.duree).every((t) => prixValide(t.prix) && dureeValide(t.duree));
+  const valide = p.name.trim() !== '' && prixValide(prix) && dureeValide(duree) && tarifsValides;
 
   const soumettre = async (e: FormEvent) => {
     e.preventDefault();
     if (!valide) return;
     const liste: Record<string, Tarif> = {};
-    for (const v of variantes) {
-      const t = tarifs[v.value];
-      if (t?.prix && t.duree) liste[v.value] = { priceCents: centimes(t.prix), durationMin: Number(t.duree) };
+    if (parVehicule) {
+      for (const v of VEHICLE_TYPES) {
+        const t = tarifs[v.value];
+        if (t?.prix && t.duree) liste[v.value] = { priceCents: centimes(t.prix), durationMin: Number(t.duree) };
+      }
     }
-    const base = Object.values(liste).reduce((min, t) => (t.priceCents < min.priceCents ? t : min));
     setErreur('');
     setEnCours(true);
     try {
-      onEnregistree(await enregistrerPrestation({ ...p, name: p.name.trim(), tarifs: liste, basePriceCents: base.priceCents, baseDurationMin: base.durationMin }));
+      onEnregistree(await enregistrerPrestation({ ...p, name: p.name.trim(), tarifs: liste, basePriceCents: centimes(prix), baseDurationMin: Number(duree) }));
     } catch (err) {
       setErreur((err as Error).message);
     } finally {
@@ -119,26 +119,34 @@ function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
       <div className={styles.grille}>
         <Field label="Nom" required value={p.name} onChange={(e) => setP({ ...p, name: e.target.value })} />
         <label className={styles.choix}>Catégorie
-          <select value={p.categoryId ?? 'auto'} onChange={(e) => { setP({ ...p, categoryId: e.target.value }); setTarifs({}); }}>
+          <select value={p.categoryId ?? 'interieur'} onChange={(e) => setP({ ...p, categoryId: e.target.value })}>
             {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
         </label>
+        <Field label="Prix (€)" inputMode="decimal" required value={prix} onChange={(e) => setPrix(e.target.value)}
+          error={prix && !prixValide(prix) ? 'Montant invalide, ex. 69 ou 69,90.' : undefined} />
+        <Field label="Durée (min)" inputMode="numeric" required value={duree} onChange={(e) => setDuree(e.target.value)}
+          error={duree && !dureeValide(duree) ? 'Nombre de minutes attendu.' : undefined} />
       </div>
       <Field label="Description" multiline rows={2} value={p.description} onChange={(e) => setP({ ...p, description: e.target.value })} />
 
-      <fieldset className={styles.liste} style={{ border: 0, padding: 0 }}>
-        <legend className={styles.choix}>Tarifs (laisser vide si non proposé)</legend>
-        {variantes.map((v) => (
-          <div key={v.value} className={`${styles.ligne} ${styles.petit}`}>
-            <span style={{ minWidth: 180 }}>{v.label}</span>
-            <Field label={`Prix ${v.label} (€)`} inputMode="decimal" value={tarifs[v.value]?.prix ?? ''}
-              onChange={(e) => setTarifs({ ...tarifs, [v.value]: { prix: e.target.value, duree: tarifs[v.value]?.duree ?? '' } })}
-              error={tarifs[v.value]?.prix && !prixValide(tarifs[v.value].prix) ? 'Montant invalide, ex. 89 ou 89,90.' : undefined} />
-            <Field label={`Durée ${v.label} (min)`} inputMode="numeric" value={tarifs[v.value]?.duree ?? ''}
-              onChange={(e) => setTarifs({ ...tarifs, [v.value]: { prix: tarifs[v.value]?.prix ?? '', duree: e.target.value } })} />
-          </div>
-        ))}
-      </fieldset>
+      <Toggle label="Prix différent selon le véhicule" checked={parVehicule} onChange={setParVehicule}
+        hint="Facultatif : un type laissé vide garde le prix et la durée ci-dessus." />
+      {parVehicule && (
+        <fieldset className={styles.liste} style={{ border: 0, padding: 0 }}>
+          <legend className={styles.choix}>Prix par type de véhicule</legend>
+          {VEHICLE_TYPES.map((v) => (
+            <div key={v.value} className={`${styles.ligne} ${styles.petit}`}>
+              <span style={{ minWidth: 180 }}>{v.label}</span>
+              <Field label={`Prix ${v.label} (€)`} inputMode="decimal" value={tarifs[v.value]?.prix ?? ''}
+                onChange={(e) => setTarifs({ ...tarifs, [v.value]: { prix: e.target.value, duree: tarifs[v.value]?.duree ?? '' } })}
+                error={tarifs[v.value]?.prix && !prixValide(tarifs[v.value].prix) ? 'Montant invalide, ex. 89 ou 89,90.' : undefined} />
+              <Field label={`Durée ${v.label} (min)`} inputMode="numeric" value={tarifs[v.value]?.duree ?? ''}
+                onChange={(e) => setTarifs({ ...tarifs, [v.value]: { prix: tarifs[v.value]?.prix ?? '', duree: e.target.value } })} />
+            </div>
+          ))}
+        </fieldset>
+      )}
 
       {options.length > 0 && (
         <fieldset className={styles.liste} style={{ border: 0, padding: 0 }}>

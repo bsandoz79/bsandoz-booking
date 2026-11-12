@@ -1,20 +1,20 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatEuros } from '@bsandoz/ui';
-import { FORMULES, type Formule } from '../../data/demo';
+import { CATEGORIES, FORMULES, prixMin, type Formule } from '../../data/demo';
+import { getCatalog } from '../../services/api';
 import { A_COMPLETER_TEXTE, SITE } from '../../data/site';
 import styles from './Accueil.module.css';
 
-const prixMin = (f: Formule) => Math.min(...Object.values(f.tarifs).map((t) => t.priceCents));
-
 /** Réalisations : photos avant / après à fournir par l'artisan (aucune image inventée). */
 const REALISATIONS = [
-  { id: 'r1', titre: 'Intérieur – citadine' },
-  { id: 'r2', titre: 'Complet – SUV' },
-  { id: 'r3', titre: 'Canapé 3 places' },
+  { id: 'r1', titre: 'Intérieur Signature' },
+  { id: 'r2', titre: 'Extérieur Excellence' },
+  { id: 'r3', titre: 'Rénovation des phares' },
 ];
 
 const ETAPES = [
-  { titre: 'Choisissez votre prestation', texte: 'Véhicule ou canapé, formule et options : le prix s’affiche tout de suite.' },
+  { titre: 'Choisissez votre prestation', texte: 'Intérieur, extérieur, phares ou soin à la carte : le prix s’affiche tout de suite, le même pour tous les véhicules.' },
   { titre: 'Réservez un créneau', texte: 'Indiquez votre adresse, choisissez le jour et l’heure, réglez l’acompte en ligne.' },
   { titre: 'Je viens chez vous', texte: 'J’arrive avec tout le matériel. Le solde se règle sur place, une fois le travail terminé.' },
 ];
@@ -23,26 +23,28 @@ const FAQ = [
   { q: 'Ai-je besoin de fournir l’eau ou l’électricité ?', r: 'Non, j’arrive avec le matériel nécessaire. Il suffit d’un emplacement où garer le véhicule.' },
   { q: 'Comment fonctionne l’acompte ?', r: `Un acompte de ${SITE.depositPercent} % est demandé en ligne pour confirmer le rendez-vous. Le solde se règle sur place.` },
   { q: 'Puis-je annuler ou déplacer mon rendez-vous ?', r: `Oui, depuis le lien reçu par e-mail ou votre espace client. L’annulation est gratuite jusqu’à ${SITE.freeCancelHours} h avant le rendez-vous : l’acompte vous est alors remboursé.` },
-  { q: 'Combien de temps dure une prestation ?', r: 'Cela dépend de la formule et du véhicule : la durée estimée est affichée avant de réserver. Pour un nettoyage complet, je réserve la demi-journée.' },
+  { q: 'Combien de temps dure une prestation ?', r: 'Cela dépend de la formule et de l’état du véhicule : de 1 h pour un Éclat à 5 h pour une Excellence. Pour les formules longues, je réserve la demi-journée.' },
 ];
 
 export function Accueil() {
-  const autos = FORMULES.filter((f) => f.category === 'auto');
-  const canape = FORMULES.find((f) => f.category === 'canape');
+  // Catalogue réel (API) dès qu'il est chargé ; données de démonstration en attendant ou si l'API ne répond pas.
+  const [formules, setFormules] = useState<Formule[]>(FORMULES);
+  useEffect(() => { getCatalog().then((c) => { if (c.formules.length > 0) setFormules(c.formules); }).catch(() => undefined); }, []);
+
 
   return (
     <main>
       <section className={styles.hero}>
         <div className="container">
-          <p className={styles.eyebrow}>Detailing auto · canapés · à domicile</p>
+          <p className={styles.eyebrow}>Nettoyage auto à domicile · Abbeville et alentours</p>
           <h1 className={styles.title}>Votre voiture comme neuve, sans bouger de chez vous.</h1>
-          <p className={styles.lead}>Je viens à votre adresse avec tout le matériel. Réservez votre créneau en ligne en quelques minutes.</p>
+          <p className={styles.lead}>Nettoyage intérieur et extérieur, rénovation des phares : je viens à votre adresse, autonome en eau et en électricité. Réservez votre créneau en ligne en quelques minutes.</p>
           <div className={styles.ctas}>
             <Link to="/reserver" className="btn">Réserver un créneau</Link>
             <a href="#prestations" className="btn btn--ghost">Voir les prestations</a>
           </div>
           <ul className={styles.args}>
-            <li>Matériel professionnel apporté</li>
+            <li>Autonome en eau et en électricité</li>
             <li>Déplacement offert dans un rayon de {SITE.freeRadiusKm} km</li>
             <li>Acompte en ligne, solde sur place</li>
           </ul>
@@ -51,24 +53,23 @@ export function Accueil() {
 
       <section id="prestations" className={`container ${styles.section}`} aria-labelledby="titre-prestations">
         <h2 id="titre-prestations">Prestations</h2>
-        <div className={styles.grid}>
-          {autos.map((f) => (
-            <article key={f.id} className={styles.card}>
-              {f.badge && <span className={styles.badge}>{f.badge}</span>}
-              <h3>{f.name}</h3>
-              <p>{f.description}</p>
-              <p className={styles.price}>à partir de {formatEuros(prixMin(f))}</p>
-            </article>
-          ))}
-        </div>
-        {canape && (
-          <article className={`${styles.card} ${styles.wide}`}>
-            <h3>{canape.name}</h3>
-            <p>{canape.description}</p>
-            <p className={styles.price}>à partir de {formatEuros(prixMin(canape))}</p>
-          </article>
-        )}
-        <p className={styles.note}>Prix indicatifs de démonstration, ajustés selon le type de véhicule ou le nombre de places.</p>
+        {CATEGORIES.filter((c) => formules.some((f) => f.category === c.value)).map((c) => (
+          <div key={c.value} className={styles.categorie}>
+            <h3>{c.label}</h3>
+            <p className={styles.note}>{c.description}</p>
+            <div className={styles.grid}>
+              {formules.filter((f) => f.category === c.value).map((f) => (
+                <article key={f.id} className={styles.card}>
+                  {f.badge && <span className={styles.badge}>{f.badge}</span>}
+                  <h4>{f.name}</h4>
+                  <p>{f.description}</p>
+                  <p className={styles.price}>{formatEuros(prixMin(f))}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        ))}
+        <p className={styles.note}>Supplément de 10 € pour les poils d’animaux ou un véhicule très sale. Même prix quel que soit le véhicule.</p>
         <Link to="/reserver" className={`btn ${styles.selfStart}`}>Calculer mon prix</Link>
       </section>
 

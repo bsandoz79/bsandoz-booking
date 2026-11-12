@@ -29,23 +29,23 @@ describe('Espace pro', () => {
     await ouvrirConnecte();
     await rubrique('Planning');
     await userEvent.click(screen.getByRole('button', { name: 'Jour' }));
-    await userEvent.click(await screen.findByRole('button', { name: /Intérieur – Client démo A/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Intérieur Éclat – Client démo A/ }));
     const detail = screen.getByRole('region', { name: /Rendez-vous du/ });
     expect(within(detail).getByRole('link', { name: '06 00 00 00 00' })).toHaveAttribute('href', 'tel:0600000000');
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler le rendez-vous' }));
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler et rembourser l’acompte' }));
-    expect(await within(detail).findByRole('status')).toHaveTextContent('Rendez-vous annulé, 20,70');
+    expect(await within(detail).findByRole('status')).toHaveTextContent('Rendez-vous annulé, 8,70');
   });
 
   it('modifie le tarif d’une prestation du catalogue', async () => {
     await ouvrirConnecte();
     await rubrique('Catalogue');
-    await userEvent.click(await screen.findByRole('button', { name: 'Modifier Extérieur' }));
-    const prix = screen.getByLabelText(/Prix SUV \/ 4x4/);
+    await userEvent.click(await screen.findByRole('button', { name: 'Modifier Extérieur Éclat' }));
+    const prix = screen.getByLabelText(/^Prix \(€\)/);
     await userEvent.clear(prix);
-    await userEvent.type(prix, '72,50');
+    await userEvent.type(prix, '27,50');
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
-    expect(await screen.findByRole('status')).toHaveTextContent('« Extérieur » enregistrée.');
+    expect(await screen.findByRole('status')).toHaveTextContent('« Extérieur Éclat » enregistrée.');
   });
 
   it('refuse un montant mal saisi', async () => {

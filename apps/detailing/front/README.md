@@ -1,4 +1,4 @@
-# Atelier Brillance – site (front)
+# Perfect Clean – site (front)
 
 Site React (Vite) du premier client, construit avec les blocs du kit `@bsandoz/ui`.
 
@@ -13,7 +13,7 @@ Contrat : `docs/api.md`. Le parcours envoie la prestation, la variante (type de 
 
 ## Contenu
 - `src/data/site.ts` : marque, ville, zone, acompte, délai d'annulation et identité légale. Tout ce qui n'est pas connu reste `[à compléter]` : ne jamais inventer d'avis, de chiffres ni de coordonnées. Les valeurs de zone, d'acompte et d'annulation doivent rester identiques aux réglages de l'API.
-- `src/data/demo.ts` : prestations et options de démonstration (identiques à `php bin/console detailing:demo:charger` côté API).
+- `src/data/demo.ts` : catalogue de démonstration Perfect Clean (identique à `php bin/console detailing:demo:charger` côté API) : 4 catégories (`CATEGORIES` : intérieur, extérieur, rénovation des phares, soins à la carte), un prix unique par formule (`basePriceCents`) sauf si l'artisan définit des prix par type de véhicule (`tarifs`), options à 10 €.
 
 ## Pages
 - `/` : accueil (prestations, comment ça marche, réalisations avant / après à fournir, zone d'intervention, avis à compléter, questions fréquentes).
@@ -25,7 +25,7 @@ Contrat : `docs/api.md`. Le parcours envoie la prestation, la variante (type de 
 - Toute autre adresse : page introuvable.
 
 ## Application installable (PWA)
-- `public/manifest.webmanifest` (nom, couleurs, icônes `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, raccourcis Réserver / Mon espace / Espace pro), `apple-touch-icon.png` pour iOS. Icônes provisoires (monogramme « AB ») à remplacer par le logo réel.
+- `public/manifest.webmanifest` (nom, couleurs, icônes `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, raccourcis Réserver / Mon espace / Espace pro), `apple-touch-icon.png` pour iOS. Icônes provisoires (monogramme « PC ») à remplacer par le logo réel.
 - `public/sw.js`, enregistré en production seulement (`src/pwa/serviceWorker.ts`) : pages en réseau d'abord avec repli hors connexion (`offline.html`), fichiers du build en cache, API jamais mise en cache. Changer `VERSION` dans `sw.js` vide les anciens caches.
 - `public/.htaccess` : `sw.js` et le manifest servis sans cache navigateur.
 - Notifications push du pro : rubrique Réglages de l'espace pro → « Activer les notifications » sur chaque appareil (`src/services/push.ts`). Nécessite les clés VAPID côté API ; sur iPhone, le site doit d'abord être ajouté à l'écran d'accueil (iOS 16.4 ou plus). Le service worker affiche la notification et ouvre l'espace pro au toucher.
