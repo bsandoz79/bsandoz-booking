@@ -3,6 +3,7 @@ import { ContenuProvider } from './ContenuContext';
 import { Footer } from '../components/Footer/Footer';
 import { Header } from '../components/Header/Header';
 import { Accueil } from '../pages/Accueil/Accueil';
+import { Commune } from '../pages/Commune/Commune';
 import { Confirmation } from '../pages/Confirmation/Confirmation';
 import { EspaceClient } from '../pages/EspaceClient/EspaceClient';
 import { EspacePro } from '../pages/EspacePro/EspacePro';
@@ -18,6 +19,7 @@ export function AppRoutes() {
       <Routes>
         <Route path="/" element={<Accueil />} />
         <Route path="/reserver" element={<Reserver />} />
+        <Route path="/nettoyage-voiture/:commune" element={<Commune />} />
         <Route path="/confirmation" element={<Confirmation />} />
         <Route path="/mon-espace" element={<EspaceClient />} />
         <Route path="/compte/activer" element={<ActiverCompte />} />

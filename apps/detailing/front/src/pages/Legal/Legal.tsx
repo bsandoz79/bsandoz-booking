@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useContenu } from '../../app/contenuContexte';
 import { SITE } from '../../data/site';
+import { useSeo } from '../../seo/useSeo';
 import styles from './Legal.module.css';
 
 /**
@@ -9,6 +10,7 @@ import styles from './Legal.module.css';
  * les textes sont à faire relire avant la mise en ligne réelle.
  */
 function PageLegale({ titre, children }: { titre: string; children: ReactNode }) {
+  useSeo(`${titre} | Perfect Clean`);
   return (
     <main className={`container ${styles.page}`}>
       <h1>{titre}</h1>

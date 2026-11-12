@@ -8,6 +8,10 @@ RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 RewriteRule ^index\.html$ - [L]
+# Pages pré-générées pour le référencement (/cgv → cgv.html, /nettoyage-voiture/abbeville → nettoyage-voiture/abbeville.html).
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+RewriteRule ^(.+?)/?$ $1.html [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.html [L]
@@ -19,8 +23,8 @@ AddType application/manifest+json .webmanifest
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "DENY"
   Header always set Strict-Transport-Security "max-age=31536000"
-  # Service worker, manifest et page d'accueil : toujours revalidés (les mises à jour sont prises tout de suite).
-  <FilesMatch "^(sw\.js|manifest\.webmanifest|index\.html)$">
+  # Service worker, manifest et pages HTML : toujours revalidés (les mises à jour sont prises tout de suite).
+  <FilesMatch "(^sw\.js|^manifest\.webmanifest|\.html)$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
   # Fichiers du build (nom avec empreinte) : cache d'un an.

@@ -8,11 +8,14 @@ import { lignesTarifDeplacement, type ZonePublique } from '../../data/zone';
 import { getCatalog, getZone } from '../../services/api';
 import { regleFidelite, type RegleFidelite } from '../../services/fidelite';
 import { A_COMPLETER } from '../../services/contenu';
+import { COMMUNES, PAGES_SEO } from '../../seo/donnees';
+import { useSeo } from '../../seo/useSeo';
 import styles from './Accueil.module.css';
 
 /** Accueil : textes, étapes, réalisations, avis, FAQ et communes modifiables dans l'espace pro (« Mon site »). */
 export function Accueil() {
   const { contenu } = useContenu();
+  useSeo(PAGES_SEO[0].titre, PAGES_SEO[0].description);
   // Catalogue réel (API) dès qu'il est chargé ; données de démonstration en attendant ou si l'API ne répond pas.
   const [formules, setFormules] = useState<Formule[]>(FORMULES);
   useEffect(() => { getCatalog().then((c) => { if (c.formules.length > 0) setFormules(c.formules); }).catch(() => undefined); }, []);
@@ -111,6 +114,9 @@ export function Accueil() {
             </>
           )}
           {communes.length > 0 && <p>Communes desservies : {communes.join(', ')}.</p>}
+          <ul className={styles.communes} aria-label="Nettoyage de voiture par commune">
+            {COMMUNES.map((c) => <li key={c.slug}><Link to={`/nettoyage-voiture/${c.slug}`}>Nettoyage voiture {c.nom}</Link></li>)}
+          </ul>
           <p>Le prix exact du déplacement est calculé automatiquement à partir de votre adresse lors de la réservation.</p>
         </div>
       </section>
