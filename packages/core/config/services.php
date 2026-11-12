@@ -40,6 +40,10 @@ use Bsandoz\Core\Booking\Infrastructure\Http\ManageController;
 use Bsandoz\Core\Notification\Domain\Port\Notifier;
 use Bsandoz\Core\Booking\Application\NotificationsReservation;
 use Bsandoz\Core\Admin\Application\GererContenuSite;
+use Bsandoz\Core\Fidelite\Application\GererFidelite;
+use Bsandoz\Core\Fidelite\Domain\Port\CartesFidelite;
+use Bsandoz\Core\Fidelite\Infrastructure\Http\FideliteController;
+use Bsandoz\Core\Fidelite\Infrastructure\Persistence\DoctrineCartesFidelite;
 use Bsandoz\Core\Admin\Application\GererMedias;
 use Bsandoz\Core\Admin\Domain\Port\StockageMedias;
 use Bsandoz\Core\Admin\Infrastructure\Http\SiteController;
@@ -232,6 +236,15 @@ return static function (ContainerConfigurator $container): void {
     $services->alias(StockageMedias::class, DossierMedias::class);
     $services->set(GererMedias::class);
     $services->set(SiteController::class)->public()->tag('controller.service_arguments');
+
+    // Fidélité (tampons, remise sur la réservation suivante)
+    $services->set(DoctrineCartesFidelite::class);
+    $services->alias(CartesFidelite::class, DoctrineCartesFidelite::class);
+    $services->set(GererFidelite::class)
+        ->arg('$actifParDefaut', param('bsandoz_core.fidelite.actif'))
+        ->arg('$tamponsRequisParDefaut', param('bsandoz_core.fidelite.tampons_requis'))
+        ->arg('$remisePercentParDefaut', param('bsandoz_core.fidelite.remise_percent'));
+    $services->set(FideliteController::class)->public()->tag('controller.service_arguments');
     $services->set(AdminCatalogueController::class)->public()->tag('controller.service_arguments');
     $services->set(AdminAgendaController::class)->public()->tag('controller.service_arguments');
     $services->set(CreneauxController::class)->public()->tag('controller.service_arguments');

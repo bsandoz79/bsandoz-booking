@@ -33,6 +33,8 @@ class Reservation
         private Money $travelFee,
         private array $metierData = [],
         private string $notes = '',
+        /** Remise de la carte de fidélité déjà déduite du total (null : aucune). */
+        private ?Money $remiseFidelite = null,
     ) {
     }
 
@@ -59,6 +61,7 @@ class Reservation
     /** @return array<string, mixed> */
     public function metierData(): array { return $this->metierData; }
     public function notes(): string { return $this->notes; }
+    public function remiseFidelite(): Money { return $this->remiseFidelite ?? Money::zero(); }
 
     public function blocks(\DateTimeImmutable $now): bool
     {

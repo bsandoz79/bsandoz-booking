@@ -12,16 +12,18 @@ use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
 use Bsandoz\Core\Catalog\Application\CalculerDevis;
+use Bsandoz\Core\Fidelite\Application\GererFidelite;
 use Bsandoz\Core\Shared\Domain\Clock;
 use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\IdGenerator;
+use Bsandoz\Core\Shared\Domain\Money;
 use Bsandoz\Core\Shared\Domain\TimeRange;
 
 /**
  * Crée la réservation, seul sur l'agenda (verrou) :
  *  1. recalcule le devis côté serveur (prix, variante, zone) ;
  *  2. revérifie que le créneau demandé fait toujours partie des créneaux libres ;
- *  3. crée ou retrouve le compte du client ;
+ *  3. crée ou retrouve le compte du client ; carte de fidélité pleine : remise déduite des prestations (hors déplacement) ;
  *  4. enregistre la réservation : bloquée holdMinutes en attente de l'acompte, ou confirmée si aucun acompte n'est demandé ;
  *  5. émet le jeton « gérer mon rendez-vous » (voir, annuler, déplacer sans compte), valable jusqu'à la fin du rendez-vous.
  * La session de paiement de l'acompte est créée ensuite (feature/core-payment).
@@ -40,6 +42,7 @@ final class ReserverCreneau
         private NotificationsReservation $notifications,
         private IdGenerator $ids,
         private Clock $clock,
+        private ?GererFidelite $fidelite = null,
     ) {
     }
 
@@ -67,6 +70,10 @@ final class ReserverCreneau
             $userId = ($this->creerCompte)($c->email, $c->firstname, $c->lastname, $c->phone);
             $now = $this->clock->now();
 
+            $remise = $this->fidelite?->utiliserRemise($userId, $devis->total->subtract($devis->travelFee)) ?? Money::zero();
+            $total = $devis->total->subtract($remise);
+            $acompte = $remise->cents === 0 ? $devis->deposit : $this->acompte($total);
+
             $reservation = new Reservation(
                 $this->ids->generate(),
                 $userId,
@@ -77,14 +84,15 @@ final class ReserverCreneau
                 $aDomicile ? trim($c->address) : '',
                 $c->lat ?? 0.0,
                 $c->lng ?? 0.0,
-                $devis->total,
-                $devis->deposit,
+                $total,
+                $acompte,
                 $devis->travelFee,
                 $c->metierData,
                 trim($c->notes),
+                $remise->cents > 0 ? $remise : null,
             );
 
-            if ($devis->deposit->cents === 0) {
+            if ($acompte->cents === 0) {
                 $reservation->confirm();
             } else {
                 Reservation::hold($reservation, $now, $this->settings->rules()->holdMinutes);
@@ -99,6 +107,18 @@ final class ReserverCreneau
 
             return new ReservationCreee($reservation->id(), $reservation->status(), $reservation->deposit(), $reservation->total(), $reservation->holdExpiresAt(), $manageToken);
         });
+    }
+
+    /** Acompte sur un total remisé (même règle que le devis : pourcentage, sinon montant fixe plafonné au total). */
+    private function acompte(Money $total): Money
+    {
+        $rules = $this->settings->rules();
+
+        return match (true) {
+            $rules->depositPercent !== null => $total->percent($rules->depositPercent),
+            $rules->depositFixedCents !== null => Money::cents($rules->depositFixedCents)->min($total),
+            default => Money::zero(),
+        };
     }
 
     /** Créneau libre qui commence exactement à l'heure demandée (sa fin dépend de la prestation : durée ou fin de demi-journée). */

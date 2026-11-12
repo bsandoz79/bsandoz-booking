@@ -17,6 +17,12 @@ describe('Accueil', () => {
     expect(screen.getAllByText(/rayon de 5 km/).length).toBeGreaterThan(0);
   });
 
+  it('présente la carte de fidélité', async () => {
+    render(<MemoryRouter><Accueil /></MemoryRouter>);
+    const section = await screen.findByRole('region', { name: 'Carte de fidélité' });
+    expect(section).toHaveTextContent('Au bout de 4 prestations, la suivante bénéficie de 20 % de remise');
+  });
+
   it('n’invente aucun avis ni photo', () => {
     render(<MemoryRouter><Accueil /></MemoryRouter>);
     const avis = screen.getByRole('region', { name: 'Avis clients' });

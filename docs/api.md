@@ -111,6 +111,14 @@ Réservation d'un autre client : 404. Sans jeton : 401.
 - `PUT /admin/site` (rôle pro) : remplace tout le contenu. Objet de textes, nombres, booléens et listes ; rubriques nommées `[A-Za-z][A-Za-z0-9_]*`, 6 niveaux, 5 000 caractères par texte, 200 Ko au total (sinon 422). Le site l'affiche comme du texte, jamais comme du HTML.
 - Photos (rôle pro) : `POST /admin/medias` (multipart, champ `fichier`, JPEG / PNG / WebP reconnus à leur contenu, 5 Mo maximum) → 201 `{"name", "url"}` ; `GET /admin/medias` → `[{"name", "url"}]` ; `DELETE /admin/medias/{name}` → 204. Fichiers rangés dans `public/medias` de l'API (option `bsandoz_core.medias_dir`), servis à `https://<api>/medias/<name>`.
 
+## Carte de fidélité
+Règle par défaut (`bsandoz_core.fidelite`) : 4 prestations réalisées, 20 % sur la suivante ; le pro la change ou la désactive.
+- `GET /fidelite` (public) → `{"actif", "tamponsRequis", "remisePercent"}`.
+- `GET /me/fidelite` (client) → `{"actif", "tampons", "tamponsRequis", "remisePercent", "remiseDisponible"}`.
+- `GET /admin/fidelite/{userId}`, `PATCH /admin/fidelite/{userId}` `{"delta": ±n}` (pro) : voir ou ajuster la carte d'un client (`clientId` dans le planning). Jamais sous zéro.
+- `PUT /admin/settings/fidelite` `{"actif", "tamponsRequis", "remisePercent"}` (pro).
+- Tampon automatique quand le pro marque un rendez-vous « done » (sauf celui qui a reçu la remise). Carte pleine : la réservation suivante (en ligne ou par téléphone) reçoit la remise sur les prestations (hors déplacement), `totalCents` et l'acompte sont recalculés, `remiseFideliteCents` est indiqué dans le planning et l'espace client ; la carte repart. Réservation remisée annulée ou expirée : la carte redevient pleine (reprise si le paiement arrive après l'expiration).
+
 ## Notifications push du pro (Web Push)
 - `GET /push/key` → `{"publicKey": "…" | null}` : clé publique VAPID (null : notifications non configurées).
 - `POST /admin/push` (rôle pro) : corps = `PushSubscription` du navigateur, `{"endpoint", "keys": {"p256dh", "auth"}}` → 204. Le même appareil remplace son abonnement. Endpoint non https ou clés invalides : 422 ; notifications non configurées : 422.

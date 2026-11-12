@@ -55,7 +55,7 @@ final class ReserverCreneauTest extends TestCase
         $this->tokens = new InMemoryTokenService($this->clock);
     }
 
-    private function reserver(?int $depositPercent = 30, bool $surPlace = false): ReserverCreneau
+    private function reserver(?int $depositPercent = 30, bool $surPlace = false, ?\Bsandoz\Core\Fidelite\Application\GererFidelite $fidelite = null): ReserverCreneau
     {
         $settings = new ConfiguredSettingsProvider(
             [
@@ -88,7 +88,7 @@ final class ReserverCreneauTest extends TestCase
             new CreerCompteDepuisReservation($this->users, $this->tokens, new RecordingNotifier(), new SequenceIdGenerator('u'), $this->clock),
             $this->reservations, $settings, $this->tokens,
             new \Bsandoz\Core\Booking\Application\NotificationsReservation(new RecordingNotifier(), $this->users, $prestations, new \Bsandoz\Core\Notification\Domain\Service\IcsGenerator(), 'Marque'),
-            new SequenceIdGenerator('r'), $this->clock,
+            new SequenceIdGenerator('r'), $this->clock, $fidelite,
         );
     }
 
@@ -126,6 +126,22 @@ final class ReserverCreneauTest extends TestCase
         self::assertSame('Portail bleu', $r->notes());
         self::assertSame(1, $this->reservations->locks, 'créée sous le verrou d\'agenda');
         self::assertSame('camille@example.test', $this->users->get('u-1')->email());
+    }
+
+    public function testCarteDeFidelitePleineRemiseSurLaPrestationSuivante(): void
+    {
+        $fidelite = new \Bsandoz\Core\Fidelite\Application\GererFidelite(new \Bsandoz\Core\Tests\Double\InMemoryCartesFidelite(), new \Bsandoz\Core\Tests\Double\InMemorySettingRepository(), $this->clock);
+        $fidelite->ajuster('u-1', 4);
+
+        $resultat = ($this->reserver(fidelite: $fidelite))(self::command());
+
+        self::assertSame(8000, $resultat->total->cents, '100 € - 20 %');
+        self::assertSame(2400, $resultat->deposit->cents, 'acompte de 30 % sur le total remisé');
+        self::assertSame(2000, $this->reservations->get('r-1')->remiseFidelite()->cents);
+        self::assertSame(0, $fidelite->carte('u-1')['tampons'], 'la carte repart');
+
+        $suivante = ($this->reserver(fidelite: $fidelite))(self::command(start: '2026-11-10 15:00'));
+        self::assertSame(10000, $suivante->total->cents, 'plus de remise ensuite');
     }
 
     public function testSansAcompteLaReservationEstConfirmee(): void

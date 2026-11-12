@@ -21,6 +21,8 @@ export interface RendezVous {
   lng: number;
   totalCents: number;
   depositCents: number;
+  /** Remise de la carte de fidélité déjà déduite du total. */
+  remiseFideliteCents?: number;
   /** Jusqu'à cette date (UTC), l'annulation est gratuite et l'acompte remboursé. */
   freeCancelUntil: string;
 }

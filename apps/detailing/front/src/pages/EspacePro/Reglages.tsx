@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { AddressInput, Button, Field, Toggle } from '@bsandoz/ui';
 import { searchAddress, type Address } from '../../services/api';
+import { modifierRegleFidelite, regleFidelite, type RegleFidelite } from '../../services/fidelite';
 import { enregistrerRegles, enregistrerZone, reglages, type Regles, type Zone } from '../../services/pro';
 import { NotificationsPro } from './Notifications';
 import styles from './Pro.module.css';
@@ -36,6 +37,7 @@ export function ReglagesOnglet() {
       <NotificationsPro />
       <FormulaireRegles initiales={regles} />
       <FormulaireZone initiale={zone} />
+      <FormulaireFidelite />
     </>
   );
 }
@@ -139,6 +141,49 @@ function FormulaireZone({ initiale }: { initiale: Zone | null }) {
         {message && <p className={styles.ok} role="status">{message}</p>}
         {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
         <div><Button type="submit" disabled={!valide}>Enregistrer la zone</Button></div>
+      </div>
+    </form>
+  );
+}
+
+function FormulaireFidelite() {
+  const [regle, setRegle] = useState<RegleFidelite>();
+  const [requis, setRequis] = useState('');
+  const [remise, setRemise] = useState('');
+  const [message, setMessage] = useState('');
+  const [erreur, setErreur] = useState('');
+
+  useEffect(() => {
+    regleFidelite().then((r) => { setRegle(r); setRequis(String(r.tamponsRequis)); setRemise(String(r.remisePercent)); }).catch((e: Error) => setErreur(e.message));
+  }, []);
+
+  if (!regle) return null;
+  const valide = /^\d+$/.test(requis) && Number(requis) >= 1 && Number(requis) <= 50 && /^\d+$/.test(remise) && Number(remise) >= 1 && Number(remise) <= 100;
+
+  const enregistrer = async (e: FormEvent) => {
+    e.preventDefault();
+    setMessage(''); setErreur('');
+    try {
+      setRegle(await modifierRegleFidelite({ actif: regle.actif, tamponsRequis: Number(requis), remisePercent: Number(remise) }));
+      setMessage('Carte de fidélité enregistrée.');
+    } catch (err) {
+      setErreur((err as Error).message);
+    }
+  };
+
+  return (
+    <form className={styles.section} onSubmit={enregistrer} noValidate aria-labelledby="titre-fidelite">
+      <h2 id="titre-fidelite">Carte de fidélité</h2>
+      <div className={styles.panneau}>
+        <Toggle label="Carte de fidélité active" checked={regle.actif} onChange={(actif) => setRegle({ ...regle, actif })}
+          hint="Un tampon à chaque prestation marquée « Terminé » ; la remise s’applique d’elle-même à la réservation suivante." />
+        <div className={styles.grille}>
+          <Field label="Prestations avant la remise" inputMode="numeric" value={requis} onChange={(e) => setRequis(e.target.value)} error={valide || !requis ? undefined : 'Entre 1 et 50.'} />
+          <Field label="Remise (%)" inputMode="numeric" value={remise} onChange={(e) => setRemise(e.target.value)} error={valide || !remise ? undefined : 'Entre 1 et 100.'} />
+        </div>
+        {message && <p className={styles.ok} role="status">{message}</p>}
+        {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
+        <div><Button type="submit" disabled={!valide}>Enregistrer la carte de fidélité</Button></div>
       </div>
     </form>
   );

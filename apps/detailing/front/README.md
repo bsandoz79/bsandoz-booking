@@ -30,3 +30,8 @@ Contrat : `docs/api.md`. Le parcours envoie la prestation, la variante (type de 
 - `public/sw.js`, enregistré en production seulement (`src/pwa/serviceWorker.ts`) : pages en réseau d'abord avec repli hors connexion (`offline.html`), fichiers du build en cache, API jamais mise en cache. Changer `VERSION` dans `sw.js` vide les anciens caches.
 - `public/.htaccess` : `sw.js` et le manifest servis sans cache navigateur.
 - Notifications push du pro : rubrique Réglages de l'espace pro → « Activer les notifications » sur chaque appareil (`src/services/push.ts`). Nécessite les clés VAPID côté API ; sur iPhone, le site doit d'abord être ajouté à l'écran d'accueil (iOS 16.4 ou plus). Le service worker affiche la notification et ouvre l'espace pro au toucher.
+
+## Carte de fidélité (`src/services/fidelite.ts`)
+- Accueil : présentation de la règle (ex. 4 prestations, 20 % sur la suivante), masquée si la fidélité est désactivée.
+- Espace client : carte en tampons et message (« Encore 2 prestations avant 20 % de remise »).
+- Espace pro : dans le détail d'un rendez-vous, carte du client avec « Ajouter / Retirer un tampon » ; règle dans Réglages → Carte de fidélité. Le tampon automatique et la remise sont gérés par l'API.

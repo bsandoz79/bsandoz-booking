@@ -1,0 +1,7 @@
+.carte { background: var(--brand-navy); color: #fff; border-radius: var(--bs-radius-md); padding: 1.25rem; display: flex; flex-direction: column; gap: .5rem; max-width: 420px; }
+.titre { font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: .8rem; color: #9fd0ff; }
+.tampons { display: flex; align-items: center; gap: .4rem; font-size: 1.75rem; line-height: 1; }
+.plein { color: #ffd166; }
+.vide { color: rgba(255, 255, 255, .45); }
+.cadeau { margin-left: auto; font-size: 1rem; font-weight: 800; background: #ffd166; color: var(--brand-navy); border-radius: var(--bs-radius-pill); padding: 4px 10px; }
+.message { font-size: .95rem; }

@@ -26,10 +26,13 @@ export interface RendezVousPro {
   prestation: string;
   variante: string | null;
   optionIds: string[];
+  /** Identifiant du compte client (carte de fidélité). */
+  clientId: string;
   client: { name: string; email: string; phone: string };
   address: string;
   totalCents: number;
   depositCents: number;
+  remiseFideliteCents?: number;
   travelFeeCents: number;
   notes: string;
   metierData: Record<string, unknown>;
@@ -95,7 +98,7 @@ const demoRdv = (id: string, jours: number, heure: number, duree: number, presta
   const tarif = tarifDe(f);
   return {
     id, status, start: debut.toISOString(), end: new Date(debut.getTime() + duree * 60000).toISOString(), prestationId, prestation: f.name,
-    variante: null, optionIds: [], client: { name: client, email: 'client@example.org', phone: '06 00 00 00 00' },
+    variante: null, optionIds: [], clientId: `client-${id}`, client: { name: client, email: 'client@example.org', phone: '06 00 00 00 00' },
     address: '1 Place Max Lejeune 80100 Abbeville', totalCents: tarif.priceCents, depositCents: Math.ceil(tarif.priceCents * 0.3), travelFeeCents: 0,
     notes: '', metierData: {},
   };

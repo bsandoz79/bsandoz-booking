@@ -31,6 +31,7 @@ final class VueReservation
             'lng' => $r->lng(),
             'totalCents' => $r->total()->cents,
             'depositCents' => $r->deposit()->cents,
+            'remiseFideliteCents' => $r->remiseFidelite()->cents,
             'freeCancelUntil' => $start->modify(sprintf('-%d hours', $rules->freeCancelHours))->setTimezone($utc)->format(DATE_ATOM),
         ];
     }

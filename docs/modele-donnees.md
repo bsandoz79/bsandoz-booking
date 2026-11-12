@@ -12,11 +12,12 @@
 | unavailability | Booking | id, period_start, period_end (UTC), reason |
 | booking_rule | Booking | min_notice_hours, horizon_days, buffer_min, slot_step_min, free_cancel_hours, deposit_percent, deposit_fixed_cents |
 | zone | Booking | origin_label, origin_lat, origin_lng, free_radius_km, price_per_km_cents, max_distance_km |
-| reservation | Booking | id, user_id, prestation_id, variante, option_ids JSON, period_start, period_end (UTC), address (chiffrée), lat, lng, travel_fee_cents, total_cents, deposit_cents, status, hold_expires_at (UTC), notes, metier_data JSON |
+| reservation | Booking | id, user_id, prestation_id, variante, option_ids JSON, period_start, period_end (UTC), address (chiffrée), lat, lng, travel_fee_cents, total_cents (remise de fidélité déduite), deposit_cents, loyalty_discount_cents, status, hold_expires_at (UTC), notes, metier_data JSON |
 | reservation_option | Booking | reservation_id, option_id, price_cents |
 | payment | Payment | id, reservation_id, provider_session_id (unique), amount_cents, refunded_cents, status (pending/paid/partially_refunded/refunded), paid_at, created_at (UTC) |
 | notification | Notification | id, type (reminder…), reservation_id (unique par type), sent_at (UTC) : journal des notifications programmées déjà envoyées |
 | push_subscription | Notification | id, user_id, endpoint (unique par appareil), public_key (p256dh), auth_token, created_at (UTC) : appareils du pro abonnés aux notifications push |
+| loyalty_card | Fidelite | user_id, stamps (tampons vers la prochaine remise), updated_at (UTC) |
 | setting | Admin | setting_key (« rules », « zone »), value JSON, updated_at (UTC) : réglages du pro, prioritaires sur la configuration |
 | audit_log | Admin | user_id, action, target, created_at, ip |
 

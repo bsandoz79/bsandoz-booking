@@ -1347,6 +1347,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         success_url?: scalar|Param|null, // Default: "/"
  *         cancel_url?: scalar|Param|null, // Default: "/"
  *     },
+ *     fidelite?: array{ // Carte de fidélité par défaut (le pro la règle ensuite dans son espace) : après N prestations, X % sur la suivante.
+ *         actif?: bool|Param, // Default: true
+ *         tampons_requis?: int|Param, // Default: 4
+ *         remise_percent?: int|Param, // Default: 20
+ *     },
  *     push?: array{ // Notifications push du pro (Web Push, clés VAPID générées par bsandoz:push:cles). Clés vides : désactivées.
  *         vapid_public_key?: scalar|Param|null, // Default: "%env(default::BSANDOZ_VAPID_PUBLIC_KEY)%"
  *         vapid_private_key?: scalar|Param|null, // Default: "%env(default::BSANDOZ_VAPID_PRIVATE_KEY)%"

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Button, PlanningView, formatEuros, startOfWeek, type PlanningEvent, type PlanningMode } from '@bsandoz/ui';
+import { ajusterCarte, carteClient, type CarteFidelite } from '../../services/fidelite';
 import { annulerRendezVous, changerStatut, indisponibilites, planning, rembourser, type Indisponibilite, type RendezVousPro } from '../../services/pro';
 import { dateHeure, jourLocal, localIso, plusJours } from './dates';
 import styles from './Pro.module.css';
@@ -96,7 +97,8 @@ function DetailRendezVous({ rdv, onFermer, onChange }: { rdv: RendezVousPro; onF
         <dt>Adresse</dt><dd>{rdv.address ? <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rdv.address)}`} target="_blank" rel="noreferrer">{rdv.address}</a> : 'Sur place'}</dd>
         {Object.keys(rdv.metierData).length > 0 && <><dt>Détails</dt><dd>{Object.entries(rdv.metierData).filter(([, v]) => v !== '' && v !== null).map(([k, v]) => `${k} : ${String(v)}`).join(' · ')}</dd></>}
         {rdv.notes && <><dt>Précisions</dt><dd>{rdv.notes}</dd></>}
-        <dt>Montant</dt><dd>{formatEuros(rdv.totalCents)} dont acompte {formatEuros(rdv.depositCents)}{rdv.travelFeeCents > 0 ? ` (déplacement ${formatEuros(rdv.travelFeeCents)})` : ''}</dd>
+        <dt>Montant</dt><dd>{formatEuros(rdv.totalCents)} dont acompte {formatEuros(rdv.depositCents)}{rdv.travelFeeCents > 0 ? ` (déplacement ${formatEuros(rdv.travelFeeCents)})` : ''}{rdv.remiseFideliteCents ? ` · remise fidélité ${formatEuros(rdv.remiseFideliteCents)}` : ''}</dd>
+        {rdv.clientId && <><dt>Fidélité</dt><dd><Fidelite clientId={rdv.clientId} /></dd></>}
       </dl>
       {message && <p className={styles.ok} role="status">{message}</p>}
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
@@ -122,5 +124,21 @@ function DetailRendezVous({ rdv, onFermer, onChange }: { rdv: RendezVousPro; onF
         </div>
       )}
     </div>
+  );
+}
+
+/** Carte de fidélité du client, avec ajout / retrait d'un tampon (carte papier, prestation hors site…). */
+function Fidelite({ clientId }: { clientId: string }) {
+  const [carte, setCarte] = useState<CarteFidelite>();
+  useEffect(() => { carteClient(clientId).then(setCarte).catch(() => undefined); }, [clientId]);
+  if (!carte) return <span>…</span>;
+  if (!carte.actif) return <span>désactivée</span>;
+  const ajuster = (delta: number) => ajusterCarte(clientId, delta).then(setCarte).catch(() => undefined);
+  return (
+    <span className={styles.actions}>
+      <span>{carte.tampons} / {carte.tamponsRequis}{carte.remiseDisponible ? ` · −${carte.remisePercent} % à la prochaine réservation` : ''}</span>
+      <Button variant="ghost" onClick={() => ajuster(1)}>Ajouter un tampon</Button>
+      <Button variant="ghost" disabled={carte.tampons === 0} onClick={() => ajuster(-1)}>Retirer un tampon</Button>
+    </span>
   );
 }

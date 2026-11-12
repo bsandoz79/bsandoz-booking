@@ -14,6 +14,7 @@ use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Payment\Domain\Port\PaymentGateway;
 use Bsandoz\Core\Payment\Domain\Port\PaymentRepository;
 use Bsandoz\Core\Payment\Domain\SignatureInvalide;
+use Bsandoz\Core\Fidelite\Application\GererFidelite;
 use Bsandoz\Core\Shared\Domain\Clock;
 
 /**
@@ -33,6 +34,7 @@ final class ConfirmerPaiement
         private TokenService $tokens,
         private NotificationsReservation $notifications,
         private Clock $clock,
+        private ?GererFidelite $fidelite = null,
     ) {
     }
 
@@ -56,6 +58,10 @@ final class ConfirmerPaiement
             $reservation = $this->reservations->get($payment->reservationId());
 
             if ($this->peutEtreConfirmee($reservation, $now)) {
+                // Paiement arrivé après l'expiration : la remise de fidélité rendue à l'expiration est reprise.
+                if ($reservation->status() === ReservationStatus::Expired && $reservation->remiseFidelite()->cents > 0) {
+                    $this->fidelite?->reprendreRemise($reservation->userId());
+                }
                 $reservation->confirm();
                 $this->reservations->save($reservation);
                 $this->payments->save($payment);

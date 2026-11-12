@@ -7,6 +7,7 @@ namespace Bsandoz\Core\Booking\Application;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
 use Bsandoz\Core\Payment\Application\RembourserAcompte;
+use Bsandoz\Core\Fidelite\Application\GererFidelite;
 use Bsandoz\Core\Shared\Domain\Clock;
 use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\NotFound;
@@ -24,6 +25,7 @@ final class AnnulerReservation
         private RembourserAcompte $rembourser,
         private NotificationsReservation $notifications,
         private Clock $clock,
+        private ?GererFidelite $fidelite = null,
     ) {
     }
 
@@ -40,6 +42,9 @@ final class AnnulerReservation
 
         $refundable = $reservation->cancel($this->clock->now(), $this->settings->rules());
         $this->reservations->save($reservation);
+        if ($reservation->remiseFidelite()->cents > 0) {
+            $this->fidelite?->rendreRemise($reservation->userId());
+        }
 
         if ($refundable) {
             ($this->rembourser)($reservation->id());
