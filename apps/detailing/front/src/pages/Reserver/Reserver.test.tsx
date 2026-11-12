@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { AppRoutes } from '../../app/App';
@@ -91,12 +91,14 @@ describe('Parcours de réservation', () => {
 
     expect(screen.getByRole('button', { name: /Payer l'acompte \(7,50/ })).toBeDisabled();
 
-    // Produit ajouté juste avant le paiement : payé avec l'acompte.
-    await userEvent.click(screen.getByRole('button', { name: 'Ajouter Microfibre' }));
-    const payer = screen.getByRole('button', { name: /Payer l’acompte et les produits \(12,50/ });
-    expect(payer).toBeDisabled();
     await userEvent.click(screen.getByRole('checkbox'));
-    await userEvent.click(payer);
+    await userEvent.click(screen.getByRole('button', { name: /Payer l'acompte \(7,50/ }));
+
+    // Au clic sur « Payer » : les produits sont proposés dans une fenêtre, puis le paiement suit.
+    const fenetre = await screen.findByRole('dialog', { name: 'Un petit plus pour l’entretien ?' });
+    expect(within(fenetre).getByRole('button', { name: 'Ajouter et payer' })).toBeDisabled();
+    await userEvent.click(within(fenetre).getByRole('button', { name: 'Ajouter Microfibre' }));
+    await userEvent.click(within(fenetre).getByRole('button', { name: /Ajouter et payer \(12,50/ }));
 
     expect(await screen.findByRole('heading', { name: 'Merci, votre rendez-vous est réservé.' })).toBeInTheDocument();
     expect(screen.getByRole('note')).toHaveTextContent('Mode démonstration');

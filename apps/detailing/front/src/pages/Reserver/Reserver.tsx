@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AddressInput, Calendar, ChoiceChips, PriceSummary, SlotPicker, StepCard, type StepCardStatus, formatEuros } from '@bsandoz/ui';
+import { AddressInput, Button, Calendar, ChoiceChips, Dialog, PriceSummary, SlotPicker, StepCard, type StepCardStatus, formatEuros } from '@bsandoz/ui';
 import type { Category, Formule, OptionItem, ProduitItem } from '../../data/demo';
 import { CATEGORIES, tarifDe } from '../../data/demo';
 import type { Address, Quote, Selection, Slot } from '../../services/api';
@@ -36,6 +36,8 @@ export function Reserver() {
   const [options, setOptions] = useState<OptionItem[]>([]);
   const [produits, setProduits] = useState<ProduitItem[]>([]);
   const [quantites, setQuantites] = useState<Record<string, number>>({});
+  // Produits proposés une fois, dans une fenêtre, au clic sur « Payer » (non merci / ajouter et payer).
+  const [proposition, setProposition] = useState<'jamais' | 'ouverte' | 'vue'>('jamais');
   const [category, setCategory] = useState<Category>();
   const [formuleId, setFormuleId] = useState<string>();
   // Plusieurs véhicules : même formule pour tous, options choisies véhicule par véhicule.
@@ -117,10 +119,15 @@ export function Reserver() {
   const next = async () => {
     setError('');
     if (step < ETAPES.length - 1) { setStep(step + 1); return; }
+    if (produits.length > 0 && proposition !== 'vue') { setProposition('ouverte'); return; }
+    await payer(quantites);
+  };
+
+  const payer = async (choix: Record<string, number>) => {
     if (!selection || !address || !start) return;
     setSending(true);
     try {
-      const choisis = Object.entries(quantites).filter(([, q]) => q > 0).map(([id, quantite]) => ({ id, quantite }));
+      const choisis = Object.entries(choix).filter(([, q]) => q > 0).map(([id, quantite]) => ({ id, quantite }));
       const resultat = await reserve(selection, start, address, contact, terms, choisis);
       if (resultat.paymentUrl?.startsWith('/')) {
         navigate(resultat.paymentUrl);
@@ -258,8 +265,6 @@ export function Reserver() {
             <label className={styles.field}>E-mail<input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} autoComplete="email" /></label>
             <label className={styles.field}>Précisions (véhicule, accès, parking, prise électrique…)<textarea rows={3} value={contact.notes} onChange={(e) => setContact({ ...contact, notes: e.target.value })} /></label>
             <p className={styles.hint}>Un espace client sera créé pour suivre vos rendez-vous : vous recevrez un lien pour choisir votre mot de passe. Carte de fidélité pleine ? La remise est déduite automatiquement du total et de l’acompte.</p>
-            <ChoixProduits produits={produits} quantites={quantites}
-              onChange={(id, q) => setQuantites({ ...quantites, [id]: Math.max(0, q) })} />
             <label className={styles.check}><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> J'accepte les <a href="/cgv" target="_blank" rel="noreferrer">conditions générales de vente</a>.</label>
           </StepCard>
 
@@ -286,6 +291,19 @@ export function Reserver() {
           </aside>
         )}
       </div>
+      <Dialog open={proposition === 'ouverte'} title="Un petit plus pour l’entretien ?" onClose={() => setProposition('jamais')}
+        description="Mes produits, réglés maintenant avec l’acompte : je vous les apporte le jour du rendez-vous."
+        actions={(
+          <>
+            <Button variant="ghost" onClick={() => { setQuantites({}); setProposition('vue'); void payer({}); }}>Non merci</Button>
+            <Button disabled={totalProduits === 0} onClick={() => { setProposition('vue'); void payer(quantites); }}>
+              {totalProduits === 0 ? 'Ajouter et payer' : `Ajouter et payer (${formatEuros(aPayer)})`}
+            </Button>
+          </>
+        )}>
+        <ChoixProduits produits={produits} quantites={quantites} avecTitre={false}
+          onChange={(id, q) => setQuantites({ ...quantites, [id]: Math.max(0, q) })} />
+      </Dialog>
     </main>
   );
 }

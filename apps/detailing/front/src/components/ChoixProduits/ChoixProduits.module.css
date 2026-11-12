@@ -1,10 +1,11 @@
-.bloc { display: flex; flex-direction: column; gap: .75rem; padding-top: 1rem; border-top: 1px solid var(--bs-color-border); }
+.bloc { display: flex; flex-direction: column; gap: .75rem; }
+.avecTitre { padding-top: 1rem; border-top: 1px solid var(--bs-color-border); }
 .titre { font-size: 1.1rem; }
 .intro { font-size: .9rem; color: var(--bs-color-text-muted); }
 .liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
 .produit { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: .75rem; padding: .6rem; border-radius: var(--bs-radius-sm); background: var(--bs-color-surface); border: 1.5px solid var(--bs-color-border); }
 .choisi { border-color: var(--bs-color-primary); }
-.photo { width: 64px; height: 64px; border-radius: var(--bs-radius-sm); object-fit: cover; display: grid; place-items: center; background: var(--bs-color-bg); color: var(--bs-color-primary); font-size: 1.4rem; }
+.photo { width: 64px; height: 64px; flex: none; border-radius: var(--bs-radius-sm); object-fit: cover; display: grid; place-items: center; background: var(--bs-color-bg); color: var(--bs-color-primary); font-size: 1.4rem; }
 .texte { display: flex; flex-direction: column; gap: .1rem; min-width: 0; }
 .description { font-size: .82rem; color: var(--bs-color-text-muted); }
 .prix { font-weight: 700; }

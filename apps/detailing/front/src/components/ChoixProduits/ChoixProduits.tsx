@@ -7,20 +7,22 @@ export interface ChoixProduitsProps {
   /** Quantité choisie par identifiant (absent ou 0 : non ajouté). */
   quantites: Record<string, number>;
   onChange: (id: string, quantite: number) => void;
+  /** Titre et texte d'introduction (false : déjà portés par une fenêtre). */
+  avecTitre?: boolean;
 }
 
 /**
  * Produits proposés juste avant le paiement : payés en entier avec l'acompte, apportés le jour du rendez-vous.
  * « Ajouter », puis − / + dans la limite du stock.
  */
-export function ChoixProduits({ produits, quantites, onChange }: ChoixProduitsProps) {
+export function ChoixProduits({ produits, quantites, onChange, avecTitre = true }: ChoixProduitsProps) {
   if (produits.length === 0) return null;
   const total = produits.reduce((t, p) => t + p.priceCents * (quantites[p.id] ?? 0), 0);
 
   return (
-    <section className={styles.bloc} aria-labelledby="titre-produits">
-      <h3 id="titre-produits" className={styles.titre}>À ajouter à votre commande ?</h3>
-      <p className={styles.intro}>Mes produits d’entretien, réglés maintenant avec l’acompte : je vous les apporte le jour du rendez-vous.</p>
+    <section className={`${styles.bloc} ${avecTitre ? styles.avecTitre : ''}`} {...(avecTitre ? { 'aria-labelledby': 'titre-produits' } : { 'aria-label': 'Produits proposés' })}>
+      {avecTitre && <h3 id="titre-produits" className={styles.titre}>À ajouter à votre commande ?</h3>}
+      {avecTitre && <p className={styles.intro}>Mes produits d’entretien, réglés maintenant avec l’acompte : je vous les apporte le jour du rendez-vous.</p>}
       <ul className={styles.liste}>
         {produits.map((p) => {
           const q = quantites[p.id] ?? 0;
@@ -45,7 +47,7 @@ export function ChoixProduits({ produits, quantites, onChange }: ChoixProduitsPr
           );
         })}
       </ul>
-      {total > 0 && <p className={styles.total}>Produits : <strong>{formatEuros(total)}</strong>, payés avec l’acompte.</p>}
+      {total > 0 && <p className={styles.total}>Produits : <strong>{formatEuros(total)}</strong></p>}
     </section>
   );
 }
