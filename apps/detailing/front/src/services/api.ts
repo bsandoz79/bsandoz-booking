@@ -26,7 +26,10 @@ export interface Slot { start: string; end?: string; label: string }
 export interface Selection {
   formule: Formule;
   variante: string;
+  /** Options de chaque véhicule mises bout à bout (une même option peut revenir, une fois par véhicule). */
   optionIds: string[];
+  /** Nombre de véhicules (même formule pour tous) ; 1 par défaut. */
+  quantite?: number;
   metierData: Record<string, unknown>;
 }
 
@@ -108,16 +111,21 @@ export async function estimerDeplacement(lat: number, lng: number): Promise<Esti
 }
 
 export async function getQuote(selection: Selection, address?: Address): Promise<Quote> {
-  const { formule, variante, optionIds, metierData } = selection;
+  const { formule, variante, optionIds, metierData, quantite = 1 } = selection;
   if (!isDemo()) {
     return http('/booking/quote', {
       method: 'POST',
-      body: JSON.stringify({ prestationId: formule.id, variante, optionIds, metierData, lat: address?.lat, lng: address?.lng }),
+      body: JSON.stringify({ prestationId: formule.id, variante, optionIds, metierData, lat: address?.lat, lng: address?.lng, quantite }),
     });
   }
+  // Démo : même calcul que l'API (formule × véhicules, chaque option comptée autant de fois qu'elle est choisie).
   const tarif = tarifDe(formule, variante);
-  const opts = OPTIONS.filter((o) => optionIds.includes(o.id));
-  const lines = [{ label: formule.name, amountCents: tarif.priceCents }, ...opts.map((o) => ({ label: o.name, amountCents: o.priceCents }))];
+  const fois = (label: string, n: number) => (n > 1 ? `${label} × ${n}` : label);
+  const opts = OPTIONS.map((o) => ({ o, n: optionIds.filter((id) => id === o.id).length })).filter((x) => x.n > 0);
+  const lines = [
+    { label: fois(formule.name, quantite), amountCents: tarif.priceCents * quantite },
+    ...opts.map(({ o, n }) => ({ label: fois(o.name, n), amountCents: o.priceCents * n })),
+  ];
   let travelFeeCents = 0;
   let inZone = true;
   if (address) {
@@ -130,7 +138,7 @@ export async function getQuote(selection: Selection, address?: Address): Promise
   return {
     lines, totalCents, travelFeeCents, inZone,
     depositCents: Math.ceil((totalCents * DEMO_RULES.depositPercent) / 100),
-    durationMin: tarif.durationMin + opts.reduce((s, o) => s + o.durationMin, 0),
+    durationMin: tarif.durationMin * quantite + opts.reduce((s, { o, n }) => s + o.durationMin * n, 0),
   };
 }
 
@@ -178,6 +186,7 @@ export async function reserve(selection: Selection, start: string, address: Addr
       prestationId: selection.formule.id,
       variante: selection.variante,
       optionIds: selection.optionIds,
+      quantite: selection.quantite ?? 1,
       metierData: selection.metierData,
       start,
       address,

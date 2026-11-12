@@ -115,6 +115,7 @@
 - Site : produits proposés juste avant le paiement (« À ajouter à votre commande ? », quantités dans la limite du stock), payés avec l'acompte ; onglet « Produits » dans l'espace pro (prix, stock, photo, retrait) ; produits à apporter dans le planning et dans « Mon espace ».
 - Interrupteur clair / nuit redessiné (soleil, lune étoilée) et changement de thème en rideau : vers la nuit de gauche à droite, vers le clair de droite à gauche.
 - Kit et API : plusieurs unités par réservation (`quantite`, ex. véhicules) : même prestation pour toutes, prix et durée multipliés, options choisies par unité, déplacement compté une fois ; migration `reservation.quantity`.
+- Réservation : nombre de véhicules (− / +, 1 par défaut), même formule pour tous, options par véhicule, prix et durée recalculés ; formules en liste compacte sans description ; colonne plus étroite ; véhicules et options affichés dans le planning du pro.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

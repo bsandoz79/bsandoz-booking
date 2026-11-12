@@ -12,7 +12,7 @@
 .quantite { display: flex; align-items: center; border: 1.5px solid var(--bs-color-border); border-radius: var(--bs-radius-pill); }
 .quantite button { width: 44px; height: 44px; border: 0; background: none; color: var(--bs-color-text); font: inherit; font-size: 1.2rem; cursor: pointer; }
 .quantite button:disabled { opacity: .35; cursor: not-allowed; }
-.quantite output { min-width: 1.5rem; text-align: center; font-weight: 700; }
+.quantite .nombre { min-width: 1.5rem; text-align: center; font-weight: 700; }
 .total { font-size: .95rem; }
 @media (max-width: 420px) {
   .produit { grid-template-columns: 48px 1fr; }

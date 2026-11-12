@@ -39,7 +39,7 @@ describe('client API', () => {
     const [url, init] = appel();
     expect(url).toBe('https://api.exemple.test/api/v1/booking/quote');
     expect(init.method).toBe('POST');
-    expect(JSON.parse(String(init.body))).toEqual({ prestationId: 'p1', variante: 'suv', optionIds: ['o1'], metierData: { category: 'auto', vehicleType: 'suv' }, lat: 49.89, lng: 2.29 });
+    expect(JSON.parse(String(init.body))).toEqual({ prestationId: 'p1', variante: 'suv', optionIds: ['o1'], metierData: { category: 'auto', vehicleType: 'suv' }, lat: 49.89, lng: 2.29, quantite: 1 });
   });
 
   it('transmet la prestation pour les jours et les créneaux (durée incertaine)', async () => {
@@ -60,7 +60,7 @@ describe('client API', () => {
     expect(resultat.paymentUrl).toBe('https://checkout.stripe.test/s');
     expect(JSON.parse(String(appel()[1].body))).toEqual({
       prestationId: 'p1', variante: 'suv', optionIds: ['o1'], metierData: { category: 'auto', vehicleType: 'suv' },
-      start: '2026-11-13T07:30:00+00:00', address: adresse, ...contact, acceptedTerms: true, produits: [],
+      start: '2026-11-13T07:30:00+00:00', address: adresse, ...contact, acceptedTerms: true, produits: [], quantite: 1,
     });
   });
 
