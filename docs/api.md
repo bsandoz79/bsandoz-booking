@@ -81,7 +81,8 @@ Mot de passe : 10 caractères minimum, au moins une lettre et un chiffre (sinon 
 ## Gérer mon rendez-vous (`/booking/manage/{token}`)
 `manageToken` est renvoyé par `POST /booking/reservations` (et sera mis dans les mails). Valable jusqu'à la fin du rendez-vous.
 - `GET` → `{"id", "status", "prestationId", "optionIds", "start", "end", "address", "lat", "lng", "totalCents", "depositCents", "remiseFideliteCents", "produits", "produitsCents", "freeCancelUntil"}` (`lat` / `lng` : pour chercher un nouveau créneau avec `/booking/slots`)
-- `PATCH` `{"start"}` → déplace vers un créneau libre (réservation confirmée, au moins 48 h avant) et renvoie la réservation.
+- `PATCH` `{"start"}` → déplace vers un créneau libre (réservation confirmée, au moins 48 h avant ; ou pas encore payée, sans délai) et renvoie la réservation.
+- `POST …/payment` → `{"paymentUrl"}` : acompte non réglé, payé plus tard. Blocage dépassé : créneau revérifié et de nouveau bloqué (produits et remise de fidélité repris) ; créneau repris entre-temps : 409, choisir un autre créneau avec `PATCH` puis payer.
 - `DELETE` → annule et renvoie `{"refundable": bool}` (acompte remboursable si annulation gratuite).
 Lien inconnu ou expiré : 404.
 
@@ -97,7 +98,7 @@ Le jeton d'accès s'envoie en `Authorization: Bearer …`. Plusieurs appareils p
 ## Espace client (`/me`, rôle client)
 - `GET /me` → `{"id", "email", "firstname", "lastname", "phone", "roles"}`
 - `GET /me/reservations` → mes réservations (de la plus récente à la plus ancienne), au même format que `GET /booking/manage/{token}`
-- `PATCH /me/reservations/{id}` `{"start"}` → 204 (déplacement, mêmes règles que le lien de gestion) ; `DELETE /me/reservations/{id}` → `{"refundable"}`
+- `PATCH /me/reservations/{id}` `{"start"}` → 204 (déplacement, mêmes règles que le lien de gestion) ; `DELETE /me/reservations/{id}` → `{"refundable"}` (réservation non payée ou expirée : annulable, rien à rembourser) ; `POST /me/reservations/{id}/payment` → `{"paymentUrl"}` (payer plus tard, mêmes règles que le lien de gestion, 409 si le créneau a été repris)
 - `GET /me/export` → toutes mes données en JSON (fichier `mes-donnees.json`)
 - `DELETE /me` → 204 : compte anonymisé, sessions fermées, accès coupé immédiatement ; refusé (422) s'il reste un rendez-vous à venir.
 Réservation d'un autre client : 404. Sans jeton : 401.

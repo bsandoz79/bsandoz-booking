@@ -60,6 +60,8 @@ final class ParcoursPaiementTest extends TestCase
     private ConfirmerPaiement $confirmer;
     private AnnulerReservation $annuler;
     private RembourserAcompte $rembourser;
+    private \Bsandoz\Core\Payment\Application\ReprendrePaiement $reprendre;
+    private \Bsandoz\Core\Booking\Application\DeplacerReservation $deplacer;
     private \Bsandoz\Core\Tests\Double\InMemoryProduitRepository $produits;
 
     protected function setUp(): void
@@ -96,6 +98,8 @@ final class ParcoursPaiementTest extends TestCase
         $this->session = new CreerSessionAcompte($this->reservations, $users, $prestations, $this->gateway, $this->payments, new SequenceIdGenerator('pay'), $this->clock, 'https://site.test/confirmation?reservation={reservationId}', 'https://site.test/reserver?annule={reservationId}');
         $this->confirmer = new ConfirmerPaiement($this->gateway, $this->payments, $this->reservations, $occupations, $this->tokens, $notifications, $this->clock, stock: $stock);
         $this->rembourser = new RembourserAcompte($this->payments, $this->gateway);
+        $this->reprendre = new \Bsandoz\Core\Payment\Application\ReprendrePaiement($this->reservations, $creneaux, $devis, $settings, $this->session, $this->clock, stock: $stock);
+        $this->deplacer = new \Bsandoz\Core\Booking\Application\DeplacerReservation($this->reservations, $creneaux, $devis, $settings, $notifications, $this->clock);
         $this->annuler = new AnnulerReservation($this->reservations, $settings, $this->rembourser, $notifications, $this->clock, stock: $stock);
     }
 
@@ -273,5 +277,61 @@ final class ParcoursPaiementTest extends TestCase
 
         self::assertSame(4200, $this->gateway->refunds[0]['amount'] ?? null, 'acompte et produits remboursés');
         self::assertSame(5, $this->produits->get('micro')->stock(), 'produits remis en stock');
+    }
+
+    public function testPayerPlusTardDepuisLEspaceClient(): void
+    {
+        $id = $this->reserver(produits: ['micro' => 1]);
+        $this->clock->modify('+20 minutes'); // client parti sans payer
+        $r = $this->reservations->get($id);
+        $r->expire();
+        $this->reservations->save($r);
+        $this->produits->get('micro')->remettreEnStock(1); // comme à l'expiration
+
+        $url = ($this->reprendre)($id, 'u-1');
+
+        self::assertSame('https://paiement.test/cs_test_1', $url);
+        self::assertSame(ReservationStatus::PendingPayment, $this->reservations->get($id)->status());
+        self::assertSame('2026-11-01T10:30:00+00:00', $this->reservations->get($id)->holdExpiresAt()?->format(DATE_ATOM), 'de nouveau bloqué 10 min');
+        self::assertSame(3600, $this->gateway->checkouts[0]['amount'], 'acompte + produit');
+        self::assertSame(4, $this->produits->get('micro')->stock(), 'produit repris');
+
+        $this->payer('cs_test_1');
+        self::assertSame(ReservationStatus::Confirmed, $this->reservations->get($id)->status());
+    }
+
+    public function testCreneauReprisIlFautEnChoisirUnAutrePuisPayer(): void
+    {
+        $id = $this->reserver();
+        $this->clock->modify('+20 minutes');
+        $autre = $this->reserver('autre@example.test');
+        ($this->session)($autre);
+        $this->payer('cs_test_1', 'evt_autre');
+
+        try {
+            ($this->reprendre)($id, 'u-1');
+            self::fail('créneau repris attendu');
+        } catch (\Bsandoz\Core\Shared\Domain\Conflit $e) {
+            self::assertStringContainsString('plus disponible', $e->getMessage());
+        }
+
+        ($this->deplacer)($id, new \DateTimeImmutable('2026-11-10 10:00', new \DateTimeZone('Europe/Paris')), 'u-1');
+        ($this->reprendre)($id, 'u-1');
+        self::assertSame(ReservationStatus::PendingPayment, $this->reservations->get($id)->status());
+        self::assertSame('2026-11-10T09:00:00+00:00', $this->reservations->get($id)->period()->start->format(DATE_ATOM));
+    }
+
+    public function testUneReservationNonPayeePeutEtreAnnulee(): void
+    {
+        $id = $this->reserver();
+        $this->clock->modify('+20 minutes');
+        $r = $this->reservations->get($id);
+        $r->expire();
+        $this->reservations->save($r);
+
+        self::assertFalse(($this->annuler)($id, 'u-1'), 'rien à rembourser');
+        self::assertSame(ReservationStatus::Cancelled, $this->reservations->get($id)->status());
+        $this->expectException(\Bsandoz\Core\Shared\Domain\DomainError::class);
+        ($this->reprendre)($id, 'u-1');
     }
 }

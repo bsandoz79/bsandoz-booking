@@ -270,6 +270,7 @@ return static function (ContainerConfigurator $container): void {
         ->arg('$successUrl', param('bsandoz_core.payment.success_url'))
         ->arg('$cancelUrl', param('bsandoz_core.payment.cancel_url'));
     $services->set(ConfirmerPaiement::class);
+    $services->set(\Bsandoz\Core\Payment\Application\ReprendrePaiement::class);
     $services->set(RembourserAcompte::class);
     $services->set(PaymentController::class)->public()->tag('controller.service_arguments');
 

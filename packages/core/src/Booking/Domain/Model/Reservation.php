@@ -121,7 +121,7 @@ class Reservation
      */
     public function cancel(\DateTimeImmutable $now, BookingRules $rules): bool
     {
-        if (!in_array($this->status, [ReservationStatus::PendingPayment, ReservationStatus::Confirmed], true)) {
+        if (!in_array($this->status, [ReservationStatus::PendingPayment, ReservationStatus::Expired, ReservationStatus::Confirmed], true)) {
             throw new DomainError('Cette réservation ne peut plus être annulée.');
         }
         if ($this->period->start <= $now) {
@@ -205,6 +205,46 @@ class Reservation
     }
 
     public function holdExpiresAt(): ?\DateTimeImmutable { return $this->holdExpiresAt; }
+
+    /** Acompte jamais payé : en attente de paiement (bloquée ou non) ou expirée. */
+    public function estImpayee(): bool
+    {
+        return in_array($this->status, [ReservationStatus::PendingPayment, ReservationStatus::Expired], true);
+    }
+
+    /**
+     * Paiement repris plus tard (espace client) : le créneau est de nouveau bloqué le temps du paiement.
+     * La disponibilité du créneau est vérifiée par le cas d'usage.
+     *
+     * @throws DomainError réservation déjà payée ou annulée, ou rendez-vous passé
+     */
+    public function rebloquer(\DateTimeImmutable $now, int $holdMinutes): void
+    {
+        if (!$this->estImpayee()) {
+            throw new DomainError('Cette réservation est déjà réglée ou annulée.');
+        }
+        if ($this->period->start <= $now) {
+            throw new DomainError('Ce rendez-vous est passé : merci de refaire une réservation.');
+        }
+        $this->status = ReservationStatus::PendingPayment;
+        $this->holdExpiresAt = $now->modify(sprintf('+%d minutes', $holdMinutes));
+    }
+
+    /**
+     * Autre créneau pour une réservation pas encore payée (aucun délai d'annulation : rien n'a été versé).
+     *
+     * @throws DomainError réservation payée ou annulée, ou nouvelle date trop proche
+     */
+    public function changerCreneauImpaye(TimeRange $newPeriod, \DateTimeImmutable $now, BookingRules $rules): void
+    {
+        if (!$this->estImpayee()) {
+            throw new DomainError('Seule une réservation en attente de paiement peut changer de créneau ainsi.');
+        }
+        if ($newPeriod->start < $now->modify(sprintf('+%d hours', $rules->minNoticeHours))) {
+            throw new DomainError('La nouvelle date est trop proche.');
+        }
+        $this->period = $newPeriod;
+    }
 
     private function isBeforeFreeCancelDeadline(\DateTimeImmutable $now, BookingRules $rules): bool
     {

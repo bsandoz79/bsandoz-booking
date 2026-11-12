@@ -116,6 +116,7 @@
 - Interrupteur clair / nuit redessiné (soleil, lune étoilée) et changement de thème en rideau : vers la nuit de gauche à droite, vers le clair de droite à gauche.
 - Kit et API : plusieurs unités par réservation (`quantite`, ex. véhicules) : même prestation pour toutes, prix et durée multipliés, options choisies par unité, déplacement compté une fois ; migration `reservation.quantity`.
 - Réservation : nombre de véhicules (− / +, 1 par défaut), même formule pour tous, options par véhicule, prix et durée recalculés ; formules en liste compacte sans description ; colonne plus étroite ; véhicules et options affichés dans le planning du pro.
+- Kit et API : payer l'acompte plus tard (`POST /me/reservations/{id}/payment`, `POST /booking/manage/{token}/payment`) : créneau revérifié et rebloqué, 409 s'il a été repris ; une réservation non payée peut changer de créneau ou être annulée.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
@@ -131,3 +132,4 @@
 - Un serveur de mail en panne ou mal configuré ne provoque plus d'erreur 500 à la réservation : l'échec est journalisé. Documentation : hôte SMTP o2switch = nom du serveur (certificat valide).
 - Accueil et pages des communes : les liens « Nettoyage voiture <commune> » (liste de mots-clés) deviennent une phrase avec le nom des communes en lien.
 - Style : plus d'encadrés à barre de couleur sur le côté (résultat de la carte de zone, message de la carte de fidélité, options d'une formule, produits) ; résultat de la carte avec le prix du déplacement en grand.
+- Déplacement d'un rendez-vous de plusieurs véhicules : durée recalculée pour tous les véhicules.
