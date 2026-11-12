@@ -27,7 +27,7 @@ export interface ContenuSite {
 export const A_COMPLETER = '[à compléter]';
 
 export const CONTENU_PAR_DEFAUT: ContenuSite = {
-  coordonnees: { telephone: A_COMPLETER, email: A_COMPLETER, adresse: 'Abbeville', horaires: 'du lundi au samedi de 8 h à 19 h, le dimanche de 10 h à 18 h' },
+  coordonnees: { telephone: '01 02 03 04 05', email: A_COMPLETER, adresse: 'Abbeville', horaires: 'du lundi au samedi de 8 h à 19 h, le dimanche de 10 h à 18 h' },
   accueil: {
     surtitre: 'Votre voiture comme neuve, sans bouger de chez vous',
     titre: 'Nettoyage de voiture à domicile à Abbeville',

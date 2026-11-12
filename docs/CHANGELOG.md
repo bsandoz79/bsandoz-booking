@@ -125,6 +125,7 @@
 - Kit : bloc `Dialog` (fenêtre modale accessible : focus gardé, Échap, fond cliquable, monte du bas sur téléphone).
 - Réservation : les produits ne sont plus dans le formulaire ; au clic sur « Payer », une fenêtre les propose (photo, prix, quantité) avec « Non merci » ou « Ajouter et payer ».
 - Adresse au-delà de la zone (réservation ou carte de l'accueil) : bouton « Demander un devis » vers une nouvelle page `/devis` avec l'adresse pré-remplie ; formulaire de devis partagé avec la page Professionnels.
+- Formulaires de devis : précision du type « Autre », nombre de véhicules en liste (1 à 10, plus de 10), fréquence facultative avec « Une seule fois », prestations en boutons à toucher ; numéro d'exemple 01 02 03 04 05 partout (coordonnées par défaut et exemples de saisie).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

@@ -15,7 +15,11 @@ describe('Page Professionnels', () => {
     await userEvent.type(screen.getByLabelText(/^Nom et prénom/), 'Alex Martin');
     await userEvent.type(screen.getByLabelText(/^E-mail/), 'alex@transport.test');
     await userEvent.selectOptions(screen.getByLabelText('Type de véhicules'), 'Utilitaires');
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Extérieur' }));
+    await userEvent.selectOptions(screen.getByLabelText('Type de véhicules'), 'Autre');
+    await userEvent.type(screen.getByLabelText('Précisez le type de véhicules'), 'Camping-cars');
+    await userEvent.selectOptions(screen.getByLabelText('Nombre de véhicules'), '3');
+    await userEvent.click(screen.getByRole('button', { name: /Extérieur/ }));
+    expect(screen.getByRole('button', { name: /Extérieur/ })).toHaveAttribute('aria-pressed', 'true');
     await userEvent.type(screen.getByLabelText(/^Votre besoin/), '6 utilitaires une fois par mois.');
     await userEvent.click(envoyer);
 
@@ -32,7 +36,7 @@ describe('Page Devis', () => {
 
     await userEvent.type(screen.getByLabelText(/^Nom et prénom/), 'Camille Martin');
     await userEvent.type(screen.getByLabelText(/^E-mail/), 'camille@example.org');
-    await userEvent.selectOptions(screen.getByLabelText('Prestation souhaitée'), 'Nettoyage intérieur');
+    await userEvent.click(screen.getByRole('button', { name: /Nettoyage intérieur/ }));
     await userEvent.type(screen.getByLabelText(/^Votre besoin/), 'Intérieur complet.');
     await userEvent.click(screen.getByRole('button', { name: 'Envoyer ma demande' }));
     expect(await screen.findByRole('status')).toHaveTextContent('Merci, votre demande est envoyée.');

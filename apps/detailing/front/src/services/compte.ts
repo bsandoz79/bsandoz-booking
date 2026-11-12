@@ -93,7 +93,7 @@ export async function authHttp<T>(path: string, init: RequestInit = {}): Promise
 }
 
 export async function monCompte(): Promise<Compte> {
-  if (isDemo()) return { id: 'demo', email: 'camille@example.org', firstname: 'Camille', lastname: 'Martin', phone: '06 00 00 00 00', roles: ['ROLE_CLIENT'] };
+  if (isDemo()) return { id: 'demo', email: 'camille@example.org', firstname: 'Camille', lastname: 'Martin', phone: '01 02 03 04 05', roles: ['ROLE_CLIENT'] };
   return authHttp('/me');
 }
 

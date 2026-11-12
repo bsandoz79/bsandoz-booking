@@ -21,7 +21,7 @@ describe('Mon site (espace pro)', () => {
 
     const telephone = screen.getByLabelText('Téléphone');
     await userEvent.clear(telephone);
-    await userEvent.type(telephone, '06 12 34 56 78');
+    await userEvent.type(telephone, '03 22 11 22 33');
 
     await userEvent.click(screen.getByRole('button', { name: 'Ajouter l’avis' }));
     await userEvent.type(screen.getByLabelText(/Avis 1 : prénom/), 'Camille M.');
@@ -32,7 +32,7 @@ describe('Mon site (espace pro)', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('Site mis à jour');
 
     const pied = screen.getByRole('contentinfo');
-    expect(within(pied).getByRole('link', { name: '06 12 34 56 78' })).toHaveAttribute('href', 'tel:0612345678');
+    expect(within(pied).getByRole('link', { name: '03 22 11 22 33' })).toHaveAttribute('href', 'tel:0322112233');
 
     await userEvent.click(screen.getByRole('link', { name: 'Perfect Clean' }));
     const avis = await screen.findByRole('region', { name: 'Avis clients' });
