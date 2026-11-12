@@ -1,0 +1,23 @@
+.wrapper { width: 100%; overflow-x: auto; font-family: var(--bs-font); }
+.table { width: 100%; border-collapse: collapse; color: var(--bs-color-text); }
+.caption { text-align: start; font-weight: 700; padding-bottom: var(--bs-space-2); }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+th, td { padding: var(--bs-space-2) var(--bs-space-3); text-align: start; border-bottom: 1px solid var(--bs-color-border); }
+th { font-size: 0.875rem; color: var(--bs-color-text-muted); font-weight: 600; }
+.end { text-align: end; }
+.sort { display: inline-flex; align-items: center; gap: var(--bs-space-1); min-height: 44px; padding: 0; border: none; background: none; font: inherit; color: inherit; cursor: pointer; }
+.sort:focus-visible, .rowButton:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
+.arrow { font-size: 0.75rem; }
+.clickable:hover { background: var(--bs-color-primary-soft); }
+.rowButton { min-height: 44px; padding: 0; border: none; background: none; font: inherit; font-weight: 600; color: var(--bs-color-primary-dark); text-align: start; cursor: pointer; text-decoration: underline; }
+.empty { text-align: center; color: var(--bs-color-text-muted); padding: var(--bs-space-5); }
+
+/* Mobile : une carte par ligne, l'intitulé de colonne devant chaque valeur. */
+@media (max-width: 640px) {
+  .table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .table tr { display: block; padding: var(--bs-space-2) 0; border-bottom: 1px solid var(--bs-color-border); }
+  .table td { display: flex; justify-content: space-between; gap: var(--bs-space-3); border: none; text-align: end; }
+  .table td::before { content: attr(data-label); font-weight: 600; color: var(--bs-color-text-muted); text-align: start; }
+  .table td.empty { display: block; text-align: center; }
+  .table td.empty::before { content: none; }
+}
