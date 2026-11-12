@@ -7,6 +7,7 @@ import type { Address, Quote, Selection, Slot } from '../../services/api';
 import { getAvailableDays, getCatalog, getQuote, getSlots, reserve, searchAddress } from '../../services/api';
 import { PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
+import { defilerVers } from '../../app/defilement';
 import styles from './Reserver.module.css';
 
 const currentMonth = () => new Date().toISOString().slice(0, 7);
@@ -74,6 +75,10 @@ export function Reserver() {
     if (day && address && dureeMin) getSlots(day, dureeMin, address, formule).then(setSlots).catch((e: Error) => setError(e.message));
   }, [day, address, dureeMin, formule]);
 
+  // Parcours guidé : chaque choix ouvre la partie suivante et y amène le visiteur (ou passe à l'étape suivante).
+  const allerA = (id: string) => { defilerVers(id); };
+  const etapeSuivante = (i: number) => { setError(''); setStep(i); };
+
   /** Un changement de prestation peut changer la durée : l'heure choisie est à revoir. */
   const changerPrestation = (maj: () => void) => { maj(); setStart(undefined); };
 
@@ -125,10 +130,10 @@ export function Reserver() {
       <div className={styles.layout}>
         <div className={styles.etapes}>
           <StepCard number={1} title={ETAPES[0]} status={statut(0)} summary={resumePrestation} onEdit={() => setStep(0)}>
-            <ChoiceChips label="Prestation" value={category} onChange={(v) => changerPrestation(() => { setCategory(v as Category); setFormuleId(undefined); setOptionIds([]); })}
+            <ChoiceChips label="Prestation" value={category} onChange={(v) => { changerPrestation(() => { setCategory(v as Category); setFormuleId(undefined); setOptionIds([]); }); allerA('resa-formules'); }}
               choices={CATEGORIES.map((c) => ({ value: c.value, label: c.label }))} />
             {category && (
-              <div className={styles.liste}>
+              <div id="resa-formules" className={`${styles.liste} ${styles.ancre}`}>
                 <h3 className={styles.sousTitre}>La formule</h3>
                 {formulesVisibles.map((f) => {
                   const tarif = tarifDe(f, variante);
@@ -136,9 +141,13 @@ export function Reserver() {
                     <div key={f.id} className={styles.formule}>
                       <OptionCard title={f.name} description={f.description} badge={f.badge}
                         priceLabel={formatEuros(tarif.priceCents)}
-                        selected={f.id === formuleId} onToggle={() => changerPrestation(() => { setFormuleId(f.id); setOptionIds([]); })} />
+                        selected={f.id === formuleId} onToggle={() => {
+                          changerPrestation(() => { setFormuleId(f.id); setOptionIds([]); });
+                          // Des options à proposer : on les montre ; sinon, direction le créneau.
+                          if (options.some((o) => f.optionIds.includes(o.id))) allerA('resa-options'); else etapeSuivante(1);
+                        }} />
                       {f.id === formuleId && optionsVisibles.length > 0 && (
-                        <div className={styles.options}>
+                        <div id="resa-options" className={`${styles.options} ${styles.ancre}`}>
                           <h4 className={styles.optionsTitre}>En plus, si besoin</h4>
                           {optionsVisibles.map((o) => (
                             <OptionCard key={o.id} title={o.name} description={o.description} priceLabel={`+ ${formatEuros(o.priceCents)}`}
@@ -156,17 +165,22 @@ export function Reserver() {
 
           <StepCard number={2} title={ETAPES[1]} status={statut(1)} summary={resumeCreneau} onEdit={() => setStep(1)}>
             <AddressInput label="Adresse de l'intervention" placeholder="N°, rue, ville" search={searchAddress}
-              value={address} onSelect={(a: Address) => { setAddress(a); setDay(undefined); setStart(undefined); }}
+              value={address} onSelect={(a: Address) => { setAddress(a); setDay(undefined); setStart(undefined); allerA('resa-calendrier'); }}
               hint="Choisissez votre adresse dans la liste pour calculer le déplacement." />
             {address && quote && (quote.inZone
               ? <p className={styles.ok}>✓ Je me déplace chez vous{quote.travelFeeCents > 0 ? ` (frais de déplacement : ${formatEuros(quote.travelFeeCents)})` : ', déplacement offert'}.</p>
               : <p className={styles.error}>Cette adresse est hors de ma zone d'intervention. Contactez-moi pour en parler.</p>)}
             {dansZone && quote && (
-              <div className={styles.dateTime}>
+              <div id="resa-calendrier" className={`${styles.dateTime} ${styles.ancre}`}>
                 <Calendar month={month} minMonth={currentMonth()} availableDays={days} selected={day}
-                  onSelect={(d) => { setDay(d); setStart(undefined); }} onMonthChange={setMonth} />
+                  onSelect={(d) => { setDay(d); setStart(undefined); allerA('resa-heures'); }} onMonthChange={setMonth} />
                 {formule?.occupePlage && <p className={styles.hint}>Cette prestation occupe la demi-journée : seules les arrivées en début de matinée ou d'après-midi sont proposées.</p>}
-                {day && <SlotPicker title="Heure d'arrivée" slots={slots} selected={start} onSelect={setStart} emptyMessage="Plus aucun créneau ce jour-là : choisissez un autre jour." />}
+                {day && (
+                  <div id="resa-heures" className={styles.ancre}>
+                    <SlotPicker title="Heure d'arrivée" slots={slots} selected={start} emptyMessage="Plus aucun créneau ce jour-là : choisissez un autre jour."
+                      onSelect={(s) => { setStart(s); etapeSuivante(2); }} />
+                  </div>
+                )}
               </div>
             )}
           </StepCard>

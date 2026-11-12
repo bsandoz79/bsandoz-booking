@@ -11,6 +11,8 @@
 .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
 .field { display: flex; flex-direction: column; gap: 0.35rem; font-weight: 600; font-size: 0.9rem; }
 .field input, .field textarea { font: inherit; font-weight: 400; font-size: 1rem; padding: 0.75rem 0.9rem; border-radius: var(--bs-radius-sm); border: 1px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); }
+/* Parties atteintes automatiquement : pas cachées sous l'en-tête collé en haut. */
+.ancre { scroll-margin-top: 5rem; }
 .dateTime { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
 .hint { font-size: 0.85rem; color: var(--bs-color-text-muted); }
 .ok { color: var(--bs-color-success); font-weight: 600; }
