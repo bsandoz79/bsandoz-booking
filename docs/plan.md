@@ -23,7 +23,7 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/core-admin` : CRUD prestations, options, tarifs, horaires, indisponibilités, règles, zone, paramètres ; tableau de bord
 
 ## 2. Kit front
-- [x] `feature/ui-calendar` : Calendar et SlotPicker écrits et testés (à compléter : navigation clavier par flèches)
+- [x] `feature/ui-calendar` : Calendar et SlotPicker écrits et testés (navigation clavier ajoutée dans `feature/ui-blocks`)
 - [ ] `feature/ui-blocks` : OptionCard, ChoiceChips, PriceSummary, Stepper (déjà écrits) ; ajouter Button, Field, AddressInput (autocomplétion)
 - [ ] `feature/ui-admin-blocks` : PlanningView (jour/semaine/mois), DataTable, Toggle
 

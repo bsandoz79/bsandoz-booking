@@ -29,3 +29,9 @@ export function formatDay(date: string, locale = 'fr-FR'): string {
   const [y, m, d] = date.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
+
+/** Ajoute (ou retire) des jours à une date YYYY-MM-DD. */
+export function addDays(date: string, delta: number): string {
+  const [y, m, d] = date.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d + delta)).toISOString().slice(0, 10);
+}
