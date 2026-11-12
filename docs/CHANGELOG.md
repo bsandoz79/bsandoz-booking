@@ -108,6 +108,7 @@
 - Réservation en 3 étapes repliables (prestation, où et quand, coordonnées) avec total et bouton collés en bas de l'écran ; le véhicule n'est plus demandé.
 - Zone d'intervention : cartes des tranches et cercles de la carte en vert, jaune, orange et rouge, traits en tirets.
 - Menu : lien « Fidélité » vers la carte de fidélité de l'accueil, qui affiche la carte tamponnée du client connecté (sinon un exemple) ; défilement jusqu'à la section visée ; sur mobile, bouton clair / nuit à côté du logo.
+- En-tête sur une seule ligne sur téléphone : logo réduit, bouton clair / nuit, « Réserver » et menu déroulant pour les liens.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
