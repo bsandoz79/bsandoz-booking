@@ -100,3 +100,4 @@
 - API detailing : CORS avec `allow_credentials` (le front envoie le cookie de renouvellement de session).
 - Site detailing : la redirection vers HTTPS du `.htaccess` n'était jamais atteinte (placée après la réécriture des routes) ; en-têtes de sécurité et cache long des fichiers du build ajoutés.
 - Kit back : le cache de production ne se construisait pas (« Cannot generate lazy ghost » : Doctrine ne peut pas créer de proxy pour une entité `final`) ; `final` retiré de `OpeningHour`, `Unavailability`, `Category`, `Option`, `AbonnementPush`. La CI construit maintenant le cache de production de l'API.
+- Déploiement : sans secrets FTP, le workflow échouait (« Input required and not supplied: server ») ; il vérifie maintenant la configuration et ignore l'envoi avec un avertissement listant les secrets manquants.

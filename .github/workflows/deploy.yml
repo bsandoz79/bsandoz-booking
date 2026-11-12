@@ -28,21 +28,46 @@ jobs:
     runs-on: ubuntu-latest
     environment: demo
     steps:
+      - name: Vérifier la configuration FTP
+        id: config
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_SERVER_DIR_FRONT }}
+        run: |
+          manquants=""
+          [ -n "$FTP_SERVER" ] || manquants="$manquants FTP_SERVER"
+          [ -n "$FTP_USERNAME" ] || manquants="$manquants FTP_USERNAME"
+          [ -n "$FTP_PASSWORD" ] || manquants="$manquants FTP_PASSWORD"
+          [ -n "$FTP_DIR" ] || manquants="$manquants FTP_SERVER_DIR_FRONT"
+          if [ -n "$manquants" ]; then
+            echo "::warning title=Déploiement non configuré::Secrets manquants dans l'environnement GitHub « demo » :$manquants. Envoi ignoré (voir docs/deploiement.md § 3)."
+            echo "pret=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "pret=true" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
+        if: steps.config.outputs.pret == 'true'
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-node@v4
+        if: steps.config.outputs.pret == 'true'
         with: { node-version: 22 }
       - run: npm install
+        if: steps.config.outputs.pret == 'true'
         working-directory: packages/ui
       - run: npm install
+        if: steps.config.outputs.pret == 'true'
         working-directory: apps/detailing/front
       - name: Build (adresse de l'API en variable GitHub VITE_API_URL)
+        if: steps.config.outputs.pret == 'true'
         run: npm run build
         working-directory: apps/detailing/front
         env:
           VITE_API_URL: ${{ vars.VITE_API_URL }}
       - name: Envoi FTPS
+        if: steps.config.outputs.pret == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -60,17 +85,40 @@ jobs:
     runs-on: ubuntu-latest
     environment: demo
     steps:
+      - name: Vérifier la configuration FTP
+        id: config
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_SERVER_DIR_API }}
+        run: |
+          manquants=""
+          [ -n "$FTP_SERVER" ] || manquants="$manquants FTP_SERVER"
+          [ -n "$FTP_USERNAME" ] || manquants="$manquants FTP_USERNAME"
+          [ -n "$FTP_PASSWORD" ] || manquants="$manquants FTP_PASSWORD"
+          [ -n "$FTP_DIR" ] || manquants="$manquants FTP_SERVER_DIR_API"
+          if [ -n "$manquants" ]; then
+            echo "::warning title=Déploiement non configuré::Secrets manquants dans l'environnement GitHub « demo » :$manquants. Envoi ignoré (voir docs/deploiement.md § 3)."
+            echo "pret=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "pret=true" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
+        if: steps.config.outputs.pret == 'true'
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: shivammathur/setup-php@v2
+        if: steps.config.outputs.pret == 'true'
         with: { php-version: '8.3', tools: composer }
       - name: Dépendances de production (kit copié dans vendor, pas de lien symbolique)
+        if: steps.config.outputs.pret == 'true'
         working-directory: apps/detailing/api
         run: composer install --no-dev --optimize-autoloader --classmap-authoritative --no-interaction --no-scripts --prefer-dist
         env:
           COMPOSER_MIRROR_PATH_REPOS: '1'
       - name: Envoi FTPS (sans var/, tests ni secrets)
+        if: steps.config.outputs.pret == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -91,5 +139,6 @@ jobs:
             phpstan.neon.dist
             .phpunit.cache/**
       - name: Rappel
+        if: steps.config.outputs.pret == 'true'
         run: |
           echo "Code envoyé. Sur le serveur (terminal cPanel ou SSH) : sh deploy/apres-envoi.sh — vide le cache et applique les migrations."
