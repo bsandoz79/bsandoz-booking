@@ -1,0 +1,3 @@
+# Fichiers exécutés ou lus sur le serveur Linux (o2switch) : fins de ligne Unix.
+*.sh text eol=lf
+.htaccess text eol=lf

@@ -28,6 +28,9 @@ jobs:
         with: { php-version: '8.3', tools: composer }
       - run: composer install --no-interaction --prefer-dist
       - run: php bin/console lint:container
+      - name: Cache de production (proxies Doctrine, comme sur le serveur)
+        run: php bin/console cache:warmup --env=prod --no-debug
+        env: { APP_SECRET: ci }
       - run: composer stan
       - run: composer test
 

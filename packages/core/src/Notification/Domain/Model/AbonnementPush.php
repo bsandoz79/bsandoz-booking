@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Bsandoz\Core\Notification\Domain\Model;
 
-/** Abonnement Web Push d'un appareil (navigateur ou application installée) du pro. */
-final class AbonnementPush
+/** Abonnement Web Push d'un appareil (navigateur ou application installée) du pro. Pas « final » : Doctrine génère un proxy (lazy ghost) pour chaque entité. */
+class AbonnementPush
 {
     public function __construct(
         public readonly string $id,
