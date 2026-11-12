@@ -21,7 +21,7 @@ use Bsandoz\Core\Shared\Domain\NotFound;
  * Rien n'est supprimé (les réservations passées y font référence) : on désactive.
  *
  * Prestation : {"name", "description", "basePriceCents", "baseDurationMin", "active", "categoryId", "position",
- *               "occupePlage", "tarifs": {"<variante>": {"priceCents", "durationMin"}}, "optionIds": []}
+ *               "occupePlage", "badge" (mise en avant, ex. « Le plus choisi »), "tarifs": {"<variante>": {"priceCents", "durationMin"}}, "optionIds": []}
  * Option     : {"name", "description", "priceCents", "durationMin", "active"}
  * Produit    : {"name", "description", "priceCents", "stock", "active", "position", "photo"} (vendu avec une réservation)
  */
@@ -138,6 +138,8 @@ final class GererCatalogue
             $tarifs[] = new Tarif((string) $variante, Money::cents(self::entier($tarif, 'priceCents')), self::entier($tarif, 'durationMin'));
         }
         $prestation->remplacerTarifs($tarifs);
+        $badge = $data['badge'] ?? null;
+        $prestation->changerBadge(is_string($badge) ? $badge : null);
 
         $optionIds = $data['optionIds'] ?? [];
         if (!is_array($optionIds) || array_filter($optionIds, static fn (mixed $o): bool => !is_string($o)) !== []) {
@@ -200,7 +202,7 @@ final class GererCatalogue
             'id' => $p->id(), 'name' => $p->name(), 'description' => $p->description(),
             'basePriceCents' => $p->basePrice()->cents, 'baseDurationMin' => $p->baseDurationMin(),
             'active' => $p->isActive(), 'categoryId' => $p->categoryId(), 'position' => $p->position(),
-            'occupePlage' => $p->occupePlage(), 'tarifs' => $tarifs, 'optionIds' => $p->optionIds(),
+            'occupePlage' => $p->occupePlage(), 'badge' => $p->badge(), 'tarifs' => $tarifs, 'optionIds' => $p->optionIds(),
         ];
     }
 

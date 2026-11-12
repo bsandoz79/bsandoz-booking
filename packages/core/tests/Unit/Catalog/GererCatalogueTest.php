@@ -48,6 +48,11 @@ final class GererCatalogueTest extends TestCase
         self::assertSame('c-2', $prestation['id']);
         self::assertSame('Formule complète', $prestation['name'], 'nom nettoyé');
         self::assertTrue($prestation['occupePlage']);
+        self::assertNull($prestation['badge']);
+
+        $avecBadge = $this->catalogue->enregistrerPrestation(['badge' => ' Le plus choisi '] + self::prestation(), 'c-2');
+        self::assertSame('Le plus choisi', $avecBadge['badge'], 'mise en avant, espaces retirés');
+        self::assertNull($this->catalogue->enregistrerPrestation(['badge' => ''] + self::prestation(), 'c-2')['badge'], 'vide : retirée');
         self::assertSame(['priceCents' => 13000, 'durationMin' => 150], $prestation['tarifs']['v-grand']);
         self::assertSame(['c-1'], $prestation['optionIds']);
         self::assertSame(13000, $this->prestations->get('c-2')->priceFor('v-grand')->cents, 'tarif utilisé par les devis');

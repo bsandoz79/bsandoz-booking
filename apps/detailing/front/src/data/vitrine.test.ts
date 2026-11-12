@@ -4,12 +4,13 @@ import { detailPrestation, heure, jourIso, semaine, tranches } from './vitrine';
 describe('mise en forme de l’accueil', () => {
   it('découpe une description en éléments compris et en durée', () => {
     const eclat = detailPrestation(FORMULES.find((f) => f.id === 'int-eclat')!.description);
-    expect(eclat.inclus).toEqual(['Aspiration complète', 'Surfaces nettoyées en profondeur', 'Vitres intérieures', 'Parfum d’ambiance']);
+    expect(eclat.inclus).toEqual(['Nettoyage approfondi des surfaces', 'Aspiration minutieuse de l’habitacle', 'Nettoyage des vitres intérieures', 'Parfum d’ambiance']);
     expect(eclat.duree).toBe('1 h à 1 h 30');
 
     const signature = detailPrestation(FORMULES.find((f) => f.id === 'int-signature')!.description);
     expect(signature.inclus[0]).toBe('Tout le niveau Éclat');
-    expect(signature.inclus[1]).toBe('Shampoing des sièges');
+    expect(signature.inclus[1]).toBe('Shampooing des tapis et moquettes');
+    expect(signature.inclus).toContain('Désodorisant voiture offert');
   });
 
   it('garde une phrase telle quelle quand elle ne se découpe pas en liste', () => {

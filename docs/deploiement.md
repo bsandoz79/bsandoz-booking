@@ -73,3 +73,6 @@ Push sur `main` → CI → déploiement automatique. Si l'API a changé : `sh de
 
 ## Nouveau client
 Copier `apps/detailing` en `apps/<client>`, ajouter ses deux jobs dans `deploy.yml` (avec son propre environnement GitHub et ses secrets), créer ses sous-domaines, sa base et son `.env.local` (nouvelles clés : chaque client a les siennes).
+
+## Mettre à jour le catalogue de démonstration déjà chargé
+`php bin/console detailing:demo:charger --mettre-a-jour` aligne les prestations de démonstration (retrouvées par leur nom) sur les données du code : prix, durées, descriptions, options proposées, mise en avant. Les options manquantes sont créées, les anciennes ne sont plus proposées ; catégorie, position, activation et tarifs par variante choisis dans l'espace pro sont conservés, les autres prestations ne sont pas touchées.

@@ -25,7 +25,7 @@ describe('Accueil', () => {
     const signature = within(panneau).getByRole('heading', { level: 3, name: 'Intérieur Signature' }).closest('article')!;
     expect(signature).toHaveTextContent('Le plus choisi');
     expect(signature).toHaveTextContent('69,00 €');
-    expect(within(signature).getByRole('list')).toHaveTextContent('Shampoing des sièges');
+    expect(within(signature).getByRole('list')).toHaveTextContent('Shampooing des tapis et moquettes');
     expect(within(signature).getByRole('link', { name: 'Choisir Intérieur Signature' })).toHaveAttribute('href', '/reserver?formule=int-signature');
     expect(within(panneau).getByRole('heading', { level: 3, name: 'Options' })).toBeInTheDocument();
 

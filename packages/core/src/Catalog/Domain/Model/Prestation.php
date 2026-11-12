@@ -30,6 +30,8 @@ class Prestation
         private ?string $categoryId = null,
         private int $position = 0,
         private bool $occupePlage = false,
+        /** Mise en avant affichée sur la formule (ex. « Le plus choisi ») ; null : aucune. */
+        private ?string $badge = null,
     ) {
     }
 
@@ -43,6 +45,17 @@ class Prestation
     public function position(): int { return $this->position; }
     /** Vrai si la durée est incertaine : la prestation bloque toute la demi-journée. */
     public function occupePlage(): bool { return $this->occupePlage; }
+    public function badge(): ?string { return $this->badge; }
+
+    /** Mise en avant (ex. « Le plus choisi ») : texte court, vide pour l'enlever. @throws DomainError trop long */
+    public function changerBadge(?string $badge): void
+    {
+        $badge = $badge === null ? '' : trim($badge);
+        if (mb_strlen($badge) > 40) {
+            throw new DomainError('La mise en avant est limitée à 40 caractères.');
+        }
+        $this->badge = $badge === '' ? null : $badge;
+    }
 
     /** Modification depuis l'espace pro. @throws DomainError nom vide ou durée nulle */
     public function modifier(

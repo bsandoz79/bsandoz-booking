@@ -163,6 +163,8 @@ function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
 
       <Toggle label="Durée incertaine (bloque la demi-journée)" checked={p.occupePlage} onChange={(v) => setP({ ...p, occupePlage: v })}
         hint="Proposée seulement en début de matinée ou d’après-midi libre ; le reste de la demi-journée n’est plus réservable." />
+      <Field label="Mise en avant (facultatif)" value={p.badge ?? ''} maxLength={40} placeholder="Ex. Le plus choisi"
+        hint="Petit badge affiché sur la formule, sur l’accueil et à la réservation. Vide : aucun." onChange={(e) => setP({ ...p, badge: e.target.value })} />
       <Toggle label="Proposée aux clients" checked={p.active} onChange={(v) => setP({ ...p, active: v })} />
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
       <div className={styles.actions}>

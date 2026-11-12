@@ -29,10 +29,10 @@ export const A_COMPLETER = '[à compléter]';
 export const CONTENU_PAR_DEFAUT: ContenuSite = {
   coordonnees: { telephone: '01 02 03 04 05', email: 'contact@bsandoz.fr', adresse: 'Abbeville', horaires: 'du lundi au samedi de 8 h à 19 h, le dimanche de 10 h à 18 h' },
   accueil: {
-    surtitre: 'Votre voiture comme neuve, sans bouger de chez vous',
-    titre: 'Nettoyage de voiture à domicile à Abbeville',
-    introduction: 'Nettoyage intérieur et extérieur, rénovation des phares : je viens à votre adresse, autonome en eau et en électricité. Réservez votre créneau en ligne en quelques minutes.',
-    arguments: ['Autonome en eau et en électricité', 'Déplacement offert dans un rayon de 5 km', 'Acompte en ligne, solde sur place'],
+    surtitre: 'Nettoyage intérieur · extérieur · rénovation optique à domicile',
+    titre: 'Un habitacle comme au premier jour',
+    introduction: 'On vient à vous, vous ne bougez pas.',
+    arguments: ['Eau et électricité autonomes', 'Déplacement offert de 0 à 5 km', 'Désodorisant offert', 'Intervention possible en moins de 24 h'],
   },
   etapes: [
     { titre: 'Choisissez votre prestation', texte: 'Intérieur, extérieur, phares ou soin à la carte : le prix s’affiche tout de suite, le même pour tous les véhicules.' },
@@ -43,7 +43,7 @@ export const CONTENU_PAR_DEFAUT: ContenuSite = {
     { question: 'Ai-je besoin de fournir l’eau ou l’électricité ?', reponse: 'Non, j’arrive avec le matériel nécessaire. Il suffit d’un emplacement où garer le véhicule.' },
     { question: 'Comment fonctionne l’acompte ?', reponse: 'Un acompte de 30 % est demandé en ligne pour confirmer le rendez-vous. Le solde se règle sur place.' },
     { question: 'Puis-je annuler ou déplacer mon rendez-vous ?', reponse: 'Oui, depuis le lien reçu par e-mail ou votre espace client. L’annulation est gratuite jusqu’à 48 h avant le rendez-vous : l’acompte vous est alors remboursé.' },
-    { question: 'Combien de temps dure une prestation ?', reponse: 'Cela dépend de la formule et de l’état du véhicule : de 1 h pour un Éclat à 5 h pour une Excellence. Pour les formules longues, je réserve la demi-journée.' },
+    { question: 'Combien de temps dure une prestation ?', reponse: 'Cela dépend de la formule et de l’état du véhicule : de 1 h à 1 h 30 pour un Éclat, jusqu’à 3 h 30 à 5 h pour une Excellence. Pour les formules longues, je réserve la demi-journée.' },
   ],
   avis: [],
   realisations: [
