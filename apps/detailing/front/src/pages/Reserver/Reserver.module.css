@@ -9,12 +9,10 @@
 .field input, .field textarea { font: inherit; font-weight: 400; font-size: 1rem; padding: 0.75rem 0.9rem; border-radius: var(--bs-radius-sm); border: 1px solid var(--bs-color-border); }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; }
 .dateTime { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
-.suggestions { list-style: none; margin: 0; padding: 0; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-sm); overflow: hidden; }
-.suggestions button { width: 100%; text-align: left; padding: 0.75rem; border: 0; background: var(--bs-color-surface); font: inherit; cursor: pointer; }
-.suggestions button:hover { background: var(--bs-color-primary-soft); }
 .hint { font-size: 0.85rem; color: var(--bs-color-text-muted); }
 .ok { color: var(--bs-color-success); font-weight: 600; }
 .error { color: #a3122f; font-weight: 600; }
 .check { display: flex; gap: 0.5rem; align-items: flex-start; }
 .actions { display: flex; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
 .actions :global(.btn):last-child { margin-left: auto; }
+.info { margin-top: 1rem; padding: .75rem 1rem; border-radius: var(--bs-radius-sm); background: var(--bs-color-primary-soft); color: var(--bs-color-text); }

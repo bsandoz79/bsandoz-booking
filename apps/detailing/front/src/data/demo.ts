@@ -12,6 +12,8 @@ export interface Formule {
   /** Prix (centimes) et durée (minutes) par variante. */
   tarifs: Record<string, { priceCents: number; durationMin: number }>;
   optionIds: string[];
+  /** Durée incertaine : la prestation occupe la demi-journée (débuts de demi-journée uniquement). */
+  occupePlage?: boolean;
   badge?: string;
 }
 
@@ -34,7 +36,7 @@ const t = (c: number, b: number, s: number, u: number, d: number) => ({
 export const FORMULES: Formule[] = [
   { id: 'interieur', category: 'auto', name: 'Intérieur', description: 'Aspiration, plastiques, vitres intérieures, tapis.', tarifs: t(6900, 7900, 8900, 9900, 90), optionIds: ['poils', 'sieges', 'odeur'] },
   { id: 'exterieur', category: 'auto', name: 'Extérieur', description: 'Lavage à la main, jantes, vitres, cire de protection.', tarifs: t(4900, 5900, 6900, 7900, 60), optionIds: ['jantes', 'odeur'] },
-  { id: 'complet', category: 'auto', name: 'Complet', description: 'Intérieur et extérieur en une seule intervention.', tarifs: t(10900, 12900, 14900, 16900, 150), optionIds: ['poils', 'sieges', 'jantes', 'odeur'], badge: 'Recommandé' },
+  { id: 'complet', category: 'auto', name: 'Complet', description: 'Intérieur et extérieur en une seule intervention.', tarifs: t(10900, 12900, 14900, 16900, 150), optionIds: ['poils', 'sieges', 'jantes', 'odeur'], occupePlage: true, badge: 'Recommandé' },
   { id: 'canape', category: 'canape', name: 'Nettoyage de canapé', description: 'Injection-extraction, détachage, séchage rapide.', tarifs: { canape_2: { priceCents: 6900, durationMin: 60 }, canape_3: { priceCents: 8900, durationMin: 75 }, canape_4: { priceCents: 10900, durationMin: 90 } }, optionIds: ['odeur'] },
 ];
 

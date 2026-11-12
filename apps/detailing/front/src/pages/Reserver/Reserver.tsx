@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Calendar, ChoiceChips, OptionCard, PriceSummary, SlotPicker, Stepper, formatEuros } from '@bsandoz/ui';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { AddressInput, Calendar, ChoiceChips, OptionCard, PriceSummary, SlotPicker, Stepper, formatEuros } from '@bsandoz/ui';
 import type { Category, Formule, OptionItem } from '../../data/demo';
 import { VEHICLE_TYPES } from '../../data/demo';
 import { suggestVehicleType } from '../../data/vehicles';
-import type { Address, Quote } from '../../services/api';
+import type { Address, Quote, Selection, Slot } from '../../services/api';
 import { getAvailableDays, getCatalog, getQuote, getSlots, reserve, searchAddress } from '../../services/api';
 import styles from './Reserver.module.css';
 
@@ -11,6 +12,9 @@ const currentMonth = () => new Date().toISOString().slice(0, 7);
 
 /** Parcours de réservation en étapes. Tout le contenu (formules, prix, créneaux) vient de l'API. */
 export function Reserver() {
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const paiementAnnule = params.get('paiement') === 'annule';
   const [step, setStep] = useState(0);
   const [formules, setFormules] = useState<Formule[]>([]);
   const [options, setOptions] = useState<OptionItem[]>([]);
@@ -21,42 +25,48 @@ export function Reserver() {
   const [seats, setSeats] = useState<string>();
   const [formuleId, setFormuleId] = useState<string>();
   const [optionIds, setOptionIds] = useState<string[]>([]);
-  const [addressQuery, setAddressQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<Address[]>([]);
   const [address, setAddress] = useState<Address>();
   const [month, setMonth] = useState(currentMonth());
   const [days, setDays] = useState<string[]>([]);
   const [day, setDay] = useState<string>();
-  const [slots, setSlots] = useState<{ start: string; label: string }[]>([]);
+  const [slots, setSlots] = useState<Slot[]>([]);
   const [start, setStart] = useState<string>();
   const [contact, setContact] = useState({ firstname: '', lastname: '', email: '', phone: '', notes: '' });
   const [terms, setTerms] = useState(false);
   const [quote, setQuote] = useState<Quote>();
   const [error, setError] = useState('');
+  const [sending, setSending] = useState(false);
 
   const steps = category === 'canape'
     ? ['Prestation', 'Canapé', 'Formule', 'Options', 'Adresse', 'Créneau', 'Coordonnées', 'Récapitulatif']
     : ['Prestation', 'Véhicule', 'Formule', 'Options', 'Adresse', 'Créneau', 'Coordonnées', 'Récapitulatif'];
 
   const variante = category === 'canape' ? (seats ? `canape_${seats}` : undefined) : vehicleType;
-  const formule = formules.find((f) => f.id === formuleId);
+  const formule = useMemo(() => formules.find((f) => f.id === formuleId), [formules, formuleId]);
   const formulesVisibles = useMemo(() => formules.filter((f) => f.category === category), [formules, category]);
   const optionsVisibles = options.filter((o) => formule?.optionIds.includes(o.id));
+  const metierData = useMemo<Record<string, unknown>>(
+    () => (category === 'canape' ? { category, seats: Number(seats) } : { category, brand, model, vehicleType }),
+    [category, seats, brand, model, vehicleType],
+  );
+  const selection = useMemo<Selection | undefined>(
+    () => (formule && variante ? { formule, variante, optionIds, metierData } : undefined),
+    [formule, variante, optionIds, metierData],
+  );
+  const dureeMin = quote?.durationMin;
 
-  useEffect(() => { getCatalog().then((c) => { setFormules(c.formules); setOptions(c.options); }); }, []);
   useEffect(() => {
-    if (formule && variante) getQuote(formule, variante, optionIds, address).then(setQuote).catch((e) => setError(e.message));
-  }, [formule, variante, optionIds, address]);
+    getCatalog().then((c) => { setFormules(c.formules); setOptions(c.options); }).catch((e: Error) => setError(e.message));
+  }, []);
   useEffect(() => {
-    if (step === 5 && address && quote) getAvailableDays(month, quote.durationMin, address).then(setDays);
-  }, [step, month, address, quote]);
+    if (selection) getQuote(selection, address).then(setQuote).catch((e: Error) => setError(e.message));
+  }, [selection, address]);
   useEffect(() => {
-    if (day && address && quote) getSlots(day, quote.durationMin, address).then(setSlots);
-  }, [day, address, quote]);
+    if (step === 5 && address && dureeMin) getAvailableDays(month, dureeMin, address, formule?.id).then(setDays).catch((e: Error) => setError(e.message));
+  }, [step, month, address, dureeMin, formule]);
   useEffect(() => {
-    const id = setTimeout(() => { searchAddress(addressQuery).then(setSuggestions).catch(() => setSuggestions([])); }, 300);
-    return () => clearTimeout(id);
-  }, [addressQuery]);
+    if (day && address && dureeMin) getSlots(day, dureeMin, address, formule).then(setSlots).catch((e: Error) => setError(e.message));
+  }, [day, address, dureeMin, formule]);
 
   const updateVehicle = (nextBrand: string, nextModel: string) => {
     setBrand(nextBrand);
@@ -79,20 +89,34 @@ export function Reserver() {
   const next = async () => {
     setError('');
     if (step < steps.length - 1) { setStep(step + 1); return; }
-    if (!formule || !address || !start) return;
+    if (!selection || !address || !start) return;
+    setSending(true);
     try {
-      const { paymentUrl } = await reserve({
-        formuleId: formule.id, optionIds, start, address, ...contact, acceptedTerms: terms,
-        metierData: category === 'canape' ? { category, seats: Number(seats) } : { category, brand, model, vehicleType },
-      });
-      window.location.assign(paymentUrl);
-    } catch (e) { setError((e as Error).message); }
+      const resultat = await reserve(selection, start, address, contact, terms);
+      if (resultat.paymentUrl?.startsWith('/')) {
+        navigate(resultat.paymentUrl);
+      } else if (resultat.paymentUrl) {
+        window.location.assign(resultat.paymentUrl);
+      } else if (resultat.status === 'confirmed') {
+        navigate(`/confirmation?reservation=${encodeURIComponent(resultat.reservationId)}`);
+      } else {
+        setError(resultat.paymentError ?? 'Le paiement en ligne est momentanément indisponible. Merci de me contacter pour confirmer le rendez-vous.');
+      }
+    } catch (e) {
+      setError((e as Error).message);
+      if ((e as { status?: number }).status === 422) { setStart(undefined); setStep(5); }
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
     <main className={`container ${styles.page}`}>
       <h1 className={styles.title}>Réserver</h1>
       <Stepper steps={steps} current={step} />
+      {paiementAnnule && step === 0 && (
+        <p className={styles.info} role="status">Le paiement de l'acompte a été annulé : votre rendez-vous n'est pas confirmé. Vous pouvez recommencer la réservation.</p>
+      )}
 
       <div className={styles.layout}>
         <section className={styles.panel} aria-labelledby="etape-titre">
@@ -142,16 +166,9 @@ export function Reserver() {
 
           {step === 4 && (
             <div className={styles.fields}>
-              <label className={styles.field}>Adresse de l'intervention
-                <input value={addressQuery} onChange={(e) => { setAddressQuery(e.target.value); setAddress(undefined); }} placeholder="N°, rue, ville" autoComplete="street-address" />
-              </label>
-              {!address && suggestions.length > 0 && (
-                <ul className={styles.suggestions}>
-                  {suggestions.map((s) => (
-                    <li key={s.label}><button type="button" onClick={() => { setAddress(s); setAddressQuery(s.label); }}>{s.label}</button></li>
-                  ))}
-                </ul>
-              )}
+              <AddressInput label="Adresse de l'intervention" placeholder="N°, rue, ville" search={searchAddress}
+                value={address} onSelect={(a: Address) => { setAddress(a); setDay(undefined); setStart(undefined); }}
+                hint="Choisissez votre adresse dans la liste pour calculer le déplacement." />
               {address && quote && (quote.inZone
                 ? <p className={styles.ok}>✓ Je me déplace chez vous{quote.travelFeeCents > 0 ? ` (frais de déplacement : ${formatEuros(quote.travelFeeCents)})` : ', déplacement offert'}.</p>
                 : <p className={styles.error}>Cette adresse est hors de ma zone d'intervention. Contactez-moi pour en parler.</p>)}
@@ -162,7 +179,8 @@ export function Reserver() {
             <div className={styles.dateTime}>
               <Calendar month={month} minMonth={currentMonth()} availableDays={days} selected={day}
                 onSelect={(d) => { setDay(d); setStart(undefined); }} onMonthChange={setMonth} />
-              {day && <SlotPicker title="Heure d'arrivée" slots={slots} selected={start} onSelect={setStart} />}
+              {formule?.occupePlage && <p className={styles.hint}>Cette prestation occupe la demi-journée : seules les arrivées en début de matinée ou d'après-midi sont proposées.</p>}
+              {day && <SlotPicker title="Heure d'arrivée" slots={slots} selected={start} onSelect={setStart} emptyMessage="Plus aucun créneau ce jour-là : choisissez un autre jour." />}
             </div>
           )}
 
@@ -190,7 +208,7 @@ export function Reserver() {
 
           <div className={styles.actions}>
             {step > 0 && <button type="button" className="btn btn--ghost" onClick={() => setStep(step - 1)}>Retour</button>}
-            <button type="button" className="btn" disabled={!canNext} onClick={next}>
+            <button type="button" className="btn" disabled={!canNext || sending} aria-busy={sending} onClick={next}>
               {step === steps.length - 1 ? `Payer l'acompte${quote ? ` (${formatEuros(quote.depositCents)})` : ''}` : 'Continuer'}
             </button>
           </div>
