@@ -32,7 +32,7 @@ final class CatalogController
     {
         $q = QuoteRequest::fromRequest($request);
 
-        return new JsonResponse(self::devis(($this->calculer)($q->prestationId, $q->optionIds, $q->metierData, $q->lat, $q->lng, $q->variante)));
+        return new JsonResponse(self::devis(($this->calculer)($q->prestationId, $q->optionIds, $q->metierData, $q->lat, $q->lng, $q->variante, $q->quantite)));
     }
 
     /** @return array<string, mixed> montants en centimes, comme attendu par le front */

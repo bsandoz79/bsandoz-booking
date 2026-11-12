@@ -150,6 +150,7 @@ final class GererRendezVousPro
             'prestation' => $prestation,
             'variante' => $r->variante(),
             'optionIds' => $r->optionIds(),
+            'quantite' => $r->quantite(),
             'clientId' => $r->userId(),
             'client' => $client,
             'remiseFideliteCents' => $r->remiseFidelite()->cents,

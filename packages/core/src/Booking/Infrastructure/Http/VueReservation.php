@@ -24,6 +24,7 @@ final class VueReservation
             'status' => $r->status()->value,
             'prestationId' => $r->prestationId(),
             'optionIds' => $r->optionIds(),
+            'quantite' => $r->quantite(),
             'start' => $start->setTimezone($utc)->format(DATE_ATOM),
             'end' => $r->period()->end->setTimezone($utc)->format(DATE_ATOM),
             'address' => $r->address(),

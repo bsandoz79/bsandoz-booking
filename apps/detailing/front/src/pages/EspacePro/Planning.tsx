@@ -95,7 +95,10 @@ function DetailRendezVous({ rdv, onFermer, onChange }: { rdv: RendezVousPro; onF
         <dt>Téléphone</dt><dd>{rdv.client.phone ? <a href={`tel:${rdv.client.phone.replace(/\s/g, '')}`}>{rdv.client.phone}</a> : '—'}</dd>
         <dt>E-mail</dt><dd>{rdv.client.email ? <a href={`mailto:${rdv.client.email}`}>{rdv.client.email}</a> : '—'}</dd>
         <dt>Adresse</dt><dd>{rdv.address ? <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rdv.address)}`} target="_blank" rel="noreferrer">{rdv.address}</a> : 'Sur place'}</dd>
-        {Object.keys(rdv.metierData).length > 0 && <><dt>Détails</dt><dd>{Object.entries(rdv.metierData).filter(([, v]) => v !== '' && v !== null).map(([k, v]) => `${k} : ${String(v)}`).join(' · ')}</dd></>}
+        {(rdv.quantite ?? 1) > 1 && (
+          <><dt>Véhicules</dt><dd>{rdv.quantite}{Array.isArray(rdv.metierData.vehicules) && <ul className={styles.liste}>{(rdv.metierData.vehicules as string[]).map((v) => <li key={v}>{v}</li>)}</ul>}</dd></>
+        )}
+        {Object.keys(rdv.metierData).length > 0 && <><dt>Détails</dt><dd>{Object.entries(rdv.metierData).filter(([k, v]) => k !== 'vehicules' && v !== '' && v !== null).map(([k, v]) => `${k} : ${String(v)}`).join(' · ')}</dd></>}
         {rdv.notes && <><dt>Précisions</dt><dd>{rdv.notes}</dd></>}
         <dt>Montant</dt><dd>{formatEuros(rdv.totalCents)} dont acompte {formatEuros(rdv.depositCents)}{rdv.travelFeeCents > 0 ? ` (déplacement ${formatEuros(rdv.travelFeeCents)})` : ''}{rdv.remiseFideliteCents ? ` · remise fidélité ${formatEuros(rdv.remiseFideliteCents)}` : ''}</dd>
         {rdv.produits && rdv.produits.length > 0 && (

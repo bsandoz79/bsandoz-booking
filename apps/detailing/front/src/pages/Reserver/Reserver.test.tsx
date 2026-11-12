@@ -30,7 +30,7 @@ describe('Parcours de réservation', () => {
     expect(bouton('Choisir le créneau')).toBeDisabled();
     expect(screen.queryByLabelText('Marque')).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('radio', { name: 'Nettoyage intérieur' }));
-    await userEvent.click(await screen.findByRole('button', { name: /Intérieur Signature/ }));
+    await userEvent.click(await screen.findByRole('radio', { name: /Intérieur Signature/ }));
     expect(await screen.findByText('Total')).toBeInTheDocument();
     expect(screen.getAllByText(/69,00/).length).toBeGreaterThan(0);
     expect(bouton('Choisir le créneau')).toBeEnabled();
@@ -39,22 +39,38 @@ describe('Parcours de réservation', () => {
   it('passe tout seul à « Où et quand ? » quand la formule n’a pas d’option à proposer', async () => {
     render(<MemoryRouter><Reserver /></MemoryRouter>);
     await userEvent.click(screen.getByRole('radio', { name: 'Soins à la carte' }));
-    await userEvent.click(await screen.findByRole('button', { name: /Ciel de toit/ }));
+    await userEvent.click(await screen.findByRole('radio', { name: /Ciel de toit/ }));
     expect(screen.getByRole('heading', { name: 'Où et quand ?' }).closest('section')).toHaveAttribute('aria-current', 'step');
     expect(screen.getByRole('button', { name: 'Modifier : Que faut-il nettoyer ?' })).toBeInTheDocument();
+  });
+
+  it('plusieurs véhicules : même formule pour tous, options choisies véhicule par véhicule', async () => {
+    render(<MemoryRouter><Reserver /></MemoryRouter>);
+    await userEvent.click(screen.getByRole('radio', { name: 'Nettoyage intérieur' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Un véhicule de plus' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Un véhicule de plus' }));
+    expect(screen.getByRole('group', { name: 'Nombre de véhicules' })).toHaveTextContent('3');
+
+    await userEvent.click(await screen.findByRole('radio', { name: /Intérieur Éclat/ }));
+    expect(screen.getByRole('group', { name: 'Véhicule 3' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('checkbox', { name: /Poils d’animaux.*véhicule 1/ }));
+    await userEvent.click(screen.getByRole('checkbox', { name: /Poils d’animaux.*véhicule 3/ }));
+
+    expect(await screen.findByText('Intérieur Éclat × 3')).toBeInTheDocument();
+    expect(await screen.findByText(/Poils d’animaux.* × 2/)).toBeInTheDocument();
   });
 
   it('présélectionne la formule choisie sur l’accueil', async () => {
     render(<MemoryRouter initialEntries={['/reserver?formule=ext-signature']}><Reserver /></MemoryRouter>);
     expect(await screen.findByRole('radio', { name: 'Nettoyage extérieur' })).toHaveAttribute('aria-checked', 'true');
-    expect(await screen.findByRole('button', { name: /Extérieur Signature/, pressed: true })).toBeInTheDocument();
+    expect(await screen.findByRole('radio', { name: /Extérieur Signature/, checked: true })).toBeInTheDocument();
   });
 
   it('va jusqu’au paiement de l’acompte (démo) : extérieur, adresse, créneau, coordonnées, CGV', async () => {
     render(<MemoryRouter initialEntries={['/reserver']}><AppRoutes /></MemoryRouter>);
 
     await userEvent.click(screen.getByRole('radio', { name: 'Nettoyage extérieur' }));
-    await userEvent.click(await screen.findByRole('button', { name: /Extérieur Éclat/ }));
+    await userEvent.click(await screen.findByRole('radio', { name: /Extérieur Éclat/ }));
     await userEvent.click(bouton('Choisir le créneau'));
 
     // Étape 1 repliée en résumé, étape 2 ouverte : adresse puis créneau.

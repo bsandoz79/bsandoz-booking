@@ -26,6 +26,8 @@ export interface RendezVousPro {
   prestation: string;
   variante: string | null;
   optionIds: string[];
+  /** Nombre de véhicules (même formule pour tous). */
+  quantite?: number;
   /** Identifiant du compte client (carte de fidélité). */
   clientId: string;
   client: { name: string; email: string; phone: string };

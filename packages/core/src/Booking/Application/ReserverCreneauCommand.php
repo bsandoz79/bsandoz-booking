@@ -14,6 +14,7 @@ final class ReserverCreneauCommand
      * @param float|null $lat null pour une activité sur place
      * @param string|null $variante variante explicite, si le module métier ne la déduit pas
      * @param array<string, int> $produits produits ajoutés : identifiant → quantité
+     * @param int $quantite nombre d'unités de la prestation (ex. véhicules)
      */
     public function __construct(
         public readonly string $prestationId,
@@ -31,6 +32,7 @@ final class ReserverCreneauCommand
         public readonly bool $acceptedTerms,
         public readonly ?string $variante = null,
         public readonly array $produits = [],
+        public readonly int $quantite = 1,
     ) {
     }
 
@@ -39,7 +41,7 @@ final class ReserverCreneauCommand
     {
         return new self(
             $this->prestationId, $this->optionIds, $this->metierData, $this->start, $this->address, $this->lat, $this->lng,
-            $this->email, $this->firstname, $this->lastname, $this->phone, $this->notes, true, $this->variante, $this->produits,
+            $this->email, $this->firstname, $this->lastname, $this->phone, $this->notes, true, $this->variante, $this->produits, $this->quantite,
         );
     }
 }

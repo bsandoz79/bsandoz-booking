@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AddressInput, Calendar, ChoiceChips, OptionCard, PriceSummary, SlotPicker, StepCard, type StepCardStatus, formatEuros } from '@bsandoz/ui';
+import { AddressInput, Calendar, ChoiceChips, PriceSummary, SlotPicker, StepCard, type StepCardStatus, formatEuros } from '@bsandoz/ui';
 import type { Category, Formule, OptionItem, ProduitItem } from '../../data/demo';
 import { CATEGORIES, tarifDe } from '../../data/demo';
 import type { Address, Quote, Selection, Slot } from '../../services/api';
@@ -14,6 +14,12 @@ import styles from './Reserver.module.css';
 const currentMonth = () => new Date().toISOString().slice(0, 7);
 const ETAPES = ['Que faut-il nettoyer ?', 'Où et quand ?', 'Vos coordonnées'];
 const BOUTONS = ['Choisir le créneau', 'Mes coordonnées'];
+const VEHICULES_MAX = 5;
+/** 90 → « 1 h 30 », 45 → « 45 min ». */
+const duree = (min: number) => {
+  const h = Math.floor(min / 60), m = min % 60;
+  return h === 0 ? `${m} min` : `${h} h${m ? ` ${String(m).padStart(2, '0')}` : ''}`;
+};
 
 /**
  * Parcours de réservation en 3 étapes repliables : la prestation, puis l'adresse et le créneau, puis les coordonnées
@@ -32,7 +38,9 @@ export function Reserver() {
   const [quantites, setQuantites] = useState<Record<string, number>>({});
   const [category, setCategory] = useState<Category>();
   const [formuleId, setFormuleId] = useState<string>();
-  const [optionIds, setOptionIds] = useState<string[]>([]);
+  // Plusieurs véhicules : même formule pour tous, options choisies véhicule par véhicule.
+  const [nbVehicules, setNbVehicules] = useState(1);
+  const [optionsParVehicule, setOptionsParVehicule] = useState<string[][]>([[]]);
   const [address, setAddress] = useState<Address>();
   const [month, setMonth] = useState(currentMonth());
   const [days, setDays] = useState<string[]>([]);
@@ -50,11 +58,25 @@ export function Reserver() {
   const formule = useMemo(() => formules.find((f) => f.id === formuleId), [formules, formuleId]);
   const formulesVisibles = useMemo(() => formules.filter((f) => f.category === category), [formules, category]);
   const optionsVisibles = options.filter((o) => formule?.optionIds.includes(o.id));
-  const metierData = useMemo<Record<string, unknown>>(() => ({ category }), [category]);
+  const optionIds = useMemo(() => optionsParVehicule.flat(), [optionsParVehicule]);
+  const metierData = useMemo<Record<string, unknown>>(() => {
+    if (nbVehicules === 1) return { category };
+    // Détail pour le pro : les options de chaque véhicule.
+    const nom = (id: string) => options.find((o) => o.id === id)?.name ?? id;
+    return { category, vehicules: optionsParVehicule.map((ids, i) => `Véhicule ${i + 1} : ${ids.length ? ids.map(nom).join(', ') : 'sans option'}`) };
+  }, [category, nbVehicules, optionsParVehicule, options]);
   const selection = useMemo<Selection | undefined>(
-    () => (formule ? { formule, variante, optionIds, metierData } : undefined),
-    [formule, variante, optionIds, metierData],
+    () => (formule ? { formule, variante, optionIds, metierData, quantite: nbVehicules } : undefined),
+    [formule, variante, optionIds, metierData, nbVehicules],
   );
+  const viderOptions = (n = nbVehicules) => setOptionsParVehicule(Array.from({ length: n }, () => []));
+  const changerNbVehicules = (n: number) => {
+    setNbVehicules(n);
+    setOptionsParVehicule((avant) => Array.from({ length: n }, (_, i) => avant[i] ?? []));
+    setStart(undefined);
+  };
+  const basculerOption = (vehicule: number, id: string) => changerPrestation(() => setOptionsParVehicule((avant) =>
+    avant.map((ids, i) => (i !== vehicule ? ids : ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))));
   const dureeMin = quote?.durationMin;
   const dansZone = !!address && quote?.inZone !== false;
 
@@ -115,8 +137,11 @@ export function Reserver() {
   };
 
   const statut = (i: number): StepCardStatus => (i < step ? 'done' : i === step ? 'active' : 'upcoming');
-  const resumePrestation = [formule?.name, ...options.filter((o) => optionIds.includes(o.id)).map((o) => o.name.toLowerCase())]
-    .filter(Boolean).join(', ');
+  const resumePrestation = [
+    formule && (nbVehicules > 1 ? `${formule.name} × ${nbVehicules} véhicules` : formule.name),
+    ...options.map((o) => ({ o, n: optionIds.filter((id) => id === o.id).length })).filter((x) => x.n > 0)
+      .map(({ o, n }) => (n > 1 ? `${o.name.toLowerCase()} × ${n}` : o.name.toLowerCase())),
+  ].filter(Boolean).join(', ');
   const resumeCreneau = [
     start && new Date(start).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
     address?.label,
@@ -140,35 +165,60 @@ export function Reserver() {
       <div className={styles.layout}>
         <div className={styles.etapes}>
           <StepCard number={1} title={ETAPES[0]} status={statut(0)} summary={resumePrestation} onEdit={() => setStep(0)}>
-            <ChoiceChips label="Prestation" value={category} onChange={(v) => { changerPrestation(() => { setCategory(v as Category); setFormuleId(undefined); setOptionIds([]); }); allerA('resa-formules'); }}
+            <ChoiceChips label="Prestation" value={category} onChange={(v) => { changerPrestation(() => { setCategory(v as Category); setFormuleId(undefined); viderOptions(); }); allerA('resa-formules'); }}
               choices={CATEGORIES.map((c) => ({ value: c.value, label: c.label }))} />
+            <div className={styles.compteur}>
+              <span id="label-vehicules" className={styles.compteurLibelle}>Nombre de véhicules</span>
+              <div className={styles.stepper} role="group" aria-labelledby="label-vehicules">
+                <button type="button" onClick={() => changerNbVehicules(nbVehicules - 1)} disabled={nbVehicules <= 1} aria-label="Un véhicule de moins">−</button>
+                <span className={styles.nombre} aria-live="polite">{nbVehicules}</span>
+                <button type="button" onClick={() => changerNbVehicules(nbVehicules + 1)} disabled={nbVehicules >= VEHICULES_MAX} aria-label="Un véhicule de plus">+</button>
+              </div>
+            </div>
             {category && (
               <div id="resa-formules" className={`${styles.liste} ${styles.ancre}`}>
-                <h3 className={styles.sousTitre}>La formule</h3>
-                {formulesVisibles.map((f) => {
-                  const tarif = tarifDe(f, variante);
-                  return (
-                    <div key={f.id} className={styles.formule}>
-                      <OptionCard title={f.name} description={f.description} badge={f.badge}
-                        priceLabel={formatEuros(tarif.priceCents)}
-                        selected={f.id === formuleId} onToggle={() => {
-                          changerPrestation(() => { setFormuleId(f.id); setOptionIds([]); });
-                          // Des options à proposer : on les montre ; sinon, direction le créneau.
-                          if (options.some((o) => f.optionIds.includes(o.id))) allerA('resa-options'); else etapeSuivante(1);
-                        }} />
-                      {f.id === formuleId && optionsVisibles.length > 0 && (
-                        <div id="resa-options" className={`${styles.options} ${styles.ancre}`}>
-                          <h4 className={styles.optionsTitre}>En plus, si besoin</h4>
-                          {optionsVisibles.map((o) => (
-                            <OptionCard key={o.id} title={o.name} description={o.description} priceLabel={`+ ${formatEuros(o.priceCents)}`}
-                              selected={optionIds.includes(o.id)}
-                              onToggle={() => changerPrestation(() => setOptionIds(optionIds.includes(o.id) ? optionIds.filter((x) => x !== o.id) : [...optionIds, o.id]))} />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                <div className={styles.listeEntete}>
+                  <h3 className={styles.sousTitre}>La formule</h3>
+                  <span className={styles.hint}>Prix pour 1 véhicule</span>
+                </div>
+                <div role="radiogroup" aria-label="La formule" className={styles.formules}>
+                  {formulesVisibles.map((f) => {
+                    const tarif = tarifDe(f, variante);
+                    const choisie = f.id === formuleId;
+                    return (
+                      <div key={f.id} className={styles.formule}>
+                        <label className={`${styles.formuleLigne} ${choisie ? styles.formuleChoisie : ''}`}>
+                          <input type="radio" name="formule" checked={choisie} onChange={() => {
+                            changerPrestation(() => { setFormuleId(f.id); viderOptions(); });
+                            // Des options à proposer : on les montre ; sinon, direction le créneau.
+                            if (options.some((o) => f.optionIds.includes(o.id))) allerA('resa-options'); else etapeSuivante(1);
+                          }} />
+                          <span className={styles.formuleNom}>{f.name}{f.badge && <span className={styles.formuleBadge}>{f.badge}</span>}</span>
+                          <span className={styles.formulePrix}>{formatEuros(tarif.priceCents)}</span>
+                          <span className={styles.formuleDuree}>Environ {duree(tarif.durationMin)} sur place</span>
+                        </label>
+                        {choisie && optionsVisibles.length > 0 && (
+                          <div id="resa-options" className={`${styles.options} ${styles.ancre}`}>
+                            <p className={styles.optionsTitre}>En plus, si besoin</p>
+                            {optionsParVehicule.map((choix, v) => (
+                              <fieldset key={v} className={styles.vehicule}>
+                                <legend className={nbVehicules > 1 ? styles.vehiculeTitre : styles.srOnly}>{nbVehicules > 1 ? `Véhicule ${v + 1}` : 'Options'}</legend>
+                                {optionsVisibles.map((o) => (
+                                  <label key={o.id} className={styles.optionLigne}>
+                                    <input type="checkbox" checked={choix.includes(o.id)} onChange={() => basculerOption(v, o.id)}
+                                      aria-label={nbVehicules > 1 ? `${o.name}, véhicule ${v + 1}` : undefined} />
+                                    <span>{o.name}</span>
+                                    <span className={styles.optionPrix}>+{formatEuros(o.priceCents)}</span>
+                                  </label>
+                                ))}
+                              </fieldset>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </StepCard>

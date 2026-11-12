@@ -37,7 +37,7 @@ export function ChoixProduits({ produits, quantites, onChange }: ChoixProduitsPr
               ) : (
                 <div className={styles.quantite} role="group" aria-label={`Quantité de ${p.name}`}>
                   <button type="button" onClick={() => onChange(p.id, q - 1)} aria-label={q === 1 ? `Retirer ${p.name}` : `Un ${p.name} de moins`}>−</button>
-                  <output aria-live="polite">{q}</output>
+                  <span className={styles.nombre} aria-live="polite">{q}</span>
                   <button type="button" onClick={() => onChange(p.id, q + 1)} disabled={q >= p.stock} aria-label={`Un ${p.name} de plus`}>+</button>
                 </div>
               )}

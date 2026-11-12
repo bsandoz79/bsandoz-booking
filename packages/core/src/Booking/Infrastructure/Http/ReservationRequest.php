@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Corps de POST /api/v1/booking/reservations :
  * {"prestationId", "optionIds": [], "metierData": {}, "variante"?, "start": "2026-11-10T08:00:00+00:00",
  *  "address": {"label", "lat", "lng"} | null, "firstname", "lastname", "email", "phone", "notes"?, "acceptedTerms": true,
- *  "produits"?: [{"id", "quantite"}]}
+ *  "produits"?: [{"id", "quantite"}], "quantite"?: 1}
  */
 final class ReservationRequest
 {
@@ -61,6 +61,7 @@ final class ReservationRequest
             ($body['acceptedTerms'] ?? false) === true,
             $variante,
             $produits,
+            \Bsandoz\Core\Catalog\Infrastructure\Http\QuoteRequest::quantite($body),
         );
     }
 

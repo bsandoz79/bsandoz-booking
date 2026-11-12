@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Corps de POST /api/v1/booking/quote :
- * {"prestationId": "…", "optionIds": ["…"], "metierData": {…}, "variante": "…", "lat": 49.89, "lng": 2.29}
+ * {"prestationId": "…", "optionIds": ["…"], "metierData": {…}, "variante": "…", "lat": 49.89, "lng": 2.29, "quantite": 1}
  * Seul prestationId est obligatoire ; lat et lng vont ensemble.
  */
 final class QuoteRequest
@@ -25,6 +25,7 @@ final class QuoteRequest
         public readonly ?string $variante,
         public readonly ?float $lat,
         public readonly ?float $lng,
+        public readonly int $quantite = 1,
     ) {
     }
 
@@ -67,7 +68,18 @@ final class QuoteRequest
 
         /** @var list<string> $optionIds */
         /** @var array<string, mixed> $metierData */
-        return new self($prestationId, $optionIds, $metierData, $variante, $lat, $lng);
+        return new self($prestationId, $optionIds, $metierData, $variante, $lat, $lng, self::quantite($body));
+    }
+
+    /** @param array<mixed> $body */
+    public static function quantite(array $body): int
+    {
+        $quantite = $body['quantite'] ?? 1;
+        if (!is_int($quantite)) {
+            throw new InvalidRequest('« quantite » doit être un nombre entier.');
+        }
+
+        return $quantite;
     }
 
     /** @param array<mixed> $body */

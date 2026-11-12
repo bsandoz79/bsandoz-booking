@@ -39,7 +39,8 @@ final class CalculerDevis
      * @param list<string> $optionIds
      * @param array<string, mixed> $metierData
      * @throws NotFound prestation ou option inconnue
-     * @throws DomainError prestation inactive, option non autorisée
+     * @param int $quantite nombre d'unités (ex. véhicules) : prestation multipliée, déplacement compté une fois
+     * @throws DomainError prestation inactive, option non autorisée, quantité invalide
      */
     public function __invoke(
         string $prestationId,
@@ -48,10 +49,16 @@ final class CalculerDevis
         ?float $lat,
         ?float $lng,
         ?string $variante = null,
+        int $quantite = 1,
     ): Devis {
         $prestation = $this->prestations->get($prestationId);
         $variante = $this->varianteResolver->resolve($metierData) ?? ($variante !== '' ? $variante : null);
-        $options = $this->options->getMany($optionIds);
+        // Une entrée par unité concernée : la même option peut revenir (ex. poils d'animaux sur 2 véhicules sur 3).
+        $parId = [];
+        foreach ($this->options->getMany($optionIds) as $option) {
+            $parId[$option->id] = $option;
+        }
+        $options = array_map(static fn (string $id) => $parId[$id], $optionIds);
 
         $zone = $this->settings->zone();
         $zoneQuote = $zone !== null && $lat !== null && $lng !== null ? $this->zone->quote($zone, $lat, $lng) : null;
@@ -64,6 +71,7 @@ final class CalculerDevis
             $zoneQuote->travelFee ?? Money::zero(),
             $rules->depositPercent,
             $rules->depositFixedCents !== null ? Money::cents($rules->depositFixedCents) : null,
+            $quantite,
         );
 
         return $zoneQuote === null ? $devis : $devis->withZone($zoneQuote->inZone, $zoneQuote->distanceKm, $zoneQuote->travelMinutes);

@@ -41,6 +41,8 @@ class Reservation
          * @var list<array{id: string, nom: string, prixCents: int, quantite: int}>|null
          */
         private ?array $produits = null,
+        /** Nombre d'unités de la prestation (ex. véhicules) ; null : 1 (réservations antérieures). */
+        private ?int $quantite = null,
     ) {
     }
 
@@ -68,6 +70,7 @@ class Reservation
     public function metierData(): array { return $this->metierData; }
     public function notes(): string { return $this->notes; }
     public function remiseFidelite(): Money { return $this->remiseFidelite ?? Money::zero(); }
+    public function quantite(): int { return $this->quantite ?? 1; }
     /** @return list<array{id: string, nom: string, prixCents: int, quantite: int}> */
     public function produits(): array { return $this->produits ?? []; }
 
