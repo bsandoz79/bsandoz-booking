@@ -122,6 +122,8 @@
 - Kit et API : demande de contact ou de devis (`POST /contact`), transmise au pro par mail avec l'adresse du demandeur en « répondre à », limitée à 5 par heure, champ piège contre les robots.
 - Page « Professionnels » (lien « Pro » du menu) : offre sur devis pour flottes, utilitaires, poids lourds et garages, formulaire de demande de devis envoyé au pro par mail, appel et e-mail directs.
 - Accueil : toute la carte d'une formule est cliquable (pas seulement « Choisir »), avec un léger relief au survol.
+- Kit : bloc `Dialog` (fenêtre modale accessible : focus gardé, Échap, fond cliquable, monte du bas sur téléphone).
+- Réservation : les produits ne sont plus dans le formulaire ; au clic sur « Payer », une fenêtre les propose (photo, prix, quantité) avec « Non merci » ou « Ajouter et payer ».
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
