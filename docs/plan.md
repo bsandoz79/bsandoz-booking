@@ -36,3 +36,4 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/detailing-pwa` : manifest, service worker, notifications
 - [x] `feature/deploiement` : workflows de déploiement o2switch (API + front), cron, sous-domaines `demo.bsandoz.fr` et `api.demo.bsandoz.fr`
 - [x] `feature/reservation-3-etapes` : réservation en 3 étapes repliables (bloc `StepCard`), sans véhicule ; tranches de zone colorées ; communes en phrase ; lien « Fidélité » et carte du client connecté
+- [x] `feature/entete-compact` : en-tête sur une ligne, menu déroulant sur téléphone
