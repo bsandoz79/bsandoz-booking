@@ -125,7 +125,7 @@ const demo = {
   horaires: [1, 2, 3, 4, 5].flatMap((j) => [{ weekday: j, startsAt: '08:00', endsAt: '12:00' }, { weekday: j, startsAt: '13:30', endsAt: '18:00' }]).concat([{ weekday: 6, startsAt: '08:00', endsAt: '12:00' }]) as Plage[],
   indisponibilites: [] as Indisponibilite[],
   reglages: {
-    rules: { minNoticeHours: 24, horizonDays: 60, bufferMin: 15, slotStepMin: 30, freeCancelHours: 48, depositPercent: DEMO_RULES.depositPercent, depositFixedCents: 0, holdMinutes: 10 },
+    rules: { minNoticeHours: 24, horizonDays: 60, bufferMin: 30, slotStepMin: 30, freeCancelHours: 48, depositPercent: DEMO_RULES.depositPercent, depositFixedCents: 0, holdMinutes: 10 },
     zone: { paliers: DEMO_RULES.paliers, originLat: DEMO_RULES.origin.lat, originLng: DEMO_RULES.origin.lng, freeRadiusKm: DEMO_RULES.freeRadiusKm, pricePerKmCents: DEMO_RULES.pricePerKmCents, maxDistanceKm: DEMO_RULES.maxDistanceKm },
     timezone: 'Europe/Paris',
   } as Reglages,

@@ -15,7 +15,7 @@ bsandoz_core:
     rules:
         min_notice_hours: 24
         horizon_days: 60
-        buffer_min: 15
+        buffer_min: 30
         slot_step_min: 30
         free_cancel_hours: 48
         deposit_percent: 30
