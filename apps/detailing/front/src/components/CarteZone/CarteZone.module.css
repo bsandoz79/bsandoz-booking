@@ -24,3 +24,4 @@
 .resultatDetail { font-size: .9rem; color: var(--bs-color-text-muted); }
 .offert { color: var(--bs-color-success); }
 .horsZone { color: var(--bs-color-danger); }
+.devis { align-self: flex-start; margin-top: .5rem; }
