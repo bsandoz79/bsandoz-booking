@@ -105,6 +105,7 @@
 - Kit : estimation publique des frais de déplacement pour une position (GET /api/v1/booking/zone/estimation), roadFactor publié dans GET /booking/zone.
 - Accueil : carte de la zone d'intervention (OpenStreetMap), un cercle par tranche autour d'Abbeville ; position demandée à l'arrivée sur la carte ou adresse à saisir, frais estimés et tranche mise en avant ; politique de confidentialité complétée.
 - Kit : bloc `StepCard` (étape repliable d'un parcours en accordéon : active, terminée avec résumé et « Modifier », à venir).
+- Réservation en 3 étapes repliables (prestation, où et quand, coordonnées) avec total et bouton collés en bas de l'écran ; le véhicule n'est plus demandé.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
