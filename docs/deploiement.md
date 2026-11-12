@@ -37,6 +37,7 @@ Le mot de passe de la base, s'il contient des caractères spéciaux, doit être 
 Settings → Environments → créer l'environnement **demo**, puis dedans :
 - **Secrets** : `FTP_SERVER` (ex. `ftp.bsandoz.fr`), `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_SERVER_DIR_FRONT` (`demo.bsandoz.fr/`), `FTP_SERVER_DIR_API` (`api.demo.bsandoz.fr/`) — chemins relatifs au dossier du compte FTP, **terminés par `/`**.
 - Tant que ces secrets manquent, le workflow ne fait rien et l'indique par un avertissement (« Déploiement non configuré ») au lieu d'échouer. Attention : des secrets créés au niveau du dépôt ou dans un autre environnement portent le même nom mais doivent être dans l'environnement **demo** (ou au niveau du dépôt) pour être lus.
+- **Variable** (facultative) : `VITE_SITE_URL` = adresse publique du site, pour les pages pré-générées et le sitemap (par défaut `https://demo.bsandoz.fr`).
 - **Variable** : `VITE_API_URL` = `https://api.demo.bsandoz.fr` (sans `/api/v1`). Vide : le site est construit en mode démonstration.
 
 ## 4. Premier déploiement

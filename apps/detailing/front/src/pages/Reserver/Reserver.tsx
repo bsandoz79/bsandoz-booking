@@ -6,6 +6,8 @@ import { CATEGORIES, VEHICLE_TYPES, tarifDe } from '../../data/demo';
 import { suggestVehicleType } from '../../data/vehicles';
 import type { Address, Quote, Selection, Slot } from '../../services/api';
 import { getAvailableDays, getCatalog, getQuote, getSlots, reserve, searchAddress } from '../../services/api';
+import { PAGES_SEO } from '../../seo/donnees';
+import { useSeo } from '../../seo/useSeo';
 import styles from './Reserver.module.css';
 
 const currentMonth = () => new Date().toISOString().slice(0, 7);
@@ -13,6 +15,7 @@ const currentMonth = () => new Date().toISOString().slice(0, 7);
 /** Parcours de réservation en étapes. Tout le contenu (formules, prix, créneaux) vient de l'API. */
 export function Reserver() {
   const navigate = useNavigate();
+  useSeo(PAGES_SEO[1].titre, PAGES_SEO[1].description);
   const [params] = useSearchParams();
   const paiementAnnule = params.get('paiement') === 'annule';
   const [step, setStep] = useState(0);

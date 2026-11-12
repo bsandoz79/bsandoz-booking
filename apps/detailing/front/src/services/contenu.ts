@@ -29,8 +29,8 @@ export const A_COMPLETER = '[à compléter]';
 export const CONTENU_PAR_DEFAUT: ContenuSite = {
   coordonnees: { telephone: A_COMPLETER, email: A_COMPLETER, adresse: 'Abbeville', horaires: 'du lundi au samedi de 8 h à 19 h, le dimanche de 10 h à 18 h' },
   accueil: {
-    surtitre: 'Nettoyage auto à domicile · Abbeville et alentours',
-    titre: 'Votre voiture comme neuve, sans bouger de chez vous.',
+    surtitre: 'Votre voiture comme neuve, sans bouger de chez vous',
+    titre: 'Nettoyage de voiture à domicile à Abbeville',
     introduction: 'Nettoyage intérieur et extérieur, rénovation des phares : je viens à votre adresse, autonome en eau et en électricité. Réservez votre créneau en ligne en quelques minutes.',
     arguments: ['Autonome en eau et en électricité', 'Déplacement offert dans un rayon de 5 km', 'Acompte en ligne, solde sur place'],
   },
@@ -51,7 +51,7 @@ export const CONTENU_PAR_DEFAUT: ContenuSite = {
     { titre: 'Extérieur Excellence', avant: '', apres: '' },
     { titre: 'Rénovation des phares', avant: '', apres: '' },
   ],
-  communes: ['Abbeville'],
+  communes: ['Abbeville', 'Saint-Valery-sur-Somme', 'Le Crotoy', 'Rue', 'Cayeux-sur-Mer', 'Friville-Escarbotin', 'Gamaches', 'Pont-Remy', 'Saint-Riquier', 'Crécy-en-Ponthieu'],
   legal: {
     responsable: A_COMPLETER, statut: A_COMPLETER, siret: A_COMPLETER, adresse: A_COMPLETER, tva: A_COMPLETER, mediateur: A_COMPLETER,
     retractation: '[à compléter : régime applicable à faire valider (prestation de service à date déterminée, article L221-28 du Code de la consommation).]',

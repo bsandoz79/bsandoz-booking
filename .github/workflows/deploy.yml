@@ -66,6 +66,8 @@ jobs:
         working-directory: apps/detailing/front
         env:
           VITE_API_URL: ${{ vars.VITE_API_URL }}
+          # Adresse publique du site (pages pré-générées, sitemap) ; par défaut https://demo.bsandoz.fr
+          VITE_SITE_URL: ${{ vars.VITE_SITE_URL }}
       - name: Envoi FTPS
         if: steps.config.outputs.pret == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5

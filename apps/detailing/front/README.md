@@ -35,3 +35,10 @@ Contrat : `docs/api.md`. Le parcours envoie la prestation, la variante (type de 
 - Accueil : présentation de la règle (ex. 4 prestations, 20 % sur la suivante), masquée si la fidélité est désactivée.
 - Espace client : carte en tampons et message (« Encore 2 prestations avant 20 % de remise »).
 - Espace pro : dans le détail d'un rendez-vous, carte du client avec « Ajouter / Retirer un tampon » ; règle dans Réglages → Carte de fidélité. Le tampon automatique et la remise sont gérés par l'API.
+
+## Référencement local (Abbeville)
+- `src/seo/donnees.ts` (sans import, lu aussi au build) : communes desservies, entreprise, prestations mises en avant, titres et descriptions de chaque page, données structurées schema.org (`AutoWash` : adresse, zone, horaires, prix).
+- Une page par commune : `/nettoyage-voiture/<commune>` (Abbeville, Saint-Valery-sur-Somme, Le Crotoy, Rue…), liées depuis l'accueil et entre elles.
+- `npm run build` lance ensuite `scripts/prerender.ts` : une page HTML par route publique (`dist/<chemin>.html`, servie par le `.htaccess`) avec titre, description, adresse canonique, Open Graph, données structurées et un contenu lisible sans JavaScript ; plus `sitemap.xml` et `robots.txt` (espaces client et pro exclus). Adresse du site : `VITE_SITE_URL` (variable GitHub, par défaut `https://demo.bsandoz.fr`).
+- `useSeo()` met à jour titre et description pendant la navigation.
+- À faire hors du code (le plus important pour Google Maps et « près de moi ») : créer la fiche **Google Business Profile** (catégorie « Service de nettoyage automobile », zone desservie, mêmes horaires, téléphone et lien vers le site), y demander des avis aux clients ; déclarer le site dans **Google Search Console** et y envoyer `sitemap.xml` ; garder partout le même nom, la même ville et le même téléphone.
