@@ -218,3 +218,4 @@
 - Navigation : en ouvrant une page (ex. « Pro »), on pouvait arriver en bas de page ; retour tout en haut à chaque clic, même vers la page déjà ouverte (le bouton « Retour » garde la position). Test.
 - Créneaux : heures proposées décalées du temps de trajet (8 h 05, 8 h 35…). Les arrivées suivent désormais la grille du pas depuis l'ouverture (8 h 00, 8 h 30…) ; le trajet vers le premier rendez-vous se fait avant l'ouverture, il reste compté entre deux rendez-vous (`CreneauCalculator`). Tests.
 - En-tête sur téléphone : la barre passait sur deux lignes ; « Mon espace » et « Espace pro » rejoignent le menu.
+- Téléphone : plus de jeu horizontal (champs 16 px sur écran tactile contre le zoom de l'iPhone, overflow-x: clip, filtres contenus à 375 px, en-tête resserré à 320 px).

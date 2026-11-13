@@ -19,7 +19,7 @@
 .plage { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 .plage input[type='time'], .petit input { font: inherit; min-height: 44px; padding: 0 .5rem; border-radius: var(--bs-radius-sm); border: 1px solid var(--bs-color-border); }
 .choix { display: flex; flex-direction: column; gap: .35rem; font-weight: 600; font-size: .9rem; }
-.choix select { font: inherit; min-height: 44px; padding: 0 .5rem; border-radius: var(--bs-radius-sm); border: 1px solid var(--bs-color-border); background: var(--bs-color-surface); }
+.choix select { max-width: 100%; font: inherit; min-height: 44px; padding: 0 .5rem; border-radius: var(--bs-radius-sm); border: 1px solid var(--bs-color-border); background: var(--bs-color-surface); }
 .case { display: flex; gap: .5rem; align-items: center; min-height: 44px; }
 .detail { display: grid; grid-template-columns: max-content 1fr; gap: .25rem 1rem; margin: 0; }
 .detail dt { font-weight: 600; color: var(--bs-color-text-muted); }
