@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { PlanningView, eventsOfDay, startOfWeek, type PlanningEvent, type PlanningLabels, type PlanningViewProps } from './PlanningView';
+import { PlanningView, disposer, eventsOfDay, startOfWeek, type PlanningEvent, type PlanningLabels, type PlanningViewProps } from './PlanningView';
 
 const labels: PlanningLabels = {
   day: 'Jour',
@@ -51,6 +51,27 @@ describe('utilitaires du planning', () => {
     expect(eventsOfDay(events, '2026-11-14').map((e) => e.id)).toEqual(['4']);
     expect(eventsOfDay(events, '2026-11-15').map((e) => e.id)).toEqual(['4']);
     expect(eventsOfDay(events, '2026-11-13')).toEqual([]);
+  });
+});
+
+describe('emploi du temps', () => {
+  it('met côte à côte les rendez-vous qui se chevauchent', () => {
+    const chevauchants: PlanningEvent[] = [
+      { id: 'a', start: '2026-11-12T09:00', end: '2026-11-12T11:00', title: 'A' },
+      { id: 'b', start: '2026-11-12T10:00', end: '2026-11-12T12:00', title: 'B' },
+      { id: 'c', start: '2026-11-12T13:00', end: '2026-11-12T14:00', title: 'C' },
+    ];
+    expect(disposer(chevauchants, '2026-11-12').map((p) => [p.event.id, p.col, p.cols, p.debut, p.fin])).toEqual([
+      ['a', 0, 2, 540, 660], ['b', 1, 2, 600, 720], ['c', 0, 1, 780, 840],
+    ]);
+  });
+
+  it('affiche toute la journée, même sans rendez-vous, avec la hauteur de chaque case selon sa durée', () => {
+    afficher({ hourStart: 8, hourEnd: 19 });
+    expect(screen.getByText('08:00')).toBeInTheDocument();
+    expect(screen.getByText('18:00')).toBeInTheDocument();
+    // 08h30 – 12h00 : 3 h 30 à 64 px l'heure.
+    expect(screen.getByText('Rendez-vous A').parentElement).toHaveStyle({ height: '224px', top: '32px' });
   });
 });
 

@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { addDays, addMonths, formatDay, formatMonth, leadingBlanks, monthDays } from '../Calendar/calendarUtils';
 import styles from './PlanningView.module.css';
 
@@ -13,6 +14,8 @@ export interface PlanningEvent {
   subtitle?: string;
   /** `blocked` = indisponibilité, `muted` = élément secondaire (ex. en attente). */
   tone?: 'default' | 'muted' | 'blocked';
+  /** Couleur de la case (ex. selon le type de prestation) ; sinon couleur principale du thème. */
+  color?: string;
 }
 
 export interface PlanningLabels {
@@ -45,9 +48,16 @@ export interface PlanningViewProps {
   weekdayLabels?: string[];
   /** Nombre d'événements visibles par case en vue mois. */
   maxPerMonthCell?: number;
+  /** Heures affichées dans les vues jour et semaine (élargies si un événement en sort). */
+  hourStart?: number;
+  hourEnd?: number;
+  /** Heure actuelle « HH:mm » pour le trait de l'heure courante (fournie par l'application, testable). */
+  now?: string;
 }
 
 const DEFAULT_WEEKDAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+/** Hauteur d'une heure dans la grille (px). */
+const HEURE_PX = 64;
 
 /** Lundi de la semaine de `date`. */
 export function startOfWeek(date: string): string {
@@ -57,6 +67,7 @@ export function startOfWeek(date: string): string {
 }
 
 const heure = (dateTime: string) => dateTime.slice(11, 16).replace(':', 'h');
+const minutes = (hhmm: string) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));
 
 /** Événements d'un jour, triés par heure de début (un événement sur plusieurs jours apparaît chaque jour). */
 export function eventsOfDay(events: PlanningEvent[], day: string): PlanningEvent[] {
@@ -67,7 +78,36 @@ export function eventsOfDay(events: PlanningEvent[], day: string): PlanningEvent
     .sort((a, b) => a.start.localeCompare(b.start));
 }
 
-/** Planning du pro : vues jour, semaine (liste par jour) et mois (grille), navigation précédent / suivant / aujourd'hui. */
+/** Place les événements d'un jour en colonnes quand ils se chevauchent (col = colonne, cols = colonnes du groupe). */
+export function disposer(events: PlanningEvent[], day: string): { event: PlanningEvent; debut: number; fin: number; col: number; cols: number }[] {
+  const places = eventsOfDay(events, day).map((event) => ({
+    event,
+    debut: event.start.slice(0, 10) < day ? 0 : minutes(event.start.slice(11, 16)),
+    fin: event.end.slice(0, 10) > day ? 24 * 60 : Math.max(minutes(event.end.slice(11, 16)), 1),
+    col: 0,
+    cols: 1,
+  }));
+  let groupe: typeof places = [];
+  let finGroupe = -1;
+  const fermer = () => { const n = Math.max(1, ...groupe.map((p) => p.col + 1)); groupe.forEach((p) => { p.cols = n; }); };
+  for (const p of places) {
+    if (p.debut >= finGroupe) { fermer(); groupe = []; }
+    const prises = new Set(groupe.filter((g) => g.fin > p.debut).map((g) => g.col));
+    let col = 0;
+    while (prises.has(col)) col++;
+    p.col = col;
+    groupe.push(p);
+    finGroupe = Math.max(finGroupe, p.fin);
+  }
+  fermer();
+  return places;
+}
+
+/**
+ * Planning du pro : vues jour et semaine en emploi du temps (toute la journée affichée, chaque rendez-vous dans une
+ * case dont la hauteur suit sa durée, côte à côte s'ils se chevauchent), vue mois en grille ; navigation précédent /
+ * suivant / aujourd'hui.
+ */
 export function PlanningView({
   mode,
   date,
@@ -79,11 +119,24 @@ export function PlanningView({
   onEventClick,
   locale = 'fr-FR',
   weekdayLabels = DEFAULT_WEEKDAYS,
-  maxPerMonthCell = 2,
+  maxPerMonthCell = 3,
+  hourStart = 7,
+  hourEnd = 20,
+  now,
 }: PlanningViewProps) {
   const month = date.slice(0, 7);
   const lundi = startOfWeek(date);
   const semaine = Array.from({ length: 7 }, (_, i) => addDays(lundi, i));
+  const jours = mode === 'day' ? [date] : semaine;
+
+  // Plage horaire : celle demandée, élargie aux événements affichés.
+  const places = jours.map((j) => disposer(events, j));
+  const toutes = places.flat();
+  const debutH = Math.min(hourStart, ...toutes.map((p) => Math.floor(p.debut / 60)));
+  const finH = Math.max(hourEnd, ...toutes.map((p) => Math.ceil(p.fin / 60)));
+  const heures = Array.from({ length: finH - debutH }, (_, i) => debutH + i);
+  const hauteur = (finH - debutH) * HEURE_PX;
+  const px = (min: number) => ((min - debutH * 60) / 60) * HEURE_PX;
 
   const titre =
     mode === 'month'
@@ -98,32 +151,39 @@ export function PlanningView({
     else onDateChange(`${addMonths(month, sens)}-01`);
   };
 
-  const evenement = (e: PlanningEvent, compact = false) => {
-    const contenu = (
-      <>
-        <span className={styles.time}>{heure(e.start)}{compact ? '' : ` – ${heure(e.end)}`}</span>
-        <span className={styles.eventTitle}>{e.title}</span>
-        {!compact && e.subtitle && <span className={styles.subtitle}>{e.subtitle}</span>}
-      </>
-    );
-    const classe = [styles.event, styles[e.tone ?? 'default'], compact ? styles.compact : ''].join(' ').trim();
-    return (
-      <li key={e.id}>
-        {onEventClick ? (
-          <button type="button" className={classe} onClick={() => onEventClick(e)}>{contenu}</button>
-        ) : (
-          <div className={classe}>{contenu}</div>
-        )}
-      </li>
-    );
-  };
+  const classeEvenement = (e: PlanningEvent, extra = '') => [styles.event, styles[e.tone ?? 'default'], extra].join(' ').trim();
+  const couleur = (e: PlanningEvent): CSSProperties | undefined => (e.color && (e.tone ?? 'default') !== 'blocked' ? ({ '--couleur': e.color } as CSSProperties) : undefined);
+  const bouton = (e: PlanningEvent, contenu: React.ReactNode, classe: string, style?: CSSProperties) => (
+    onEventClick
+      ? <button type="button" className={classe} style={style} onClick={() => onEventClick(e)}>{contenu}</button>
+      : <div className={classe} style={style}>{contenu}</div>
+  );
 
-  const jour = (day: string) => {
-    const liste = eventsOfDay(events, day);
-    return liste.length === 0 ? (
-      <p className={styles.empty}>{labels.empty}</p>
-    ) : (
-      <ul className={styles.list}>{liste.map((e) => evenement(e))}</ul>
+  const colonneJour = (day: string, i: number) => {
+    const liste = places[i];
+    return (
+      <div key={day} className={[styles.colonne, day === today ? styles.isToday : ''].join(' ').trim()} style={{ height: hauteur }}>
+        {liste.length === 0 && <p className={mode === 'day' ? styles.emptyDay : styles.srOnly}>{labels.empty}</p>}
+        <ul className={styles.cases}>
+          {liste.map(({ event: e, debut, fin, col, cols }) => {
+            const top = Math.max(0, px(debut));
+            const h = Math.max(22, px(fin) - top);
+            const court = h < 44;
+            const contenu = (
+              <>
+                <span className={styles.time}>{heure(e.start)} – {heure(e.end)}</span>
+                <span className={styles.eventTitle}>{e.title}</span>
+                {!court && e.subtitle && <span className={styles.subtitle}>{e.subtitle}</span>}
+              </>
+            );
+            const style: CSSProperties = { top, height: h, left: `calc(${(col / cols) * 100}% + 2px)`, width: `calc(${100 / cols}% - 4px)`, ...couleur(e) };
+            return <li key={e.id}>{bouton(e, contenu, classeEvenement(e, court ? styles.court : ''), style)}</li>;
+          })}
+        </ul>
+        {day === today && now && minutes(now) >= debutH * 60 && minutes(now) <= finH * 60 && (
+          <span className={styles.maintenant} style={{ top: px(minutes(now)) }} aria-hidden="true" />
+        )}
+      </div>
     );
   };
 
@@ -145,20 +205,27 @@ export function PlanningView({
         </div>
       </div>
 
-      {mode === 'day' && jour(date)}
-
-      {mode === 'week' && (
-        <div className={styles.week}>
-          {semaine.map((day, i) => (
-            <div key={day} className={[styles.weekDay, day === today ? styles.isToday : ''].join(' ').trim()}>
-              <h3 className={styles.dayTitle}>
+      {mode !== 'month' && (
+        <div className={[styles.agenda, mode === 'week' ? styles.agendaSemaine : ''].join(' ').trim()}>
+          <div className={styles.entete}>
+            <span />
+            {mode === 'week' ? semaine.map((day, i) => (
+              <h3 key={day} className={[styles.dayTitle, day === today ? styles.isToday : ''].join(' ').trim()}>
                 <button type="button" className={styles.dayLink} onClick={() => { onDateChange(day); onModeChange('day'); }} aria-label={formatDay(day, locale)}>
                   <span aria-hidden="true">{weekdayLabels[i]} {Number(day.slice(8))}</span>
                 </button>
               </h3>
-              {jour(day)}
+            )) : <span />}
+          </div>
+          <div className={styles.grille} style={{ height: hauteur }}>
+            <div className={styles.heures} aria-hidden="true">
+              {heures.map((h) => <span key={h} style={{ top: (h - debutH) * HEURE_PX }}>{String(h).padStart(2, '0')}:00</span>)}
             </div>
-          ))}
+            <div className={styles.lignes} aria-hidden="true">
+              {heures.map((h) => <span key={h} style={{ top: (h - debutH) * HEURE_PX }} />)}
+            </div>
+            {jours.map((day, i) => colonneJour(day, i))}
+          </div>
         </div>
       )}
 
@@ -176,13 +243,19 @@ export function PlanningView({
               <div key={day} className={[styles.cell, day === today ? styles.isToday : '', liste.length > 0 ? styles.busy : ''].join(' ').trim()}>
                 <button
                   type="button"
-                  className={styles.dayLink}
+                  className={styles.dayNumber}
                   onClick={() => { onDateChange(day); onModeChange('day'); }}
                   aria-label={labels.dayWithCount(formatDay(day, locale), liste.length)}
                 >
                   <span aria-hidden="true">{Number(day.slice(8))}</span>
                 </button>
-                {visibles.length > 0 && <ul className={styles.list}>{visibles.map((e) => evenement(e, true))}</ul>}
+                {visibles.length > 0 && (
+                  <ul className={styles.puces}>
+                    {visibles.map((e) => (
+                      <li key={e.id}>{bouton(e, <><span className={styles.time}>{heure(e.start)}</span> <span className={styles.eventTitle}>{e.title}</span></>, classeEvenement(e, styles.puce), couleur(e))}</li>
+                    ))}
+                  </ul>
+                )}
                 {masques > 0 && <span className={styles.more}>{labels.more(masques)}</span>}
               </div>
             );

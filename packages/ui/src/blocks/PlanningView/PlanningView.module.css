@@ -1,56 +1,69 @@
-.planning { font-family: var(--bs-font); color: var(--bs-color-text); }
+.planning { font-family: var(--bs-font); color: var(--bs-color-text); --couleur-defaut: #2563eb; }
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--bs-space-3); margin-bottom: var(--bs-space-4); }
-.title { order: -1; flex-basis: 100%; margin: 0; font-size: 1.125rem; }
+.title { order: -1; flex-basis: 100%; margin: 0; font-size: 1.25rem; text-transform: capitalize; }
 .nav, .modes { display: flex; gap: var(--bs-space-1); }
-.navButton, .todayButton, .mode, .dayLink {
+.modes { padding: 3px; border-radius: 10px; background: var(--bs-color-bg); border: 1px solid var(--bs-color-border); }
+.navButton, .todayButton {
   min-width: 44px; min-height: 44px; padding: 0 var(--bs-space-3);
-  border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-sm);
-  background: var(--bs-color-surface); color: var(--bs-color-text); font: inherit; cursor: pointer;
-  transition: background var(--bs-transition);
+  border: 1px solid var(--bs-color-border); border-radius: 10px;
+  background: var(--bs-color-surface); color: var(--bs-color-text); font: inherit; font-weight: 600; cursor: pointer;
 }
-.mode[aria-pressed='true'] { background: var(--bs-color-primary); border-color: var(--bs-color-primary); color: #fff; }
-.navButton:focus-visible, .todayButton:focus-visible, .mode:focus-visible, .dayLink:focus-visible, .event:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
+.navButton { font-size: 1.3rem; }
+.mode { min-height: 38px; padding: 0 var(--bs-space-4); border: 0; border-radius: 8px; background: none; color: var(--bs-color-text-muted); font: inherit; font-weight: 700; cursor: pointer; }
+.mode[aria-pressed='true'] { background: var(--bs-color-surface); color: var(--bs-color-text); box-shadow: 0 1px 4px rgb(0 0 0 / .15); }
+.navButton:focus-visible, .todayButton:focus-visible, .mode:focus-visible, .dayLink:focus-visible, .dayNumber:focus-visible, .event:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--bs-space-1); }
-.empty { margin: 0; color: var(--bs-color-text-muted); font-size: 0.875rem; }
+/* Emploi du temps (jour, semaine) : colonne des heures + une colonne par jour, une ligne par heure. */
+.agenda { border: 1px solid var(--bs-color-border); border-radius: 12px; background: var(--bs-color-surface); overflow: auto; max-height: 75vh; }
+.agendaSemaine .entete, .agendaSemaine .grille { min-width: 760px; }
+.entete { position: sticky; top: 0; z-index: 3; display: grid; grid-template-columns: 56px repeat(var(--jours, 1), minmax(0, 1fr)); background: var(--bs-color-surface); border-bottom: 1px solid var(--bs-color-border); }
+.agendaSemaine .entete, .agendaSemaine .grille { --jours: 7; }
+.dayTitle { margin: 0; padding: var(--bs-space-2) 0; text-align: center; font-size: .9rem; }
+.dayLink { min-height: 40px; padding: 0 var(--bs-space-2); border: 0; border-radius: 8px; background: none; color: var(--bs-color-text); font: inherit; font-weight: 700; cursor: pointer; }
+.dayTitle.isToday .dayLink { background: var(--couleur-defaut); color: #fff; }
+.grille { position: relative; display: grid; grid-template-columns: 56px repeat(var(--jours, 1), minmax(0, 1fr)); }
+.heures { position: relative; grid-column: 1; }
+.heures span { position: absolute; right: 8px; transform: translateY(-50%); font-size: .72rem; font-weight: 600; color: var(--bs-color-text-muted); font-variant-numeric: tabular-nums; }
+.heures span:first-child { transform: none; }
+.lignes { position: absolute; inset: 0 0 0 56px; pointer-events: none; }
+.lignes span { position: absolute; left: 0; right: 0; border-top: 1px solid var(--bs-color-border); }
+.lignes span::after { content: ''; position: absolute; left: 0; right: 0; top: 32px; border-top: 1px dashed color-mix(in srgb, var(--bs-color-border) 60%, transparent); }
+.colonne { position: relative; border-left: 1px solid var(--bs-color-border); }
+.colonne.isToday { background: color-mix(in srgb, var(--couleur-defaut) 5%, transparent); }
+.cases { list-style: none; margin: 0; padding: 0; }
+.emptyDay { position: absolute; top: 1rem; left: 0; right: 0; margin: 0; text-align: center; color: var(--bs-color-text-muted); font-size: .9rem; }
+.maintenant { position: absolute; left: 0; right: 0; z-index: 2; border-top: 2px solid #e11d48; }
+.maintenant::before { content: ''; position: absolute; left: -5px; top: -6px; width: 10px; height: 10px; border-radius: 50%; background: #e11d48; }
+
+/* Une case par rendez-vous : couleur pleine, texte blanc, hauteur = durée. */
 .event {
-  display: flex; flex-direction: column; width: 100%; padding: var(--bs-space-2);
-  border: none; border-inline-start: 4px solid var(--bs-color-primary); border-radius: var(--bs-radius-sm);
-  background: var(--bs-color-primary-soft); color: var(--bs-color-text); font: inherit; text-align: start;
+  position: absolute; display: flex; flex-direction: column; gap: 1px; overflow: hidden; padding: 6px 8px;
+  border: 0; border-radius: 8px; background: var(--couleur, var(--couleur-defaut)); color: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / .18); font: inherit; font-size: .82rem; text-align: start; line-height: 1.25;
 }
 button.event { cursor: pointer; }
-.muted { border-inline-start-color: var(--bs-color-text-muted); background: var(--bs-color-bg); }
-.blocked { border-inline-start-color: var(--bs-color-disabled); background: repeating-linear-gradient(45deg, var(--bs-color-bg), var(--bs-color-bg) 6px, var(--bs-color-surface) 6px, var(--bs-color-surface) 12px); }
-.time { font-size: 0.8125rem; font-weight: 700; }
-.eventTitle { font-weight: 600; }
-.subtitle { font-size: 0.875rem; color: var(--bs-color-text-muted); }
-.compact { flex-direction: row; gap: var(--bs-space-1); padding: 2px var(--bs-space-1); font-size: 0.75rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+button.event:hover { filter: brightness(1.08); }
+.court { flex-direction: row; align-items: center; gap: 6px; padding: 2px 8px; white-space: nowrap; }
+.time { font-size: .74rem; font-weight: 700; opacity: .92; font-variant-numeric: tabular-nums; }
+.eventTitle { font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
+.subtitle { font-size: .76rem; opacity: .9; overflow: hidden; text-overflow: ellipsis; }
+/* En attente (ex. paiement en ligne non reçu) : rayé, bordure en pointillés. */
+.muted { background: repeating-linear-gradient(135deg, var(--couleur, var(--couleur-defaut)) 0 8px, color-mix(in srgb, var(--couleur, var(--couleur-defaut)) 75%, #fff) 8px 16px); outline: 2px dashed rgb(255 255 255 / .7); outline-offset: -3px; }
+/* Indisponibilité : gris hachuré. */
+.blocked { background: repeating-linear-gradient(45deg, #9ca3af 0 6px, #b8bec7 6px 12px); color: #1f2937; box-shadow: none; }
 
-.week { display: flex; flex-direction: column; gap: var(--bs-space-3); }
-.weekDay { display: flex; flex-direction: column; gap: var(--bs-space-2); }
-.dayTitle { margin: 0; font-size: 1rem; }
-.dayLink { border: none; background: none; padding: 0 var(--bs-space-1); font-weight: 700; text-align: start; }
-.isToday .dayLink { color: var(--bs-color-primary-dark); text-decoration: underline; }
-
-.month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
-.weekday { text-align: center; font-size: 0.75rem; font-weight: 600; color: var(--bs-color-text-muted); padding: var(--bs-space-1) 0; }
-.cell { display: flex; flex-direction: column; gap: 2px; min-height: 64px; padding: 2px; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-sm); background: var(--bs-color-surface); }
-.cell .list { display: none; }
-.more { font-size: 0.75rem; color: var(--bs-color-text-muted); }
-
-@media (min-width: 768px) {
-  .title { order: 0; flex-basis: auto; }
-  .week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
-  .cell { min-height: 96px; }
-  .cell .list { display: flex; }
-}
-
-/* Sur mobile, la case du mois n'affiche qu'une pastille si le jour est occupé : le détail est dans la vue jour. */
-@media (max-width: 767px) {
-  .cell .more { display: none; }
-  .busy::after { content: ''; align-self: center; width: 8px; height: 8px; border-radius: 50%; background: var(--bs-color-primary); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .navButton, .todayButton, .mode, .dayLink { transition: none; }
+/* Mois : grille, chaque jour avec ses rendez-vous en pastilles colorées. */
+.month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.weekday { text-align: center; font-size: .75rem; font-weight: 700; color: var(--bs-color-text-muted); padding: var(--bs-space-1) 0; text-transform: uppercase; }
+.cell { display: flex; flex-direction: column; gap: 3px; min-height: 92px; padding: 4px; border: 1px solid var(--bs-color-border); border-radius: 10px; background: var(--bs-color-surface); min-width: 0; }
+.cell.isToday { border-color: var(--couleur-defaut); box-shadow: inset 0 0 0 1px var(--couleur-defaut); }
+.dayNumber { align-self: flex-start; min-width: 32px; min-height: 32px; border: 0; border-radius: 8px; background: none; color: var(--bs-color-text); font: inherit; font-weight: 700; cursor: pointer; }
+.cell.isToday .dayNumber { background: var(--couleur-defaut); color: #fff; }
+.puces { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.puce { position: static; flex-direction: row; gap: 4px; width: 100%; padding: 2px 6px; border-radius: 6px; font-size: .72rem; white-space: nowrap; }
+.more { font-size: .75rem; font-weight: 600; color: var(--bs-color-text-muted); padding-left: 4px; }
+@media (max-width: 640px) {
+  .cell { min-height: 64px; }
+  .puce .eventTitle { display: none; }
 }
