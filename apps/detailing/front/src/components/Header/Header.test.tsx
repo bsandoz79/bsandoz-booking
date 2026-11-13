@@ -39,6 +39,12 @@ describe('Header', () => {
     expect(menu).toHaveAttribute('aria-expanded', 'false');
   });
 
+  it('ne propose pas d’installer l’application aux clients (compte pro seulement)', async () => {
+    render(<MemoryRouter><Header /></MemoryRouter>);
+    await userEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    expect(screen.queryByRole('button', { name: /Installer l’application/ })).not.toBeInTheDocument();
+  });
+
   it('affiche le logo comme lien vers l’accueil', () => {
     render(<MemoryRouter><Header /></MemoryRouter>);
     expect(screen.getByRole('link', { name: 'Perfect Clean' })).toHaveAttribute('href', '/');
