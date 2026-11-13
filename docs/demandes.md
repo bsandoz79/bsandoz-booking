@@ -69,3 +69,28 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 
 ### Décisions en attente
 - ❓ Lien de la fiche Google (à créer), informations de facturation du vendeur (`[à compléter]`).
+
+## À faire
+
+### Facturation électronique (réforme)
+- ⏳ **Choisir une plateforme agréée gratuite** et s'y inscrire pour la **réception** des factures (obligatoire depuis le 1er septembre 2026). Pistes gratuites citées par les comparatifs (novembre 2026) : Tiime, Indy, Abby, Shine Facture ; Solo (réception seule) ; Pennylane (offre gratuite incertaine). Vérifier qu'elle figure sur la liste officielle des plateformes immatriculées (impots.gouv.fr).
+- ⏳ **Faire confirmer le calendrier d'émission** par le comptable ou l'administration : en principe 1er septembre 2027 pour les micro-entreprises (facture électronique aux clients pro, e-reporting des ventes aux particuliers) ; une source parle d'une obligation déjà en vigueur.
+- ⏳ **Brancher le site sur la plateforme choisie** (développement) : à « Terminé », envoi automatique de la facture (clients pro) et des données de vente (particuliers), si la plateforme propose une API.
+
+### Informations à fournir
+- ⏳ Mentions légales et CGV : responsable, statut, SIRET, adresse, TVA, médiateur, conservation des données ; texte de rétractation à faire valider.
+- ⏳ Informations de facturation du vendeur (onglet Factures).
+- ⏳ Fiche Google à créer, puis lien d'avis à coller dans Réglages → Avis Google.
+- ⏳ Photos des réalisations (avant / après), vrais produits (photos, prix, stock).
+
+### Serveur
+- ⏳ Lancer `sh deploy/apres-envoi.sh` après chaque déploiement de l'API (migrations en attente : catégorie des produits, date de réservation, ordre des options).
+- ⏳ `.env.local` de l'API : clés Stripe (paiement en ligne réel), `PRO_EMAIL`, `BSANDOZ_ICAL_SECRET` (agenda du pro, 32 caractères au moins).
+- ⏳ Supprimer les dossiers « "demo.bsandoz.fr » et « "api.demo.bsandoz.fr » (créés par erreur).
+
+### Idées pour la suite
+- SMS de confirmation et de rappel (prêts, à activer).
+- Relance automatique par e-mail des clients « à relancer ».
+- Export comptable (CSV des factures et des dépenses).
+- Catégories de prestations modifiables depuis l'espace pro.
+
