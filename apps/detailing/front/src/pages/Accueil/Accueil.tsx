@@ -56,9 +56,15 @@ export function Accueil() {
   return (
     <main>
       <section className={styles.hero}>
-        <div className="container">
+        {/* Grand écran : texte à gauche, photo du camion à droite ; téléphone et tablette : photo sous le titre. */}
+        <div className={`container ${styles.heroGrille}`}>
           <p className={styles.eyebrow}>{accueil.surtitre}</p>
           <h1 className={styles.title}>{accueil.titre}</h1>
+          <picture className={styles.heroPhoto}>
+            <source srcSet="/camion.webp" type="image/webp" />
+            <img src="/camion.jpg" width="600" height="600" fetchPriority="high"
+              alt={`Le camion-atelier ${SITE.brand}, portes ouvertes : produits, enrouleurs et matériel autonome en eau et en électricité.`} />
+          </picture>
           <p className={styles.lead}>{accueil.introduction}</p>
           <div className={styles.ctas}>
             <Link to="/reserver" className="btn">Réserver un créneau</Link>

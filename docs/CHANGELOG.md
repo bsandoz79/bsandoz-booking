@@ -136,6 +136,7 @@
 - Réservation : étape « Vos coordonnées » reprise (nom et prénom, modèle du véhicule, réservation pour une entreprise avec SIRET, précision repliable) et paiement au choix sans acompte ; textes du site, CGV, espace client et planning mis à jour.
 - Demande de devis professionnel : nom de l'entreprise, SIRET ou n° BCE (contrôlé) et adresse de facturation facultative, comme à la réservation pour une entreprise.
 - Zone : rayon de la ville de départ (`rayonVilleKm`, 4 km pour Abbeville) : toute la ville compte pour 0 km, le déplacement offert, les tranches et la distance maximale se comptent depuis sa sortie ; réglable dans l'espace pro ; carte, cartes des tranches et estimation à jour.
+- Accueil : photo du camion-atelier à droite de l'accroche (sous le titre sur téléphone et tablette) ; point fort « Déplacement offert : Abbeville et 5 km autour ».
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
