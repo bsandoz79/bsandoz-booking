@@ -29,6 +29,8 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ « Accéder à l'espace pro » retiré de Mon espace : lien « Espace pro » dans la barre de navigation pour un compte pro, en pastille ambre bien distincte (aussi dans le menu sur téléphone).
 - ✅ Mon espace moins large (680 px), valeur alignée juste après l'intitulé : moins de vide au milieu.
 
+- ✅ Chaque clic dans la barre de navigation (Pro, Mon espace…) ramène tout en haut de la page, même sur la page déjà ouverte ; le bouton « Retour » garde la position.
+
 ### Site public
 - ✅ Formules, options et prix modifiables depuis le site.
 - ✅ Bug : le crayon « Modifier » d'une carte de prestation ouvrait la réservation au lieu de la modification.
