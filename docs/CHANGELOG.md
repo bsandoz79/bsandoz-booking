@@ -140,6 +140,7 @@
 - Téléphone mis en avant : bouton d'appel vert dans l'en-tête de toutes les pages et « Appeler le … » dans l'accroche ; espace pro : bouton « Appeler » du client dans le planning et dans les prochains rendez-vous du tableau de bord (nom et téléphone du client ajoutés à `/admin/dashboard`).
 - Cartes des formules : « Formule … incluse » en couleur, étiquettes en pastilles (« Nouveau », « Durée limitée », « Offert · durée limitée ») écrites entre crochets dans la description du Catalogue, carte mise en avant teintée.
 - Mon espace : bouton « Accéder à l’espace pro » pour un compte professionnel.
+- Planning de l'espace pro en emploi du temps : vues jour, semaine et mois, toute la journée affichée, une case colorée par rendez-vous de la hauteur de sa durée, une couleur par catégorie, rendez-vous qui se chevauchent côte à côte, heure courante.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

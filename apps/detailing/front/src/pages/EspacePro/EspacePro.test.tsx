@@ -29,7 +29,7 @@ describe('Espace pro', () => {
     await ouvrirConnecte();
     await rubrique('Planning');
     await userEvent.click(screen.getByRole('button', { name: 'Jour' }));
-    await userEvent.click(await screen.findByRole('button', { name: /Intérieur Éclat – Client démo A/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Client démo A · Intérieur Éclat/ }));
     const detail = screen.getByRole('region', { name: /Rendez-vous du/ });
     expect(await within(detail).findByText('0 / 4')).toBeInTheDocument();
     await userEvent.click(within(detail).getByRole('button', { name: 'Ajouter un tampon' }));
@@ -40,7 +40,7 @@ describe('Espace pro', () => {
     await ouvrirConnecte();
     await rubrique('Planning');
     await userEvent.click(screen.getByRole('button', { name: 'Jour' }));
-    await userEvent.click(await screen.findByRole('button', { name: /Intérieur Éclat – Client démo A/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Client démo A · Intérieur Éclat/ }));
     const detail = screen.getByRole('region', { name: /Rendez-vous du/ });
     expect(within(detail).getByRole('link', { name: /Appeler 01 02 03 04 05/ })).toHaveAttribute('href', 'tel:0102030405');
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler le rendez-vous' }));
