@@ -95,7 +95,7 @@
 }
 
 /* Détail d'un rendez-vous : en-tête (quand, statut), blocs Client / Prestation / Paiement, actions. */
-.detailRdv { gap: 1.25rem; }
+.detailRdv { gap: .85rem; }
 .detailEntete { display: flex; flex-wrap: wrap; align-items: flex-start; gap: .5rem 1rem; }
 .detailEntete > div:first-child { flex: 1; min-width: 12rem; }
 .detailEntete p { margin: 0; }
@@ -108,3 +108,12 @@
 .detailActions { display: flex; flex-wrap: wrap; gap: .5rem; padding-top: .25rem; border-top: 1px solid var(--bs-color-border); padding-block-start: 1rem; }
 .detailAnnulation { display: flex; flex-direction: column; gap: .75rem; padding: 1rem; border: 1px dashed var(--bs-color-danger); border-radius: 12px; }
 .detailAnnulation p { margin: 0; }
+/* Fiche compacte du rendez-vous : intitulé court à gauche, information à droite, une ligne chacune. */
+.fiche { margin: 0; display: flex; flex-direction: column; border: 1px solid var(--bs-color-border); border-radius: 12px; overflow: hidden; }
+.fiche > div { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: .25rem .75rem; padding: .45rem .75rem; font-size: .93rem; line-height: 1.35; }
+.fiche > div + div { border-top: 1px solid var(--bs-color-border); }
+.fiche dt { display: flex; align-items: center; gap: .4rem; margin: 0; color: var(--bs-color-text-muted); font-weight: 600; }
+.fiche dt svg { flex: none; }
+.fiche dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 480px) { .fiche > div { grid-template-columns: 1fr; gap: .1rem; } }
+.detailContact { display: flex; flex-wrap: wrap; gap: .5rem; }

@@ -51,13 +51,13 @@ export function Header() {
         <Link to="/reserver" className={`btn ${styles.reserver}`}>Réserver</Link>
         <div className={styles.actions}>
           {telephone && (
-            <a href={lienTel(telephone)} className={styles.appel} aria-label={`Appeler le ${telephone}`}>
-              <IconeTelephone /><span className={styles.appelNumero}>{telephone}</span>
+            <a href={lienTel(telephone)} className={styles.appel} aria-label={`Appeler le ${telephone}`} title={`Appeler le ${telephone}`}>
+              <IconeTelephone />
             </a>
           )}
           {pro && (
-            <NavLink to="/pro" className={styles.espacePro} aria-label="Espace pro">
-              <Icone nom="tableau" taille={18} /><span className={styles.libelleCompte}>Espace pro</span>
+            <NavLink to="/pro" className={styles.espacePro} aria-label="Espace pro" title="Espace pro">
+              <Icone nom="tableau" taille={18} />
             </NavLink>
           )}
           <NavLink to="/mon-espace" className={styles.compte} aria-label="Mon espace">

@@ -115,10 +115,9 @@ describe('Espace pro', () => {
     await userEvent.click(await screen.findByRole('button', { name: /Client démo A · Intérieur Éclat/ }));
     const detail = screen.getByRole('region', { name: /Rendez-vous du/ });
     expect(within(detail).getByRole('link', { name: /Appeler 01 02 03 04 05/ })).toHaveAttribute('href', 'tel:0102030405');
-    // Détail structuré : client, prestation, paiement.
-    expect(within(detail).getByRole('region', { name: 'Client' })).toHaveTextContent('Client démo A');
-    expect(within(detail).getByRole('region', { name: 'Prestation' })).toHaveTextContent('Intérieur Éclat');
-    expect(within(detail).getByRole('region', { name: 'Paiement' })).toHaveTextContent('À encaisser sur place');
+    // Fiche compacte : client, prestation, paiement ; contact tout en bas.
+    expect(detail).toHaveTextContent(/Client.*Client démo A.*Prestation.*Intérieur Éclat.*Paiement.*À encaisser sur place/);
+    expect(within(detail).getByRole('link', { name: /Écrire/ })).toHaveAttribute('href', 'mailto:client@example.org');
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler le rendez-vous' }));
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler et rembourser l’acompte' }));
     expect(await within(detail).findByRole('status')).toHaveTextContent('Rendez-vous annulé, 8,70');
