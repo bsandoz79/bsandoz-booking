@@ -15,7 +15,26 @@ export interface TableauDeBord {
   pendingPayments: number;
   monthCancellationRate: number;
   next: { id: string; start: string; address: string; client?: string; phone?: string }[];
+  /** Rendez-vous du jour, dans l'ordre. */
+  journee?: RendezVousDuJour[];
+  /** Produits à emporter pour la journée, additionnés. */
+  aCharger?: { nom: string; quantite: number }[];
+  aFaire?: ChoseAFaire[];
+  chiffres?: { moisCents: number; moisPrecedentCents: number; rendezVousMois: number; panierMoyenCents: number; produitsMoisCents: number };
+  clients?: { nouveauxMois: number; aRelancer: { userId: string; client: string; phone: string; derniereVisite: string }[] };
 }
+
+export interface RendezVousDuJour {
+  id: string; start: string; end: string; status: RendezVousPro['status']; address: string; lat: number; lng: number;
+  prestation: string; quantite: number; produits: { nom: string; quantite: number }[]; resteSurPlaceCents: number; notes: string;
+  client: string; phone: string;
+}
+
+/** paiement : paiement en ligne attendu ; statut : rendez-vous passé à marquer fait ou absent ; stock : stock bas ; facturation : informations à compléter. */
+export type ChoseAFaire =
+  | { type: 'paiement' | 'statut'; reservationId: string; start: string; client: string; phone: string }
+  | { type: 'stock'; produit: string; stock: number }
+  | { type: 'facturation' };
 
 export interface RendezVousPro {
   id: string;
@@ -151,6 +170,23 @@ export async function tableauDeBord(): Promise<TableauDeBord> {
       monthRevenueCents: actifs.reduce((s, r) => s + r.totalCents, 0), monthBookings: actifs.length,
       pendingPayments: demo.rdv.filter((r) => r.status === 'pending_payment').length, monthCancellationRate: 0,
       next: actifs.map((r) => ({ id: r.id, start: r.start, address: r.address, client: r.client.name, phone: r.client.phone })),
+      journee: demo.rdv.filter((r) => r.status !== 'cancelled' && new Date(r.start).toDateString() === new Date().toDateString()).map((r) => ({
+        id: r.id, start: r.start, end: r.end, status: r.status, address: r.address, lat: 50.1054, lng: 1.8332, prestation: r.prestation,
+        quantite: r.quantite ?? 1, produits: (r.produits ?? []).map((p) => ({ nom: p.nom, quantite: p.quantite })), resteSurPlaceCents: r.totalCents + (r.produitsCents ?? 0),
+        notes: r.notes, client: r.client.name, phone: r.client.phone,
+      })),
+      aCharger: [],
+      aFaire: [
+        ...demo.rdv.filter((r) => r.status === 'pending_payment').map((r): ChoseAFaire => ({ type: 'paiement', reservationId: r.id, start: r.start, client: r.client.name, phone: r.client.phone })),
+        ...demo.produits.filter((p) => p.active && p.stock <= 2).map((p): ChoseAFaire => ({ type: 'stock', produit: p.name, stock: p.stock })),
+        { type: 'facturation' },
+      ],
+      chiffres: {
+        moisCents: actifs.reduce((s, r) => s + r.totalCents, 0), moisPrecedentCents: 0, rendezVousMois: actifs.length,
+        panierMoyenCents: actifs.length ? Math.round(actifs.reduce((s, r) => s + r.totalCents, 0) / actifs.length) : 0,
+        produitsMoisCents: actifs.reduce((s, r) => s + (r.produitsCents ?? 0), 0),
+      },
+      clients: { nouveauxMois: actifs.length, aRelancer: [] },
     };
   }
   return authHttp('/admin/dashboard');

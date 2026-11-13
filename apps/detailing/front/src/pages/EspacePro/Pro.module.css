@@ -49,3 +49,17 @@
   .vueJour { grid-template-columns: minmax(0, 1.2fr) minmax(340px, 1fr); }
   .colonneDetail { position: sticky; top: 5rem; }
 }
+
+/* Tableau de bord : « Ma journée ». */
+.entetePanneau { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
+.etape { display: grid; grid-template-columns: 4.25rem 1fr; gap: .75rem; padding-block: .75rem; border-bottom: 1px solid var(--bs-color-border); }
+.etape:last-child { border-bottom: none; }
+.etapeHeure { display: flex; flex-direction: column; align-items: flex-start; font-variant-numeric: tabular-nums; }
+.etapeHeure strong { font-size: 1.15rem; color: var(--bs-color-primary-dark); }
+.etapeHeure span { font-size: .85rem; color: var(--bs-color-text-muted); }
+.etapeCorps { display: flex; flex-direction: column; gap: .35rem; min-width: 0; }
+.etapeCorps p { margin: 0; overflow-wrap: anywhere; }
+.statut { display: inline-block; margin-left: .35rem; padding: .05rem .5rem; border-radius: 999px; background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); font-size: .8rem; font-weight: 700; }
+.produitsJour { font-weight: 700; color: #a34e00; }
+.aCharger { margin: .25rem 0 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: .2rem; }
+:global(:root[data-theme='nuit']) .produitsJour { color: #fdba74; }

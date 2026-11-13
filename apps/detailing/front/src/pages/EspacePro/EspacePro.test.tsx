@@ -25,6 +25,19 @@ describe('Espace pro', () => {
     expect(screen.getByRole('heading', { name: 'Prochains rendez-vous' })).toBeInTheDocument();
   });
 
+  it('montre ma journée (itinéraire, appel), les choses à faire, les chiffres et les clients', async () => {
+    await ouvrirConnecte();
+    const journee = await screen.findByRole('region', { name: 'Ma journée' });
+    expect(within(journee).getByText('Client démo A')).toBeInTheDocument();
+    expect(within(journee).getByRole('link', { name: 'Itinéraire vers Client démo A' })).toHaveAttribute('href', expect.stringContaining('google.com/maps/dir'));
+    expect(within(journee).getByRole('link', { name: /Appeler 01 02 03 04 05/ })).toHaveAttribute('href', 'tel:0102030405');
+    const aFaire = screen.getByRole('region', { name: /Choses à faire/ });
+    expect(within(aFaire).getByText(/Paiement en ligne attendu : Client démo C/)).toBeInTheDocument();
+    expect(within(aFaire).getByText(/Informations de facturation à compléter/)).toBeInTheDocument();
+    expect(screen.getByText('Panier moyen')).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Clients' })).getByText('Personne pour le moment.')).toBeInTheDocument();
+  });
+
   it('ajoute un tampon de fidélité au client depuis le détail du rendez-vous', async () => {
     await ouvrirConnecte();
     await rubrique('Planning');
