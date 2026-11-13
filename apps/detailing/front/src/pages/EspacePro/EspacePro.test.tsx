@@ -38,6 +38,21 @@ describe('Espace pro', () => {
     expect(within(screen.getByRole('region', { name: 'Clients' })).getByText('Personne pour le moment.')).toBeInTheDocument();
   });
 
+  it('ouvre la fiche d’un client et corrige son avoir', async () => {
+    await ouvrirConnecte();
+    await rubrique('Clients');
+    await userEvent.type(await screen.findByLabelText(/Rechercher un client/), 'démo b');
+    await userEvent.click(screen.getByRole('button', { name: 'Voir la fiche de Client démo B' }));
+    expect(await screen.findByRole('heading', { level: 2, name: /Client démo B/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Appeler 01 02 03 04 05/ })).toHaveAttribute('href', 'tel:0102030405');
+    const avoir = screen.getByLabelText(/Montant de l’avoir/);
+    await userEvent.clear(avoir);
+    await userEvent.type(avoir, '15');
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer l’avoir' }));
+    expect(await screen.findByText(/Avoir de 15,00\s€ enregistré/)).toBeInTheDocument();
+    expect(screen.getByText('Intérieur Signature', { exact: false })).toBeInTheDocument();
+  });
+
   it('règle le lien d’avis Google joint au mail de fin de prestation', async () => {
     await ouvrirConnecte();
     await rubrique('Réglages');

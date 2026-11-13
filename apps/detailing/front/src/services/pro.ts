@@ -161,6 +161,9 @@ const demo = {
 };
 let demoId = 100;
 
+/** Rendez-vous de démonstration (fiches clients en mode démo). */
+export const demoRendezVousPro = () => demo.rdv;
+
 // ——— Tableau de bord et planning ———
 export async function tableauDeBord(): Promise<TableauDeBord> {
   if (isDemo()) {

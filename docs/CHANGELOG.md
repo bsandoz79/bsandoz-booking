@@ -153,6 +153,7 @@
 - Site : mode « Modifier le site » pour le pro connecté (bouton en bas à gauche). Crayons ✏️ sur les formules et les options de l'accueil : prix, description, durée, options, mise en avant, remise par véhicule, retrait ; ajout d'une formule dans l'onglet affiché ; formules retirées proposables à nouveau ; changements visibles aussitôt. Tests.
 - Kit et site : demande d'avis Google. Bouton « Laisser un avis » dans le mail de facture envoyé quand le rendez-vous passe à « Terminé » ; lien réglé dans Réglages (vide par défaut : rien n'est demandé) ; routes `GET` / `PUT /admin/settings/avis`. Tests.
 - Kit et site : créneaux groupés. Les heures juste avant ou juste après un rendez-vous déjà prévu (trajets compris, écart réglable dans Réglages, 30 min par défaut) sont marquées « Conseillé » à la réservation ; bloc `SlotPicker` : props `highlighted`, `highlightLabel`, `highlightHint`. Tests.
+- Espace pro : onglet « Clients ». Recherche, tri, total dépensé, visites, dernière visite, prochain rendez-vous, mention « À relancer » ; fiche avec appel, e-mail, panier moyen, carte de fidélité, historique et avoir modifiable ; routes `/admin/clients`. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
