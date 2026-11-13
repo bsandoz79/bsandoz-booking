@@ -105,7 +105,7 @@ export function CarteZone({ zone, centre, ville, estimer, rechercherAdresse, onE
         }).addTo(map);
         L.tooltip({ permanent: true, direction: 'center', className: styles.etiquette })
           .setLatLng([centre.lat + c.rayonM / 111320, centre.lng])
-          .setContent(`${c.km} km · ${prix(c.fraisCents)}${dernier ? ' · au-delà : sur devis' : ''}`)
+          .setContent(`${c === cercles[0] && zone.rayonVilleKm ? `${ville} + ` : ''}${c.km} km · ${prix(c.fraisCents)}${dernier ? ' · au-delà : sur devis' : ''}`)
           .addTo(map);
         return cercle;
       });
@@ -155,8 +155,10 @@ export function CarteZone({ zone, centre, ville, estimer, rechercherAdresse, onE
             </strong>
             <span className={styles.resultatDetail}>
               {estimation.dansZone
-                ? `Vous êtes à environ ${km(estimation.distanceKm)} de route de ${ville}.`
-                : `Vous êtes à environ ${km(estimation.distanceKm)} de ${ville}, au-delà de ${zone.maxDistanceKm} km : je viens sur devis.`}
+                ? (zone.rayonVilleKm
+                  ? (estimation.distanceKm === 0 ? `Vous êtes à ${ville} : déplacement compris.` : `Vous êtes à environ ${km(estimation.distanceKm)} de route après la sortie de ${ville}.`)
+                  : `Vous êtes à environ ${km(estimation.distanceKm)} de route de ${ville}.`)
+                : `Vous êtes à environ ${km(estimation.distanceKm)} ${zone.rayonVilleKm ? `après la sortie de ${ville}` : `de ${ville}`}, au-delà de ${zone.maxDistanceKm} km : je viens sur devis.`}
             </span>
             {!estimation.dansZone && (
               <Link className={`btn ${styles.devis}`} to={adresse ? `/devis?adresse=${encodeURIComponent(adresse.label)}` : '/devis'}>Demander un devis</Link>

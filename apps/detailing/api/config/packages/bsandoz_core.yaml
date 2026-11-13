@@ -29,6 +29,8 @@ bsandoz_core:
         free_radius_km: 5
         price_per_km_cents: 0
         max_distance_km: 50
+        # Tout Abbeville compte pour 0 km : les 5 km offerts et les tranches partent de la sortie de la ville.
+        rayon_ville_km: 4
         paliers:
             - { jusqua_km: 15, prix_cents: 500 }
             - { jusqua_km: 30, prix_cents: 1000 }
@@ -48,3 +50,4 @@ when@test:
             price_per_km_cents: 50
             max_distance_km: 60
             paliers: []
+            rayon_ville_km: 0

@@ -166,4 +166,23 @@ final class ZoneCalculatorTest extends TestCase
         $this->expectException(DomainError::class);
         new Zone(self::LAT, self::LNG, 5, Money::cents(0), 50, 1.0, 50, [new PalierDeplacement(5, Money::cents(500))]);
     }
+
+    public function testToutLaVilleDeDepartCompteCommeZeroKm(): void
+    {
+        // Rayon de ville 4 km : un point à 3 km du centre est « en ville » (0 km), un point à 9 km est à 5 km de la limite.
+        $zone = new \Bsandoz\Core\Booking\Domain\Model\Zone(45.0, 5.0, 5.0, \Bsandoz\Core\Shared\Domain\Money::zero(), 50.0, 1.0, 50.0,
+            [new \Bsandoz\Core\Booking\Domain\Model\PalierDeplacement(15.0, \Bsandoz\Core\Shared\Domain\Money::cents(500))], 4.0);
+        $calcul = new \Bsandoz\Core\Booking\Domain\Service\ZoneCalculator();
+        $parKm = 1 / 111.195; // degrés de latitude par km
+
+        $enVille = $calcul->quote($zone, 45.0 + 3 * $parKm, 5.0);
+        self::assertSame([0.0, 0], [$enVille->distanceKm, $enVille->travelFee->cents]);
+
+        $limiteOfferte = $calcul->quote($zone, 45.0 + 9 * $parKm, 5.0);
+        self::assertSame([5.0, 0], [$limiteOfferte->distanceKm, $limiteOfferte->travelFee->cents], '5 km après la sortie de la ville : encore offert');
+
+        $tranche = $calcul->quote($zone, 45.0 + 12 * $parKm, 5.0);
+        self::assertSame([8.0, 500], [$tranche->distanceKm, $tranche->travelFee->cents]);
+        self::assertSame(15, $tranche->travelMinutes, 'trajet compté depuis le centre (12 km à 50 km/h)');
+    }
 }

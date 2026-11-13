@@ -135,6 +135,7 @@
 - Kit et API : paiement au choix (`paiement` : en ligne pour la totalité, ou sur place), plus d'acompte par défaut, nom de famille facultatif ; mails et vues avec « réglé en ligne » / « à régler sur place » ; migration `reservation.online_payment`.
 - Réservation : étape « Vos coordonnées » reprise (nom et prénom, modèle du véhicule, réservation pour une entreprise avec SIRET, précision repliable) et paiement au choix sans acompte ; textes du site, CGV, espace client et planning mis à jour.
 - Demande de devis professionnel : nom de l'entreprise, SIRET ou n° BCE (contrôlé) et adresse de facturation facultative, comme à la réservation pour une entreprise.
+- Zone : rayon de la ville de départ (`rayonVilleKm`, 4 km pour Abbeville) : toute la ville compte pour 0 km, le déplacement offert, les tranches et la distance maximale se comptent depuis sa sortie ; réglable dans l'espace pro ; carte, cartes des tranches et estimation à jour.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

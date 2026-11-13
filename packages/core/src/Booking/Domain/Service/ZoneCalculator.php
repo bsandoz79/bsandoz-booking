@@ -10,7 +10,8 @@ use Bsandoz\Core\Shared\Domain\Money;
 
 /**
  * Distance, frais de déplacement et temps de trajet depuis le point de départ du pro.
- * Distance routière estimée = distance à vol d'oiseau × roadFactor.
+ * Distance routière estimée = distance à vol d'oiseau × roadFactor, comptée depuis la limite de la ville de départ
+ * (rayonVilleKm autour de son centre) : toute la ville est à 0 km. Le temps de trajet, lui, part du centre.
  * Frais : rien dans le rayon offert ; puis prix de la première tranche qui couvre la distance ; au-delà de la dernière
  * tranche (sans dépasser la distance maximale), prix de la dernière tranche plus le prix au km pour les km en plus.
  * Sans tranche : prix au km pour chaque km commencé au-delà du rayon offert.
@@ -21,10 +22,11 @@ final class ZoneCalculator
 
     public function quote(Zone $zone, float $lat, float $lng): ZoneQuote
     {
-        $distance = round($this->haversine($zone->originLat, $zone->originLng, $lat, $lng) * $zone->roadFactor, 1);
+        $volOiseau = $this->haversine($zone->originLat, $zone->originLng, $lat, $lng);
+        $distance = round(max(0.0, $volOiseau - $zone->rayonVilleKm) * $zone->roadFactor, 1);
         $inZone = $distance <= $zone->maxDistanceKm;
         $fee = $inZone ? $this->frais($zone, $distance) : Money::zero();
-        $minutes = (int) (ceil(($distance / $zone->averageSpeedKmh * 60) / 5) * 5);
+        $minutes = (int) (ceil(($volOiseau * $zone->roadFactor / $zone->averageSpeedKmh * 60) / 5) * 5);
 
         return new ZoneQuote($distance, $inZone, $fee, $minutes);
     }

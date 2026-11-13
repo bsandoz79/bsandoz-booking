@@ -68,7 +68,7 @@ export async function http<T>(path: string, init: RequestInit = {}, token?: stri
 const query = (params: Record<string, string | number | undefined>) =>
   new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])).toString();
 
-const ZONE_DEMO: ZonePublique = { surPlace: false, freeRadiusKm: DEMO_RULES.freeRadiusKm, maxDistanceKm: DEMO_RULES.maxDistanceKm, pricePerKmCents: DEMO_RULES.pricePerKmCents, paliers: DEMO_RULES.paliers, roadFactor: 1.3 };
+const ZONE_DEMO: ZonePublique = { surPlace: false, freeRadiusKm: DEMO_RULES.freeRadiusKm, maxDistanceKm: DEMO_RULES.maxDistanceKm, pricePerKmCents: DEMO_RULES.pricePerKmCents, paliers: DEMO_RULES.paliers, roadFactor: 1.3, rayonVilleKm: DEMO_RULES.rayonVilleKm };
 
 /** Horaires de démonstration (identiques à `detailing:demo:charger`) : lundi–samedi 8 h–19 h, dimanche 10 h–18 h. */
 const HORAIRES_DEMO: Plage[] = [1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, startsAt: '08:00', endsAt: '19:00' })).concat([{ weekday: 7, startsAt: '10:00', endsAt: '18:00' }]);
@@ -99,13 +99,13 @@ export async function getCatalog(): Promise<{ formules: Formule[]; options: Opti
   return { ...c, produits: c.produits ?? [] };
 }
 
-/** Démo : distance à vol d'oiseau depuis le point de départ (Abbeville) × 1,3. */
+/** Démo : distance à vol d'oiseau depuis la limite d'Abbeville (rayon de la ville retiré) × 1,3. */
 function demoDistanceKm(a: Address): number {
   const R = 6371, rad = (d: number) => (d * Math.PI) / 180;
   const { lat, lng } = DEMO_RULES.origin;
   const dLat = rad(a.lat - lat), dLng = rad(a.lng - lng);
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(lat)) * Math.cos(rad(a.lat)) * Math.sin(dLng / 2) ** 2;
-  return Math.round(2 * R * Math.asin(Math.sqrt(h)) * 1.3 * 10) / 10;
+  return Math.round(Math.max(0, 2 * R * Math.asin(Math.sqrt(h)) - DEMO_RULES.rayonVilleKm) * 1.3 * 10) / 10;
 }
 
 /** Frais de déplacement estimés pour une position (carte de la zone) ; la position n'est pas enregistrée. */

@@ -16,7 +16,7 @@ use Bsandoz\Core\Shared\Domain\Money;
  * Remplacé par des paramètres modifiables dans l'espace pro (branche feature/core-admin).
  *
  * @phpstan-type RulesConfig array{min_notice_hours: int, horizon_days: int, buffer_min: int, slot_step_min: int, free_cancel_hours: int, deposit_percent: int|null, deposit_fixed_cents: int|null, hold_minutes: int}
- * @phpstan-type ZoneConfig array{origin_lat: float, origin_lng: float, free_radius_km: float, price_per_km_cents: int, max_distance_km: float, road_factor: float, average_speed_kmh: float, paliers?: list<array{jusqua_km: float, prix_cents: int}>}
+ * @phpstan-type ZoneConfig array{origin_lat: float, origin_lng: float, free_radius_km: float, price_per_km_cents: int, max_distance_km: float, road_factor: float, average_speed_kmh: float, rayon_ville_km?: float, paliers?: list<array{jusqua_km: float, prix_cents: int}>}
  */
 final class ConfiguredSettingsProvider implements SettingsProvider
 {
@@ -49,6 +49,7 @@ final class ConfiguredSettingsProvider implements SettingsProvider
             roadFactor: $zone['road_factor'],
             averageSpeedKmh: $zone['average_speed_kmh'],
             paliers: array_map(static fn (array $p): PalierDeplacement => new PalierDeplacement($p['jusqua_km'], Money::cents($p['prix_cents'])), $zone['paliers'] ?? []),
+            rayonVilleKm: (float) ($zone['rayon_ville_km'] ?? 0.0),
         );
         $this->timezone = new \DateTimeZone($timezone);
     }

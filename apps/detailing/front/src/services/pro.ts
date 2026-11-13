@@ -80,6 +80,8 @@ export interface Regles {
 export interface Zone {
   originLat: number; originLng: number; freeRadiusKm: number; pricePerKmCents: number; maxDistanceKm: number;
   roadFactor?: number; averageSpeedKmh?: number;
+  /** Rayon de la ville de départ : toute la ville compte pour 0 km. */
+  rayonVilleKm?: number;
   /** Frais par tranches au-delà du rayon offert (vide : prix au km). */
   paliers?: { jusquaKm: number; prixCents: number }[];
 }
@@ -132,7 +134,7 @@ const demo = {
   indisponibilites: [] as Indisponibilite[],
   reglages: {
     rules: { minNoticeHours: 24, horizonDays: 60, bufferMin: 30, slotStepMin: 30, freeCancelHours: 48, depositPercent: DEMO_RULES.depositPercent, depositFixedCents: 0, holdMinutes: 10 },
-    zone: { paliers: DEMO_RULES.paliers, originLat: DEMO_RULES.origin.lat, originLng: DEMO_RULES.origin.lng, freeRadiusKm: DEMO_RULES.freeRadiusKm, pricePerKmCents: DEMO_RULES.pricePerKmCents, maxDistanceKm: DEMO_RULES.maxDistanceKm },
+    zone: { paliers: DEMO_RULES.paliers, originLat: DEMO_RULES.origin.lat, originLng: DEMO_RULES.origin.lng, freeRadiusKm: DEMO_RULES.freeRadiusKm, pricePerKmCents: DEMO_RULES.pricePerKmCents, maxDistanceKm: DEMO_RULES.maxDistanceKm, rayonVilleKm: DEMO_RULES.rayonVilleKm },
     timezone: 'Europe/Paris',
   } as Reglages,
 };
