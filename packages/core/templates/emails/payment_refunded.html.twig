@@ -1,7 +1,11 @@
 {% extends '_base.html.twig' %}
-{% block subject %}Remboursement de votre acompte{% endblock %}
+{% import '_macros.html.twig' as m %}
+{% block subject %}Remboursement de {{ amountCents|euros }}{% endblock %}
+{% block preheader %}Votre remboursement est en cours.{% endblock %}
+{% block titre %}Votre remboursement est en cours{% endblock %}
 {% block body %}
-<p>Bonjour {{ firstname }},</p>
-{% if reason == 'creneau_indisponible' %}<p>Votre paiement est arrivé après la fin du délai de réservation et le créneau a été pris entre-temps. Nous en sommes désolés.</p>{% endif %}
-<p>Votre acompte de {{ amountCents|euros }} vous est remboursé sur le moyen de paiement utilisé. Le délai dépend de votre banque (en général quelques jours).</p>
+<p style="margin:0 0 8px;">Bonjour {{ firstname }},</p>
+{% if reason == 'creneau_indisponible' %}<p style="margin:0 0 8px;">Votre paiement est arrivé après la fin du délai de réservation, et le créneau a été pris entre-temps. J’en suis désolé.</p>{% endif %}
+{{ m.recap([['Montant remboursé', amountCents|euros], ['Délai', 'Quelques jours, selon votre banque']]) }}
+<p style="margin:0;font-size:14px;color:#4b5563;">Le remboursement est fait sur le moyen de paiement utilisé.</p>
 {% endblock %}

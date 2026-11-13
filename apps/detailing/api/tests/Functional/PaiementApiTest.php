@@ -105,8 +105,8 @@ final class PaiementApiTest extends WebTestCase
         $confirmation = self::getMailerMessage(0);
         self::assertNotNull($confirmation);
         self::assertEmailHeaderSame($confirmation, 'To', 'camille@example.test');
-        self::assertEmailHeaderSame($confirmation, 'Subject', 'Votre rendez-vous est confirmé');
-        self::assertEmailHtmlBodyContains($confirmation, '10/11/2026 à 09h00');
+        self::assertEmailHeaderSame($confirmation, 'Subject', 'Rendez-vous confirmé : mardi 10 novembre 2026');
+        self::assertEmailHtmlBodyContains($confirmation, 'mardi 10 novembre 2026 à 9 h 00');
         self::assertEmailAttachmentCount($confirmation, 1);
         $pro = self::getMailerMessage(1);
         self::assertNotNull($pro);
@@ -121,7 +121,7 @@ final class PaiementApiTest extends WebTestCase
         // setUp vient de réserver : un compte a été créé, avec son lien d'activation.
         $activation = self::getMailerMessage(0);
         self::assertNotNull($activation);
-        self::assertEmailHeaderSame($activation, 'Subject', 'Créez votre mot de passe');
+        self::assertEmailHeaderSame($activation, 'Subject', 'Créez votre espace client');
         self::assertEmailHeaderSame($activation, 'From', 'Perfect Clean <no-reply@demo.bsandoz.fr>');
         self::assertEmailHtmlBodyContains($activation, 'http://localhost:5173/compte/activer?jeton=');
     }

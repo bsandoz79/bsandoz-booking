@@ -1,6 +1,9 @@
 {% extends '_base.html.twig' %}
 {% import '_macros.html.twig' as m %}
-{% block subject %}Rendez-vous déplacé au {{ start|date('d/m/Y', timezone) }}{% endblock %}
+{% block subject %}Rendez-vous déplacé : {{ client }}, {{ start|jour_long }}{% endblock %}
+{% block titre %}Rendez-vous déplacé{% endblock %}
 {% block body %}
-<p>{{ client }} a déplacé son rendez-vous du {{ m.date(previousStart, timezone) }} au <strong>{{ m.date(start, timezone) }}</strong>.</p>
+<p style="margin:0;">{{ client }} a déplacé son rendez-vous.</p>
+{{ m.recap([['Nouvelle date', start|date_longue], ['Ancienne date', previousStart|date_longue], ['Prestation', prestation ?? ''], ['Téléphone', phone ?? '']]) }}
+{{ m.bouton(front_url ~ '/pro', 'Ouvrir mon planning', true) }}
 {% endblock %}

@@ -1,8 +1,11 @@
 {% extends '_base.html.twig' %}
 {% import '_macros.html.twig' as m %}
-{% block subject %}Votre rendez-vous a été déplacé{% endblock %}
+{% block subject %}Rendez-vous déplacé au {{ start|jour_long }}{% endblock %}
+{% block preheader %}Nouvelle date : {{ start|date_longue }}.{% endblock %}
+{% block titre %}Votre rendez-vous a été déplacé{% endblock %}
 {% block body %}
-<p>Bonjour {{ firstname }},</p>
-<p>Votre rendez-vous est désormais prévu le <strong>{{ m.date(start, timezone) }}</strong>.</p>
-<p>Le rendez-vous mis à jour est joint à ce message pour votre agenda.</p>
+<p style="margin:0 0 8px;">Bonjour {{ firstname }},</p>
+<p style="margin:0;">C’est noté, voici la nouvelle date :</p>
+{{ m.recap([['Nouvelle date', start|date_longue], ['Ancienne date', previousStart is defined ? previousStart|date_longue : ''], ['Prestation', prestation ?? ''], ['Adresse', address ?? '']]) }}
+<p style="margin:0;font-size:14px;color:#4b5563;">L’invitation jointe met votre agenda à jour.</p>
 {% endblock %}

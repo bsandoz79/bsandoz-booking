@@ -1,14 +1,12 @@
 {% extends '_base.html.twig' %}
 {% import '_macros.html.twig' as m %}
-{% block subject %}Nouveau rendez-vous le {{ start|date('d/m/Y', timezone) }}{% endblock %}
+{% block subject %}Nouveau rendez-vous : {{ client }}, {{ start|jour_long }}{% endblock %}
+{% block preheader %}{{ prestation ?: 'Rendez-vous' }} le {{ start|date_longue }}.{% endblock %}
+{% block titre %}Nouveau rendez-vous{% endblock %}
 {% block body %}
-<p>Nouveau rendez-vous confirmé :</p>
-<ul>
-    <li>Date : <strong>{{ m.date(start, timezone) }}</strong></li>
-    {% if prestation is defined and prestation %}<li>Prestation : {{ prestation }}</li>{% endif %}
-    <li>Client : {{ client }}{% if phone is defined and phone %} – {{ phone }}{% endif %}</li>
-    {% if address is defined and address %}<li>Adresse : {{ address }}</li>{% endif %}
-    <li>Total : {{ totalCents|euros }}{% if enLigneCents is defined %}{% if enLigneCents > 0 %} (réglé en ligne : {{ enLigneCents|euros }}{% if surPlaceCents > 0 %}, reste sur place : {{ surPlaceCents|euros }}{% endif %}){% else %} (à régler sur place){% endif %}{% elseif depositCents is defined and depositCents > 0 %} (acompte réglé : {{ depositCents|euros }}){% endif %}</li>
-    {% if notes is defined and notes %}<li>Informations : {{ notes }}</li>{% endif %}
-</ul>
+{% set paiement = enLigneCents is defined
+    ? (enLigneCents > 0 ? (surPlaceCents > 0 ? 'Réglé en ligne : ' ~ enLigneCents|euros ~ ' · sur place : ' ~ surPlaceCents|euros : 'Tout est réglé en ligne (' ~ enLigneCents|euros ~ ')') : 'Sur place, une fois la prestation terminée (' ~ surPlaceCents|euros ~ ')')
+    : (depositCents is defined and depositCents > 0 ? 'Acompte réglé : ' ~ depositCents|euros ~ ', solde sur place' : '') %}
+{{ m.recap([['Date', start|date_longue], ['Prestation', prestation ?? ''], ['Client', client], ['Téléphone', phone ?? ''], ['Adresse', address ?? ''], ['Total', totalCents|euros], ['Paiement', paiement], ['Précisions', notes ?? '']]) }}
+{{ m.bouton(front_url ~ '/pro', 'Ouvrir mon planning') }}
 {% endblock %}

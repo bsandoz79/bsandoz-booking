@@ -1,9 +1,12 @@
 {% extends '_base.html.twig' %}
 {% import '_macros.html.twig' as m %}
-{% block subject %}Rappel : votre rendez-vous de demain{% endblock %}
+{% block subject %}Rappel : votre rendez-vous demain à {{ start|date('G', timezone) }} h {{ start|date('i', timezone) }}{% endblock %}
+{% block preheader %}À demain ! {{ prestation ?: 'Votre rendez-vous' }}{% if address is defined and address %}, {{ address }}{% endif %}.{% endblock %}
+{% block titre %}À demain !{% endblock %}
 {% block body %}
-<p>Bonjour {{ firstname }},</p>
-<p>Petit rappel : votre rendez-vous a lieu demain, le <strong>{{ m.date(start, timezone) }}</strong>.</p>
-{% if address is defined and address %}<p>Adresse : {{ address }}</p>{% endif %}
+<p style="margin:0 0 8px;">Bonjour {{ firstname }},</p>
+<p style="margin:0;">Petit rappel de votre rendez-vous de demain :</p>
+{{ m.recap([['Date', start|date_longue], ['Prestation', prestation ?? ''], ['Adresse', address ?? '']]) }}
+<p style="margin:0;font-size:14px;color:#4b5563;">Pensez à laisser le véhicule accessible et à vider l’habitacle de vos affaires personnelles.</p>
 {% if manageToken is defined and manageToken %}{{ m.bouton(front_url ~ '/rendez-vous?jeton=' ~ manageToken, 'Voir mon rendez-vous') }}{% endif %}
 {% endblock %}
