@@ -163,6 +163,7 @@
 - Mon espace restructuré : nom en titre, e-mail et téléphone dessous, modifiables (route `PATCH /me`, cas d'usage `ModifierMonCompte`), « Se déconnecter » bien visible, « Zone de danger » (suppression du compte) en pointillés rouges tout en bas. Itinéraire : fenêtre au choix Google Maps ou Waze. Tests.
 - Site : crayons de modification en icône seule (rond transparent, libellé lu par les lecteurs d'écran et au survol), placés en haut à droite des cartes, à côté des titres et en haut à droite du bandeau d'accueil.
 - Planning : vue semaine au texte resserré (2 lignes au plus, coupé proprement, texte complet au survol, bloc `PlanningView`) ; un clic sur un rendez-vous en semaine ou en mois amène à son détail.
+- Espace pro : rubriques dans une colonne fixe à gauche avec icônes (ordinateur), grille de boutons sans défilement (téléphone) ; page plus large.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

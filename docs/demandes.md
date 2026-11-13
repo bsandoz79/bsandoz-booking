@@ -23,7 +23,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Catalogue : aperçu en direct de la carte à droite pendant la modification.
 
 - ✅ Planning en semaine : texte des cases resserré (2 lignes, coupé proprement, texte complet au survol) ; un clic amène au détail du rendez-vous.
-- 🔧 Rubriques de l'espace pro (Tableau de bord, Planning, Clients…) dans une colonne à gauche, sans menu à faire défiler.
+- ✅ Rubriques de l'espace pro (Tableau de bord, Planning, Clients…) dans une colonne fixe à gauche sur ordinateur ; sur téléphone, toutes visibles sur quelques lignes (plus de menu à faire défiler).
 
 ### Site public
 - ✅ Formules, options et prix modifiables depuis le site.
