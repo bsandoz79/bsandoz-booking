@@ -122,7 +122,7 @@ const demoRdv = (id: string, jours: number, heure: number, duree: number, presta
 const demo = {
   rdv: [
     demoRdv('d1', 0, 9, 90, 'int-eclat', 'Client démo A'),
-    demoRdv('d2', 1, 14, 210, 'int-signature', 'Client démo B'),
+    { ...demoRdv('d2', 1, 14, 210, 'int-signature', 'Client démo B'), produits: [{ id: 'microfibre', nom: 'Microfibre', prixCents: 500, quantite: 2 }], produitsCents: 1000 },
     demoRdv('d3', 3, 8, 120, 'ext-signature', 'Client démo C', 'pending_payment'),
   ],
   prestations: FORMULES.map((f, i): PrestationPro => {

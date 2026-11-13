@@ -53,6 +53,8 @@ export interface PlanningViewProps {
   hourEnd?: number;
   /** Heure actuelle « HH:mm » pour le trait de l'heure courante (fournie par l'application, testable). */
   now?: string;
+  /** Heures écrites dans les cases des vues jour et semaine (false : la position dans la grille suffit). */
+  showTime?: boolean;
 }
 
 const DEFAULT_WEEKDAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -123,6 +125,7 @@ export function PlanningView({
   hourStart = 7,
   hourEnd = 20,
   now,
+  showTime = true,
 }: PlanningViewProps) {
   const month = date.slice(0, 7);
   const lundi = startOfWeek(date);
@@ -171,7 +174,7 @@ export function PlanningView({
             const court = h < 44;
             const contenu = (
               <>
-                <span className={styles.time}>{heure(e.start)} – {heure(e.end)}</span>
+                {showTime && <span className={styles.time}>{heure(e.start)} – {heure(e.end)}</span>}
                 <span className={styles.eventTitle}>{e.title}</span>
                 {!court && e.subtitle && <span className={styles.subtitle}>{e.subtitle}</span>}
               </>
