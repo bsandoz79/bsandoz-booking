@@ -17,6 +17,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Planning : la journée entière visible sans faire défiler (hauteur de l'écran).
 - ✅ Agenda du pro : Réglages > « Mon agenda », abonnement une fois pour toutes dans Google Agenda, Apple ou Outlook (flux mis à jour tout seul). Sur le serveur : `BSANDOZ_ICAL_SECRET` à définir dans `.env.local` s'il ne l'est pas.
 - ✅ Onglet Clients (fiche, historique, avoir, à relancer).
+- ✅ Clients : tri (nom A→Z / Z→A, plus et moins dépensé, plus de visites, dernière visite, prochain rendez-vous), filtres rapides (à relancer, rendez-vous à venir, fidèles, nouveaux) avec compteurs, recherche, résumé (nombre, dépensé, panier moyen), une ligne par client avec initiales et étiquettes.
 - ✅ Onglet Comptabilité (dépenses ponctuelles ou mensuelles, chiffre d'affaires, résultat par mois).
 - ✅ Créneaux groupés (« Conseillé » à côté d'un rendez-vous déjà prévu, écart réglable).
 - ✅ Avis Google : bouton dans le mail de facture (lien à coller dans Réglages quand la fiche Google existera).

@@ -43,6 +43,21 @@ describe('Espace pro', () => {
     expect(within(screen.getByRole('region', { name: 'Clients' })).getByText('Personne pour le moment.')).toBeInTheDocument();
   });
 
+  it('clients : tri par nom (A→Z, Z→A), filtres rapides et résumé', async () => {
+    await ouvrirConnecte();
+    await rubrique('Clients');
+    const noms = () => within(screen.getByRole('list', { name: 'Liste des clients' })).getAllByRole('button').map((b) => b.getAttribute('aria-label'));
+    expect((await screen.findByRole('list', { name: 'Liste des clients' }))).toBeInTheDocument();
+    expect(noms()[0]).toBe('Voir la fiche de Client démo A');
+    await userEvent.selectOptions(screen.getByLabelText('Trier par'), 'nom-inverse');
+    expect(noms()[0]).toBe('Voir la fiche de Client démo C');
+
+    await userEvent.click(within(screen.getByRole('group', { name: 'Filtrer les clients' })).getByRole('button', { name: /Rendez-vous à venir/ }));
+    expect(noms()).toContain('Voir la fiche de Client démo B');
+    expect(noms()).not.toContain('Voir la fiche de Client démo C');
+    expect(screen.getByRole('list', { name: 'Résumé de la sélection' })).toHaveTextContent(/client/);
+  });
+
   it('ouvre la fiche d’un client et corrige son avoir', async () => {
     await ouvrirConnecte();
     await rubrique('Clients');
