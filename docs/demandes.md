@@ -61,6 +61,9 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Zones modifiables : contour en pointillés autour de chaque zone (haut de page, photo, prestations, étapes, réalisations, zone, horaires, fidélité, avis, FAQ, pied de page, pages légales), crayon dans le coin en haut à droite ; photo de l'accueil modifiable (envoi d'une photo).
 - ✅ « Mon espace » plus structuré : nom, puis e-mail et téléphone modifiables, déconnexion bien visible, zone de danger (suppression du compte) en pointillés rouges tout en bas.
 
+### Relance automatique
+- ✅ Relance par e-mail des clients absents (dernière prestation il y a plus de N jours, 90 par défaut, rien de prévu) : un seul e-mail par période d'absence, bouton « Reprendre rendez-vous », lien de désinscription (page `/desinscription`), envoi en journée, désactivée par défaut ; réglage dans Réglages → « Relance des clients ». Partie avec la tâche cron existante (`bsandoz:notifications:send`).
+
 ### Bugs et mise en ligne
 - ✅ Heures de rendez-vous rondes (8 h 00, 8 h 30…) au lieu de 8 h 05, 8 h 35 : le trajet vers le premier rendez-vous se fait avant l'ouverture ; entre deux rendez-vous, le trajet est toujours compté.
 - ✅ « « lastname » est obligatoire » au paiement (champ « Nom et prénom » unique).
@@ -90,7 +93,6 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 
 ### Idées pour la suite
 - SMS de confirmation et de rappel (prêts, à activer).
-- Relance automatique par e-mail des clients « à relancer ».
 - Export comptable (CSV des factures et des dépenses).
 - Catégories de prestations modifiables depuis l'espace pro.
 

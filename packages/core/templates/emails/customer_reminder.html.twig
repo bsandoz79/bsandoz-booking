@@ -1,0 +1,9 @@
+{% extends '_base.html.twig' %}
+{% import '_macros.html.twig' as m %}
+{% block subject %}Votre véhicule a besoin d'un coup de propre ?{% endblock %}
+{% block body %}
+<p>Bonjour {{ firstname }},</p>
+<p>Votre dernier passage chez {{ brand }} remonte au {{ derniereVisite|date('d/m/Y', timezone) }}. Si vous souhaitez retrouver un véhicule propre, je peux revenir chez vous : choisissez simplement un créneau en ligne.</p>
+{{ m.bouton(front_url ~ '/reserver', 'Reprendre rendez-vous') }}
+<p style="font-size:13px;color:#6b7280;">Vous ne souhaitez plus recevoir ce rappel ? <a href="{{ front_url }}/desinscription?{{ desinscription }}" style="color:#6b7280;">Se désinscrire</a></p>
+{% endblock %}

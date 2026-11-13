@@ -179,6 +179,7 @@
 - Catalogue : chaque option affiche les formules qui la proposent ; filtre par catégorie appliqué aux options (ordre changé entre elles seulement) ; cases d'options du formulaire avec prix et description. Test.
 - Catalogue : dans la fiche d'une formule, options cochées en haut et réordonnables (glisser-déposer) ; la réservation affiche les options de la formule dans cet ordre. Test.
 - Docs : liste « À faire » dans `docs/demandes.md` (facturation électronique : plateforme agréée gratuite, calendrier, branchement du site ; informations à fournir ; serveur ; idées) et case `feature/facturation-electronique` dans le plan.
+- Kit et site : relance automatique par e-mail des clients absents (cas d'usage `RelancerClients`, mail `customer_reminder`, une fois par période d'absence, en journée, désactivée par défaut), réglage dans Réglages, désinscription par lien signé (page `/desinscription`, route `POST /relance/desinscription`) ; lancée par la tâche cron existante. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

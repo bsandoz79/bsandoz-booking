@@ -323,6 +323,9 @@ return static function (ContainerConfigurator $container): void {
     $services->set(\Bsandoz\Core\Facturation\Application\EmettreFacture::class);
     // Demande d'avis (lien joint au mail de facture)
     $services->set(\Bsandoz\Core\Notification\Application\DemandeAvis::class);
+    // Relance automatique des clients absents (cron des notifications)
+    $services->set(\Bsandoz\Core\Notification\Application\RelancerClients::class)->arg('$secret', '%kernel.secret%');
+    $services->set(\Bsandoz\Core\Notification\Infrastructure\Http\RelanceController::class)->public()->tag('controller.service_arguments');
     $services->set(\Bsandoz\Core\Notification\Infrastructure\Http\AvisController::class)->public()->tag('controller.service_arguments');
     $services->set(\Bsandoz\Core\Facturation\Application\ConsulterFactures::class);
     $services->set(\Bsandoz\Core\Facturation\Infrastructure\Http\FactureController::class)->public()->tag('controller.service_arguments');

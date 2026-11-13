@@ -120,6 +120,18 @@ describe('Espace pro', () => {
     expect(screen.getByRole('region', { name: /Rendez-vous du/ })).toHaveTextContent('Intérieur Signature');
   });
 
+  it('active la relance automatique des clients absents', async () => {
+    await ouvrirConnecte();
+    await rubrique('Réglages');
+    const bloc = await screen.findByRole('form', { name: 'Relance des clients' });
+    await userEvent.click(within(bloc).getByRole('switch', { name: /Relancer automatiquement/ }));
+    const jours = within(bloc).getByLabelText(/Après combien de jours/);
+    await userEvent.clear(jours);
+    await userEvent.type(jours, '120');
+    await userEvent.click(within(bloc).getByRole('button', { name: 'Enregistrer la relance' }));
+    expect(await within(bloc).findByRole('status')).toHaveTextContent('absents depuis 120 jours');
+  });
+
   it('règle le lien d’avis Google joint au mail de fin de prestation', async () => {
     await ouvrirConnecte();
     await rubrique('Réglages');
