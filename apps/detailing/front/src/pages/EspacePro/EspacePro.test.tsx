@@ -66,6 +66,20 @@ describe('Espace pro', () => {
     expect(await screen.findByText('« Assurance » arrêtée.')).toBeInTheDocument();
   });
 
+  it('montre l’aperçu de la carte en direct pendant la modification d’une prestation', async () => {
+    await ouvrirConnecte();
+    await rubrique('Catalogue');
+    await userEvent.click(await screen.findByRole('button', { name: 'Modifier Intérieur Éclat' }));
+    const apercu = screen.getByRole('complementary', { name: 'Aperçu sur le site' });
+    expect(within(apercu).getByRole('heading', { name: 'Intérieur Éclat' })).toBeInTheDocument();
+    const prix = screen.getByLabelText(/^Prix \(€\)/);
+    await userEvent.clear(prix);
+    await userEvent.type(prix, '33');
+    expect(apercu).toHaveTextContent('33,00 €');
+    await userEvent.type(screen.getByLabelText(/Mise en avant/), 'Nouveau');
+    expect(apercu).toHaveTextContent('Nouveau');
+  });
+
   it('règle le lien d’avis Google joint au mail de fin de prestation', async () => {
     await ouvrirConnecte();
     await rubrique('Réglages');

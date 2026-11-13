@@ -1,0 +1,37 @@
+# Suivi des demandes
+
+Toutes les demandes faites pendant le développement, avec leur état. Mis à jour au fil de l'eau.
+Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à faire · ❓ décision à prendre.
+
+## 13 novembre 2026
+
+### Réglages et règles
+- ✅ Phares : 45 € le premier véhicule, 40 € chacun des suivants (remise par véhicule réglable dans le catalogue) ; option « Deuxième véhicule » retirée.
+- ✅ Annulation tardive d'un rendez-vous payé en ligne : pas de remboursement, la somme devient un avoir déduit du prochain rendez-vous.
+- ✅ « Désodorisant Perfect Clean » partout.
+
+### Espace pro
+- ✅ Tableau de bord : Ma journée (tournée, GPS, appel, produits à charger, à encaisser), Choses à faire, Chiffres, Clients.
+- ⏳ Tableau de bord : afficher le prochain rendez-vous à côté de « Ma journée ».
+- ⏳ Planning : la journée entière visible sans faire défiler.
+- ✅ Onglet Clients (fiche, historique, avoir, à relancer).
+- ✅ Onglet Comptabilité (dépenses ponctuelles ou mensuelles, chiffre d'affaires, résultat par mois).
+- ✅ Créneaux groupés (« Conseillé » à côté d'un rendez-vous déjà prévu, écart réglable).
+- ✅ Avis Google : bouton dans le mail de facture (lien à coller dans Réglages quand la fiche Google existera).
+- ✅ Catalogue : aperçu en direct de la carte à droite pendant la modification.
+
+### Site public
+- ✅ Formules, options et prix modifiables depuis le site.
+- ✅ Bug : le crayon « Modifier » d'une carte de prestation ouvrait la réservation au lieu de la modification.
+- ✅ Tout le site modifiable sur place : titre et présentation, coordonnées, étapes, réalisations (photos), zone et frais de déplacement, communes, horaires et congés, carte de fidélité, avis, FAQ, pages légales.
+- ✅ Plus de bouton « Modifier le site » : connecté avec le compte pro, les crayons sont affichés directement partout.
+- ⏳ Réservation : chaque choix amène exactement à l'endroit logique suivant.
+- ⏳ Adresse : bouton « Utiliser ma position ».
+
+### Bugs et mise en ligne
+- ✅ « « lastname » est obligatoire » au paiement (champ « Nom et prénom » unique).
+- ✅ Minutes GitHub Actions épuisées : dépôt rendu public (minutes illimitées).
+- ✅ Déploiement : certificat FTPS (intermédiaires Let's Encrypt), TLS 1.2, dossiers « "demo.bsandoz.fr » créés par erreur (à supprimer dans cPanel), CSS/JS envoyés avant les pages.
+
+### Décisions en attente
+- ❓ Lien de la fiche Google (à créer), informations de facturation du vendeur (`[à compléter]`).

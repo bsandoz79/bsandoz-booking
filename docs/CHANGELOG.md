@@ -155,6 +155,8 @@
 - Kit et site : créneaux groupés. Les heures juste avant ou juste après un rendez-vous déjà prévu (trajets compris, écart réglable dans Réglages, 30 min par défaut) sont marquées « Conseillé » à la réservation ; bloc `SlotPicker` : props `highlighted`, `highlightLabel`, `highlightHint`. Tests.
 - Espace pro : onglet « Clients ». Recherche, tri, total dépensé, visites, dernière visite, prochain rendez-vous, mention « À relancer » ; fiche avec appel, e-mail, panier moyen, carte de fidélité, historique et avoir modifiable ; routes `/admin/clients`. Tests.
 - Kit et site : comptabilité simple (module `Comptabilite`). Dépenses ponctuelles ou mensuelles (arrêtables, historique gardé) ; chiffre d'affaires des prestations faites, dépenses et résultat par mois et par année ; onglet « Comptabilité » de l'espace pro ; table `expense` (migration). Tests.
+- Site : tout est modifiable sur place pour le pro connecté, crayons ✏️ affichés d'office (plus de bouton « Modifier le site ») : titre et présentation, coordonnées, étapes, réalisations, zone et frais de déplacement, communes, horaires et congés, carte de fidélité, avis, FAQ, pages légales. Rubriques de « Mon site » réutilisées (`RubriquesSite`). Tests.
+- Espace pro : catalogue avec aperçu en direct de la carte de la formule à droite pendant la modification (composant `CarteFormule` partagé avec l'accueil). Suivi des demandes : `docs/demandes.md`. Test.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
@@ -180,3 +182,4 @@
 - Réservation : « « lastname » est obligatoire » au paiement. Le formulaire envoie « Nom et prénom » en un seul champ, le nom de famille est désormais facultatif pour l'API. Test.
 - Déploiement : lftp envoyait le site et l'API dans des dossiers commençant par un guillemet (« "demo.bsandoz.fr ») ; chemin transmis sans guillemets.
 - Déploiement : page sans mise en forme si elle était ouverte pendant l'envoi (CSS pas encore arrivé, gardé en cache). Fichiers CSS/JS envoyés avant les pages HTML ; cache hors-ligne (service worker) passé en v5 pour effacer les copies ratées.
+- Site : le crayon « Modifier » d'une carte de prestation ouvrait la réservation (la carte entière est un lien) ; lien désactivé pour le pro.

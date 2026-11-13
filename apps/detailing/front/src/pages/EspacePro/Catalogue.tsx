@@ -3,6 +3,8 @@ import { Button, DataTable, Field, Toggle, formatEuros } from '@bsandoz/ui';
 import { CATEGORIES as CATEGORIES_SITE, VEHICLE_TYPES } from '../../data/demo';
 import { catalogue, enregistrerOption, enregistrerPrestation, type OptionPro, type PrestationPro, type Tarif } from '../../services/pro';
 import { nouvellePrestation } from './nouvellePrestation';
+import { CarteFormule } from '../Accueil/CarteFormule';
+import type { Formule } from '../../data/demo';
 import styles from './Pro.module.css';
 
 /** Catégories du site (intérieur, extérieur, phares, soins à la carte). */
@@ -74,8 +76,10 @@ export function CatalogueOnglet() {
   );
 }
 
-export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
+export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree, apercu = true }: {
   initiale: PrestationPro; options: OptionPro[]; onAnnuler: () => void; onEnregistree: (p: PrestationPro) => void;
+  /** Aperçu en direct de la carte affichée sur le site, à droite (sous le formulaire sur téléphone). */
+  apercu?: boolean;
 }) {
   const [p, setP] = useState(initiale);
   const [prix, setPrix] = useState(initiale.id ? euros(initiale.basePriceCents) : '');
@@ -112,7 +116,14 @@ export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistr
     }
   };
 
-  return (
+  // Aperçu : la carte telle qu'elle apparaîtra sur le site, avec les valeurs en cours de saisie.
+  const formuleApercu: Formule = {
+    id: initiale.id ?? 'apercu', category: p.categoryId ?? '', name: p.name, description: p.description,
+    basePriceCents: prixValide(prix) ? centimes(prix) : 0, baseDurationMin: Number(duree) || 0, tarifs: {}, optionIds: p.optionIds,
+    occupePlage: p.occupePlage, badge: p.badge?.trim() ? p.badge : null,
+  };
+
+  const formulaire = (
     <form className={styles.panneau} onSubmit={soumettre} noValidate aria-labelledby="titre-prestation">
       <h3 id="titre-prestation">{initiale.id ? `Modifier « ${initiale.name} »` : 'Nouvelle prestation'}</h3>
       <div className={styles.grille}>
@@ -174,6 +185,17 @@ export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistr
         <Button variant="ghost" onClick={onAnnuler}>Annuler</Button>
       </div>
     </form>
+  );
+
+  if (!apercu) return formulaire;
+  return (
+    <div className={styles.avecApercu}>
+      {formulaire}
+      <aside className={styles.apercu} aria-label="Aperçu sur le site">
+        <p className={styles.aide}>Aperçu sur le site</p>
+        <CarteFormule formule={formuleApercu} apercu />
+      </aside>
+    </div>
   );
 }
 

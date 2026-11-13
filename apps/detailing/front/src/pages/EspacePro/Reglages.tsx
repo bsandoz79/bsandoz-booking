@@ -78,6 +78,13 @@ function FormulaireRegles({ initiales }: { initiales: Record<keyof Regles, strin
   );
 }
 
+/** Zone d'intervention seule (chargée à l'ouverture), pour le mode « Modifier » du site. */
+export function ReglageZone() {
+  const [zone, setZone] = useState<Zone | null>();
+  useEffect(() => { reglages().then((r) => setZone(r.zone)).catch(() => setZone(null)); }, []);
+  return zone === undefined ? <p aria-busy="true">Chargement…</p> : <FormulaireZone initiale={zone} />;
+}
+
 function FormulaireZone({ initiale }: { initiale: Zone | null }) {
   const [deplacement, setDeplacement] = useState(initiale !== null);
   const [origine, setOrigine] = useState<Address | null>(initiale ? { label: 'Point de départ actuel', lat: initiale.originLat, lng: initiale.originLng } : null);
@@ -152,7 +159,7 @@ function FormulaireZone({ initiale }: { initiale: Zone | null }) {
   );
 }
 
-function FormulaireFidelite() {
+export function FormulaireFidelite() {
   const [regle, setRegle] = useState<RegleFidelite>();
   const [requis, setRequis] = useState('');
   const [remise, setRemise] = useState('');

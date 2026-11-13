@@ -53,3 +53,4 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/creneaux-groupes` : créneaux proches d'un rendez-vous déjà prévu proposés en premier
 - [x] `feature/fiche-client` : onglet Clients (recherche, total dépensé, panier moyen, dernière visite, historique, avoir modifiable, fidélité, à relancer après 90 jours)
 - [x] `feature/comptabilite` : module `Comptabilite` (dépenses ponctuelles ou mensuelles), chiffre d'affaires, dépenses et résultat par mois, onglet Comptabilité
+- [x] `feature/edition-partout` : crayons « Modifier » sur tout le site pour le pro connecté (sans bouton), aperçu en direct dans le catalogue, suivi des demandes dans `docs/demandes.md`
