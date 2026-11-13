@@ -87,7 +87,8 @@ export function Reserver() {
   const variante = '';
   const formule = useMemo(() => formules.find((f) => f.id === formuleId), [formules, formuleId]);
   const formulesVisibles = useMemo(() => formules.filter((f) => f.category === category), [formules, category]);
-  const optionsVisibles = options.filter((o) => formule?.optionIds.includes(o.id));
+  // Dans l'ordre choisi pour cette formule (espace pro, formulaire de la formule).
+  const optionsVisibles = (formule?.optionIds ?? []).map((id) => options.find((o) => o.id === id)).filter((o): o is OptionItem => !!o);
   const optionIds = useMemo(() => optionsParVehicule.flat(), [optionsParVehicule]);
   const metierData = useMemo<Record<string, unknown>>(() => {
     if (nbVehicules === 1) return { category };

@@ -166,7 +166,7 @@ export function CatalogueOnglet() {
             <div className={r.rubriqueEntete}>
               <div>
                 <h3 id="cat-options">Options</h3>
-                <p className={r.aide}>Une liste commune : chaque formule choisit les siennes (bouton « Modifier » de la formule, cases « Options proposées »). L’ordre ci-dessous est celui de la réservation.</p>
+                <p className={r.aide}>Une liste commune : chaque formule choisit les siennes et leur ordre (bouton « Modifier » de la formule). L’ordre ci-dessous sert à ranger cette liste et l’accueil.</p>
               </div>
               <button type="button" className={r.boutonContour} onClick={() => { setMessage(''); setOption({ name: '', description: '', priceCents: 0, durationMin: 0, active: true }); }}>
                 Ajouter une option
@@ -204,6 +204,19 @@ export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistr
   const [enCours, setEnCours] = useState(false);
 
   const dureeValide = (d: string) => /^\d+$/.test(d) && Number(d) > 0;
+  // Options cochées dans l'ordre de la formule (en haut, réordonnables), puis les autres.
+  const cochees = p.optionIds.map((id) => options.find((o) => o.id === id)).filter((o): o is OptionPro => !!o?.id);
+  const nonCochees = options.filter((o) => o.id && !p.optionIds.includes(o.id));
+  const basculerOption = (id: string) => setP({ ...p, optionIds: p.optionIds.includes(id) ? p.optionIds.filter((x) => x !== id) : [...p.optionIds, id] });
+  const caseOption = (o: OptionPro) => (
+    <label className={styles.caseOption}>
+      <input type="checkbox" checked={p.optionIds.includes(o.id!)} onChange={() => basculerOption(o.id!)} />
+      <span>
+        <strong>{o.name}</strong> · + {formatEuros(o.priceCents)}{o.active ? '' : ' (non proposée)'}
+        {o.description && <span className={styles.aide}><br />{o.description}</span>}
+      </span>
+    </label>
+  );
   const tarifsValides = !parVehicule || Object.values(tarifs).filter((t) => t.prix || t.duree).every((t) => prixValide(t.prix) && dureeValide(t.duree));
   const valide = p.name.trim() !== '' && prixValide(prix) && dureeValide(duree) && tarifsValides && (remise.trim() === '' || prixValide(remise));
 
@@ -274,17 +287,13 @@ export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistr
       {options.length > 0 && (
         <fieldset className={styles.liste} style={{ border: 0, padding: 0 }}>
           <legend className={styles.choix}>Options proposées avec cette prestation</legend>
-          <p className={styles.aide}>Cochez les suppléments que le client pourra ajouter à cette formule. Elles s’affichent dans l’ordre réglé dans la liste des options.</p>
-          {options.map((o) => o.id && (
-            <label key={o.id} className={styles.caseOption}>
-              <input type="checkbox" checked={p.optionIds.includes(o.id)}
-                onChange={() => setP({ ...p, optionIds: p.optionIds.includes(o.id!) ? p.optionIds.filter((x) => x !== o.id) : [...p.optionIds, o.id!] })} />
-              <span>
-                <strong>{o.name}</strong> · + {formatEuros(o.priceCents)}{o.active ? '' : ' (non proposée)'}
-                {o.description && <span className={styles.aide}><br />{o.description}</span>}
-              </span>
-            </label>
-          ))}
+          <p className={styles.aide}>Cochez les suppléments que le client pourra ajouter à cette formule. Les options cochées remontent en haut : faites-les glisser dans l’ordre où le client les verra.</p>
+          {cochees.length > 0 && (
+            <SortableList items={cochees} getKey={(o) => o.id!} label="Ordre des options de cette formule" className={styles.optionsCochees}
+              handleLabel={(o) => `Déplacer ${o.name}`} movedMessage={(o, n, t) => `${o.name} : position ${n} sur ${t}`}
+              onReorder={(ids) => setP({ ...p, optionIds: ids })} renderItem={caseOption} />
+          )}
+          {nonCochees.map((o) => <div key={o.id}>{caseOption(o)}</div>)}
         </fieldset>
       )}
 
