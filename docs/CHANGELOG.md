@@ -173,6 +173,7 @@
 - Produits : grille de cartes dans l'espace pro (photo, catégorie, prix, stock − / +, modifier, retirer, supprimer), catégorie libre (colonne `catalog_product.category`, migration), suppression définitive (`DELETE /admin/catalog/produits/{id}/definitif`), filtres par catégorie et par nom (aussi dans le Catalogue). Côté client : « Il en reste N » et « Épuisé ». Tests.
 - Détail d'un rendez-vous en fiche compacte (une ligne par information), contact (Appeler, Écrire, Itinéraire) tout en bas ; réservation pré-remplie pour un client connecté (modifiable) ; Mon espace plus étroit ; en-tête allégé. Tests.
 - Espace pro : onglet « Historique » (une ligne par rendez-vous, tri par date du rendez-vous ou de réservation, filtres par période, statut et nom, fiche au clic) ; date de prise du rendez-vous enregistrée (colonne `reservation.created_at`, migration ; `createdAt` dans le planning). Tests.
+- Espace pro, Clients : tri (nom A→Z / Z→A, dépensé, visites, dernière visite, prochain rendez-vous), filtres rapides avec compteurs (à relancer, rendez-vous à venir, fidèles, nouveaux), résumé de la sélection, lignes avec initiales et étiquettes. Test.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

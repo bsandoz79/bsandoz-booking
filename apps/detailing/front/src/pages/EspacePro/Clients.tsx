@@ -1,5 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Button, DataTable, Field, formatEuros } from '@bsandoz/ui';
+import { Button, Field, formatEuros } from '@bsandoz/ui';
+import r from '../../components/Reglages/Reglages.module.css';
+import f from './Filtres.module.css';
 import { changerAvoir, clients, ficheClient, type ClientResume, type FicheClient } from '../../services/clients';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
@@ -9,10 +11,43 @@ const jour = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('fr
 const STATUTS: Record<string, string> = { confirmed: 'À venir', done: 'Fait', no_show: 'Absent', cancelled: 'Annulé', pending_payment: 'Paiement en attente', expired: 'Expiré' };
 const sansAccents = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
-/** Clients : liste (recherche, tri), puis fiche (dépenses, historique, avoir, fidélité, appel). */
+type Tri = 'nom' | 'nom-inverse' | 'depense' | 'depense-inverse' | 'visites' | 'derniere' | 'prochain';
+const TRIS: { value: Tri; label: string }[] = [
+  { value: 'nom', label: 'Nom, de A à Z' },
+  { value: 'nom-inverse', label: 'Nom, de Z à A' },
+  { value: 'depense', label: 'Les plus gros clients (dépensé)' },
+  { value: 'depense-inverse', label: 'Les plus petits clients (dépensé)' },
+  { value: 'visites', label: 'Le plus de visites' },
+  { value: 'derniere', label: 'Dernière visite, la plus récente' },
+  { value: 'prochain', label: 'Prochain rendez-vous, le plus proche' },
+];
+type Groupe = '' | 'relancer' | 'a-venir' | 'fideles' | 'nouveaux';
+const GROUPES: { value: Groupe; label: string; garde: (c: ClientResume) => boolean }[] = [
+  { value: '', label: 'Tous', garde: () => true },
+  { value: 'relancer', label: 'À relancer', garde: (c) => c.aRelancer },
+  { value: 'a-venir', label: 'Rendez-vous à venir', garde: (c) => !!c.prochainRdv },
+  { value: 'fideles', label: 'Fidèles (3 visites et plus)', garde: (c) => c.visites >= 3 },
+  { value: 'nouveaux', label: 'Nouveaux (1 visite au plus)', garde: (c) => c.visites <= 1 },
+];
+const nomTri = (c: ClientResume) => (c.nom || c.email).toLocaleLowerCase('fr');
+const COMPARER: Record<Tri, (a: ClientResume, b: ClientResume) => number> = {
+  nom: (a, b) => nomTri(a).localeCompare(nomTri(b), 'fr'),
+  'nom-inverse': (a, b) => nomTri(b).localeCompare(nomTri(a), 'fr'),
+  depense: (a, b) => b.depenseCents - a.depenseCents,
+  'depense-inverse': (a, b) => a.depenseCents - b.depenseCents,
+  visites: (a, b) => b.visites - a.visites,
+  // Sans visite : en dernier.
+  derniere: (a, b) => (b.derniereVisite ?? '').localeCompare(a.derniereVisite ?? ''),
+  prochain: (a, b) => (a.prochainRdv ?? '9999').localeCompare(b.prochainRdv ?? '9999'),
+};
+const initiales = (nom: string) => nom.split(/[\s@.-]+/).filter(Boolean).slice(0, 2).map((m) => m[0]!.toUpperCase()).join('');
+
+/** Clients : tri (nom, dépensé, visites…), groupes (à relancer, fidèles…), recherche ; puis fiche (dépenses, historique, avoir, fidélité, appel). */
 export function ClientsOnglet() {
   const [liste, setListe] = useState<ClientResume[]>([]);
   const [recherche, setRecherche] = useState('');
+  const [tri, setTri] = useState<Tri>('nom');
+  const [groupe, setGroupe] = useState<Groupe>('');
   const [fiche, setFiche] = useState<FicheClient>();
   const [erreur, setErreur] = useState('');
 
@@ -20,24 +55,71 @@ export function ClientsOnglet() {
 
   const ouvrir = (c: ClientResume) => { setErreur(''); ficheClient(c.userId).then(setFiche).catch((e: Error) => setErreur(e.message)); };
   const filtre = sansAccents(recherche.trim());
-  const visibles = filtre === '' ? liste : liste.filter((c) => sansAccents(`${c.nom} ${c.email} ${c.phone}`).includes(filtre));
+  const garde = GROUPES.find((g) => g.value === groupe)!.garde;
+  const visibles = liste
+    .filter((c) => garde(c) && (filtre === '' || sansAccents(`${c.nom} ${c.email} ${c.phone}`).includes(filtre)))
+    .sort(COMPARER[tri]);
+  const total = visibles.reduce((t, c) => t + c.depenseCents, 0);
+  const visites = visibles.reduce((t, c) => t + c.visites, 0);
 
   if (fiche) return <Fiche fiche={fiche} onRetour={() => setFiche(undefined)} onAvoir={(avoirCents) => setFiche({ ...fiche, avoirCents })} />;
 
   return (
     <section className={styles.section} aria-labelledby="titre-clients-onglet">
-      <h2 id="titre-clients-onglet">Clients</h2>
+      <div className={r.rubriqueEntete}>
+        <div>
+          <h2 id="titre-clients-onglet">Clients</h2>
+          <p className={r.aide}>Tous ceux qui ont réservé. Touchez un client pour voir sa fiche.</p>
+        </div>
+      </div>
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
-      <Field label="Rechercher un client" type="search" value={recherche} placeholder="Nom, e-mail ou téléphone" onChange={(e) => setRecherche(e.target.value)} />
-      <DataTable caption={`${visibles.length} client${visibles.length > 1 ? 's' : ''}`} rows={visibles} rowKey={(c) => c.userId} emptyLabel="Aucun client pour l’instant."
-        onRowClick={ouvrir} rowActionLabel={(c) => `Voir la fiche de ${c.nom || c.email}`}
-        columns={[
-          { key: 'nom', header: 'Client', render: (c) => <>{c.nom || c.email}{c.aRelancer && <span className={styles.statut}>À relancer</span>}</>, sortValue: (c) => c.nom },
-          { key: 'visites', header: 'Visites', align: 'end', sortValue: (c) => c.visites },
-          { key: 'depense', header: 'Dépensé', align: 'end', render: (c) => formatEuros(c.depenseCents), sortValue: (c) => c.depenseCents },
-          { key: 'derniere', header: 'Dernière visite', render: (c) => jour(c.derniereVisite), sortValue: (c) => c.derniereVisite ?? '' },
-          { key: 'prochain', header: 'Prochain rendez-vous', render: (c) => jour(c.prochainRdv), sortValue: (c) => c.prochainRdv ?? '' },
-        ]} />
+
+      <div className={f.filtres}>
+        <div className={f.recherche}><Field label="Rechercher un client" type="search" value={recherche} placeholder="Nom, e-mail ou téléphone" onChange={(e) => setRecherche(e.target.value)} /></div>
+        <label className={styles.choix}>Trier par
+          <select value={tri} onChange={(e) => setTri(e.target.value as Tri)}>
+            {TRIS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+          </select>
+        </label>
+      </div>
+      <div className={f.puces} role="group" aria-label="Filtrer les clients">
+        {GROUPES.map((g) => (
+          <button key={g.value || 'tous'} type="button" className={`${r.boutonContour} ${f.puce}`} aria-pressed={groupe === g.value} onClick={() => setGroupe(g.value)}>
+            {g.label} <span className={styles.compte}>{liste.filter(g.garde).length}</span>
+          </button>
+        ))}
+      </div>
+
+      <ul className={styles.tuiles} aria-label="Résumé de la sélection">
+        <li className={styles.tuile}><span className={styles.valeur}>{visibles.length}</span><span className={styles.libelle}>client{visibles.length > 1 ? 's' : ''}</span></li>
+        <li className={styles.tuile}><span className={styles.valeur}>{formatEuros(total)}</span><span className={styles.libelle}>dépensés (prestations faites)</span></li>
+        <li className={styles.tuile}><span className={styles.valeur}>{formatEuros(visites ? Math.round(total / visites) : 0)}</span><span className={styles.libelle}>panier moyen</span></li>
+      </ul>
+
+      {visibles.length === 0 ? <p className={r.aide}>{liste.length === 0 ? 'Aucun client pour l’instant.' : 'Aucun client ne correspond.'}</p> : (
+        <ul className={r.panneau} aria-label="Liste des clients">
+          {visibles.map((c) => (
+            <li key={c.userId} className={styles.historiqueLigne}>
+              <button type="button" className={styles.clientBouton} onClick={() => ouvrir(c)} aria-label={`Voir la fiche de ${c.nom || c.email}`}>
+                <span className={styles.clientAvatar} aria-hidden="true">{initiales(c.nom || c.email)}</span>
+                <span className={styles.clientQui}>
+                  <strong>{c.nom || c.email}</strong>
+                  <span className={r.ligneSous}>{[c.phone, c.email].filter(Boolean).join(' · ')}</span>
+                </span>
+                <span className={styles.clientChiffres}>
+                  <strong>{formatEuros(c.depenseCents)}</strong>
+                  <span className={r.ligneSous}>{c.visites} visite{c.visites > 1 ? 's' : ''} · {c.derniereVisite ? `dernière le ${jour(c.derniereVisite)}` : 'pas encore venu'}</span>
+                </span>
+                <span className={styles.clientEtiquettes}>
+                  {c.prochainRdv && <span className={r.etiquette}>Prochain : {jour(c.prochainRdv)}</span>}
+                  {c.aRelancer && <span className={`${r.etiquette} ${styles.etiquetteRelance}`}>À relancer</span>}
+                  {c.visites >= 3 && <span className={`${r.etiquette} ${r.etiquetteNeutre}`}>Fidèle</span>}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
