@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties, type KeyboardEvent } from 'react';
+import { Fragment, useEffect, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Dialog, formatEuros } from '@bsandoz/ui';
 import { useModeEdition } from '../../app/modeEditionContexte';
@@ -97,7 +97,12 @@ export function Accueil() {
         {/* Grand écran : texte à gauche, photo du camion à droite ; téléphone et tablette : photo sous le titre. */}
         <div className={`container ${styles.heroGrille}`}>
           <p className={styles.eyebrow}>{accueil.surtitre}</p>
-          <h1 className={styles.title}>{accueil.titre}</h1>
+          {/* Titre révélé mot par mot (lu normalement par les lecteurs d'écran). */}
+          <h1 className={styles.title} aria-label={accueil.titre}>
+            {accueil.titre.split(' ').map((mot, i) => (
+              <Fragment key={`${i}-${mot}`}><span aria-hidden="true" className={styles.mot} style={{ '--i': i } as CSSProperties}>{mot}</span>{' '}</Fragment>
+            ))}
+          </h1>
           <Zone className={styles.zonePhoto} crayons={<ModifierRubrique rubrique="photo" />}>
             {accueil.photo ? (
               <picture className={styles.heroPhoto}>
@@ -113,13 +118,13 @@ export function Accueil() {
           </Zone>
           <p className={styles.lead}>{accueil.introduction}</p>
           <div className={styles.ctas}>
-            <Link to="/reserver" className="btn">Réserver un créneau</Link>
+            <Link to="/reserver" className={`btn ${styles.impulsion}`}>Réserver un créneau</Link>
             {telephone && <a href={lienTel(telephone)} className={`btn ${styles.appeler}`} aria-label={`Appeler le ${telephone}`}><IconeTelephone /> {telephone}</a>}
             <a href="#prestations" className="btn btn--ghost">Voir les prestations</a>
           </div>
           {accueil.arguments.length > 0 && (
             <ul className={styles.args}>
-              {accueil.arguments.map((a) => <li key={a}>{a}</li>)}
+              {accueil.arguments.map((a, i) => <li key={a} style={{ '--i': i } as CSSProperties}>{a}</li>)}
             </ul>
           )}
         </div>

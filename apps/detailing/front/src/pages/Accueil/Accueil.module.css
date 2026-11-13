@@ -188,3 +188,20 @@ blockquote.card { margin: 0; }
   .step, .realisation { transition: none; }
   .step:hover, .realisation:hover { transform: none; }
 }
+
+/* Arrivée sur le site : titre mot par mot, photo en lent zoom arrière, pastilles une à une, une impulsion sur « Réserver ». */
+.heroGrille > .title { animation: none; }
+.mot { display: inline-block; animation: motMonte .7s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(.15s + var(--i) * 90ms); }
+@keyframes motMonte { from { opacity: 0; transform: translateY(.45em); } to { opacity: 1; transform: none; } }
+.heroPhoto { overflow: hidden; border-radius: 22px; box-shadow: 0 18px 40px rgb(0 0 0 / .35); }
+.heroPhoto img { animation: zoomArriere 2.2s cubic-bezier(.2, .7, .2, 1) .2s both, respire 14s ease-in-out 2.4s infinite alternate; transform-origin: 60% 50%; }
+@keyframes zoomArriere { from { transform: scale(1.14); } to { transform: scale(1); } }
+@keyframes respire { from { transform: scale(1); } to { transform: scale(1.04); } }
+.heroGrille > .args { animation: none; }
+.args li { animation: pastille .5s ease both; animation-delay: calc(.9s + var(--i) * 120ms); }
+@keyframes pastille { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: none; } }
+.impulsion { animation: impulsion 1.2s ease-out 1.6s 1 both; }
+@keyframes impulsion { 0% { box-shadow: 0 0 0 0 rgb(22 115 209 / .55); } 100% { box-shadow: 0 0 0 16px rgb(22 115 209 / 0); } }
+@media (prefers-reduced-motion: reduce) {
+  .mot, .heroPhoto img, .args li, .impulsion { animation: none; }
+}
