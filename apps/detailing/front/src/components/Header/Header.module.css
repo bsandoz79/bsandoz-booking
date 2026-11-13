@@ -42,8 +42,8 @@
 .nav { display: none; position: absolute; top: calc(100% + 1px); right: 1.25rem; z-index: 20; min-width: 240px; flex-direction: column; padding: .4rem;
   background: var(--bs-color-surface); border: 1px solid var(--bs-color-border); border-radius: 14px; box-shadow: 0 16px 40px rgb(0 0 0 / .14); font-weight: 600; }
 .nav.ouvert { display: flex; }
-.nav a { display: flex; align-items: center; gap: .55rem; min-height: 46px; padding: 0 .85rem; border-radius: 10px; color: var(--bs-color-text); text-decoration: none; white-space: nowrap; }
-.nav a:hover, .nav a[aria-current='page'] { background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); }
+.nav a, .nav .installer { display: flex; align-items: center; gap: .55rem; min-height: 46px; padding: 0 .85rem; border-radius: 10px; color: var(--bs-color-text); text-decoration: none; white-space: nowrap; }
+.nav a:hover, .nav a[aria-current='page'], .nav .installer:hover { background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); }
 .nav .lienCompte { margin-top: .3rem; border-top: 1px solid var(--bs-color-border); border-radius: 0 0 10px 10px; padding-top: .3rem; }
 /* Espace pro (compte pro) : se distingue en ambre. */
 .nav .espacePro { color: #2a1d00; background: #f5b833; margin-top: .3rem; }
@@ -55,3 +55,6 @@
   .reserver { padding: 0 1rem; min-height: 42px; font-size: .95rem; }
   .nav { left: .75rem; right: .75rem; min-width: 0; }
 }
+/* « Installer l'application » : bouton du menu, présenté comme les liens. */
+.nav .installer { width: 100%; border: 0; background: none; font: inherit; font-weight: 600; cursor: pointer; text-align: left; }
+.nav .installer:focus-visible { outline: 2px solid var(--bs-color-primary); outline-offset: -2px; }
