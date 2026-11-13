@@ -85,6 +85,26 @@ describe('Espace pro', () => {
     expect(apercu).toHaveTextContent('Nouveau');
   });
 
+  it('historique : une ligne par rendez-vous, filtres par statut et nom, tri, fiche au clic', async () => {
+    await ouvrirConnecte();
+    await rubrique('Historique');
+    const liste = await screen.findByRole('list', { name: 'Rendez-vous' });
+    expect(within(liste).getAllByRole('listitem')).toHaveLength(3);
+    expect(liste).toHaveTextContent(/Réservé le/);
+
+    await userEvent.click(within(screen.getByRole('group', { name: 'Filtrer par statut' })).getByRole('button', { name: 'Paiement en attente' }));
+    expect(within(screen.getByRole('list', { name: 'Rendez-vous' })).getAllByRole('listitem')).toHaveLength(1);
+    expect(screen.getByRole('list', { name: 'Rendez-vous' })).toHaveTextContent('Client démo C');
+    await userEvent.click(screen.getByRole('button', { name: 'Tous' }));
+
+    await userEvent.selectOptions(screen.getByLabelText('Trier par'), 'rdv-ancien');
+    expect(within(screen.getByRole('list', { name: 'Rendez-vous' })).getAllByRole('listitem')[0]).toHaveTextContent('Client démo A');
+    await userEvent.type(screen.getByLabelText('Rechercher'), 'démo b');
+    const ligne = within(screen.getByRole('list', { name: 'Rendez-vous' })).getByRole('button', { name: /Client démo B/ });
+    await userEvent.click(ligne);
+    expect(screen.getByRole('region', { name: /Rendez-vous du/ })).toHaveTextContent('Intérieur Signature');
+  });
+
   it('règle le lien d’avis Google joint au mail de fin de prestation', async () => {
     await ouvrirConnecte();
     await rubrique('Réglages');

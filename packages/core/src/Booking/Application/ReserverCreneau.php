@@ -105,6 +105,7 @@ final class ReserverCreneau
                 $c->paiementEnLigne,
                 $avoir->cents > 0 ? $avoir : null,
             );
+            $reservation->marquerCreeLe($now);
 
             if ($reservation->aPayerEnLigne()->cents === 0) {
                 $reservation->confirm();

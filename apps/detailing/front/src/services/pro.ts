@@ -39,6 +39,8 @@ export type ChoseAFaire =
 export interface RendezVousPro {
   id: string;
   status: 'pending_payment' | 'confirmed' | 'done' | 'cancelled' | 'expired' | 'no_show';
+  /** Date de prise du rendez-vous (UTC) ; absente pour les réservations anciennes. */
+  createdAt?: string | null;
   start: string;
   end: string;
   prestationId: string;
@@ -134,7 +136,7 @@ const demoRdv = (id: string, jours: number, heure: number, duree: number, presta
   const f = FORMULES.find((x) => x.id === prestationId) ?? FORMULES[0];
   const tarif = tarifDe(f);
   return {
-    id, status, start: debut.toISOString(), end: new Date(debut.getTime() + duree * 60000).toISOString(), prestationId, prestation: f.name,
+    id, status, createdAt: new Date(debut.getTime() - (4 + jours) * 86400000).toISOString(), start: debut.toISOString(), end: new Date(debut.getTime() + duree * 60000).toISOString(), prestationId, prestation: f.name,
     variante: null, optionIds: [], clientId: `client-${id}`, client: { name: client, email: 'client@example.org', phone: '01 02 03 04 05' },
     address: '1 Place Max Lejeune 80100 Abbeville', totalCents: tarif.priceCents, depositCents: Math.ceil(tarif.priceCents * 0.3), travelFeeCents: 0,
     notes: '', metierData: {},

@@ -27,6 +27,7 @@
         <field name="quantite" column="quantity" type="integer" nullable="true"/>
         <field name="paiementEnLigne" column="online_payment" type="boolean" nullable="true"/>
         <field name="avoirUtilise" column="credit_used_cents" type="bsandoz_money" nullable="true"/>
+        <field name="creeLe" column="created_at" type="datetime_utc_immutable" nullable="true"/>
         <field name="status" type="string" length="20" enum-type="Bsandoz\Core\Booking\Domain\Model\ReservationStatus"/>
         <field name="holdExpiresAt" column="hold_expires_at" type="datetime_utc_immutable" nullable="true"/>
     </entity>

@@ -154,6 +154,7 @@ final class GererRendezVousPro
         return [
             'id' => $r->id(),
             'status' => $r->status()->value,
+            'createdAt' => $r->creeLe()?->setTimezone($utc)->format(DATE_ATOM),
             'start' => $r->period()->start->setTimezone($utc)->format(DATE_ATOM),
             'end' => $r->period()->end->setTimezone($utc)->format(DATE_ATOM),
             'prestationId' => $r->prestationId(),

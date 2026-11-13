@@ -3,6 +3,7 @@ import { Button, PlanningView, formatEuros, startOfWeek, type PlanningEvent, typ
 import { ajusterCarte, carteClient, type CarteFidelite } from '../../services/fidelite';
 import { annulerRendezVous, catalogue, changerStatut, horaires, indisponibilites, planning, rembourser, type Indisponibilite, type Plage, type RendezVousPro } from '../../services/pro';
 import { dateHeure, jourLocal, localIso, plusJours } from './dates';
+import { STATUTS } from './statutsRdv';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
 import { BoutonItineraire } from '../../components/Itineraire/Itineraire';
@@ -13,9 +14,6 @@ import { Link } from 'react-router-dom';
 import { emettreFacture } from '../../services/factures';
 import styles from './Pro.module.css';
 
-const STATUTS: Record<RendezVousPro['status'], string> = {
-  pending_payment: 'Paiement en ligne en attente', confirmed: 'Confirmé', done: 'Terminé', cancelled: 'Annulé', expired: 'Expiré', no_show: 'Client absent',
-};
 
 const LIBELLES = {
   day: 'Jour', week: 'Semaine', month: 'Mois', previous: 'Période précédente', next: 'Période suivante', today: 'Aujourd’hui',
@@ -135,7 +133,7 @@ export function PlanningOnglet() {
 /** « 1 h 30 », « 45 min ». */
 const dureeTexte = (min: number) => (min >= 60 ? `${Math.floor(min / 60)} h${min % 60 ? ` ${String(min % 60).padStart(2, '0')}` : ''}` : `${min} min`);
 
-function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: { rdv: RendezVousPro; nomsOptions?: Record<string, string>; onFermer?: () => void; onChange: () => void }) {
+export function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: { rdv: RendezVousPro; nomsOptions?: Record<string, string>; onFermer?: () => void; onChange: () => void }) {
   // Ce que le client a demandé : options (avec le nombre de véhicules concernés), modèle, entreprise.
   const options = [...new Set(rdv.optionIds)].map((id) => {
     const n = rdv.optionIds.filter((x) => x === id).length;
