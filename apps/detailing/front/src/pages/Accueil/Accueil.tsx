@@ -24,6 +24,7 @@ import { A_COMPLETER } from '../../services/contenu';
 import { COMMUNES, ENTREPRISE, PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
 import { CarteFormule } from './CarteFormule';
+import { AvantApres } from '../../components/AvantApres/AvantApres';
 import styles from './Accueil.module.css';
 
 /** Accueil : textes, étapes, réalisations, avis, FAQ et communes modifiables dans l'espace pro (« Mon site »). */
@@ -126,7 +127,7 @@ export function Accueil() {
       </Zone>
 
       <section id="prestations" className={`container ${styles.section}`} aria-labelledby="titre-prestations">
-        <h2 id="titre-prestations">Prestations</h2>
+        <h2 id="titre-prestations" data-apparition>Prestations</h2>
         <p className={styles.note}>Même prix quel que soit le véhicule. Choisissez une catégorie pour voir le détail de chaque formule.</p>
         <div role="tablist" aria-label="Catégories de prestations" className={styles.onglets} onKeyDown={(e: KeyboardEvent) => {
           if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
@@ -146,8 +147,8 @@ export function Accueil() {
           <div id="panneau-prestations" role="tabpanel" aria-labelledby={`onglet-${categorie.value}`} className={styles.panneau}>
             <p className={styles.intro}>{categorie.description}</p>
             <div className={styles.cartes}>
-              {formulesOnglet.map((f) => (
-                <CarteFormule key={f.id} formule={f} enEdition={edition}
+              {formulesOnglet.map((f, i) => (
+                <CarteFormule key={f.id} formule={f} enEdition={edition} rang={i}
                   crayon={prestationPro(f.id) && <Crayon libelle={`Modifier ${f.name}`} onClick={() => setEnEdition({ prestation: prestationPro(f.id)! })} />} />
               ))}
             </div>
@@ -195,10 +196,10 @@ export function Accueil() {
         <Zone crayons={<ModifierRubrique rubrique="etapes" />}>
         <section className={styles.band} aria-labelledby="titre-etapes">
           <div className={`container ${styles.section}`}>
-            <h2 id="titre-etapes">Comment ça marche</h2>
+            <h2 id="titre-etapes" data-apparition>Comment ça marche</h2>
             <ol className={styles.steps}>
               {etapes.map((e, i) => (
-                <li key={`${i}-${e.titre}`} className={styles.step}>
+                <li key={`${i}-${e.titre}`} className={styles.step} data-apparition style={{ '--delai': `${i * 120}ms` } as CSSProperties}>
                   <h3>{e.titre}</h3>
                   <p>{e.texte}</p>
                 </li>
@@ -211,10 +212,11 @@ export function Accueil() {
 
       <Zone crayons={<ModifierRubrique rubrique="realisations" />}>
       <section id="realisations" className={`container ${styles.section}`} aria-labelledby="titre-realisations">
-        <h2 id="titre-realisations">Réalisations</h2>
+        <h2 id="titre-realisations" data-apparition>Réalisations</h2>
         <div className={styles.grid}>
           {realisations.map((r, i) => (
-            <figure key={`${i}-${r.titre}`} className={styles.realisation}>
+            <figure key={`${i}-${r.titre}`} className={styles.realisation} data-apparition style={{ '--delai': `${i * 120}ms` } as CSSProperties}>
+              {r.avant && r.apres ? <AvantApres avant={r.avant} apres={r.apres} titre={r.titre} /> : (
               <div className={styles.beforeAfter}>
                 {(['avant', 'apres'] as const).map((moment) => (r[moment] ? (
                   <img key={moment} src={r[moment]} alt={`${r.titre} – ${moment === 'avant' ? 'avant' : 'après'}`} className={styles.image} loading="lazy" />
@@ -222,6 +224,7 @@ export function Accueil() {
                   <div key={moment} className={styles.photo}><span>{moment === 'avant' ? 'Avant' : 'Après'}</span><span>{A_COMPLETER}</span></div>
                 )))}
               </div>
+              )}
               <figcaption>{r.titre}</figcaption>
             </figure>
           ))}
@@ -232,7 +235,7 @@ export function Accueil() {
       <Zone crayons={<><ModifierAvec titre="Zone et frais de déplacement" apresFermeture={() => getZone().then(setZone).catch(() => undefined)}><ReglageZone /></ModifierAvec><ModifierRubrique rubrique="communes" /></>}>
       <section id="zone" className={styles.band} aria-labelledby="titre-zone">
         <div className={`container ${styles.section}`}>
-          <h2 id="titre-zone">Zone d’intervention</h2>
+          <h2 id="titre-zone" data-apparition>Zone d’intervention</h2>
           {zone?.surPlace ? (
             <p>Les prestations se font sur place, à <strong>{SITE.city}</strong>.</p>
           ) : (
@@ -241,7 +244,7 @@ export function Accueil() {
               {zone && (
                 <ol className={styles.tranches} aria-label="Frais de déplacement par distance">
                   {tranches(zone).map((t, i, toutes) => (
-                    <li key={t.de} aria-current={estimation && estimation.distanceKm > t.de && estimation.distanceKm <= (t.jusqua ?? Infinity) ? 'true' : undefined}
+                    <li key={t.de} data-apparition aria-current={estimation && estimation.distanceKm > t.de && estimation.distanceKm <= (t.jusqua ?? Infinity) ? 'true' : undefined}
                       className={`${styles.tranche} ${t.jusqua === undefined ? styles.devis : ''}`}
                       style={t.jusqua === undefined ? undefined : { '--teinte': couleurTranche(i, toutes.length - 1) } as CSSProperties}>
                       <span className={styles.km}>{t.jusqua === undefined ? `Au-delà de ${t.de} km` : t.de === 0 && zone.rayonVilleKm ? `${SITE.city} + ${t.jusqua} km` : `${t.de} à ${t.jusqua} km`}</span>
@@ -275,7 +278,7 @@ export function Accueil() {
       {horaires && horaires.length > 0 && (
         <Zone crayons={<ModifierAvec titre="Horaires et congés" apresFermeture={() => getHoraires().then(setHoraires).catch(() => undefined)}><HorairesOnglet /></ModifierAvec>}>
         <section id="horaires" className={`container ${styles.section}`} aria-labelledby="titre-horaires">
-          <h2 id="titre-horaires">Horaires</h2>
+          <h2 id="titre-horaires" data-apparition>Horaires</h2>
           <ul className={styles.horaires}>
             {semaine(horaires).map((j) => (
               <li key={j.weekday} className={`${j.weekday === aujourdhui ? styles.aujourdhui : ''} ${j.plages.length === 0 ? styles.ferme : ''}`}
@@ -300,7 +303,7 @@ export function Accueil() {
         <section id="fidelite" className={styles.band} aria-labelledby="titre-fidelite">
           <div className={`container ${styles.section} ${styles.fidelite}`}>
             <div className={styles.fideliteTexte}>
-              <h2 id="titre-fidelite">{maCarte ? 'Votre carte de fidélité' : 'Carte de fidélité'}</h2>
+              <h2 id="titre-fidelite" data-apparition>{maCarte ? 'Votre carte de fidélité' : 'Carte de fidélité'}</h2>
               <p>
                 Au bout de {fidelite.tamponsRequis} prestations, la suivante bénéficie de <strong>{fidelite.remisePercent} % de remise</strong>. Chaque
                 prestation terminée ajoute un tampon sur votre carte, et la remise s’applique d’elle-même à la réservation.
@@ -321,7 +324,7 @@ export function Accueil() {
       {(avisPublies.length > 0 || edition) && (
       <Zone crayons={<ModifierRubrique rubrique="avis" />}>
       <section id="avis" className={`container ${styles.section}`} aria-labelledby="titre-avis">
-        <h2 id="titre-avis">Avis clients</h2>
+        <h2 id="titre-avis" data-apparition>Avis clients</h2>
         {avisPublies.length === 0 ? (
           <p className={styles.note}>Section masquée pour les visiteurs tant qu’aucun avis n’est publié. Ajoutez ici des avis réels (par exemple ceux de votre fiche Google), avec l’accord des clients.</p>
         ) : (
@@ -343,10 +346,10 @@ export function Accueil() {
         <Zone crayons={<ModifierRubrique rubrique="faq" />}>
         <section id="faq" className={styles.band} aria-labelledby="titre-faq">
           <div className={`container ${styles.section}`}>
-            <h2 id="titre-faq">Questions fréquentes</h2>
+            <h2 id="titre-faq" data-apparition>Questions fréquentes</h2>
             <div className={styles.faq}>
               {faq.map((item, i) => (
-                <details key={`${i}-${item.question}`} className={styles.question}>
+                <details key={`${i}-${item.question}`} className={styles.question} data-apparition style={{ '--delai': `${i * 70}ms` } as CSSProperties}>
                   <summary>{item.question}</summary>
                   <p>{item.reponse}</p>
                 </details>

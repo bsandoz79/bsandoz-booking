@@ -10,3 +10,18 @@ a { color: var(--bs-color-primary-dark); }
 .btn--ghost { background: transparent; color: var(--bs-color-text); border: 1.5px solid var(--bs-color-border); }
 /* Sections atteintes par un lien (« /#fidelite ») : pas cachées sous l'en-tête collé en haut. */
 main section[id] { scroll-margin-top: 5rem; }
+
+/* Apparition au défilement (voir app/Apparitions.tsx) : seulement quand le script est actif et sans « moins d'animations ». */
+html.anim [data-apparition]:not(.visible) { opacity: 0; transform: translateY(26px); }
+html.anim [data-apparition] { transition: opacity .7s ease var(--delai, 0ms), transform .7s cubic-bezier(.2, .7, .2, 1) var(--delai, 0ms); }
+@media (prefers-reduced-motion: reduce) {
+  html.anim [data-apparition]:not(.visible) { opacity: 1; transform: none; }
+}
+
+/* Boutons : léger relief au survol (désactivé si moins d'animations). */
+.btn { position: relative; overflow: hidden; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+.btn:not(.btn--ghost):hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgb(0 0 0 / .15); }
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+  .btn:not(.btn--ghost):hover { transform: none; }
+}

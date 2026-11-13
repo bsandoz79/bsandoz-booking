@@ -65,6 +65,9 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Avant de confirmer, le client est prévenu de ce qu'il perd (avoir, tampons de fidélité, remise prête).
 - ✅ La suppression efface aussi l'adresse, la position, les précisions et les données métier de ses anciens rendez-vous ; montants et dates restent pour la comptabilité, les factures gardent leurs mentions légales.
 
+### Dynamisme du site
+- ✅ Plus vivant mais sobre (pas d'effets « gadget » : ni dégradés, ni halos, ni reflets) : apparitions discrètes au défilement, entrée en douceur du haut de page, points forts en pastilles, étapes numérotées reliées par un trait, titres soulignés, comparateur avant / après à faire glisser pour les réalisations, léger relief au survol. Tout est coupé si « moins d'animations » est demandé.
+
 ### Démonstration
 - ✅ Mentions légales de démonstration : responsable Baptiste Sandoz ; SIRET, adresse, médiateur et conservation fictifs, signalés comme tels. Vendeur des factures rempli par `detailing:demo:charger` (sans écraser ce qui est saisi). À remplacer par les vraies informations.
 - ✅ Boutons d'appel : le numéro seul avec l'icône (« Appeler le … » lu par les lecteurs d'écran).

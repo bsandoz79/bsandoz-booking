@@ -183,6 +183,7 @@
 - Suppression du compte client : avertissement de ce qui sera perdu (avoir, tampons de fidélité) avant confirmation ; anonymisation des anciens rendez-vous (adresse, position, précisions, données métier), factures conservées. Tests.
 - E-mails refaits : mise en page professionnelle (logo, titre, aperçu, encadré récapitulatif, boutons compatibles avec toutes les messageries, pied de page), dates en toutes lettres (filtres `date_longue`, `jour_long`), objets plus précis ; réponse des clients dirigée vers l'adresse du pro. Tests.
 - Démo : mentions légales de démonstration (responsable Baptiste Sandoz, SIRET et adresse fictifs signalés comme tels) ; vendeur des factures de démonstration rempli par `detailing:demo:charger` sans écraser les saisies. Boutons d'appel réduits au numéro (libellé complet pour les lecteurs d'écran). Tests.
+- Site plus dynamique et sobre : apparitions au défilement (`Apparitions`, attribut `data-apparition`), entrée du haut de page, points forts en pastilles, étapes en parcours numéroté, titres soulignés, comparateur avant / après (`AvantApres`), relief au survol ; rien de tout cela si « moins d'animations ».
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
