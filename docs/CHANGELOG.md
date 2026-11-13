@@ -186,6 +186,7 @@
 - Site plus dynamique et sobre : apparitions au défilement (`Apparitions`, attribut `data-apparition`), entrée du haut de page, points forts en pastilles, étapes en parcours numéroté, titres soulignés, comparateur avant / après (`AvantApres`), relief au survol ; rien de tout cela si « moins d'animations ».
 - En-tête minimal : logo, Réserver, téléphone, thème et menu ☰ à toutes les tailles d'écran ; liens (Prestations, Fidélité, Pro, Mon espace, Espace pro) dans un menu déroulant refermé par Échap, un lien ou un clic ailleurs ; styles de l'en-tête réécrits.
 - Accueil : arrivée animée sobre (titre mot par mot, photo en lent zoom arrière, points forts un à un, une impulsion sur « Réserver un créneau »), coupée si moins d'animations.
+- Bouton « Installer l'application » dans le menu : invitation du navigateur (Android, ordinateur) ou aide pas à pas (iPhone), masqué une fois le site installé.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
