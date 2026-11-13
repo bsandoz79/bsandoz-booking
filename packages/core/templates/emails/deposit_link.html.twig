@@ -1,10 +1,12 @@
 {% extends '_base.html.twig' %}
 {% import '_macros.html.twig' as m %}
-{% block subject %}Réglez l'acompte de votre rendez-vous{% endblock %}
+{% block subject %}Confirmez votre rendez-vous du {{ start|jour_long }}{% endblock %}
+{% block preheader %}Il reste à régler l’acompte de {{ depositCents|euros }} pour confirmer.{% endblock %}
+{% block titre %}Plus qu’une étape pour confirmer{% endblock %}
 {% block body %}
-<p>Bonjour {{ firstname }},</p>
-<p>Suite à notre échange, votre rendez-vous du <strong>{{ m.date(start, timezone) }}</strong> est réservé{% if prestation is defined and prestation %} ({{ prestation }}){% endif %}.</p>
-<p>Pour le confirmer, merci de régler l'acompte de {{ depositCents|euros }} :</p>
-{{ m.bouton(paymentUrl, 'Régler l\'acompte') }}
-<p>Le solde est à régler sur place.</p>
+<p style="margin:0 0 8px;">Bonjour {{ firstname }},</p>
+<p style="margin:0;">Suite à notre échange, votre créneau est réservé. Pour le confirmer, réglez l’acompte en ligne :</p>
+{{ m.recap([['Date', start|date_longue], ['Prestation', prestation ?? ''], ['Acompte', depositCents|euros]]) }}
+{{ m.bouton(paymentUrl, 'Régler l’acompte') }}
+<p style="margin:0;font-size:14px;color:#4b5563;">Le reste se règle sur place, une fois la prestation terminée.</p>
 {% endblock %}

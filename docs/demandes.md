@@ -65,6 +65,9 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Avant de confirmer, le client est prévenu de ce qu'il perd (avoir, tampons de fidélité, remise prête).
 - ✅ La suppression efface aussi l'adresse, la position, les précisions et les données métier de ses anciens rendez-vous ; montants et dates restent pour la comptabilité, les factures gardent leurs mentions légales.
 
+### E-mails
+- ✅ E-mails professionnels : en-tête avec logo et liseré, grand titre, phrase d'aperçu, encadré récapitulatif (date en toutes lettres, prestation, adresse, paiement), boutons soignés, pied de page avec le site ; le client peut répondre directement (réponse chez le pro).
+
 ### Relance automatique
 - ✅ Relance par e-mail des clients absents (dernière prestation il y a plus de N jours, 90 par défaut, rien de prévu) : un seul e-mail par période d'absence, bouton « Reprendre rendez-vous », lien de désinscription (page `/desinscription`), envoi en journée, désactivée par défaut ; réglage dans Réglages → « Relance des clients ». Partie avec la tâche cron existante (`bsandoz:notifications:send`).
 

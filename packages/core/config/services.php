@@ -150,6 +150,7 @@ return static function (ContainerConfigurator $container): void {
         param('bsandoz_core.timezone'),
         '%kernel.project_dir%/templates/bsandoz/emails',
         service('logger')->nullOnInvalid(),
+        param('bsandoz_core.mail.pro_email'),
     ]);
     $services->alias(Notifier::class, SymfonyMailerNotifier::class);
     $services->set(IcsGenerator::class);

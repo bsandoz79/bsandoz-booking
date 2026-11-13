@@ -181,6 +181,7 @@
 - Docs : liste « À faire » dans `docs/demandes.md` (facturation électronique : plateforme agréée gratuite, calendrier, branchement du site ; informations à fournir ; serveur ; idées) et case `feature/facturation-electronique` dans le plan.
 - Kit et site : relance automatique par e-mail des clients absents (cas d'usage `RelancerClients`, mail `customer_reminder`, une fois par période d'absence, en journée, désactivée par défaut), réglage dans Réglages, désinscription par lien signé (page `/desinscription`, route `POST /relance/desinscription`) ; lancée par la tâche cron existante. Tests.
 - Suppression du compte client : avertissement de ce qui sera perdu (avoir, tampons de fidélité) avant confirmation ; anonymisation des anciens rendez-vous (adresse, position, précisions, données métier), factures conservées. Tests.
+- E-mails refaits : mise en page professionnelle (logo, titre, aperçu, encadré récapitulatif, boutons compatibles avec toutes les messageries, pied de page), dates en toutes lettres (filtres `date_longue`, `jour_long`), objets plus précis ; réponse des clients dirigée vers l'adresse du pro. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

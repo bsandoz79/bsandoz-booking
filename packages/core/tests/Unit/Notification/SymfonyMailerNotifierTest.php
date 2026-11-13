@@ -19,7 +19,7 @@ final class SymfonyMailerNotifierTest extends TestCase
     /** @var list<Email> */
     private array $envoyes = [];
 
-    private function notifier(?string $overrideDir = null): SymfonyMailerNotifier
+    private function notifier(?string $overrideDir = null, ?string $pro = null): SymfonyMailerNotifier
     {
         $this->envoyes = [];
         $test = $this;
@@ -36,7 +36,7 @@ final class SymfonyMailerNotifierTest extends TestCase
             }
         };
 
-        return new SymfonyMailerNotifier($mailer, 'contact@marque.test', 'Marque', 'Marque', 'https://site.test/', 'Europe/Paris', $overrideDir);
+        return new SymfonyMailerNotifier($mailer, 'contact@marque.test', 'Marque', 'Marque', 'https://site.test/', 'Europe/Paris', $overrideDir, null, $pro);
     }
 
     public function recevoir(Email $email): void
@@ -57,7 +57,7 @@ final class SymfonyMailerNotifierTest extends TestCase
         $this->notifier()->send('camille@example.test', 'activation', ['firstname' => 'Camille', 'token' => 'abc123']);
 
         $email = $this->dernier();
-        self::assertSame('Créez votre mot de passe', $email->getSubject());
+        self::assertSame('Créez votre espace client', $email->getSubject());
         self::assertSame('camille@example.test', $email->getTo()[0]->getAddress());
         self::assertSame('contact@marque.test', $email->getFrom()[0]->getAddress());
         self::assertSame('Marque', $email->getFrom()[0]->getName());
@@ -75,7 +75,10 @@ final class SymfonyMailerNotifierTest extends TestCase
 
         $email = $this->dernier();
         $html = (string) $email->getHtmlBody();
-        self::assertStringContainsString('10/11/2026 à 09h00', $html, 'heure de Paris');
+        self::assertStringContainsString('mardi 10 novembre 2026 à 9 h 00', $html, 'date en toutes lettres, heure de Paris');
+        self::assertSame('Rendez-vous confirmé : mardi 10 novembre 2026', $email->getSubject());
+        self::assertStringContainsString('Votre rendez-vous est confirmé', $html, 'grand titre');
+        self::assertStringContainsString('src="https://site.test/logo.png"', $html, 'logo dans l\'en-tête');
         self::assertStringContainsString("20,70\u{00A0}€", $html);
         self::assertStringContainsString('/rendez-vous?jeton=tok', $html);
         self::assertStringContainsString('1 rue de l&#039;Exemple', $html, 'contenu échappé');
@@ -89,14 +92,14 @@ final class SymfonyMailerNotifierTest extends TestCase
     public static function modeles(): iterable
     {
         $base = ['firstname' => 'Camille', 'start' => '2026-11-10T08:00:00+00:00', 'client' => 'Camille Martin', 'totalCents' => 6900];
-        yield 'mot de passe oublié' => ['password_reset', $base + ['token' => 't'], 'Réinitialisation de votre mot de passe'];
-        yield 'annulation remboursée' => ['booking_cancelled', $base + ['refundable' => true], 'Votre rendez-vous est annulé'];
-        yield 'déplacement' => ['booking_moved', $base, 'Votre rendez-vous a été déplacé'];
-        yield 'rappel' => ['reminder', $base + ['manageToken' => 't'], 'Rappel : votre rendez-vous de demain'];
-        yield 'remboursement' => ['payment_refunded', $base + ['amountCents' => 2070, 'reason' => 'creneau_indisponible'], 'Remboursement de votre acompte'];
-        yield 'pro : nouveau' => ['pro_new_booking', $base + ['phone' => '0600000000'], 'Nouveau rendez-vous le 10/11/2026'];
-        yield 'pro : annulation' => ['pro_booking_cancelled', $base + ['refundable' => false], 'Rendez-vous annulé : 10/11/2026'];
-        yield 'pro : déplacement' => ['pro_booking_moved', $base + ['previousStart' => '2026-11-09T08:00:00+00:00'], 'Rendez-vous déplacé au 10/11/2026'];
+        yield 'mot de passe oublié' => ['password_reset', $base + ['token' => 't'], 'Changement de votre mot de passe'];
+        yield 'annulation remboursée' => ['booking_cancelled', $base + ['refundable' => true], 'Rendez-vous annulé'];
+        yield 'déplacement' => ['booking_moved', $base, 'Rendez-vous déplacé au mardi 10 novembre 2026'];
+        yield 'rappel' => ['reminder', $base + ['manageToken' => 't'], 'Rappel : votre rendez-vous demain à 9 h 00'];
+        yield 'remboursement' => ['payment_refunded', $base + ['amountCents' => 2070, 'reason' => 'creneau_indisponible'], "Remboursement de 20,70\u{00A0}€"];
+        yield 'pro : nouveau' => ['pro_new_booking', $base + ['phone' => '0600000000'], 'Nouveau rendez-vous : Camille Martin, mardi 10 novembre 2026'];
+        yield 'pro : annulation' => ['pro_booking_cancelled', $base + ['refundable' => false], 'Rendez-vous annulé : Camille Martin, mardi 10 novembre 2026'];
+        yield 'pro : déplacement' => ['pro_booking_moved', $base + ['previousStart' => '2026-11-09T08:00:00+00:00'], 'Rendez-vous déplacé : Camille Martin, mardi 10 novembre 2026'];
     }
 
     /** @param array<string, mixed> $context */
@@ -114,7 +117,7 @@ final class SymfonyMailerNotifierTest extends TestCase
         $this->notifier()->send('camille@example.test', 'booking_confirmed', [
             'firstname' => 'Camille', 'start' => '2026-11-10T08:00:00+00:00', 'manageToken' => 't', 'enLigneCents' => 0, 'surPlaceCents' => 6900,
         ]);
-        self::assertStringContainsString('À régler sur place, une fois la prestation terminée : 69,00', (string) $this->dernier()->getTextBody());
+        self::assertStringContainsString('Sur place, une fois la prestation terminée (69,00', (string) $this->dernier()->getTextBody());
     }
 
     public function testDemandeDeDevisAvecAdresseDeReponse(): void
@@ -127,6 +130,17 @@ final class SymfonyMailerNotifierTest extends TestCase
         self::assertSame('Demande de devis : Alex Martin (Transports Martin)', $this->dernier()->getSubject());
         self::assertSame('alex@transport.test', $this->dernier()->getReplyTo()[0]->getAddress());
         self::assertStringContainsString('Type de véhicules : Utilitaires', (string) $this->dernier()->getTextBody());
+    }
+
+    public function testLeClientRepondAuPro(): void
+    {
+        $this->notifier(null, 'pro@marque.test')->send('camille@example.test', 'reminder', ['firstname' => 'Camille', 'start' => '2026-11-10T08:00:00+00:00']);
+        self::assertSame('pro@marque.test', $this->dernier()->getReplyTo()[0]->getAddress());
+        self::assertStringContainsString('Répondez simplement à cet e-mail', (string) $this->dernier()->getHtmlBody());
+
+        // Mail au pro lui-même : pas de réponse à soi-même.
+        $this->notifier(null, 'pro@marque.test')->send('pro@marque.test', 'pro_new_booking', ['client' => 'Camille', 'start' => '2026-11-10T08:00:00+00:00', 'totalCents' => 6900]);
+        self::assertSame([], $this->dernier()->getReplyTo());
     }
 
     public function testModeleSurchargeParLApplication(): void

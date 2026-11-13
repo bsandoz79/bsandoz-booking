@@ -1,11 +1,14 @@
 {% extends '_base.html.twig' %}
 {% import '_macros.html.twig' as m %}
-{% block subject %}Votre rendez-vous est annulé{% endblock %}
+{% block subject %}Rendez-vous annulé{% endblock %}
+{% block preheader %}Votre rendez-vous du {{ start|date_longue }} est annulé.{% endblock %}
+{% block titre %}Votre rendez-vous est annulé{% endblock %}
 {% block body %}
-<p>Bonjour {{ firstname }},</p>
-<p>Votre rendez-vous du <strong>{{ m.date(start, timezone) }}</strong> est annulé.</p>
-{% if refundable %}<p>Votre acompte vous est remboursé sur le moyen de paiement utilisé. Le délai dépend de votre banque (en général quelques jours).</p>
-{% elseif avoirCents is defined and avoirCents > 0 %}<p>L'annulation intervenant après le délai d'annulation gratuite, la somme payée n'est pas remboursée : elle est conservée en avoir ({{ avoirCents|euros }}) et sera déduite automatiquement de votre prochain rendez-vous.</p>
-{% elseif depositCents is defined and depositCents > 0 %}<p>L'annulation intervenant après le délai d'annulation gratuite, l'acompte n'est pas remboursé.</p>{% endif %}
-{{ m.bouton(front_url ~ '/reserver', 'Prendre un nouveau rendez-vous') }}
+<p style="margin:0 0 8px;">Bonjour {{ firstname }},</p>
+<p style="margin:0;">Votre rendez-vous a bien été annulé.</p>
+{{ m.recap([['Date', start|date_longue], ['Prestation', prestation ?? '']]) }}
+{% if refundable %}<p style="margin:0;">Ce que vous avez payé en ligne vous est <strong>remboursé</strong> sur le moyen de paiement utilisé (en général sous quelques jours, selon votre banque).</p>
+{% elseif avoirCents is defined and avoirCents > 0 %}{{ m.note('L’annulation intervenant après le délai d’annulation gratuite, la somme payée n’est pas remboursée : elle est conservée en avoir (' ~ avoirCents|euros ~ ') et sera déduite automatiquement de votre prochain rendez-vous.') }}
+{% elseif depositCents is defined and depositCents > 0 %}{{ m.note('L’annulation intervenant après le délai d’annulation gratuite, l’acompte n’est pas remboursé.') }}{% endif %}
+{{ m.bouton(front_url ~ '/reserver', 'Choisir une autre date', true) }}
 {% endblock %}

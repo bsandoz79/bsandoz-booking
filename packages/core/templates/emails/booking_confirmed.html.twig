@@ -1,15 +1,16 @@
 {% extends '_base.html.twig' %}
 {% import '_macros.html.twig' as m %}
-{% block subject %}Votre rendez-vous est confirmé{% endblock %}
+{% block subject %}Rendez-vous confirmé : {{ start|jour_long }}{% endblock %}
+{% block preheader %}{{ prestation ?: 'Votre rendez-vous' }} le {{ start|date_longue }}. Ajoutez-le à votre agenda.{% endblock %}
+{% block titre %}Votre rendez-vous est confirmé{% endblock %}
 {% block body %}
-<p>Bonjour {{ firstname }},</p>
-<p>Votre rendez-vous du <strong>{{ m.date(start, timezone) }}</strong> est confirmé{% if prestation is defined and prestation %} ({{ prestation }}){% endif %}.</p>
-{% if address is defined and address %}<p>Adresse : {{ address }}</p>{% endif %}
-{% if enLigneCents is defined %}
-{% if enLigneCents > 0 %}<p>Réglé en ligne : {{ enLigneCents|euros }}.{% if surPlaceCents > 0 %} Reste à régler sur place : {{ surPlaceCents|euros }}.{% else %} Rien à régler sur place.{% endif %}</p>
-{% else %}<p>À régler sur place, une fois la prestation terminée : {{ surPlaceCents|euros }}.</p>{% endif %}
-{% elseif depositCents is defined and depositCents > 0 %}<p>Acompte réglé : {{ depositCents|euros }}. Le solde est à régler sur place.</p>{% endif %}
-<p>Le rendez-vous est joint à ce message : ouvrez la pièce jointe pour l'ajouter à votre agenda.</p>
+{% set paiement = enLigneCents is defined
+    ? (enLigneCents > 0 ? (surPlaceCents > 0 ? 'Réglé en ligne : ' ~ enLigneCents|euros ~ ' · sur place : ' ~ surPlaceCents|euros : 'Tout est réglé en ligne (' ~ enLigneCents|euros ~ ')') : 'Sur place, une fois la prestation terminée (' ~ surPlaceCents|euros ~ ')')
+    : (depositCents is defined and depositCents > 0 ? 'Acompte réglé : ' ~ depositCents|euros ~ ', solde sur place' : '') %}
+<p style="margin:0 0 8px;">Bonjour {{ firstname }},</p>
+<p style="margin:0;">Merci pour votre réservation. Je viens chez vous avec tout le matériel : il vous suffit de laisser le véhicule accessible.</p>
+{{ m.recap([['Date', start|date_longue], ['Prestation', prestation ?? ''], ['Adresse', address ?? ''], ['Paiement', paiement]]) }}
+<p style="margin:0;font-size:14px;color:#4b5563;">L’invitation jointe (rendez-vous.ics) l’ajoute à votre agenda en un clic.</p>
 {{ m.bouton(front_url ~ '/rendez-vous?jeton=' ~ manageToken, 'Gérer mon rendez-vous') }}
-<p>Depuis ce lien, vous pouvez déplacer ou annuler votre rendez-vous selon les conditions d'annulation.</p>
+<p style="margin:0;font-size:14px;color:#4b5563;">Un empêchement ? Depuis ce lien, vous pouvez déplacer ou annuler votre rendez-vous selon les conditions d’annulation.</p>
 {% endblock %}
