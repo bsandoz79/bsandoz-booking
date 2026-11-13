@@ -194,3 +194,4 @@
 - Déploiement : lftp envoyait le site et l'API dans des dossiers commençant par un guillemet (« "demo.bsandoz.fr ») ; chemin transmis sans guillemets.
 - Déploiement : page sans mise en forme si elle était ouverte pendant l'envoi (CSS pas encore arrivé, gardé en cache). Fichiers CSS/JS envoyés avant les pages HTML ; cache hors-ligne (service worker) passé en v5 pour effacer les copies ratées.
 - Site : le crayon « Modifier » d'une carte de prestation ouvrait la réservation (la carte entière est un lien) ; lien désactivé pour le pro.
+- Navigation : en ouvrant une page (ex. « Pro »), on pouvait arriver en bas de page ; retour tout en haut à chaque clic, même vers la page déjà ouverte (le bouton « Retour » garde la position). Test.
