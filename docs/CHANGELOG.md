@@ -189,6 +189,7 @@
 - Bouton « Installer l'application » dans le menu : invitation du navigateur (Android, ordinateur) ou aide pas à pas (iPhone), masqué une fois le site installé.
 - « Installer l'application » réservé au compte pro (absent du menu des clients).
 - L'application installée s'ouvre sur l'Espace pro (raccourcis : Espace pro, Site public, Réserver) ; service worker v6.
+- Itinéraire : icône de trajet sur le bouton, logos Google Maps et Waze dans la fenêtre de choix.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
