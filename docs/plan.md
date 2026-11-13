@@ -52,4 +52,4 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/avis-google` : demande d'avis jointe au mail de facture envoyé à la prestation faite (lien Google réglé dans Réglages, vide par défaut)
 - [x] `feature/creneaux-groupes` : créneaux proches d'un rendez-vous déjà prévu proposés en premier
 - [x] `feature/fiche-client` : onglet Clients (recherche, total dépensé, panier moyen, dernière visite, historique, avoir modifiable, fidélité, à relancer après 90 jours)
-- [ ] `feature/comptabilite` : chiffre d'affaires et dépenses par mois
+- [x] `feature/comptabilite` : module `Comptabilite` (dépenses ponctuelles ou mensuelles), chiffre d'affaires, dépenses et résultat par mois, onglet Comptabilité

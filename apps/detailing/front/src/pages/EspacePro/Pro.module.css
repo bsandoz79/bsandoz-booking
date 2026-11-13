@@ -63,3 +63,6 @@
 .produitsJour { font-weight: 700; color: #a34e00; }
 .aCharger { margin: .25rem 0 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: .2rem; }
 :global(:root[data-theme='nuit']) .produitsJour { color: #fdba74; }
+
+/* Comptabilité : montant négatif. */
+.negatif { color: var(--bs-color-danger); }

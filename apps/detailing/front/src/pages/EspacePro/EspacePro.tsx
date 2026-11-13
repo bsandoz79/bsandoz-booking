@@ -3,6 +3,7 @@ import { Button, Field } from '@bsandoz/ui';
 import { reprendreSession, rolesSession, seConnecter, seDeconnecter } from '../../services/compte';
 import { CatalogueOnglet } from './Catalogue';
 import { ClientsOnglet } from './Clients';
+import { ComptabiliteOnglet } from './Comptabilite';
 import { HorairesOnglet } from './Horaires';
 import { MonSiteOnglet } from './MonSite';
 import { PlanningOnglet } from './Planning';
@@ -21,6 +22,7 @@ const ONGLETS = [
   { id: 'catalogue', label: 'Catalogue' },
   { id: 'produits', label: 'Produits' },
   { id: 'factures', label: 'Factures' },
+  { id: 'comptabilite', label: 'Comptabilité' },
   { id: 'horaires', label: 'Horaires et congés' },
   { id: 'site', label: 'Mon site' },
   { id: 'reglages', label: 'Réglages' },
@@ -61,6 +63,7 @@ export function EspacePro() {
       {onglet === 'catalogue' && <CatalogueOnglet />}
       {onglet === 'produits' && <ProduitsOnglet />}
       {onglet === 'factures' && <FacturesOnglet />}
+      {onglet === 'comptabilite' && <ComptabiliteOnglet />}
       {onglet === 'horaires' && <HorairesOnglet />}
       {onglet === 'site' && <MonSiteOnglet />}
       {onglet === 'reglages' && <ReglagesOnglet />}
