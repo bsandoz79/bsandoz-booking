@@ -15,17 +15,17 @@ import { TableauDeBordOnglet } from './TableauDeBord';
 import styles from './Pro.module.css';
 
 const ONGLETS = [
-  { id: 'tableau', label: 'Tableau de bord' },
-  { id: 'planning', label: 'Planning' },
-  { id: 'clients', label: 'Clients' },
-  { id: 'telephone', label: 'Rendez-vous par téléphone' },
-  { id: 'catalogue', label: 'Catalogue' },
-  { id: 'produits', label: 'Produits' },
-  { id: 'factures', label: 'Factures' },
-  { id: 'comptabilite', label: 'Comptabilité' },
-  { id: 'horaires', label: 'Horaires et congés' },
-  { id: 'site', label: 'Mon site' },
-  { id: 'reglages', label: 'Réglages' },
+  { id: 'tableau', icone: '📊', label: 'Tableau de bord' },
+  { id: 'planning', icone: '📅', label: 'Planning' },
+  { id: 'clients', icone: '👥', label: 'Clients' },
+  { id: 'telephone', icone: '📞', label: 'Rendez-vous par téléphone' },
+  { id: 'catalogue', icone: '🧽', label: 'Catalogue' },
+  { id: 'produits', icone: '🧴', label: 'Produits' },
+  { id: 'factures', icone: '🧾', label: 'Factures' },
+  { id: 'comptabilite', icone: '💶', label: 'Comptabilité' },
+  { id: 'horaires', icone: '🕒', label: 'Horaires et congés' },
+  { id: 'site', icone: '🌐', label: 'Mon site' },
+  { id: 'reglages', icone: '⚙️', label: 'Réglages' },
 ] as const;
 type Onglet = (typeof ONGLETS)[number]['id'];
 
@@ -49,13 +49,17 @@ export function EspacePro() {
         <h1>Espace pro</h1>
         <Button variant="ghost" onClick={async () => { await seDeconnecter(); setEtat('deconnecte'); }}>Se déconnecter</Button>
       </div>
+      <div className={styles.mise}>
+      {/* Ordinateur : colonne fixe à gauche ; téléphone : toutes les rubriques visibles sur quelques lignes. */}
       <nav aria-label="Rubriques de l'espace pro" className={styles.onglets}>
         {ONGLETS.map((o) => (
-          <button key={o.id} type="button" className={styles.onglet} aria-current={onglet === o.id ? 'page' : undefined} onClick={() => setOnglet(o.id)}>
-            {o.label}
+          <button key={o.id} type="button" className={styles.onglet} aria-current={onglet === o.id ? 'page' : undefined}
+            onClick={() => { setOnglet(o.id); document.getElementById('contenu-pro')?.scrollIntoView?.({ block: 'start' }); }}>
+            <span className={styles.ongletIcone} aria-hidden="true">{o.icone}</span>{o.label}
           </button>
         ))}
       </nav>
+      <div id="contenu-pro" className={styles.contenu}>
       {onglet === 'tableau' && <TableauDeBordOnglet />}
       {onglet === 'planning' && <PlanningOnglet />}
       {onglet === 'clients' && <ClientsOnglet />}
@@ -67,6 +71,8 @@ export function EspacePro() {
       {onglet === 'horaires' && <HorairesOnglet />}
       {onglet === 'site' && <MonSiteOnglet />}
       {onglet === 'reglages' && <ReglagesOnglet />}
+      </div>
+      </div>
     </main>
   );
 }

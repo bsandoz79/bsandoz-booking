@@ -48,6 +48,12 @@ button.event:hover { filter: brightness(1.08); }
 .time { font-size: .74rem; font-weight: 700; opacity: .92; font-variant-numeric: tabular-nums; }
 .eventTitle { font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
 .subtitle { font-size: .76rem; opacity: .9; overflow: hidden; text-overflow: ellipsis; }
+/* Semaine : colonnes étroites, texte resserré sur 2 lignes au plus, coupé proprement. */
+.agendaSemaine .event { padding: 4px 6px; border-radius: 6px; font-size: .74rem; line-height: 1.2; }
+.agendaSemaine .eventTitle, .agendaSemaine .subtitle { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow-wrap: anywhere; }
+.agendaSemaine .subtitle { -webkit-line-clamp: 1; line-clamp: 1; font-size: .68rem; }
+.agendaSemaine .court { padding: 1px 6px; }
+.agendaSemaine .court .eventTitle { display: block; white-space: nowrap; text-overflow: ellipsis; }
 /* En attente (ex. paiement en ligne non reçu) : rayé, bordure en pointillés. */
 .muted { background: repeating-linear-gradient(135deg, var(--couleur, var(--couleur-defaut)) 0 8px, color-mix(in srgb, var(--couleur, var(--couleur-defaut)) 75%, #fff) 8px 16px); outline: 2px dashed rgb(255 255 255 / .7); outline-offset: -3px; }
 /* Indisponibilité : gris hachuré. */

@@ -94,7 +94,7 @@ export function Accueil() {
       <section className={styles.hero}>
         {/* Grand écran : texte à gauche, photo du camion à droite ; téléphone et tablette : photo sous le titre. */}
         <div className={`container ${styles.heroGrille}`}>
-          <div className={styles.crayonsHero}><ModifierRubrique rubrique="accueil" libelle="Titre, présentation et points forts" /><ModifierRubrique rubrique="coordonnees" libelle="Téléphone et coordonnées" /></div>
+          <div className={styles.crayonsHero}><ModifierRubrique rubrique="accueil" libelle="Titre, présentation et points forts" /></div>
           <p className={styles.eyebrow}>{accueil.surtitre}</p>
           <h1 className={styles.title}>{accueil.titre}</h1>
           <picture className={styles.heroPhoto}>
@@ -106,6 +106,7 @@ export function Accueil() {
           <div className={styles.ctas}>
             <Link to="/reserver" className="btn">Réserver un créneau</Link>
             {telephone && <a href={lienTel(telephone)} className={`btn ${styles.appeler}`}><IconeTelephone /> Appeler le {telephone}</a>}
+            <ModifierRubrique rubrique="coordonnees" libelle="Téléphone et coordonnées" />
             <a href="#prestations" className="btn btn--ghost">Voir les prestations</a>
           </div>
           {accueil.arguments.length > 0 && (
