@@ -200,10 +200,47 @@ final class GererCatalogue
         if ($duration < 0) {
             throw new DomainError('La durée d\'une option ne peut pas être négative.');
         }
-        $option = new Option($id ?? $this->ids->generate(), $name, Money::cents(self::entier($data, 'priceCents')), $duration, ($data['active'] ?? true) === true, self::texte($data, 'description', ''));
+        // Position : celle demandée, sinon celle de l'option existante, sinon à la fin.
+        $position = is_int($data['position'] ?? null) ? $data['position'] : ($id !== null ? $this->options->get($id)->position : count($this->options->all()));
+        $option = new Option($id ?? $this->ids->generate(), $name, Money::cents(self::entier($data, 'priceCents')), $duration, ($data['active'] ?? true) === true, self::texte($data, 'description', ''), $position);
         $this->options->save($option);
 
         return self::optionEnTableau($option);
+    }
+
+    /**
+     * Nouvel ordre d'affichage (glisser-déposer) : identifiants dans l'ordre voulu ; positions 0, 1, 2…
+     * Les éléments absents de la liste gardent leur place.
+     *
+     * @param array<string, mixed> $data {prestations?: list<string>, options?: list<string>, produits?: list<string>}
+     * @throws NotFound identifiant inconnu
+     * @throws DomainError liste invalide
+     */
+    public function reordonner(array $data): void
+    {
+        $liste = static function (string $cle) use ($data): array {
+            $ids = $data[$cle] ?? [];
+            if (!is_array($ids) || !array_is_list($ids) || array_filter($ids, static fn (mixed $id): bool => !is_string($id)) !== []) {
+                throw new DomainError(sprintf('« %s » : liste d\'identifiants attendue.', $cle));
+            }
+            /** @var list<string> $ids */
+            return $ids;
+        };
+        foreach ($liste('prestations') as $position => $id) {
+            $p = $this->prestations->get($id);
+            $p->changerPosition($position);
+            $this->prestations->save($p);
+        }
+        foreach ($liste('options') as $position => $id) {
+            $o = $this->options->get($id);
+            $this->options->save(new Option($o->id, $o->name, $o->price, $o->durationMin, $o->active, $o->description, $position));
+        }
+        foreach ($liste('produits') as $position => $id) {
+            $depot = $this->depotProduits();
+            $p = $depot->get($id);
+            $p->modifier($p->nom(), $p->description(), $p->prix(), $p->stock(), $p->actif(), $position, $p->photo(), $p->categorie());
+            $depot->save($p);
+        }
     }
 
     /** @return array<string, mixed> */
@@ -225,7 +262,7 @@ final class GererCatalogue
     /** @return array<string, mixed> */
     private static function optionEnTableau(Option $o): array
     {
-        return ['id' => $o->id, 'name' => $o->name, 'description' => $o->description, 'priceCents' => $o->price->cents, 'durationMin' => $o->durationMin, 'active' => $o->active];
+        return ['id' => $o->id, 'name' => $o->name, 'description' => $o->description, 'priceCents' => $o->price->cents, 'durationMin' => $o->durationMin, 'active' => $o->active, 'position' => $o->position];
     }
 
     /** @param array<mixed> $data */

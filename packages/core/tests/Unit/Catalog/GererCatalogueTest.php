@@ -133,4 +133,27 @@ final class GererCatalogueTest extends TestCase
         $this->expectException(DomainError::class);
         $this->catalogue->enregistrerOption(['name' => '', 'priceCents' => 100, 'durationMin' => 10]);
     }
+
+    public function testNouvelOrdreDesPrestationsEtDesOptions(): void
+    {
+        $a = $this->catalogue->enregistrerOption(['name' => 'Désodorisant', 'priceCents' => 400, 'durationMin' => 0]);
+        $b = $this->catalogue->enregistrerOption(['name' => 'Poils', 'priceCents' => 1000, 'durationMin' => 30]);
+        $c = $this->catalogue->enregistrerOption(['name' => 'Très sale', 'priceCents' => 1000, 'durationMin' => 30]);
+        $p1 = $this->catalogue->enregistrerPrestation(['name' => 'Éclat', 'basePriceCents' => 2900, 'baseDurationMin' => 90, 'position' => 0]);
+        $p2 = $this->catalogue->enregistrerPrestation(['name' => 'Signature', 'basePriceCents' => 6900, 'baseDurationMin' => 150, 'position' => 1]);
+
+        // Le désodorisant passe en troisième position, Signature avant Éclat.
+        $this->catalogue->reordonner(['options' => [$b['id'], $c['id'], $a['id']], 'prestations' => [$p2['id'], $p1['id']]]);
+
+        $liste = $this->catalogue->lister();
+        self::assertSame(['Poils', 'Très sale', 'Désodorisant'], array_column($liste['options'], 'name'));
+        self::assertSame([1, 0], [$this->prestations->get((string) $p1['id'])->position(), $this->prestations->get((string) $p2['id'])->position()]);
+        self::assertSame(1000, $this->options->get((string) $b['id'])->price->cents, 'le reste de l\'option est inchangé');
+    }
+
+    public function testOrdreAvecUnIdentifiantInconnu(): void
+    {
+        $this->expectException(\Bsandoz\Core\Shared\Domain\NotFound::class);
+        $this->catalogue->reordonner(['options' => ['inconnue']]);
+    }
 }

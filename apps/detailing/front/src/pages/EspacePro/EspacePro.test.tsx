@@ -188,6 +188,17 @@ describe('Espace pro', () => {
     expect(screen.queryByRole('region', { name: 'Nettoyage extérieur' })).not.toBeInTheDocument();
   });
 
+  it('réordonne les options : le désodorisant remonte en première position', async () => {
+    await ouvrirConnecte();
+    await rubrique('Catalogue');
+    const ordre = await screen.findByRole('list', { name: 'Ordre des options' });
+    expect(within(ordre).getAllByRole('listitem')[0]).toHaveTextContent('Poils d’animaux');
+    within(ordre).getByRole('button', { name: 'Déplacer Désodorisant Perfect Clean' }).focus();
+    await userEvent.keyboard('{ArrowUp}{ArrowUp}');
+    expect(await screen.findByRole('status')).toHaveTextContent('Nouvel ordre enregistré');
+    expect(within(screen.getByRole('list', { name: 'Ordre des options' })).getAllByRole('listitem')[0]).toHaveTextContent('Désodorisant Perfect Clean');
+  });
+
   it('modifie le tarif d’une prestation du catalogue', async () => {
     await ouvrirConnecte();
     await rubrique('Catalogue');

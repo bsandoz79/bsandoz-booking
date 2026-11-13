@@ -186,3 +186,4 @@ Compte pro créé à l'installation : `php bin/console bsandoz:pro:creer contact
 - `category` (texte libre, 60 caractères au plus) sur chaque produit, renvoyé par `/catalog` et `/admin/catalog`.
 - `GET /catalog` renvoie les produits actifs, épuisés compris (`stock` réel ; 0 : épuisé, non commandable ; 10 au plus par réservation).
 - `DELETE /admin/catalog/produits/{id}/definitif` → 204 : suppression définitive (les réservations gardent nom et prix). `DELETE /admin/catalog/produits/{id}` seul retire de la vente.
+- `PUT /admin/catalog/ordre` `{"prestations"?: [ids], "options"?: [ids], "produits"?: [ids]}` → 204 : nouvel ordre d'affichage (positions 0, 1, 2…), appliqué au site et à la réservation. Options : colonne `catalog_option.position` (migration).

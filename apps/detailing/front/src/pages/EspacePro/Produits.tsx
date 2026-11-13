@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Button, Dialog, Field, Toggle, formatEuros } from '@bsandoz/ui';
+import { Button, Dialog, Field, SortableList, Toggle, formatEuros } from '@bsandoz/ui';
 import { envoyerPhoto } from '../../services/contenu';
-import { enregistrerProduit, produits as listerProduits, supprimerProduit, type ProduitPro } from '../../services/pro';
+import { enregistrerOrdre, enregistrerProduit, produits as listerProduits, supprimerProduit, type ProduitPro } from '../../services/pro';
 import { Icone } from '../../components/Icone/Icone';
 import { Filtres } from './Filtres';
 import { filtrer } from './filtrer';
@@ -47,35 +47,8 @@ export function ProduitsOnglet() {
   const categories = [...new Set(liste.map((p) => p.category?.trim()).filter((c): c is string => !!c))].sort((a, b) => a.localeCompare(b, 'fr'));
   const visibles = filtrer(liste, recherche, categorie, (p) => `${p.name} ${p.description}`, (p) => p.category ?? '');
 
-  if (edition) {
-    return (
-      <section className={styles.section} aria-labelledby="titre-produits">
-        <h2 id="titre-produits">Produits</h2>
-        {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
-        <FormulaireProduit initial={edition} categories={categories} onAnnuler={() => setEdition(undefined)} onEnregistrer={(p) => enregistrer(p, `« ${p.name} » enregistré.`)} />
-      </section>
-    );
-  }
-
-  return (
-    <section className={styles.section} aria-labelledby="titre-produits">
-      <div className={r.rubriqueEntete}>
-        <div>
-          <h2 id="titre-produits">Produits</h2>
-          <p className={r.aide}>Proposés au client juste avant le paiement et remis le jour du rendez-vous. Le client voit le stock restant (« il en reste 2 », « épuisé »).</p>
-        </div>
-        <Button onClick={() => { setMessage(''); setEdition(nouveauProduit(liste.length, categorie || null)); }}>Ajouter un produit</Button>
-      </div>
-      {message && <p className={styles.ok} role="status">{message}</p>}
-      {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
-
-      <Filtres recherche={recherche} onRecherche={setRecherche} categories={categories} categorie={categorie} onCategorie={setCategorie}
-        libelleRecherche="Rechercher un produit" />
-
-      {visibles.length === 0 ? <p className={r.aide}>{liste.length === 0 ? 'Aucun produit pour l’instant.' : 'Aucun produit ne correspond à la recherche.'}</p> : (
-        <ul className={g.grille} aria-label="Mes produits">
-          {visibles.map((p) => (
-            <li key={p.id ?? p.name} className={`${g.carte} ${p.active ? '' : g.retire}`} aria-label={p.name}>
+  const carteProduit = (p: ProduitPro) => (
+    <div className={`${g.carte} ${p.active ? '' : g.retire}`}>
               <div className={g.photo}>
                 {p.photo ? <img src={p.photo} alt="" loading="lazy" /> : <Icone nom="produit" taille={56} className={g.sansPhoto} />}
                 <span className={`${g.etat} ${!p.active ? g.etatRetire : p.stock === 0 ? g.etatEpuise : p.stock <= 5 ? g.etatBas : ''}`}>
@@ -102,9 +75,45 @@ export function ProduitsOnglet() {
                   </button>
                 </div>
               </div>
-            </li>
-          ))}
-        </ul>
+    </div>
+  );
+
+  if (edition) {
+    return (
+      <section className={styles.section} aria-labelledby="titre-produits">
+        <h2 id="titre-produits">Produits</h2>
+        {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
+        <FormulaireProduit initial={edition} categories={categories} onAnnuler={() => setEdition(undefined)} onEnregistrer={(p) => enregistrer(p, `« ${p.name} » enregistré.`)} />
+      </section>
+    );
+  }
+
+  return (
+    <section className={styles.section} aria-labelledby="titre-produits">
+      <div className={r.rubriqueEntete}>
+        <div>
+          <h2 id="titre-produits">Produits</h2>
+          <p className={r.aide}>Proposés au client juste avant le paiement et remis le jour du rendez-vous. Le client voit le stock restant (« il en reste 2 », « épuisé »).</p>
+        </div>
+        <Button onClick={() => { setMessage(''); setEdition(nouveauProduit(liste.length, categorie || null)); }}>Ajouter un produit</Button>
+      </div>
+      {message && <p className={styles.ok} role="status">{message}</p>}
+      {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
+
+      <Filtres recherche={recherche} onRecherche={setRecherche} categories={categories} categorie={categorie} onCategorie={setCategorie}
+        libelleRecherche="Rechercher un produit" />
+
+      {visibles.length === 0 ? <p className={r.aide}>{liste.length === 0 ? 'Aucun produit pour l’instant.' : 'Aucun produit ne correspond à la recherche.'}</p> : (
+        recherche.trim() || categorie ? (
+          <ul className={g.grille} aria-label="Mes produits">{visibles.map((p) => <li key={p.id ?? p.name} aria-label={p.name}>{carteProduit(p)}</li>)}</ul>
+        ) : (
+          <SortableList items={visibles} getKey={(p) => p.id ?? p.name} getItemLabel={(p) => p.name} label="Mes produits" layout="grid" className={g.grille}
+            handleLabel={(p) => `Déplacer ${p.name}`} movedMessage={(p, n, t) => `${p.name} : position ${n} sur ${t}`}
+            renderItem={carteProduit} onReorder={async (ids) => {
+              setErreur('');
+              try { await enregistrerOrdre({ produits: ids }); setMessage('Nouvel ordre enregistré : il est appliqué sur le site.'); charger(); } catch (e) { setErreur((e as Error).message); }
+            }} />
+        )
       )}
 
       {suppression && (

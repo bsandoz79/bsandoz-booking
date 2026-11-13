@@ -33,7 +33,7 @@ final class InMemoryOptionRepository implements OptionRepository
     public function all(): array
     {
         $all = array_values($this->items);
-        usort($all, static fn (Option $a, Option $b): int => $a->name <=> $b->name);
+        usort($all, static fn (Option $a, Option $b): int => [$a->position, $a->name] <=> [$b->position, $b->name]);
 
         return $all;
     }
@@ -41,7 +41,7 @@ final class InMemoryOptionRepository implements OptionRepository
     public function allActive(): array
     {
         $active = array_values(array_filter($this->items, static fn (Option $o): bool => $o->active));
-        usort($active, static fn (Option $a, Option $b): int => $a->name <=> $b->name);
+        usort($active, static fn (Option $a, Option $b): int => [$a->position, $a->name] <=> [$b->position, $b->name]);
 
         return $active;
     }

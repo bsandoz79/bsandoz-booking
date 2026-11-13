@@ -27,6 +27,9 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Mon espace encore moins large (580 px) ; barre de navigation allégée (téléphone et espace pro en petits ronds, « Mon espace » sans contour).
 - ✅ Réservation : coordonnées pré-remplies pour un client connecté, modifiables pour réserver pour quelqu'un d'autre.
 - ✅ Historique des rendez-vous dans l'espace pro : une ligne par réservation dès qu'elle est prise (« réservé le… »), tri par date du rendez-vous (récent / ancien) ou par dernières réservations, filtres par période, statut et nom ; un clic ouvre la fiche.
+- ✅ Ordre des formules, des options et des produits réglable par glisser-déposer (appui long au doigt, souris, ou flèches au clavier) ; c'est l'ordre du site et de la réservation.
+- ✅ Barre du haut sur téléphone sur une seule ligne : « Mon espace » et « Espace pro » passent dans le menu.
+- ❓ Avis fictifs : refusés (faux avis interdits, règle du projet) ; alternatives proposées.
 - ✅ Catalogue repensé : formules rangées par catégorie (comme sur l'accueil), une ligne par formule (prix, durée, options, étiquettes « Le plus choisi », « Retirée du site »…), « Modifier » et « Retirer » à droite ; options à part.
 - ✅ Détail d'un rendez-vous structuré : en-tête (quand, durée, statut), blocs Client (appel, e-mail, itinéraire, fidélité), Prestation (véhicules, options, produits à apporter, précisions), Paiement (total, payé en ligne, à encaisser sur place, facture), puis les actions.
 - ✅ Catalogue : aperçu en direct de la carte à droite pendant la modification.

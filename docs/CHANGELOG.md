@@ -174,6 +174,7 @@
 - Détail d'un rendez-vous en fiche compacte (une ligne par information), contact (Appeler, Écrire, Itinéraire) tout en bas ; réservation pré-remplie pour un client connecté (modifiable) ; Mon espace plus étroit ; en-tête allégé. Tests.
 - Espace pro : onglet « Historique » (une ligne par rendez-vous, tri par date du rendez-vous ou de réservation, filtres par période, statut et nom, fiche au clic) ; date de prise du rendez-vous enregistrée (colonne `reservation.created_at`, migration ; `createdAt` dans le planning). Tests.
 - Espace pro, Clients : tri (nom A→Z / Z→A, dépensé, visites, dernière visite, prochain rendez-vous), filtres rapides avec compteurs (à relancer, rendez-vous à venir, fidèles, nouveaux), résumé de la sélection, lignes avec initiales et étiquettes. Test.
+- Kit et site : ordre des formules, des options et des produits par glisser-déposer dans l'espace pro (bloc `SortableList` : souris, appui long au doigt, flèches au clavier avec annonce), appliqué au site et à la réservation ; route `PUT /admin/catalog/ordre`, position des options (colonne `catalog_option.position`, migration). Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
@@ -202,3 +203,4 @@
 - Site : le crayon « Modifier » d'une carte de prestation ouvrait la réservation (la carte entière est un lien) ; lien désactivé pour le pro.
 - Navigation : en ouvrant une page (ex. « Pro »), on pouvait arriver en bas de page ; retour tout en haut à chaque clic, même vers la page déjà ouverte (le bouton « Retour » garde la position). Test.
 - Créneaux : heures proposées décalées du temps de trajet (8 h 05, 8 h 35…). Les arrivées suivent désormais la grille du pas depuis l'ouverture (8 h 00, 8 h 30…) ; le trajet vers le premier rendez-vous se fait avant l'ouverture, il reste compté entre deux rendez-vous (`CreneauCalculator`). Tests.
+- En-tête sur téléphone : la barre passait sur deux lignes ; « Mon espace » et « Espace pro » rejoignent le menu.

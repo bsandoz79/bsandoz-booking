@@ -61,3 +61,5 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/navbar-ordre` : catalogue par catégorie, détail de rendez-vous structuré, barre de navigation dans l'ordre logique (liens, Réserver, compte, thème)
 - [x] `feature/produits-grille` : produits en grille avec catégories et filtres, stock visible du client, détail de rendez-vous compact, réservation pré-remplie
 - [x] `feature/historique` : historique des rendez-vous (date de réservation, tri, filtres, fiche au clic)
+- [x] `feature/clients-filtres` : clients triables et filtrables
+- [x] `feature/ordre-glisser` : ordre des formules, options et produits par glisser-déposer (bloc `SortableList`), barre du haut sur une ligne sur téléphone

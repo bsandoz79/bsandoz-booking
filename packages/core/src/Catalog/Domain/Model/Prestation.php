@@ -59,6 +59,12 @@ class Prestation
         $this->remiseUniteSupplementaire = $cents;
     }
 
+    /** Nouvelle place dans l'ordre d'affichage (glisser-déposer de l'espace pro). */
+    public function changerPosition(int $position): void
+    {
+        $this->position = max(0, $position);
+    }
+
     /** Mise en avant (ex. « Le plus choisi ») : texte court, vide pour l'enlever. @throws DomainError trop long */
     public function changerBadge(?string $badge): void
     {
