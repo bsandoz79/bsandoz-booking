@@ -139,6 +139,7 @@
 - Accueil : photo du camion-atelier à droite de l'accroche (sous le titre sur téléphone et tablette) ; point fort « Déplacement offert : Abbeville et 5 km autour ».
 - Téléphone mis en avant : bouton d'appel vert dans l'en-tête de toutes les pages et « Appeler le … » dans l'accroche ; espace pro : bouton « Appeler » du client dans le planning et dans les prochains rendez-vous du tableau de bord (nom et téléphone du client ajoutés à `/admin/dashboard`).
 - Cartes des formules : « Formule … incluse » en couleur, étiquettes en pastilles (« Nouveau », « Durée limitée », « Offert · durée limitée ») écrites entre crochets dans la description du Catalogue, carte mise en avant teintée.
+- Mon espace : bouton « Accéder à l’espace pro » pour un compte professionnel.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

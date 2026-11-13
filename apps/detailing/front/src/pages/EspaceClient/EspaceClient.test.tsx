@@ -31,6 +31,11 @@ describe('Espace client', () => {
     expect(screen.getByRole('link', { name: 'Mot de passe oublié ?' })).toHaveAttribute('href', '/compte/mot-de-passe');
   });
 
+  it('donne accès à l’espace pro quand le compte est professionnel', async () => {
+    await seConnecterDemo();
+    expect(screen.getByRole('link', { name: 'Accéder à l’espace pro' })).toHaveAttribute('href', '/pro');
+  });
+
   it('affiche la carte de fidélité du client', async () => {
     await seConnecterDemo();
     expect(screen.getByRole('img', { name: '2 tampons sur 4' })).toBeInTheDocument();
