@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ContexteModeEdition as Contexte } from './modeEditionContexte';
-import { estConnecte, reprendreSession, rolesSession } from '../services/compte';
+import { EVENEMENT_SESSION, estConnecte, reprendreSession, rolesSession } from '../services/compte';
 
 const estPro = () => estConnecte() && rolesSession().includes('ROLE_PRO');
 /** Reprise de session (cookie) tentée une seule fois par visite. */
@@ -23,6 +23,12 @@ export function ModeEditionProvider({ children }: { children: ReactNode }) {
     }
     return () => { annule = true; };
   }, [pathname]);
+  // Connexion ou déconnexion sans changer de page : nouveau rendu.
+  useEffect(() => {
+    const maj = () => setReprise((n) => n + 1);
+    window.addEventListener(EVENEMENT_SESSION, maj);
+    return () => window.removeEventListener(EVENEMENT_SESSION, maj);
+  }, []);
   const pro = estPro();
 
   return <Contexte.Provider value={{ peutModifier: pro, actif: pro, basculer: () => undefined }}>{children}</Contexte.Provider>;

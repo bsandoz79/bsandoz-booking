@@ -50,3 +50,13 @@
   .nav.ouvert { display: flex; }
   .nav a { display: flex; align-items: center; min-height: 48px; padding-inline: .25rem; border-top: 1px solid var(--bs-color-border); }
 }
+
+/* Lien « Espace pro » (compte pro connecté) : pastille ambre, distincte des liens et du bouton « Réserver ». */
+.nav .espacePro { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .85rem; border-radius: 999px;
+  background: #f5b833; color: #2a1d00; font-weight: 800; text-decoration: none; box-shadow: 0 0 0 2px rgb(245 184 51 / .25); }
+.nav .espacePro:hover { background: #ffc94d; color: #2a1d00; }
+.nav .espacePro:focus-visible { outline: 3px solid #f5b833; outline-offset: 3px; }
+.nav .espacePro[aria-current='page'] { box-shadow: 0 0 0 3px rgb(245 184 51 / .45); }
+@media (max-width: 760px) {
+  .nav .espacePro { align-self: flex-start; min-height: 44px; margin-block: .5rem .25rem; padding-inline: 1rem; border-top: none; }
+}

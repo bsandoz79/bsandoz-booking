@@ -25,6 +25,10 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Planning en semaine : texte des cases resserré (2 lignes, coupé proprement, texte complet au survol) ; un clic amène au détail du rendez-vous.
 - ✅ Rubriques de l'espace pro (Tableau de bord, Planning, Clients…) dans une colonne fixe à gauche sur ordinateur ; sur téléphone, toutes visibles sur quelques lignes (plus de menu à faire défiler).
 
+### Navigation
+- ✅ « Accéder à l'espace pro » retiré de Mon espace : lien « Espace pro » dans la barre de navigation pour un compte pro, en pastille ambre bien distincte (aussi dans le menu sur téléphone).
+- ✅ Mon espace moins large (680 px), valeur alignée juste après l'intitulé : moins de vide au milieu.
+
 ### Site public
 - ✅ Formules, options et prix modifiables depuis le site.
 - ✅ Bug : le crayon « Modifier » d'une carte de prestation ouvrait la réservation au lieu de la modification.

@@ -57,9 +57,14 @@ const demoRendezVous = (): RendezVous => {
 };
 let demo: RendezVous[] = [];
 
+/** Événement émis à chaque connexion ou déconnexion (en-tête, crayons de modification). */
+export const EVENEMENT_SESSION = 'bsandoz-session';
+const signalerSession = () => { if (typeof window !== 'undefined') window.dispatchEvent(new Event(EVENEMENT_SESSION)); };
+
 async function ouvrirSession(reponse: { token: string; roles: string[] }) {
   jeton = reponse.token;
   roles = reponse.roles;
+  signalerSession();
 }
 
 export async function seConnecter(email: string, password: string): Promise<void> {
@@ -86,6 +91,7 @@ export async function seDeconnecter(): Promise<void> {
   if (!isDemo()) await http('/auth/logout', { method: 'POST' }).catch(() => undefined);
   jeton = null;
   roles = [];
+  signalerSession();
 }
 
 /** Appel authentifié : jeton expiré (15 min) → un renouvellement puis nouvel essai. */
