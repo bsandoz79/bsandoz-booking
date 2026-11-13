@@ -6,6 +6,8 @@ import { CarteRendezVous } from '../../components/CarteRendezVous/CarteRendezVou
 import type { Formule } from '../../data/demo';
 import { getCatalog } from '../../services/api';
 import { maCarteFidelite, type CarteFidelite as Carte } from '../../services/fidelite';
+import { mesFactures, type FactureResume } from '../../services/factures';
+import { formatEuros } from '@bsandoz/ui';
 import {
   annulerMonRendezVous, deplacerMonRendezVous, payerMonRendezVous, exporterMesDonnees, mesRendezVous, monCompte, reprendreSession,
   rolesSession, seConnecter, seDeconnecter, supprimerMonCompte, type Compte, type RendezVous,
@@ -78,6 +80,7 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
   const [erreur, setErreur] = useState('');
   const [suppression, setSuppression] = useState(false);
   const [fidelite, setFidelite] = useState<Carte>();
+  const [factures, setFactures] = useState<FactureResume[]>([]);
   const [maintenant] = useState(() => new Date());
 
   const recharger = useCallback(() => mesRendezVous().then(setRendezVous).catch((e: Error) => setErreur(e.message)), []);
@@ -86,6 +89,7 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
     monCompte().then(setCompte).catch((e: Error) => setErreur(e.message));
     getCatalog().then((c) => setFormules(c.formules)).catch(() => setFormules([]));
     maCarteFidelite().then(setFidelite).catch(() => undefined);
+    mesFactures().then(setFactures).catch(() => undefined);
     recharger();
   }, [recharger]);
 
@@ -143,6 +147,17 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
         <section className={styles.section} aria-labelledby="titre-historique">
           <h2 id="titre-historique">Historique</h2>
           <div className={styles.liste}>{passes.map(carte)}</div>
+        </section>
+      )}
+
+      {factures.length > 0 && (
+        <section className={styles.section} aria-labelledby="titre-factures">
+          <h2 id="titre-factures">Mes factures</h2>
+          <ul className={styles.liste}>
+            {factures.map((f) => (
+              <li key={f.id}><Link to={`/facture/${f.id}`}>Facture {f.numero}</Link> · {new Date(f.prestationLe).toLocaleDateString('fr-FR')} · {formatEuros(f.totalCents)}</li>
+            ))}
+          </ul>
         </section>
       )}
 

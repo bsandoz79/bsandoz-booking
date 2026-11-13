@@ -6,6 +6,7 @@ import { HorairesOnglet } from './Horaires';
 import { MonSiteOnglet } from './MonSite';
 import { PlanningOnglet } from './Planning';
 import { ProduitsOnglet } from './Produits';
+import { FacturesOnglet } from './Factures';
 import { RdvTelephoneOnglet } from './RdvTelephone';
 import { ReglagesOnglet } from './Reglages';
 import { TableauDeBordOnglet } from './TableauDeBord';
@@ -17,6 +18,7 @@ const ONGLETS = [
   { id: 'telephone', label: 'Rendez-vous par téléphone' },
   { id: 'catalogue', label: 'Catalogue' },
   { id: 'produits', label: 'Produits' },
+  { id: 'factures', label: 'Factures' },
   { id: 'horaires', label: 'Horaires et congés' },
   { id: 'site', label: 'Mon site' },
   { id: 'reglages', label: 'Réglages' },
@@ -55,6 +57,7 @@ export function EspacePro() {
       {onglet === 'telephone' && <RdvTelephoneOnglet />}
       {onglet === 'catalogue' && <CatalogueOnglet />}
       {onglet === 'produits' && <ProduitsOnglet />}
+      {onglet === 'factures' && <FacturesOnglet />}
       {onglet === 'horaires' && <HorairesOnglet />}
       {onglet === 'site' && <MonSiteOnglet />}
       {onglet === 'reglages' && <ReglagesOnglet />}

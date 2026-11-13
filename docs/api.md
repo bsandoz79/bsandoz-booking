@@ -139,6 +139,12 @@ Règle par défaut (`bsandoz_core.fidelite`) : 4 prestations réalisées, 20 % s
 - `DELETE /admin/push` `{"endpoint"}` → 204.
 - Envoi à tous les appareils abonnés à chaque rendez-vous confirmé, annulé ou déplacé : `{"title", "body": "prestation · client · jour à HHhMM", "url": "/pro", "tag"}`. Un appareil désabonné (réponse 404 / 410 du service push) est supprimé ; une erreur d'envoi n'empêche jamais la réservation.
 
+## Factures
+Émise automatiquement quand le pro marque un rendez-vous « fait » (`PATCH /admin/reservations/{id}` `{"status": "done"}`), ou à la demande : `POST /admin/reservations/{id}/facture` → 201 (une seule par réservation : un nouvel appel renvoie la même ; prestation pas encore faite : 422). Numéro chronologique sans trou `F-AAAA-NNNN` (sous verrou), lignes (prestation et options, déplacement, remise fidélité, produits, « Ajustement du tarif » si le prix a changé depuis la réservation), vendeur et client figés ; mail `invoice_issued` au client avec le lien `/facture/{id}`.
+- Pro : `GET /admin/factures` → `[{id, numero, reservationId, emiseLe, prestationLe, client, totalCents}]` ; `GET /admin/factures/{id}` → + `{vendeur, client: {nom, email, adresse, entreprise, siret, adresseFacturation}, lignes: [{libelle, montantCents}], payeEnLigneCents, payeSurPlaceCents}` ; `GET /admin/reservations/{id}/facture` → `{id, numero}` ou `null`.
+- Vendeur : `GET` / `PUT /admin/settings/facturation` `{nom, adresse, siret, mentionTva, email, telephone}` (« [à compléter] » tant que vide ; mention de TVA par défaut « TVA non applicable, art. 293 B du CGI » ; SIRET de 14 chiffres ou n° BCE de 10).
+- Client : `GET /me/factures`, `GET /me/factures/{id}` (les siennes seulement, sinon 404).
+
 ## Espace pro (`/admin`, rôle pro)
 Compte pro créé à l'installation : `php bin/console bsandoz:pro:creer contact@domaine.fr Prénom Nom` (mot de passe demandé), puis connexion par `/auth/login`. Client connecté : 403 ; sans jeton : 401.
 - `GET /admin/dashboard` → `{today, week, monthRevenueCents, monthBookings, pendingPayments, monthCancellationRate, next: [{id, start, address, client, phone}]}`

@@ -13,6 +13,7 @@ import { ActiverCompte, MotDePasse } from '../pages/Compte/MotDePasse';
 import { RendezVous } from '../pages/RendezVous/RendezVous';
 import { Cgv, Confidentialite, MentionsLegales, PageIntrouvable } from '../pages/Legal/Legal';
 import { Reserver } from '../pages/Reserver/Reserver';
+import { FactureVue } from '../pages/Facture/Facture';
 import { Professionnels } from '../pages/Professionnels/Professionnels';
 import { Devis } from '../pages/Professionnels/Devis';
 
@@ -28,6 +29,7 @@ export function AppRoutes() {
         <Route path="/devis" element={<Devis />} />
         <Route path="/nettoyage-voiture/:commune" element={<Commune />} />
         <Route path="/confirmation" element={<Confirmation />} />
+        <Route path="/facture/:id" element={<FactureVue />} />
         <Route path="/mon-espace" element={<EspaceClient />} />
         <Route path="/compte/activer" element={<ActiverCompte />} />
         <Route path="/compte/mot-de-passe" element={<MotDePasse />} />

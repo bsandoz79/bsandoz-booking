@@ -306,4 +306,12 @@ return static function (ContainerConfigurator $container): void {
     $services->set(CalculerDevis::class);
     $services->set(GererCatalogue::class);
     $services->set(CatalogController::class)->public()->tag('controller.service_arguments');
+
+    // Facturation
+    $services->set(\Bsandoz\Core\Facturation\Infrastructure\Persistence\DoctrineFactureRepository::class);
+    $services->alias(\Bsandoz\Core\Facturation\Domain\Port\FactureRepository::class, \Bsandoz\Core\Facturation\Infrastructure\Persistence\DoctrineFactureRepository::class);
+    $services->set(\Bsandoz\Core\Facturation\Application\InfosFacturation::class);
+    $services->set(\Bsandoz\Core\Facturation\Application\EmettreFacture::class);
+    $services->set(\Bsandoz\Core\Facturation\Application\ConsulterFactures::class);
+    $services->set(\Bsandoz\Core\Facturation\Infrastructure\Http\FactureController::class)->public()->tag('controller.service_arguments');
 };

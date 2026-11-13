@@ -34,6 +34,7 @@ final class GererRendezVousPro
         private NotificationsReservation $notifications,
         private Clock $clock,
         private ?GererFidelite $fidelite = null,
+        private ?\Bsandoz\Core\Facturation\Application\EmettreFacture $emettreFacture = null,
         private ?StockProduits $stock = null,
     ) {
     }
@@ -66,6 +67,13 @@ final class GererRendezVousPro
         // Prestation réalisée : un tampon (sauf pour la prestation remisée, qui clôt la carte).
         if ($statut === ReservationStatus::Done->value && $r->remiseFidelite()->cents === 0) {
             $this->fidelite?->tamponner($r->userId());
+        }
+        // Prestation faite : facture émise et envoyée au client (sans bloquer le changement de statut).
+        if ($statut === ReservationStatus::Done->value) {
+            try {
+                ($this->emettreFacture)?->__invoke($r->id());
+            } catch (DomainError) {
+            }
         }
     }
 

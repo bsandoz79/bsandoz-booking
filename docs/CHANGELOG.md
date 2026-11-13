@@ -143,6 +143,8 @@
 - Planning de l'espace pro en emploi du temps : vues jour, semaine et mois, toute la journée affichée, une case colorée par rendez-vous de la hauteur de sa durée, une couleur par catégorie, rendez-vous qui se chevauchent côte à côte, heure courante.
 - Planning, vue jour : emploi du temps à gauche et détail du rendez-vous à droite (le prochain par défaut, dessous sur téléphone), avec tout ce qui a été demandé : prestation, véhicules, options, modèle, entreprise, précisions, produits.
 - Planning : cases réduites au client et au service (plus les produits à apporter), bleues, orange quand un produit est à apporter, grises une fois terminées ; option `showTime` du bloc `PlanningView`.
+- Kit et API : facturation (module `Facturation`) : facture émise quand la prestation est faite, numéro chronologique F-AAAA-NNNN, lignes, vendeur et client figés, mail au client ; factures dans l'espace pro et l'espace client ; informations du vendeur réglables ; migration `invoice`.
+- Site : page de facture imprimable en PDF, onglet « Factures » de l'espace pro (informations du vendeur, liste), « Mes factures » dans Mon espace, facture accessible depuis le planning.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
