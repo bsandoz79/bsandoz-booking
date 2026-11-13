@@ -114,7 +114,14 @@ export function Accueil() {
                     {detail.inclus.length > 0 ? (
                       <>
                         <p className={styles.compris}>Ce qui est compris</p>
-                        <ul className={styles.inclus}>{detail.inclus.map((e) => <li key={e}>{e}</li>)}</ul>
+                        <ul className={styles.inclus}>
+                          {detail.elements.map((e) => (
+                            <li key={e.texte} className={e.formule ? styles.formuleIncluse : undefined}>
+                              {e.texte}
+                              {e.etiquette && <span className={`${styles.etiquette} ${/offert/i.test(e.etiquette) ? styles.etiquetteOfferte : ''}`}>{e.etiquette}</span>}
+                            </li>
+                          ))}
+                        </ul>
                       </>
                     ) : <p>{detail.texte}</p>}
                     <Link to={`/reserver?formule=${encodeURIComponent(f.id)}`} className={`btn ${f.badge ? '' : 'btn--ghost'} ${styles.choisir}`} aria-label={`Choisir ${f.name}`}>

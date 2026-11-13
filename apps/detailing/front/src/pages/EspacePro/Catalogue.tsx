@@ -128,7 +128,8 @@ function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
         <Field label="Durée (min)" inputMode="numeric" required value={duree} onChange={(e) => setDuree(e.target.value)}
           error={duree && !dureeValide(duree) ? 'Nombre de minutes attendu.' : undefined} />
       </div>
-      <Field label="Description" multiline rows={2} value={p.description} onChange={(e) => setP({ ...p, description: e.target.value })} />
+      <Field label="Description" multiline rows={2} value={p.description}
+        hint="Éléments séparés par des virgules, « Durée : … » à la fin. Étiquette entre crochets après un élément : « anti-buée [Nouveau] », « désodorisant [Offert · durée limitée] »." onChange={(e) => setP({ ...p, description: e.target.value })} />
 
       <Toggle label="Prix différent selon le véhicule" checked={parVehicule} onChange={setParVehicule}
         hint="Facultatif : un type laissé vide garde le prix et la durée ci-dessus." />

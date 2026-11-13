@@ -4,9 +4,14 @@
  */
 import type { ZonePublique } from './zone';
 
+/** Un élément compris : texte, étiquette facultative (« Nouveau », « Offert · durée limitée »…), formule de base incluse. */
+export interface ElementCompris { texte: string; etiquette?: string; formule?: boolean }
+
 export interface DetailPrestation {
   /** Éléments compris (liste à cocher) ; vide si la description est une simple phrase. */
   inclus: string[];
+  /** Les mêmes éléments avec leur étiquette éventuelle et la formule incluse mise en avant. */
+  elements: ElementCompris[];
   /** Description telle quelle, quand elle ne se découpe pas en liste. */
   texte: string;
   /** « 1 h à 1 h 30 », repris de « Durée : … » dans la description. */
@@ -18,7 +23,8 @@ const majuscule = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 /**
  * Découpe la description d'une prestation (saisie dans le Catalogue de l'espace pro) en éléments compris :
  * « Aspiration complète, vitres intérieures, parfum d'ambiance. Durée : 1 h. » → 3 éléments + durée 1 h.
- * « Éclat, plus shampoing… » → « Tout le niveau Éclat », « Shampoing… ». Au moins 3 éléments pour faire une liste.
+ * « Éclat, plus shampoing… » → « Formule Éclat incluse », « Shampoing… ». Au moins 3 éléments pour faire une liste.
+ * Étiquette entre crochets à la fin d'un élément : « traitement anti-buée [Nouveau] », « désodorisant [Offert · durée limitée] ».
  */
 export function detailPrestation(description: string): DetailPrestation {
   let texte = description.trim();
@@ -29,12 +35,15 @@ export function detailPrestation(description: string): DetailPrestation {
     texte = texte.slice(0, d.index).trim();
   }
   const elements = texte.replace(/\.$/, '').split(/,\s+/).map((e) => e.trim()).filter(Boolean);
-  if (elements.length < 3 || elements.some((e) => e.includes('. ') || e.includes(' : '))) return { inclus: [], texte, duree };
-  const inclus = elements.map((e, i) => {
-    if (i === 0 && /^[A-ZÉÈ][\p{L}-]*$/u.test(e)) return `Tout le niveau ${e}`;
-    return majuscule(e.replace(/^plus\s+/i, ''));
+  if (elements.length < 3 || elements.some((e) => e.includes('. ') || e.includes(' : '))) return { inclus: [], elements: [], texte: texte.replace(/\s*\[[^\]]*\]/g, ''), duree };
+  const detail = elements.map((e, i): ElementCompris => {
+    const tag = /\s*\[([^\]]+)\]\s*$/.exec(e);
+    const sans = (tag ? e.slice(0, tag.index) : e).trim();
+    const etiquette = tag ? tag[1].trim() : undefined;
+    if (i === 0 && /^[A-ZÉÈ][\p{L}-]*$/u.test(sans)) return { texte: `Formule ${sans} incluse`, formule: true, etiquette };
+    return { texte: majuscule(sans.replace(/^plus\s+/i, '')), etiquette };
   });
-  return { inclus, texte, duree };
+  return { inclus: detail.map((e) => e.texte), elements: detail, texte, duree };
 }
 
 export interface Plage { weekday: number; startsAt: string; endsAt: string }

@@ -8,9 +8,10 @@ describe('mise en forme de l’accueil', () => {
     expect(eclat.duree).toBe('1 h à 1 h 30');
 
     const signature = detailPrestation(FORMULES.find((f) => f.id === 'int-signature')!.description);
-    expect(signature.inclus[0]).toBe('Tout le niveau Éclat');
+    expect(signature.inclus[0]).toBe('Formule Éclat incluse');
+    expect(signature.elements[0].formule).toBe(true);
     expect(signature.inclus[1]).toBe('Shampooing des tapis et moquettes');
-    expect(signature.inclus).toContain('Désodorisant voiture offert');
+    expect(signature.elements).toContainEqual({ texte: 'Désodorisant voiture', etiquette: 'Offert · durée limitée' });
   });
 
   it('garde une phrase telle quelle quand elle ne se découpe pas en liste', () => {

@@ -74,7 +74,7 @@ blockquote.card { margin: 0; }
 .formule:has(.choisir:focus-visible) { outline: 3px solid var(--bs-color-primary); outline-offset: 3px; }
 .choisir::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
 @media (prefers-reduced-motion: reduce) { .formule { transition: none; } .formule:hover { transform: none; } }
-.vedette { border: 2px solid var(--bs-color-primary); box-shadow: 0 12px 28px -14px rgb(22 119 210 / 55%); }
+.vedette { border: 2px solid var(--bs-color-primary); box-shadow: 0 12px 28px -14px rgb(22 119 210 / 55%); background: linear-gradient(180deg, var(--bs-color-primary-soft) 0%, var(--bs-color-surface) 45%); }
 .vedette .badge { position: absolute; top: -.8rem; left: 1.25rem; background: var(--bs-color-primary); color: #fff; }
 .prix { font-size: 2rem; font-weight: 800; color: var(--bs-color-primary-dark); line-height: 1; }
 .duree { align-self: flex-start; font-size: .85rem; font-weight: 600; padding: 2px 10px; border-radius: var(--bs-radius-pill); background: var(--bs-color-primary-soft); }
@@ -127,3 +127,11 @@ blockquote.card { margin: 0; }
 .communes { font-size: .9rem; color: var(--bs-color-text-muted); }
 .communes summary { display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; font-weight: 600; color: var(--bs-color-text); }
 .communes p { margin-top: .25rem; line-height: 1.7; }
+
+/* Contenu des formules : formule de base en couleur, étiquettes « Nouveau », « Durée limitée » (orange), « Offert… » (rose). */
+.formuleIncluse { font-weight: 700; color: #b4470b; }
+:global([data-theme='nuit']) .formuleIncluse { color: #fdba74; }
+.etiquette { display: inline-block; margin-left: .4rem; padding: 1px 8px; border-radius: 999px; vertical-align: .1em;
+  font-size: .68rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; background: #f59e0b; color: #2b1700; }
+.etiquetteOfferte { background: #d6246e; color: #fff; }
+.inclus li:has(.etiquetteOfferte) { font-weight: 700; }
