@@ -91,7 +91,7 @@ export interface PrestationPro {
 /** Produit vendu avec les réservations ; stock à 0 : affiché « épuisé » sur le site ; inactif : plus proposé. */
 export interface ProduitPro { id?: string; name: string; description: string; priceCents: number; stock: number; active: boolean; position: number; photo: string | null; category?: string | null }
 
-export interface OptionPro { id?: string; name: string; description: string; priceCents: number; durationMin: number; active: boolean }
+export interface OptionPro { id?: string; name: string; description: string; priceCents: number; durationMin: number; active: boolean; position?: number }
 
 export interface Plage { weekday: number; startsAt: string; endsAt: string }
 export interface Indisponibilite { id: string; start: string; end: string; reason: string }
@@ -261,6 +261,19 @@ export async function enregistrerOption(o: OptionPro): Promise<OptionPro> {
     return enregistree;
   }
   return authHttp(id ? `/admin/catalog/options/${encodeURIComponent(id)}` : '/admin/catalog/options', { method: id ? 'PUT' : 'POST', ...json(donnees) });
+}
+
+/** Nouvel ordre d'affichage (glisser-déposer) : identifiants dans l'ordre voulu. */
+export async function enregistrerOrdre(ordre: { prestations?: string[]; options?: string[]; produits?: string[] }): Promise<void> {
+  if (isDemo()) {
+    const ranger = <T extends { id?: string; position?: number }>(liste: T[], ids?: string[]) =>
+      ids ? liste.map((x) => (x.id && ids.includes(x.id) ? { ...x, position: ids.indexOf(x.id) } : x)).sort((a, b) => (a.position ?? 0) - (b.position ?? 0)) : liste;
+    demo.prestations = ranger(demo.prestations, ordre.prestations);
+    demo.options = ranger(demo.options, ordre.options);
+    demo.produits = ranger(demo.produits, ordre.produits);
+    return;
+  }
+  await authHttp('/admin/catalog/ordre', { method: 'PUT', ...json(ordre) });
 }
 
 // ——— Produits ———

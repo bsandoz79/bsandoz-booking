@@ -14,3 +14,4 @@ export * from './blocks/AddressInput';
 export * from './blocks/Toggle';
 export * from './blocks/DataTable';
 export * from './blocks/PlanningView';
+export * from './blocks/SortableList';

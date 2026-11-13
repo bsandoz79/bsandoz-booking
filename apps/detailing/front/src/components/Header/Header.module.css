@@ -90,3 +90,13 @@
 .compte:hover { border-color: transparent; background: color-mix(in srgb, var(--bs-color-text) 6%, transparent); }
 .compte[aria-current='page'] { border-color: transparent; background: var(--bs-color-primary-soft); }
 .nav { gap: 1.1rem; }
+
+/* Liens du compte : dans la barre sur grand écran, dans le menu sur téléphone. */
+.dansMenu { display: none; }
+@media (max-width: 760px) {
+  .horsMenu { display: none !important; }
+  .nav .dansMenu { display: flex; }
+  .inner { flex-wrap: wrap; row-gap: 0; }
+  .reserver { padding: 0 1rem; min-height: 42px; font-size: .95rem; }
+  .actions { gap: .3rem; }
+}

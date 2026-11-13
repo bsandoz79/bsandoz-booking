@@ -34,8 +34,9 @@ describe('Espace client', () => {
   it('compte pro : le lien « Espace pro » est dans l’en-tête, à côté de « Mon espace », plus dans la page', async () => {
     await seConnecterDemo();
     const entete = screen.getAllByRole('banner')[0];
-    expect(await within(entete).findByRole('link', { name: 'Espace pro' })).toHaveAttribute('href', '/pro');
-    expect(within(entete).getByRole('link', { name: 'Mon espace' })).toHaveAttribute('href', '/mon-espace');
+    // Dans la barre (grand écran) et dans le menu (téléphone).
+    expect((await within(entete).findAllByRole('link', { name: 'Espace pro' })).every((l) => l.getAttribute('href') === '/pro')).toBe(true);
+    expect(within(entete).getAllByRole('link', { name: 'Mon espace' })[0]).toHaveAttribute('href', '/mon-espace');
     expect(within(screen.getByRole('main')).queryByRole('link', { name: /espace pro/i })).not.toBeInTheDocument();
   });
 

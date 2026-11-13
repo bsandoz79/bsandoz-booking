@@ -16,6 +16,8 @@ class Option
         public readonly int $durationMin,
         public readonly bool $active = true,
         public readonly string $description = '',
+        /** Ordre d'affichage (site, réservation, espace pro). */
+        public readonly int $position = 0,
     ) {
     }
 }

@@ -1,0 +1,15 @@
+.liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1.25rem; }
+.element { position: relative; display: flex; align-items: stretch; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease; }
+.liste:not(.grille) > .element + .element { border-top: 1px solid var(--bs-color-border); }
+.contenu { flex: 1; min-width: 0; }
+.poignee { flex: none; display: grid; place-items: center; width: 32px; padding: 0; border: 0; background: none; color: var(--bs-color-text-muted); cursor: grab; border-radius: 8px; }
+.grille .poignee { position: absolute; top: .5rem; right: .5rem; z-index: 2; width: 32px; height: 32px; background: var(--bs-color-surface); box-shadow: 0 1px 4px rgb(0 0 0 / .15); }
+.poignee:hover { color: var(--bs-color-text); }
+.poignee:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
+.enCours { cursor: grabbing; }
+.enCours .element:not(.saisi) { opacity: .75; }
+.saisi { z-index: 3; transform: scale(1.02); box-shadow: 0 12px 28px rgb(0 0 0 / .18); background: var(--bs-color-surface); border-radius: 12px; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .element { transition: none; } .saisi { transform: none; } }

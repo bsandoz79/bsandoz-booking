@@ -65,6 +65,15 @@ final class AdminCatalogueController
         return new JsonResponse($this->catalogue->enregistrerOption(Json::corps($request), $id));
     }
 
+    /** PUT /admin/catalog/ordre {"prestations"?: [ids], "options"?: [ids], "produits"?: [ids]} → 204 : nouvel ordre d'affichage. */
+    #[Route('/ordre', name: 'bsandoz_admin_catalog_ordre', methods: ['PUT'])]
+    public function ordre(Request $request): Response
+    {
+        $this->catalogue->reordonner(Json::corps($request));
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
     #[Route('/produits', name: 'bsandoz_admin_produit_create', methods: ['POST'])]
     public function creerProduit(Request $request): JsonResponse
     {

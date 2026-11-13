@@ -46,6 +46,9 @@ export function Header() {
           {/* Section fidélité de l'accueil : la carte du client connecté, sinon un exemple. */}
           {fidelite && <Link to="/#fidelite">Fidélité</Link>}
           <NavLink to="/professionnels">Pro</NavLink>
+          {/* Téléphone : le compte et l'espace pro passent dans le menu, la barre tient sur une ligne. */}
+          <NavLink to="/mon-espace" className={styles.dansMenu}>Mon espace</NavLink>
+          {pro && <NavLink to="/pro" className={styles.dansMenu}>Espace pro</NavLink>}
         </nav>
         {/* Ordre : liens, bouton principal, puis le compte et le thème à droite. */}
         <Link to="/reserver" className={`btn ${styles.reserver}`}>Réserver</Link>
@@ -56,11 +59,11 @@ export function Header() {
             </a>
           )}
           {pro && (
-            <NavLink to="/pro" className={styles.espacePro} aria-label="Espace pro" title="Espace pro">
+            <NavLink to="/pro" className={`${styles.espacePro} ${styles.horsMenu}`} aria-label="Espace pro" title="Espace pro">
               <Icone nom="tableau" taille={18} />
             </NavLink>
           )}
-          <NavLink to="/mon-espace" className={styles.compte} aria-label="Mon espace">
+          <NavLink to="/mon-espace" className={`${styles.compte} ${styles.horsMenu}`} aria-label="Mon espace">
             <Icone nom="utilisateur" taille={18} /><span className={styles.libelleCompte}>Mon espace</span>
           </NavLink>
           <button type="button" className={styles.astre} onClick={basculer} aria-pressed={theme === 'nuit'} title={theme === 'nuit' ? 'Passer en version claire' : 'Passer en version nuit'}>

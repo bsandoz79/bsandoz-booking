@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { Button, Field, Toggle, formatEuros } from '@bsandoz/ui';
+import { Button, Field, SortableList, Toggle, formatEuros } from '@bsandoz/ui';
 import { Icone } from '../../components/Icone/Icone';
 import r from '../../components/Reglages/Reglages.module.css';
 import { CATEGORIES as CATEGORIES_SITE, VEHICLE_TYPES } from '../../data/demo';
-import { catalogue, enregistrerOption, enregistrerPrestation, type OptionPro, type PrestationPro, type Tarif } from '../../services/pro';
+import { catalogue, enregistrerOption, enregistrerOrdre, enregistrerPrestation, type OptionPro, type PrestationPro, type Tarif } from '../../services/pro';
 import { nouvellePrestation } from './nouvellePrestation';
 import { Filtres } from './Filtres';
 import { filtrer } from './filtrer';
@@ -40,9 +40,71 @@ export function CatalogueOnglet() {
     try { await enregistrerPrestation({ ...p, active: !p.active }); apres(p.active ? `« ${p.name} » n’est plus proposée.` : `« ${p.name} » est de nouveau proposée.`); } catch (e) { setErreur((e as Error).message); }
   };
 
+  /** Nouvel ordre : formules (toutes catégories, la catégorie déplacée remise à sa place) ou options. */
+  const ranger = async (type: 'prestations' | 'options', ids: string[]) => {
+    setErreur('');
+    try {
+      if (type === 'options') {
+        setOptions((liste) => ids.map((id) => liste.find((o) => o.id === id)!).filter(Boolean));
+        await enregistrerOrdre({ options: ids });
+      } else {
+        const triees = [...prestations].sort((a, b) => a.position - b.position);
+        const ensemble = new Set(ids);
+        const restants = [...ids];
+        const ordre = triees.map((p) => (p.id && ensemble.has(p.id) ? restants.shift()! : p.id!)).filter(Boolean);
+        setPrestations((liste) => liste.map((p) => ({ ...p, position: ordre.indexOf(p.id!) })));
+        await enregistrerOrdre({ prestations: ordre });
+      }
+      setMessage('Nouvel ordre enregistré : il est appliqué sur le site.');
+    } catch (e) {
+      setErreur((e as Error).message);
+    }
+  };
+
+  const lignePrestation = (p: PrestationPro) => (
+    <div className={`${r.ligne} ${p.active ? '' : r.estompee}`}>
+                        <Icone nom="catalogue" className={r.ligneIcone} />
+                        <div className={r.ligneTexte}>
+                          <span className={r.ligneTitre}>{p.name}</span>
+                          <span className={r.ligneSous}>
+                            À partir de <strong>{formatEuros(Math.min(p.basePriceCents, ...Object.values(p.tarifs).map((t) => t.priceCents)))}</strong>
+                            {' · '}{p.occupePlage ? 'demi-journée' : duree(p.baseDurationMin)}
+                            {p.optionIds.length > 0 ? ` · ${p.optionIds.length} option${p.optionIds.length > 1 ? 's' : ''}` : ''}
+                          </span>
+                          {(p.badge || !p.active || (p.remiseUniteCents ?? 0) > 0 || Object.keys(p.tarifs).length > 0) && (
+                            <span className={r.etiquettes}>
+                              {!p.active && <span className={`${r.etiquette} ${r.etiquetteNeutre}`}>Retirée du site</span>}
+                              {p.badge && <span className={r.etiquette}>{p.badge}</span>}
+                              {Object.keys(p.tarifs).length > 0 && <span className={`${r.etiquette} ${r.etiquetteNeutre}`}>Prix selon le véhicule</span>}
+                              {(p.remiseUniteCents ?? 0) > 0 && <span className={`${r.etiquette} ${r.etiquetteNeutre}`}>−{formatEuros(p.remiseUniteCents!)} par véhicule en plus</span>}
+                            </span>
+                          )}
+                        </div>
+                        <div className={r.ligneActions}>
+                          <button type="button" className={r.boutonContour} aria-label={`Modifier ${p.name}`} onClick={() => { setMessage(''); setPrestation(p); }}>Modifier</button>
+                          <button type="button" className={r.boutonContour} aria-label={p.active ? `Retirer ${p.name}` : `Proposer ${p.name}`} onClick={() => basculer(p)}>
+                            {p.active ? 'Retirer' : 'Proposer'}
+                          </button>
+                        </div>
+    </div>
+  );
+  const ligneOption = (o: OptionPro) => (
+    <div className={`${r.ligne} ${o.active ? '' : r.estompee}`}>
+                    <Icone nom="etoile" className={r.ligneIcone} />
+                    <div className={r.ligneTexte}>
+                      <span className={r.ligneTitre}>{o.name}</span>
+                      <span className={r.ligneSous}>+ {formatEuros(o.priceCents)}{o.durationMin > 0 ? ` · + ${duree(o.durationMin)}` : ''}{o.active ? '' : ' · non proposée'}</span>
+                    </div>
+                    <div className={r.ligneActions}>
+                      <button type="button" className={r.boutonContour} aria-label={`Modifier l’option ${o.name}`} onClick={() => { setMessage(''); setOption(o); }}>Modifier</button>
+                    </div>
+    </div>
+  );
+
   return (
     <section className={styles.section} aria-labelledby="titre-catalogue">
       <h2 id="titre-catalogue">Catalogue</h2>
+      <p className={styles.aide}>L’ordre ici est celui du site et de la réservation : restez appuyé sur une ligne (ou saisissez-la à la souris) puis faites-la glisser.</p>
       {message && <p className={styles.ok} role="status">{message}</p>}
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
 
@@ -74,35 +136,13 @@ export function CatalogueOnglet() {
                   )}
                 </div>
                 {liste.length === 0 ? <p className={r.aide}>Aucune prestation dans cette catégorie.</p> : (
-                  <ul className={r.panneau}>
-                    {liste.map((p) => (
-                      <li key={p.id ?? p.name} className={`${r.ligne} ${p.active ? '' : r.estompee}`}>
-                        <Icone nom="catalogue" className={r.ligneIcone} />
-                        <div className={r.ligneTexte}>
-                          <span className={r.ligneTitre}>{p.name}</span>
-                          <span className={r.ligneSous}>
-                            À partir de <strong>{formatEuros(Math.min(p.basePriceCents, ...Object.values(p.tarifs).map((t) => t.priceCents)))}</strong>
-                            {' · '}{p.occupePlage ? 'demi-journée' : duree(p.baseDurationMin)}
-                            {p.optionIds.length > 0 ? ` · ${p.optionIds.length} option${p.optionIds.length > 1 ? 's' : ''}` : ''}
-                          </span>
-                          {(p.badge || !p.active || (p.remiseUniteCents ?? 0) > 0 || Object.keys(p.tarifs).length > 0) && (
-                            <span className={r.etiquettes}>
-                              {!p.active && <span className={`${r.etiquette} ${r.etiquetteNeutre}`}>Retirée du site</span>}
-                              {p.badge && <span className={r.etiquette}>{p.badge}</span>}
-                              {Object.keys(p.tarifs).length > 0 && <span className={`${r.etiquette} ${r.etiquetteNeutre}`}>Prix selon le véhicule</span>}
-                              {(p.remiseUniteCents ?? 0) > 0 && <span className={`${r.etiquette} ${r.etiquetteNeutre}`}>−{formatEuros(p.remiseUniteCents!)} par véhicule en plus</span>}
-                            </span>
-                          )}
-                        </div>
-                        <div className={r.ligneActions}>
-                          <button type="button" className={r.boutonContour} aria-label={`Modifier ${p.name}`} onClick={() => { setMessage(''); setPrestation(p); }}>Modifier</button>
-                          <button type="button" className={r.boutonContour} aria-label={p.active ? `Retirer ${p.name}` : `Proposer ${p.name}`} onClick={() => basculer(p)}>
-                            {p.active ? 'Retirer' : 'Proposer'}
-                          </button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                  recherche.trim() ? (
+                    <ul className={r.panneau}>{liste.map((p) => <li key={p.id ?? p.name}>{lignePrestation(p)}</li>)}</ul>
+                  ) : (
+                    <SortableList items={liste} getKey={(p) => p.id ?? p.name} label={`Ordre des prestations : ${c.label}`} className={r.panneau}
+                      handleLabel={(p) => `Déplacer ${p.name}`} movedMessage={(p, n, t) => `${p.name} : position ${n} sur ${t}`}
+                      renderItem={lignePrestation} onReorder={(ids) => ranger('prestations', ids)} />
+                  )
                 )}
               </section>
             );
@@ -119,20 +159,13 @@ export function CatalogueOnglet() {
               </button>
             </div>
             {options.length === 0 ? <p className={r.aide}>Aucune option.</p> : (
-              <ul className={r.panneau}>
-                {filtrer(options, recherche, '', (o) => o.name, () => '').map((o) => (
-                  <li key={o.id ?? o.name} className={`${r.ligne} ${o.active ? '' : r.estompee}`}>
-                    <Icone nom="etoile" className={r.ligneIcone} />
-                    <div className={r.ligneTexte}>
-                      <span className={r.ligneTitre}>{o.name}</span>
-                      <span className={r.ligneSous}>+ {formatEuros(o.priceCents)}{o.durationMin > 0 ? ` · + ${duree(o.durationMin)}` : ''}{o.active ? '' : ' · non proposée'}</span>
-                    </div>
-                    <div className={r.ligneActions}>
-                      <button type="button" className={r.boutonContour} aria-label={`Modifier l’option ${o.name}`} onClick={() => { setMessage(''); setOption(o); }}>Modifier</button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              recherche.trim() ? (
+                <ul className={r.panneau}>{filtrer(options, recherche, '', (o) => o.name, () => '').map((o) => <li key={o.id ?? o.name}>{ligneOption(o)}</li>)}</ul>
+              ) : (
+                <SortableList items={options} getKey={(o) => o.id ?? o.name} label="Ordre des options" className={r.panneau}
+                  handleLabel={(o) => `Déplacer ${o.name}`} movedMessage={(o, n, t) => `${o.name} : position ${n} sur ${t}`}
+                  renderItem={ligneOption} onReorder={(ids) => ranger('options', ids)} />
+              )
             )}
           </section>
         </>
