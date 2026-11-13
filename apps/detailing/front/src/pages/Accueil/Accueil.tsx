@@ -113,7 +113,7 @@ export function Accueil() {
           <p className={styles.lead}>{accueil.introduction}</p>
           <div className={styles.ctas}>
             <Link to="/reserver" className="btn">Réserver un créneau</Link>
-            {telephone && <a href={lienTel(telephone)} className={`btn ${styles.appeler}`}><IconeTelephone /> Appeler le {telephone}</a>}
+            {telephone && <a href={lienTel(telephone)} className={`btn ${styles.appeler}`} aria-label={`Appeler le ${telephone}`}><IconeTelephone /> {telephone}</a>}
             <a href="#prestations" className="btn btn--ghost">Voir les prestations</a>
           </div>
           {accueil.arguments.length > 0 && (

@@ -55,9 +55,15 @@ export const CONTENU_PAR_DEFAUT: ContenuSite = {
   ],
   communes: ['Abbeville', 'Saint-Valery-sur-Somme', 'Le Crotoy', 'Rue', 'Cayeux-sur-Mer', 'Friville-Escarbotin', 'Gamaches', 'Pont-Remy', 'Saint-Riquier', 'Crécy-en-Ponthieu'],
   legal: {
-    responsable: A_COMPLETER, statut: A_COMPLETER, siret: A_COMPLETER, adresse: A_COMPLETER, tva: A_COMPLETER, mediateur: A_COMPLETER,
+    // Données de démonstration, volontairement fictives : à remplacer par les vraies (crayon des pages légales ou « Mon site »).
+    responsable: 'Baptiste Sandoz',
+    statut: 'Entreprise individuelle (micro-entreprise) — données de démonstration',
+    siret: '000 000 000 00000 (fictif, démonstration)',
+    adresse: '12 rue de la Démonstration, 80100 Abbeville (adresse fictive)',
+    tva: 'TVA non applicable, art. 293 B du CGI',
+    mediateur: 'Médiateur de la consommation : [fictif, démonstration]',
     retractation: '[à compléter : régime applicable à faire valider (prestation de service à date déterminée, article L221-28 du Code de la consommation).]',
-    conservation: A_COMPLETER,
+    conservation: '3 ans après le dernier rendez-vous (données de démonstration)',
   },
 };
 

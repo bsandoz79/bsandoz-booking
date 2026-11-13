@@ -65,6 +65,10 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Avant de confirmer, le client est prévenu de ce qu'il perd (avoir, tampons de fidélité, remise prête).
 - ✅ La suppression efface aussi l'adresse, la position, les précisions et les données métier de ses anciens rendez-vous ; montants et dates restent pour la comptabilité, les factures gardent leurs mentions légales.
 
+### Démonstration
+- ✅ Mentions légales de démonstration : responsable Baptiste Sandoz ; SIRET, adresse, médiateur et conservation fictifs, signalés comme tels. Vendeur des factures rempli par `detailing:demo:charger` (sans écraser ce qui est saisi). À remplacer par les vraies informations.
+- ✅ Boutons d'appel : le numéro seul avec l'icône (« Appeler le … » lu par les lecteurs d'écran).
+
 ### E-mails
 - ✅ E-mails professionnels : en-tête avec logo et liseré, grand titre, phrase d'aperçu, encadré récapitulatif (date en toutes lettres, prestation, adresse, paiement), boutons soignés, pied de page avec le site ; le client peut répondre directement (réponse chez le pro).
 
@@ -88,7 +92,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ⏳ **Brancher le site sur la plateforme choisie** (développement) : à « Terminé », envoi automatique de la facture (clients pro) et des données de vente (particuliers), si la plateforme propose une API.
 
 ### Informations à fournir
-- ⏳ Mentions légales et CGV : responsable, statut, SIRET, adresse, TVA, médiateur, conservation des données ; texte de rétractation à faire valider.
+- ⏳ Mentions légales et CGV : remplacer les données de démonstration (SIRET, adresse, médiateur… fictifs) par les vraies ; texte de rétractation à faire valider.
 - ⏳ Informations de facturation du vendeur (onglet Factures).
 - ⏳ Fiche Google à créer, puis lien d'avis à coller dans Réglages → Avis Google.
 - ⏳ Photos des réalisations (avant / après), vrais produits (photos, prix, stock).

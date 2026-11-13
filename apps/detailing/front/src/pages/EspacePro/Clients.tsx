@@ -147,7 +147,7 @@ function Fiche({ fiche, onRetour, onAvoir }: { fiche: FicheClient; onRetour: () 
       <div><Button variant="ghost" onClick={onRetour}>← Tous les clients</Button></div>
       <h2 id="titre-fiche">{fiche.nom || fiche.email}{fiche.aRelancer && <span className={styles.statut}>À relancer</span>}</h2>
       <div className={styles.actions}>
-        {fiche.phone && <a className={styles.appelClient} href={lienTel(fiche.phone)}><IconeTelephone /> Appeler {fiche.phone}</a>}
+        {fiche.phone && <a className={styles.appelClient} href={lienTel(fiche.phone)} aria-label={`Appeler ${fiche.phone}`}><IconeTelephone /> {fiche.phone}</a>}
         <a className="btn btn--ghost" href={`mailto:${fiche.email}`}>Écrire à {fiche.email}</a>
       </div>
       <div className={styles.tuiles}>
