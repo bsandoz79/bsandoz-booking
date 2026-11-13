@@ -73,6 +73,11 @@ function Connexion({ message, onConnecte }: { message: string; onConnecte: () =>
   );
 }
 
+/** « mar. 17 nov., 9 h 30 » */
+const jourCourt = (iso: string) => new Date(iso).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+/** Initiales du nom (2 lettres au plus). */
+const initiales = (nom: string) => nom.split(/[\s@.-]+/).filter(Boolean).slice(0, 2).map((m) => m[0]!.toUpperCase()).join('');
+
 function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) {
   const [compte, setCompte] = useState<Compte>();
   const [rendezVous, setRendezVous] = useState<RendezVous[]>([]);
@@ -136,13 +141,40 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
       )}
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
 
+      <ul className={styles.tuiles} aria-label="En bref">
+        <li className={styles.tuile}>
+          <span className={styles.tuileIcone} aria-hidden="true">📅</span>
+          <span className={styles.tuileLibelle}>Prochain rendez-vous</span>
+          <strong className={styles.tuileValeur}>{aVenir[0] ? jourCourt(aVenir[0].start) : 'Aucun'}</strong>
+        </li>
+        <li className={styles.tuile}>
+          <span className={styles.tuileIcone} aria-hidden="true">✨</span>
+          <span className={styles.tuileLibelle}>Prestations réalisées</span>
+          <strong className={styles.tuileValeur}>{rendezVous.filter((r) => r.status === 'done').length}</strong>
+        </li>
+        {fidelite?.actif && (
+          <li className={styles.tuile}>
+            <span className={styles.tuileIcone} aria-hidden="true">🎟️</span>
+            <span className={styles.tuileLibelle}>Carte de fidélité</span>
+            <strong className={styles.tuileValeur}>{fidelite.remiseDisponible ? `−${fidelite.remisePercent} % prêt` : `${fidelite.tampons} / ${fidelite.tamponsRequis}`}</strong>
+          </li>
+        )}
+        {(compte?.avoirCents ?? 0) > 0 && (
+          <li className={`${styles.tuile} ${styles.tuileAvoir}`}>
+            <span className={styles.tuileIcone} aria-hidden="true">💶</span>
+            <span className={styles.tuileLibelle}>Avoir, déduit au prochain rendez-vous</span>
+            <strong className={styles.tuileValeur}>{formatEuros(compte!.avoirCents!)}</strong>
+          </li>
+        )}
+      </ul>
+      <Link to="/reserver" className={`btn ${styles.reserver}`}>Réserver un nouveau rendez-vous</Link>
       {(compte?.avoirCents ?? 0) > 0 && (
-        <p className={styles.accesPro}>Vous avez un avoir de <strong>{formatEuros(compte!.avoirCents!)}</strong> : il sera déduit automatiquement de votre prochain rendez-vous.</p>
+        <p className={styles.srOnly}>Vous avez un avoir de {formatEuros(compte!.avoirCents!)} : il sera déduit automatiquement de votre prochain rendez-vous.</p>
       )}
       {fidelite?.actif && <CarteFidelite carte={fidelite} />}
 
       <section className={styles.section} aria-labelledby="titre-a-venir">
-        <h2 id="titre-a-venir">Mes rendez-vous à venir</h2>
+        <h2 id="titre-a-venir"><span aria-hidden="true">🗓️ </span>Mes rendez-vous à venir</h2>
         {aVenir.length === 0 ? (
           <p>Aucun rendez-vous à venir. <Link to="/reserver">Réserver un créneau</Link></p>
         ) : (
@@ -152,14 +184,14 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
 
       {passes.length > 0 && (
         <section className={styles.section} aria-labelledby="titre-historique">
-          <h2 id="titre-historique">Historique</h2>
+          <h2 id="titre-historique"><span aria-hidden="true">🕘 </span>Historique</h2>
           <div className={styles.liste}>{passes.map(carte)}</div>
         </section>
       )}
 
       {factures.length > 0 && (
         <section className={styles.section} aria-labelledby="titre-factures">
-          <h2 id="titre-factures">Mes factures</h2>
+          <h2 id="titre-factures"><span aria-hidden="true">🧾 </span>Mes factures</h2>
           <ul className={styles.liste}>
             {factures.map((f) => (
               <li key={f.id}><Link to={`/facture/${f.id}`}>Facture {f.numero}</Link> · {new Date(f.prestationLe).toLocaleDateString('fr-FR')} · {formatEuros(f.totalCents)}</li>
@@ -169,7 +201,7 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
       )}
 
       <section className={styles.section} aria-labelledby="titre-compte">
-        <h2 id="titre-compte">Sécurité et données</h2>
+        <h2 id="titre-compte"><span aria-hidden="true">🔒 </span>Sécurité et données</h2>
         <div className={styles.actions}>
           <Link to="/compte/mot-de-passe" className="btn btn--ghost">Changer de mot de passe</Link>
           <Button variant="ghost" onClick={telecharger}>Télécharger mes données</Button>
@@ -177,7 +209,7 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
       </section>
 
       <section className={styles.danger} aria-labelledby="titre-danger">
-        <h2 id="titre-danger">Zone de danger</h2>
+        <h2 id="titre-danger"><span aria-hidden="true">⚠️ </span>Zone de danger</h2>
         <div className={styles.dangerContenu}>
           {suppression ? (
             <>
@@ -225,12 +257,13 @@ function Profil({ compte, onModifie, onDeconnecter }: { compte: Compte; onModifi
 
   return (
     <section className={styles.profil} aria-labelledby="titre-profil">
-      <div className={styles.profilEntete}>
-        <div>
+      <div className={styles.profilBandeau}>
+        <span className={styles.avatar} aria-hidden="true">{initiales(nomComplet || compte.email)}</span>
+        <div className={styles.profilIdentite}>
           <p className={styles.bonjour}>Bonjour</p>
           <h2 id="titre-profil" className={styles.profilNom}>{nomComplet || compte.email}</h2>
         </div>
-        <Button variant="secondary" onClick={onDeconnecter}>Se déconnecter</Button>
+        <button type="button" className={styles.deconnexion} onClick={onDeconnecter}>Se déconnecter</button>
       </div>
       {edition ? (
         <form className={styles.profilFormulaire} onSubmit={enregistrer} noValidate>
@@ -246,10 +279,10 @@ function Profil({ compte, onModifie, onDeconnecter }: { compte: Compte; onModifi
       ) : (
         <>
           <dl className={styles.coordonnees}>
-            <div><dt>E-mail</dt><dd>{compte.email}</dd></div>
-            <div><dt>Téléphone</dt><dd>{compte.phone || '—'}</dd></div>
+            <div><dt><span aria-hidden="true">✉️</span> E-mail</dt><dd>{compte.email}</dd></div>
+            <div><dt><span aria-hidden="true">📱</span> Téléphone</dt><dd>{compte.phone || '—'}</dd></div>
           </dl>
-          <div><Button variant="ghost" onClick={ouvrir}>Modifier mes informations</Button></div>
+          <div className={styles.profilActions}><Button variant="ghost" onClick={ouvrir}>Modifier mes informations</Button></div>
         </>
       )}
       {message && <p className={styles.ok} role="status">{message}</p>}

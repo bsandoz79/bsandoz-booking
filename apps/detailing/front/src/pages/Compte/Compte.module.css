@@ -16,14 +16,35 @@
 /* Compte pro connecté sur « Mon espace » : accès direct à l'espace pro. */
 .accesPro { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; padding: 1rem; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); }
 
-/* En-tête de « Mon espace » : nom, coordonnées, déconnexion. */
-.profil { display: flex; flex-direction: column; gap: .9rem; padding: 1.25rem; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); }
-.profilEntete { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: .75rem 1rem; }
-.bonjour { margin: 0; color: var(--bs-color-text-muted); font-weight: 600; }
-.profilNom { margin: 0; font-size: clamp(1.5rem, 4vw, 2rem); overflow-wrap: anywhere; }
-.coordonnees { display: grid; gap: .5rem; margin: 0; }
+/* En-tête de « Mon espace » : bandeau sombre aux initiales, coordonnées dessous. */
+.profil { overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); box-shadow: 0 8px 24px rgb(0 0 0 / .06); }
+.profilBandeau { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem 1rem; padding: 1.25rem; color: #fff;
+  background: radial-gradient(circle at 85% 0%, color-mix(in srgb, var(--brand-accent) 35%, transparent), transparent 55%), var(--brand-navy); }
+.avatar { display: grid; place-items: center; flex: none; width: 64px; height: 64px; border-radius: 50%; font-size: 1.4rem; font-weight: 800; letter-spacing: .02em;
+  color: var(--brand-navy); background: var(--brand-accent); box-shadow: 0 0 0 4px rgb(255 255 255 / .18); }
+.profilIdentite { flex: 1; min-width: 12rem; }
+.bonjour { margin: 0; color: var(--brand-on-navy); font-weight: 600; }
+.profilNom { margin: 0; color: #fff; font-size: clamp(1.4rem, 4vw, 1.9rem); overflow-wrap: anywhere; }
+.deconnexion { min-height: 44px; padding: 0 1rem; border: 1px solid rgb(255 255 255 / .6); border-radius: 999px; background: rgb(255 255 255 / .08);
+  color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.deconnexion:hover { background: rgb(255 255 255 / .18); }
+.deconnexion:focus-visible { outline: 3px solid var(--brand-accent); outline-offset: 2px; }
+.coordonnees { display: grid; gap: .6rem; margin: 0; padding: 1rem 1.25rem 0; }
 .coordonnees div { display: flex; flex-wrap: wrap; gap: .25rem .75rem; }
-.coordonnees dt { min-width: 6rem; font-weight: 600; color: var(--bs-color-text-muted); }
-.coordonnees dd { margin: 0; overflow-wrap: anywhere; }
-.profilFormulaire { display: flex; flex-direction: column; gap: .75rem; max-width: 460px; }
+.coordonnees dt { min-width: 8rem; font-weight: 600; color: var(--bs-color-text-muted); }
+.coordonnees dd { margin: 0; overflow-wrap: anywhere; font-weight: 600; }
+.profilActions { padding: .5rem 1.25rem 1rem; }
+.profilFormulaire { display: flex; flex-direction: column; gap: .75rem; max-width: 460px; padding: 1rem 1.25rem; }
+.profil > [role='status'] { padding: 0 1.25rem 1rem; margin: 0; }
+
+/* Tuiles « En bref ». */
+.tuiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .75rem; }
+.tuile { display: flex; flex-direction: column; gap: .2rem; padding: 1rem; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); }
+.tuileIcone { font-size: 1.4rem; }
+.tuileLibelle { font-size: .85rem; color: var(--bs-color-text-muted); }
+.tuileValeur { font-size: 1.15rem; color: var(--bs-color-primary-dark); text-transform: capitalize; }
+.tuileAvoir { border-color: var(--bs-color-success); background: color-mix(in srgb, var(--bs-color-success) 8%, var(--bs-color-surface)); }
+.tuileAvoir .tuileValeur { color: var(--bs-color-success); }
+.reserver { align-self: flex-start; }
+.section h2 { display: flex; align-items: center; gap: .25rem; }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

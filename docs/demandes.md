@@ -34,6 +34,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Réservation : chaque choix amène à l'endroit logique suivant (formules, options, étape suivante, calendrier, heures, coordonnées).
 - ✅ Adresse : bouton « Utiliser ma position » (GPS du téléphone, avec accord).
 - ✅ Après la réservation (page de confirmation) et dans « Mon espace » : « Ajouter à mon agenda » (Google Agenda, Apple / Outlook).
+- ✅ « Mon espace » plus visuel : bandeau de profil aux initiales, coordonnées avec icônes, tuiles « En bref » (prochain rendez-vous, prestations réalisées, fidélité, avoir), bouton « Réserver » bien visible.
 - ✅ « Mon espace » plus structuré : nom, puis e-mail et téléphone modifiables, déconnexion bien visible, zone de danger (suppression du compte) en pointillés rouges tout en bas.
 
 ### Bugs et mise en ligne

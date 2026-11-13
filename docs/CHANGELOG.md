@@ -164,6 +164,7 @@
 - Site : crayons de modification en icône seule (rond transparent, libellé lu par les lecteurs d'écran et au survol), placés en haut à droite des cartes, à côté des titres et en haut à droite du bandeau d'accueil.
 - Planning : vue semaine au texte resserré (2 lignes au plus, coupé proprement, texte complet au survol, bloc `PlanningView`) ; un clic sur un rendez-vous en semaine ou en mois amène à son détail.
 - Espace pro : rubriques dans une colonne fixe à gauche avec icônes (ordinateur), grille de boutons sans défilement (téléphone) ; page plus large.
+- Mon espace plus visuel : bandeau de profil sombre aux initiales, coordonnées avec icônes, tuiles « En bref » (prochain rendez-vous, prestations réalisées, fidélité, avoir), bouton « Réserver un nouveau rendez-vous », sections avec icônes. Test.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
