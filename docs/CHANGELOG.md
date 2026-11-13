@@ -176,3 +176,4 @@
 - Carte de la zone sur téléphone : indication « Utilisez deux doigts pour déplacer la carte » quand on la glisse avec un seul doigt (un doigt fait défiler la page).
 - Déploiement : envoi FTPS avec lftp (certificat vérifié) au lieu de FTP-Deploy-Action, qui échouait avec « tls_process_new_session_ticket: length mismatch ».
 - Déploiement : erreur « certificate issuer is unknown » de lftp. Le serveur FTPS d'o2switch n'envoie pas les certificats intermédiaires Let's Encrypt (YR1, Root YR) ; la chaîne est reconstituée (`.github/chaine-ftps.sh`) et contrôlée jusqu'à une racine reconnue, la vérification du certificat reste active.
+- Déploiement : erreur « gnutls_record_recv: Error in parsing » de lftp sur le canal de données en TLS 1.3 ; envoi forcé en TLS 1.2 (toujours chiffré, certificat vérifié).
