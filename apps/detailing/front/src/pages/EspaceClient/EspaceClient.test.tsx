@@ -75,6 +75,10 @@ describe('Espace client', () => {
     const profil = screen.getByRole('region', { name: 'Camille Martin' });
     expect(profil).toHaveTextContent('camille@example.org');
     expect(within(profil).getByRole('button', { name: 'Se déconnecter' })).toBeInTheDocument();
+    const enBref = screen.getByRole('list', { name: 'En bref' });
+    expect(enBref).toHaveTextContent(/Prochain rendez-vous.*mar\. 17 nov\./);
+    expect(enBref).toHaveTextContent(/Avoir.*30,00/);
+    expect(screen.getByRole('link', { name: 'Réserver un nouveau rendez-vous' })).toHaveAttribute('href', '/reserver');
 
     await userEvent.click(within(profil).getByRole('button', { name: 'Modifier mes informations' }));
     const telephone = within(profil).getByLabelText(/Téléphone/);
