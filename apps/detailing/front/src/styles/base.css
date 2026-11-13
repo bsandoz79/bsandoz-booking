@@ -1,4 +1,10 @@
 *, *::before, *::after { box-sizing: border-box; }
+/* Téléphone : la page ne glisse jamais de côté (« clip » garde l'en-tête collé en haut, contrairement à « hidden »). */
+html, body { overflow-x: clip; }
+/* Écran tactile : champs en 16 px minimum, sinon Safari (iPhone) zoome en touchant un champ et la page prend du jeu. */
+@media (pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']), select, textarea { font-size: max(16px, 1em) !important; }
+}
 body { margin: 0; font-family: var(--bs-font); color: var(--bs-color-text); background: var(--bs-color-bg); line-height: 1.6; }
 h1, h2, h3 { line-height: 1.15; margin: 0; }
 p { margin: 0; }

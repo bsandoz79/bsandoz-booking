@@ -58,3 +58,11 @@
 /* « Installer l'application » : bouton du menu, présenté comme les liens. */
 .nav .installer { width: 100%; border: 0; background: none; font: inherit; font-weight: 600; cursor: pointer; text-align: left; }
 .nav .installer:focus-visible { outline: 2px solid var(--bs-color-primary); outline-offset: -2px; }
+/* Très petits téléphones (320 px) : boutons un peu plus serrés pour que tout tienne sur la ligne. */
+@media (max-width: 370px) {
+  .inner { gap: .25rem; }
+  .brand img { height: 34px; }
+  .actions { gap: .25rem; }
+  .reserver { padding: 0 .8rem; font-size: .9rem; }
+  .rond, .appel, .astre { width: 40px; height: 40px; }
+}
