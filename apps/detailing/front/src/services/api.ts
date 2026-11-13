@@ -20,7 +20,8 @@ export interface Quote {
   inZone: boolean;
 }
 export interface Address { label: string; lat: number; lng: number }
-export interface Slot { start: string; end?: string; label: string }
+/** `groupe` : créneau juste avant ou après un rendez-vous déjà prévu (conseillé). */
+export interface Slot { start: string; end?: string; label: string; groupe?: boolean }
 
 /** Choix du client transmis à l'API : la variante est déduite de `metierData` par le module detailing. */
 export interface Selection {
@@ -179,7 +180,8 @@ export async function getAvailableDays(month: string, durationMin: number, addre
 export async function getSlots(date: string, durationMin: number, address: Address, formule?: Formule): Promise<Slot[]> {
   if (!isDemo()) return http(`/booking/slots?${query({ date, duration: durationMin, lat: address.lat, lng: address.lng, prestation: formule?.id })}`);
   const starts = formule?.occupePlage || durationMin > 180 ? ['08:30', '13:30'] : ['08:30', '10:30', '13:30', '15:30'];
-  return starts.map((h) => ({ start: `${date}T${h}:00`, label: h }));
+  // Démo : le premier créneau de l'après-midi suit un rendez-vous fictif.
+  return starts.map((h) => ({ start: `${date}T${h}:00`, label: h, groupe: h === '13:30' }));
 }
 
 /** Crée la réservation (bloquée le temps du paiement) ; renvoie la page de paiement de l'acompte. */

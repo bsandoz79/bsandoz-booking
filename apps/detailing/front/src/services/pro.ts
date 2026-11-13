@@ -321,3 +321,17 @@ export async function enregistrerZone(zone: Zone | null): Promise<void> {
   if (isDemo()) { demo.reglages = { ...demo.reglages, zone }; return; }
   await authHttp('/admin/settings/zone', { method: 'PUT', ...json({ zone }) });
 }
+
+// ——— Créneaux groupés ———
+let demoSeuilGroupes = 30;
+
+/** Seuil (minutes) sous lequel un créneau voisin d'un rendez-vous est mis en avant ; 0 : désactivé. */
+export async function seuilCreneauxGroupes(): Promise<number> {
+  if (isDemo()) return demoSeuilGroupes;
+  return (await authHttp<{ seuilMin: number }>('/admin/settings/creneaux-groupes')).seuilMin;
+}
+
+export async function enregistrerSeuilCreneauxGroupes(seuilMin: number): Promise<number> {
+  if (isDemo()) { demoSeuilGroupes = seuilMin; return seuilMin; }
+  return (await authHttp<{ seuilMin: number }>('/admin/settings/creneaux-groupes', { method: 'PUT', ...json({ seuilMin }) })).seuilMin;
+}

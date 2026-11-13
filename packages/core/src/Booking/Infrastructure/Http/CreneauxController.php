@@ -16,7 +16,8 @@ use Symfony\Component\Routing\Attribute\Route;
 /**
  * Calendrier public :
  *   GET /api/v1/booking/days?month=AAAA-MM&duration=150&lat=…&lng=…&prestation=…  → ["2026-11-10", …]
- *   GET /api/v1/booking/slots?date=AAAA-MM-JJ&duration=150&lat=…&lng=…&prestation=… → [{"start", "end", "label"}, …]
+ *   GET /api/v1/booking/slots?date=AAAA-MM-JJ&duration=150&lat=…&lng=…&prestation=… → [{"start", "end", "label", "groupe"}, …]
+ *   (groupe : créneau proche d'un rendez-vous déjà prévu, à mettre en avant)
  * lat/lng : obligatoires pour une activité à domicile ; prestation : facultative (durée incertaine → demi-journées).
  */
 #[Route('/api/v1/booking')]
@@ -43,11 +44,12 @@ final class CreneauxController
         [$duration, $lat, $lng, $prestation] = self::common($request);
         $tz = $this->settings->timezone();
 
-        return new JsonResponse(array_map(static fn (TimeRange $slot): array => [
-            'start' => $slot->start->format(DATE_ATOM),
-            'end' => $slot->end->format(DATE_ATOM),
-            'label' => $slot->start->setTimezone($tz)->format('H:i'),
-        ], ($this->creneaux)(self::required($request, 'date'), $duration, $lat, $lng, $prestation)));
+        return new JsonResponse(array_map(static fn (array $s): array => [
+            'start' => $s['creneau']->start->format(DATE_ATOM),
+            'end' => $s['creneau']->end->format(DATE_ATOM),
+            'label' => $s['creneau']->start->setTimezone($tz)->format('H:i'),
+            'groupe' => $s['groupe'],
+        ], $this->creneaux->avecRegroupement(self::required($request, 'date'), $duration, $lat, $lng, $prestation)));
     }
 
     /** @return array{int, float|null, float|null, string|null} durée, lat, lng, prestation */

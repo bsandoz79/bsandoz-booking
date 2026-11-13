@@ -19,6 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  *   GET /api/v1/admin/settings                  → {rules, zone, timezone}
  *   PUT /api/v1/admin/settings/rules {…}        → règles de réservation
  *   PUT /api/v1/admin/settings/zone {"zone": {…} | null}  (null : activité sur place)
+ *   GET / PUT /api/v1/admin/settings/creneaux-groupes {"seuilMin": 0–240} (0 : pas de mise en avant)
  */
 #[Route('/api/v1/admin')]
 #[IsGranted('ROLE_PRO')]
@@ -27,6 +28,7 @@ final class AdminController
     public function __construct(
         private TableauDeBord $tableau,
         private GererReglages $reglages,
+        private ?\Bsandoz\Core\Booking\Application\CreneauxGroupes $groupes = null,
     ) {
     }
 
@@ -62,5 +64,21 @@ final class AdminController
         $this->reglages->modifierZone($zone);
 
         return new JsonResponse($this->reglages->lire());
+    }
+
+    #[Route('/settings/creneaux-groupes', name: 'bsandoz_admin_creneaux_groupes', methods: ['GET'])]
+    public function creneauxGroupes(): JsonResponse
+    {
+        return new JsonResponse(['seuilMin' => $this->groupes?->seuilMin() ?? 0]);
+    }
+
+    #[Route('/settings/creneaux-groupes', name: 'bsandoz_admin_creneaux_groupes_changer', methods: ['PUT'])]
+    public function changerCreneauxGroupes(Request $request): JsonResponse
+    {
+        if ($this->groupes === null) {
+            throw new InvalidRequest('Réglage indisponible.');
+        }
+
+        return new JsonResponse(['seuilMin' => $this->groupes->changer(Json::corps($request)['seuilMin'] ?? null)]);
     }
 }

@@ -265,7 +265,8 @@ export function Reserver() {
                 {formule?.occupePlage && <p className={styles.hint}>Cette prestation occupe la demi-journée : seules les arrivées en début de matinée ou d'après-midi sont proposées.</p>}
                 {day && (
                   <div id="resa-heures" className={styles.ancre}>
-                    <SlotPicker title="Heure d'arrivée" slots={slots} selected={start} emptyMessage="Plus aucun créneau ce jour-là : choisissez un autre jour."
+                    <SlotPicker title="Heure d'arrivée" slots={slots.map((s) => ({ ...s, highlighted: s.groupe }))} selected={start} emptyMessage="Plus aucun créneau ce jour-là : choisissez un autre jour."
+                      highlightLabel="Conseillé" highlightHint="Conseillé : juste avant ou juste après un autre rendez-vous, déjà sur la route."
                       onSelect={(s) => { setStart(s); etapeSuivante(2); }} />
                   </div>
                 )}

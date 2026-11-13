@@ -66,7 +66,7 @@ final class CreneauxApiTest extends WebTestCase
         $slots = $this->get(sprintf('/api/v1/booking/slots?date=2026-11-10&duration=60&lat=%s&lng=%s', self::LAT, self::LNG));
 
         self::assertResponseIsSuccessful();
-        self::assertSame(['start' => '2026-11-10T07:00:00+00:00', 'end' => '2026-11-10T08:00:00+00:00', 'label' => '08:00'], $slots[0]);
+        self::assertSame(['start' => '2026-11-10T07:00:00+00:00', 'end' => '2026-11-10T08:00:00+00:00', 'label' => '08:00', 'groupe' => false], $slots[0]);
     }
 
     public function testPrestationADureeIncertaineEnDemiJournee(): void

@@ -6,3 +6,7 @@
 .slot:disabled { border-style: dashed; color: var(--bs-color-disabled); cursor: not-allowed; }
 .selected { border: 2px solid var(--bs-color-primary); background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); }
 .empty { color: var(--bs-color-text-muted); font-family: var(--bs-font); }
+.slot { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: var(--bs-space-1) var(--bs-space-2); }
+.highlighted { border-color: var(--bs-color-success); }
+.badge { font-size: .7rem; font-weight: 700; line-height: 1.1; color: var(--bs-color-success); }
+.hint { margin: 0; font-size: .85rem; color: var(--bs-color-text-muted); }

@@ -37,8 +37,18 @@ final class Occupations
      */
     public function __invoke(\DateTimeImmutable $from, \DateTimeImmutable $to, ?string $ignorerReservationId = null): array
     {
+        return [...$this->availability->unavailabilities($from, $to), ...$this->reservations($from, $to, $ignorerReservationId)];
+    }
+
+    /**
+     * Réservations seules (sans les indisponibilités), étendues de leur trajet et du battement.
+     *
+     * @return list<TimeRange>
+     */
+    public function reservations(\DateTimeImmutable $from, \DateTimeImmutable $to, ?string $ignorerReservationId = null): array
+    {
         $now = $this->clock->now();
-        $busy = $this->availability->unavailabilities($from, $to);
+        $busy = [];
         $battement = $this->settings?->rules()->bufferMin ?? 0;
 
         $marge = sprintf('%d hours', self::MARGE_HEURES);

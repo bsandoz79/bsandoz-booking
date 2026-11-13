@@ -26,7 +26,43 @@ final class ListerCreneaux
         private Occupations $occupations,
         private Trajet $trajet,
         private Clock $clock,
+        private ?CreneauxGroupes $groupes = null,
     ) {
+    }
+
+    /**
+     * Créneaux du jour, chacun marqué « groupé » s'il touche presque un rendez-vous déjà prévu (voir CreneauxGroupes).
+     *
+     * @return list<array{creneau: TimeRange, groupe: bool}>
+     * @throws DomainError date invalide, adresse manquante ou hors zone
+     */
+    public function avecRegroupement(string $date, int $durationMin, ?float $lat, ?float $lng, ?string $prestationId = null): array
+    {
+        $creneaux = $this($date, $durationMin, $lat, $lng, $prestationId);
+        $seuil = $this->groupes?->seuilMin() ?? 0;
+        $rdv = [];
+        if ($seuil > 0 && $creneaux !== []) {
+            $day = \DateTimeImmutable::createFromFormat('!Y-m-d', $date, $this->settings->timezone());
+            if ($day !== false) {
+                $rdv = $this->occupations->reservations($day, $day->modify('+1 day'));
+            }
+        }
+        $trajet = $rdv === [] ? 0 : ($this->trajet)($lat, $lng);
+        $battement = $this->settings->rules()->bufferMin;
+
+        return array_map(static function (TimeRange $c) use ($rdv, $seuil, $trajet, $battement): array {
+            // Le créneau occupe aussi son trajet avant et son battement après.
+            $debut = $c->start->modify(sprintf('-%d minutes', $trajet))->getTimestamp();
+            $fin = $c->end->modify(sprintf('+%d minutes', $battement))->getTimestamp();
+            foreach ($rdv as $r) {
+                $ecart = max($r->start->getTimestamp() - $fin, $debut - $r->end->getTimestamp());
+                if ($ecart <= $seuil * 60) {
+                    return ['creneau' => $c, 'groupe' => true];
+                }
+            }
+
+            return ['creneau' => $c, 'groupe' => false];
+        }, $creneaux);
     }
 
     /**
