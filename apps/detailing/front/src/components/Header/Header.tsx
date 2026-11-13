@@ -10,8 +10,9 @@ import { Icone } from '../Icone/Icone';
 import styles from './Header.module.css';
 
 /**
- * En-tête sur une seule ligne : logo, liens, bouton clair / nuit et « Réserver ». Sur téléphone, les liens passent
- * dans un menu déroulant (bouton « Menu »), refermé en choisissant un lien ou avec Échap.
+ * En-tête minimal, sur une ligne à toutes les tailles d'écran : logo, « Réserver », téléphone, thème clair / nuit et
+ * menu. Le menu (Prestations, Fidélité, Pro, Mon espace, Espace pro) se déroule sous la barre ; il se referme en
+ * choisissant un lien, avec Échap ou en cliquant ailleurs.
  */
 export function Header() {
   const [theme, setTheme] = useState<Theme>(() => themeActuel());
@@ -24,8 +25,13 @@ export function Header() {
   useEffect(() => {
     if (!ouvert) return;
     const echap = (e: KeyboardEvent) => { if (e.key === 'Escape') setOuvert(false); };
+    const ailleurs = (e: MouseEvent) => {
+      const cible = e.target as HTMLElement;
+      if (!cible.closest('#menu-principal') && !cible.closest('[aria-controls="menu-principal"]')) setOuvert(false);
+    };
     document.addEventListener('keydown', echap);
-    return () => document.removeEventListener('keydown', echap);
+    document.addEventListener('click', ailleurs);
+    return () => { document.removeEventListener('keydown', echap); document.removeEventListener('click', ailleurs); };
   }, [ouvert]);
 
   const basculer = () => {
@@ -40,32 +46,14 @@ export function Header() {
         <Link to="/" className={styles.brand}>
           <img src="/logo.png" alt="Perfect Clean" width="64" height="56" />
         </Link>
-        <nav id="menu-principal" aria-label="Navigation principale" className={`${styles.nav} ${ouvert ? styles.ouvert : ''}`}
-          onClick={(e) => { if ((e.target as HTMLElement).closest('a')) setOuvert(false); }}>
-          <NavLink to="/#prestations">Prestations</NavLink>
-          {/* Section fidélité de l'accueil : la carte du client connecté, sinon un exemple. */}
-          {fidelite && <Link to="/#fidelite">Fidélité</Link>}
-          <NavLink to="/professionnels">Pro</NavLink>
-          {/* Téléphone : le compte et l'espace pro passent dans le menu, la barre tient sur une ligne. */}
-          <NavLink to="/mon-espace" className={styles.dansMenu}>Mon espace</NavLink>
-          {pro && <NavLink to="/pro" className={styles.dansMenu}>Espace pro</NavLink>}
-        </nav>
-        {/* Ordre : liens, bouton principal, puis le compte et le thème à droite. */}
-        <Link to="/reserver" className={`btn ${styles.reserver}`}>Réserver</Link>
+        {/* Barre minimale : Réserver, téléphone, thème et menu ; tous les liens sont dans le menu. */}
         <div className={styles.actions}>
+          <Link to="/reserver" className={`btn ${styles.reserver}`}>Réserver</Link>
           {telephone && (
             <a href={lienTel(telephone)} className={styles.appel} aria-label={`Appeler le ${telephone}`} title={`Appeler le ${telephone}`}>
               <IconeTelephone />
             </a>
           )}
-          {pro && (
-            <NavLink to="/pro" className={`${styles.espacePro} ${styles.horsMenu}`} aria-label="Espace pro" title="Espace pro">
-              <Icone nom="tableau" taille={18} />
-            </NavLink>
-          )}
-          <NavLink to="/mon-espace" className={`${styles.compte} ${styles.horsMenu}`} aria-label="Mon espace">
-            <Icone nom="utilisateur" taille={18} /><span className={styles.libelleCompte}>Mon espace</span>
-          </NavLink>
           <button type="button" className={styles.astre} onClick={basculer} aria-pressed={theme === 'nuit'} title={theme === 'nuit' ? 'Passer en version claire' : 'Passer en version nuit'}>
             {/* Une roue porte le soleil (en haut) et la lune (en bas) : elle tourne d'un demi-tour, le soleil se couche et
                 la lune se lève pendant que le ciel s'assombrit. */}
@@ -83,6 +71,15 @@ export function Header() {
             <span className={styles.srOnly}>Menu</span>
           </button>
         </div>
+        <nav id="menu-principal" aria-label="Navigation principale" className={`${styles.nav} ${ouvert ? styles.ouvert : ''}`}
+          onClick={(e) => { if ((e.target as HTMLElement).closest('a')) setOuvert(false); }}>
+          <Link to="/#prestations">Prestations</Link>
+          {/* Section fidélité de l'accueil : la carte du client connecté, sinon un exemple. */}
+          {fidelite && <Link to="/#fidelite">Fidélité</Link>}
+          <NavLink to="/professionnels">Pro</NavLink>
+          <NavLink to="/mon-espace" className={styles.lienCompte}><Icone nom="utilisateur" taille={18} /> Mon espace</NavLink>
+          {pro && <NavLink to="/pro" className={styles.espacePro}><Icone nom="tableau" taille={18} /> Espace pro</NavLink>}
+        </nav>
       </div>
     </header>
   );
