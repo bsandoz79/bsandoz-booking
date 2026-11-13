@@ -1352,6 +1352,14 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         tampons_requis?: int|Param, // Default: 4
  *         remise_percent?: int|Param, // Default: 20
  *     },
+ *     sms?: array{ // SMS au client (confirmation, rappel, déplacement, annulation). Par défaut : aucun envoi.
+ *         fournisseur?: scalar|Param|null, // « brevo », « android » (SMS Gateway for Android) ou vide : aucun. // Default: "%env(default::SMS_FOURNISSEUR)%"
+ *         expediteur?: scalar|Param|null, // Nom affiché (11 caractères, Brevo). // Default: "%env(default::SMS_EXPEDITEUR)%"
+ *         brevo_cle?: scalar|Param|null, // Default: "%env(default::SMS_BREVO_CLE)%"
+ *         passerelle_url?: scalar|Param|null, // Default: "%env(default::SMS_PASSERELLE_URL)%"
+ *         passerelle_utilisateur?: scalar|Param|null, // Default: "%env(default::SMS_PASSERELLE_UTILISATEUR)%"
+ *         passerelle_mot_de_passe?: scalar|Param|null, // Default: "%env(default::SMS_PASSERELLE_MOT_DE_PASSE)%"
+ *     },
  *     push?: array{ // Notifications push du pro (Web Push, clés VAPID générées par bsandoz:push:cles). Clés vides : désactivées.
  *         vapid_public_key?: scalar|Param|null, // Default: "%env(default::BSANDOZ_VAPID_PUBLIC_KEY)%"
  *         vapid_private_key?: scalar|Param|null, // Default: "%env(default::BSANDOZ_VAPID_PRIVATE_KEY)%"

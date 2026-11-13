@@ -70,6 +70,18 @@ final class BsandozCoreBundle extends AbstractBundle
                         ->integerNode('remise_percent')->defaultValue(20)->min(1)->max(100)->end()
                     ->end()
                 ->end()
+                ->arrayNode('sms')
+                    ->info('SMS au client (confirmation, rappel, déplacement, annulation). Par défaut : aucun envoi.')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('fournisseur')->defaultValue('%env(default::SMS_FOURNISSEUR)%')->info('« brevo », « android » (SMS Gateway for Android) ou vide : aucun.')->end()
+                        ->scalarNode('expediteur')->defaultValue('%env(default::SMS_EXPEDITEUR)%')->info('Nom affiché (11 caractères, Brevo).')->end()
+                        ->scalarNode('brevo_cle')->defaultValue('%env(default::SMS_BREVO_CLE)%')->end()
+                        ->scalarNode('passerelle_url')->defaultValue('%env(default::SMS_PASSERELLE_URL)%')->end()
+                        ->scalarNode('passerelle_utilisateur')->defaultValue('%env(default::SMS_PASSERELLE_UTILISATEUR)%')->end()
+                        ->scalarNode('passerelle_mot_de_passe')->defaultValue('%env(default::SMS_PASSERELLE_MOT_DE_PASSE)%')->end()
+                    ->end()
+                ->end()
                 ->arrayNode('push')
                     ->info('Notifications push du pro (Web Push, clés VAPID générées par bsandoz:push:cles). Clés vides : désactivées.')
                     ->addDefaultsIfNotSet()
@@ -119,7 +131,7 @@ final class BsandozCoreBundle extends AbstractBundle
             ->end();
     }
 
-    /** @param array{timezone: string, medias_dir: string, encryption_key: string|null, ical_secret: string|null, mail: array{from_email: string, from_name: string, brand: string, front_url: string|null, pro_email: string|null}, payment: array{stripe_secret_key: string|null, stripe_webhook_secret: string|null, success_url: string, cancel_url: string}, fidelite: array{actif: bool, tampons_requis: int, remise_percent: int}, push: array{vapid_public_key: string|null, vapid_private_key: string|null, subject: string|null}, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
+    /** @param array{timezone: string, medias_dir: string, encryption_key: string|null, ical_secret: string|null, mail: array{from_email: string, from_name: string, brand: string, front_url: string|null, pro_email: string|null}, payment: array{stripe_secret_key: string|null, stripe_webhook_secret: string|null, success_url: string, cancel_url: string}, fidelite: array{actif: bool, tampons_requis: int, remise_percent: int}, push: array{vapid_public_key: string|null, vapid_private_key: string|null, subject: string|null}, sms?: array<string, string|null>, rules: array<string, int|null>, zone?: array<string, float|int>} $config */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->parameters()
@@ -138,6 +150,12 @@ final class BsandozCoreBundle extends AbstractBundle
             ->set('bsandoz_core.payment.stripe_webhook_secret', $config['payment']['stripe_webhook_secret'])
             ->set('bsandoz_core.payment.success_url', $config['payment']['success_url'])
             ->set('bsandoz_core.payment.cancel_url', $config['payment']['cancel_url'])
+            ->set('bsandoz_core.sms.fournisseur', $config['sms']['fournisseur'] ?? '')
+            ->set('bsandoz_core.sms.expediteur', $config['sms']['expediteur'] ?? '')
+            ->set('bsandoz_core.sms.brevo_cle', $config['sms']['brevo_cle'] ?? '')
+            ->set('bsandoz_core.sms.passerelle_url', $config['sms']['passerelle_url'] ?? '')
+            ->set('bsandoz_core.sms.passerelle_utilisateur', $config['sms']['passerelle_utilisateur'] ?? '')
+            ->set('bsandoz_core.sms.passerelle_mot_de_passe', $config['sms']['passerelle_mot_de_passe'] ?? '')
             ->set('bsandoz_core.push.vapid_public_key', $config['push']['vapid_public_key'] ?? '')
             ->set('bsandoz_core.push.vapid_private_key', $config['push']['vapid_private_key'] ?? '')
             ->set('bsandoz_core.push.subject', $config['push']['subject'] ?? 'mailto:' . $config['mail']['from_email'])

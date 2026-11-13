@@ -314,4 +314,18 @@ return static function (ContainerConfigurator $container): void {
     $services->set(\Bsandoz\Core\Facturation\Application\EmettreFacture::class);
     $services->set(\Bsandoz\Core\Facturation\Application\ConsulterFactures::class);
     $services->set(\Bsandoz\Core\Facturation\Infrastructure\Http\FactureController::class)->public()->tag('controller.service_arguments');
+
+    // SMS (aucun par défaut)
+    $services->set(\Bsandoz\Core\Notification\Domain\Port\EnvoiSms::class)
+        ->factory([\Bsandoz\Core\Notification\Infrastructure\Sms\FabriqueEnvoiSms::class, 'creer'])
+        ->args([
+            service('http_client'),
+            service('logger')->nullOnInvalid(),
+            param('bsandoz_core.sms.fournisseur'),
+            param('bsandoz_core.sms.expediteur'),
+            param('bsandoz_core.sms.brevo_cle'),
+            param('bsandoz_core.sms.passerelle_url'),
+            param('bsandoz_core.sms.passerelle_utilisateur'),
+            param('bsandoz_core.sms.passerelle_mot_de_passe'),
+        ]);
 };
