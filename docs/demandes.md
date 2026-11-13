@@ -49,7 +49,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 
 - ✅ Barre du haut minimale à toutes les tailles d'écran : logo, Réserver, téléphone, thème et menu ☰ ; le menu (Prestations, Fidélité, Pro, Mon espace, Espace pro) se déroule sous la barre et se referme en cliquant ailleurs.
 - ✅ Mouvement dès l'arrivée sur l'accueil, sobre : titre révélé mot par mot, photo en lent zoom arrière puis respiration très lente, points forts un à un, une seule impulsion sur « Réserver un créneau » ; tout reste immobile si « moins d'animations » est demandé.
-- ✅ Site installable sur le téléphone comme une application : « Installer l'application » dans le menu ☰, visible seulement avec le compte pro. Sur Android, la fenêtre d'installation du navigateur s'ouvre ; sur iPhone, une fenêtre explique les deux gestes (Partager, puis « Sur l'écran d'accueil »). Le bouton disparaît une fois le site installé. Raccourcis sur l'icône (appui long) : Réserver, Mon espace, Espace pro.
+- ✅ Site installable sur le téléphone comme une application : « Installer l'application » dans le menu ☰, visible seulement avec le compte pro. L'application installée s'ouvre directement sur l'Espace pro (connexion si besoin). Sur Android, la fenêtre d'installation du navigateur s'ouvre ; sur iPhone, une fenêtre explique les deux gestes (Partager, puis « Sur l'écran d'accueil »). Le bouton disparaît une fois le site installé. Raccourcis sur l'icône (appui long) : Espace pro, Site public, Réserver.
 
 ### Site public
 - ✅ Formules, options et prix modifiables depuis le site.

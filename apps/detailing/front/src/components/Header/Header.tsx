@@ -81,7 +81,7 @@ export function Header() {
           <NavLink to="/mon-espace" className={styles.lienCompte}><Icone nom="utilisateur" taille={18} /> Mon espace</NavLink>
           {pro && <NavLink to="/pro" className={styles.espacePro}><Icone nom="tableau" taille={18} /> Espace pro</NavLink>}
           {/* Compte pro seulement : ajouter le site sur l'écran d'accueil du téléphone (masqué s'il est déjà installé). */}
-          {pro && <Installer className={styles.installer} onAction={() => setOuvert(false)} />}
+          {pro && <Installer className={styles.installer} page="/pro" onAction={() => setOuvert(false)} />}
         </nav>
       </div>
     </header>
