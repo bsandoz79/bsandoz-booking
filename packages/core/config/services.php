@@ -264,6 +264,8 @@ return static function (ContainerConfigurator $container): void {
     $services->set(AnnulerReservation::class);
     $services->set(DeplacerReservation::class);
     $services->set(ExpirerReservationsNonPayees::class);
+    // Créneaux groupés (mis en avant à côté d'un rendez-vous déjà prévu)
+    $services->set(\Bsandoz\Core\Booking\Application\CreneauxGroupes::class);
     $services->set(ReservationParJeton::class);
     // Payment : acompte Stripe Checkout
     $services->set(StripeGateway::class)->args([param('bsandoz_core.payment.stripe_secret_key'), param('bsandoz_core.payment.stripe_webhook_secret')]);

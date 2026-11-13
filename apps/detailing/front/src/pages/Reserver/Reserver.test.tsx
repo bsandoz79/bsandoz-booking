@@ -80,7 +80,8 @@ describe('Parcours de réservation', () => {
     expect(await screen.findByText(/déplacement offert/)).toBeInTheDocument();
     await userEvent.click(await screen.findByRole('button', { name: /vendredi 13 novembre 2026/ }));
     // Choisir l'heure ouvre directement l'étape des coordonnées.
-    await userEvent.click(await screen.findByRole('button', { name: '10:30' }));
+    expect(await screen.findByRole('button', { name: '13:30, Conseillé' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: '10:30' }));
     expect(screen.getByRole('heading', { name: 'Vos coordonnées' }).closest('section')).toHaveAttribute('aria-current', 'step');
 
     expect(screen.getByText(/ven\. 13 nov\..*Abbeville/)).toBeInTheDocument();

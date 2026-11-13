@@ -5,7 +5,7 @@
 | GET | /catalog | public | ListerCatalogue |
 | POST | /booking/quote | public | CalculerDevis (+ zone) |
 | GET | /booking/days?month=YYYY-MM&duration=&lat=&lng=&prestation= | public | ListerJoursDisponibles |
-| GET | /booking/slots?date=YYYY-MM-DD&duration=&lat=&lng=&prestation= | public | ListerCreneaux |
+| GET | /booking/slots?date=YYYY-MM-DD&duration=&lat=&lng=&prestation= | public | ListerCreneaux (`[{start, end, label, groupe}]`, `groupe` : créneau à moins de `seuilMin` d'un rendez-vous déjà prévu, trajets compris) |
 | POST | /booking/reservations | public, rate limit | ReserverCreneau → URL Stripe |
 | POST | /payment/stripe/webhook | signature Stripe | ConfirmerPaiement |
 | GET/PATCH/DELETE | /booking/manage/{token} | jeton | voir / déplacer / annuler sans compte |
@@ -135,6 +135,9 @@ Règle par défaut (`bsandoz_core.fidelite`) : 4 prestations réalisées, 20 % s
 
 ## Avoirs
 Annulation tardive (après le délai d'annulation gratuite) d'un rendez-vous confirmé : rien n'est remboursé, la somme payée en ligne devient un avoir du client. L'avoir est déduit automatiquement de sa réservation suivante (après la remise de fidélité, acompte recalculé, ligne « Avoir déduit » sur la facture) et rendu si cette réservation est annulée ou expire. Mail d'annulation au client et au pro avec le montant (`avoirCents`). `GET /me` renvoie `avoirCents` (solde).
+
+## Créneaux groupés
+- `GET /admin/settings/creneaux-groupes`, `PUT /admin/settings/creneaux-groupes` `{"seuilMin": 0–240}` (pro, défaut 30 ; 0 : désactivé). Les créneaux proches d'un rendez-vous déjà prévu sont renvoyés avec `groupe: true` et mis en avant sur le site (« Conseillé »).
 
 ## Demande d'avis
 - `GET /admin/settings/avis`, `PUT /admin/settings/avis` `{"actif", "lien"}` (pro) : lien https:// de la page d'avis (ex. fiche Google), 500 caractères au plus (sinon 422). Sans lien, rien n'est demandé.

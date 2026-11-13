@@ -70,7 +70,7 @@ final class ListerCreneauxTest extends TestCase
         $calculator = new CreneauCalculator();
 
         return [
-            new ListerCreneaux($this->availability, $settings, $prestations, $calculator, $occupations, $trajet, $this->clock),
+            new ListerCreneaux($this->availability, $settings, $prestations, $calculator, $occupations, $trajet, $this->clock, new \Bsandoz\Core\Booking\Application\CreneauxGroupes(new \Bsandoz\Core\Tests\Double\InMemorySettingRepository())),
             new ListerJoursDisponibles($this->availability, $settings, $prestations, $calculator, $occupations, $trajet, $this->clock),
         ];
     }
@@ -95,6 +95,30 @@ final class ListerCreneauxTest extends TestCase
             new TimeRange(new \DateTimeImmutable($start, $paris), new \DateTimeImmutable($end, $paris)),
             'adresse', $lat, $lng, Money::cents(5000), Money::zero(), Money::zero(),
         );
+    }
+
+    public function testCreneauxGroupesAutourDUnRendezVousDejaPrevu(): void
+    {
+        $rdv = $this->reservation('r-1', '2026-11-10 10:00', '2026-11-10 11:00');
+        $rdv->confirm();
+        $this->reservations->save($rdv);
+        [$lister] = $this->useCases();
+
+        $groupes = [];
+        foreach ($lister->avecRegroupement('2026-11-10', 60, self::LAT, self::LNG) as $s) {
+            $groupes[$s['creneau']->start->setTimezone(new \DateTimeZone('Europe/Paris'))->format('H:i')] = $s['groupe'];
+        }
+
+        // Seuil de 30 min (défaut) : juste avant ou juste après le rendez-vous de 10 h.
+        self::assertSame(['08:00' => false, '08:30' => true, '09:00' => true, '11:00' => true, '14:00' => false], array_slice($groupes, 0, 5));
+        self::assertFalse($groupes['17:00']);
+    }
+
+    public function testSansRendezVousAucunCreneauGroupe(): void
+    {
+        [$lister] = $this->useCases();
+
+        self::assertSame([], array_filter(array_column($lister->avecRegroupement('2026-11-10', 60, self::LAT, self::LNG), 'groupe')));
     }
 
     public function testCreneauxEnUtcAvecTrajet(): void

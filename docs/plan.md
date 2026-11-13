@@ -50,6 +50,6 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/tableau-de-bord` : Ma journée (tournée, GPS, produits à charger), Choses à faire, Chiffres du mois, Clients
 - [x] `feature/modifier-formules` : mode « Modifier » sur le site public : formules, options et prix modifiables en place
 - [x] `feature/avis-google` : demande d'avis jointe au mail de facture envoyé à la prestation faite (lien Google réglé dans Réglages, vide par défaut)
-- [ ] `feature/creneaux-groupes` : créneaux proches d'un rendez-vous déjà prévu proposés en premier
+- [x] `feature/creneaux-groupes` : créneaux proches d'un rendez-vous déjà prévu proposés en premier
 - [ ] `feature/fiche-client` : fiche client (total dépensé, panier moyen, dernière visite, avoir, relance après 90 jours)
 - [ ] `feature/comptabilite` : chiffre d'affaires et dépenses par mois

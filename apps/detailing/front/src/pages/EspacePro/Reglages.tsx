@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { AddressInput, Button, Field, Toggle } from '@bsandoz/ui';
 import { searchAddress, type Address } from '../../services/api';
 import { modifierRegleFidelite, regleFidelite, type RegleFidelite } from '../../services/fidelite';
-import { enregistrerRegles, enregistrerZone, reglages, type Regles, type Zone } from '../../services/pro';
+import { enregistrerRegles, enregistrerSeuilCreneauxGroupes, enregistrerZone, reglages, seuilCreneauxGroupes, type Regles, type Zone } from '../../services/pro';
 import { enregistrerAvis, reglageAvis, type ReglageAvis } from '../../services/avis';
 import { NotificationsPro } from './Notifications';
 import styles from './Pro.module.css';
@@ -37,6 +37,7 @@ export function ReglagesOnglet() {
     <>
       <NotificationsPro />
       <FormulaireRegles initiales={regles} />
+      <FormulaireCreneauxGroupes />
       <FormulaireZone initiale={zone} />
       <FormulaireFidelite />
       <FormulaireAvis />
@@ -227,6 +228,42 @@ function FormulaireAvis() {
         {message && <p className={styles.ok} role="status">{message}</p>}
         {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
         <div><Button type="submit" disabled={!valide}>Enregistrer</Button></div>
+      </div>
+    </form>
+  );
+}
+
+function FormulaireCreneauxGroupes() {
+  const [seuil, setSeuil] = useState<string>();
+  const [message, setMessage] = useState('');
+  const [erreur, setErreur] = useState('');
+
+  useEffect(() => { seuilCreneauxGroupes().then((s) => setSeuil(String(s))).catch(() => undefined); }, []);
+
+  if (seuil === undefined) return null;
+  const valide = /^\d+$/.test(seuil) && Number(seuil) <= 240;
+
+  const enregistrer = async (e: FormEvent) => {
+    e.preventDefault();
+    setMessage(''); setErreur('');
+    try {
+      const s = await enregistrerSeuilCreneauxGroupes(Number(seuil));
+      setMessage(s === 0 ? 'Créneaux groupés désactivés.' : `Créneaux à ${s} min ou moins d’un rendez-vous mis en avant.`);
+    } catch (err) {
+      setErreur((err as Error).message);
+    }
+  };
+
+  return (
+    <form className={styles.section} onSubmit={enregistrer} noValidate aria-labelledby="titre-groupes">
+      <h2 id="titre-groupes">Créneaux groupés</h2>
+      <div className={styles.panneau}>
+        <p className={styles.aide}>À la réservation, les heures juste avant ou juste après un rendez-vous déjà prévu sont marquées « Conseillé » : vos rendez-vous s’enchaînent et vous roulez moins.</p>
+        <Field label="Écart maximal avec un rendez-vous (minutes)" inputMode="numeric" value={seuil} onChange={(e) => setSeuil(e.target.value)}
+          hint="Trajets compris. 0 : aucune mise en avant. Conseillé : 15 à 30." error={valide || seuil === '' ? undefined : 'Entre 0 et 240.'} />
+        {message && <p className={styles.ok} role="status">{message}</p>}
+        {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
+        <div><Button type="submit" disabled={!valide}>Enregistrer les créneaux groupés</Button></div>
       </div>
     </form>
   );

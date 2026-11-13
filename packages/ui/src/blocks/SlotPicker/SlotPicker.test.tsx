@@ -19,6 +19,17 @@ describe('SlotPicker', () => {
     render(<SlotPicker slots={slots} onSelect={() => {}} />);
     expect(screen.getByRole('button', { name: '18:30' })).toBeDisabled();
   });
+  it('met en avant les créneaux conseillés, avec une légende', () => {
+    const conseilles = [{ ...slots[0], highlighted: true }, slots[1]];
+    render(<SlotPicker slots={conseilles} onSelect={() => {}} highlightLabel="Conseillé" highlightHint="Conseillé : juste avant ou après un rendez-vous déjà prévu." />);
+    expect(screen.getByRole('button', { name: '09:00, Conseillé' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '14:00' })).toBeInTheDocument();
+    expect(screen.getByText('Conseillé : juste avant ou après un rendez-vous déjà prévu.')).toBeInTheDocument();
+  });
+  it('sans libellé, aucune mise en avant', () => {
+    render(<SlotPicker slots={[{ ...slots[0], highlighted: true }]} onSelect={() => {}} />);
+    expect(screen.getByRole('button', { name: '09:00' })).toBeInTheDocument();
+  });
   it('affiche un message quand il n’y a rien', () => {
     render(<SlotPicker slots={[]} onSelect={() => {}} emptyMessage="Complet" />);
     expect(screen.getByText('Complet')).toBeInTheDocument();
