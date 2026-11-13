@@ -46,6 +46,7 @@ final class ConsulterFactures
             'lignes' => $f->lignes(),
             'payeEnLigneCents' => $f->payeEnLigne()->cents,
             'payeSurPlaceCents' => $f->payeSurPlace()->cents,
+            'moyenSurPlace' => $f->moyenSurPlace(),
         ]);
     }
 

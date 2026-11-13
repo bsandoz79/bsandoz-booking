@@ -63,6 +63,33 @@ class Reservation
 
     public function creeLe(): ?\DateTimeImmutable { return $this->creeLe; }
 
+    /** Moyen de paiement du reste à régler sur place (null : pas encore encaissé, ou rien à encaisser). */
+    private ?MoyenPaiement $moyenSurPlace = null;
+    private ?\DateTimeImmutable $encaisseLe = null;
+
+    public function moyenSurPlace(): ?MoyenPaiement { return $this->moyenSurPlace; }
+    public function encaisseLe(): ?\DateTimeImmutable { return $this->encaisseLe; }
+
+    /**
+     * Reste à régler encaissé sur place (moyen noté par le pro, ou QR code payé par le client) : la prestation est faite.
+     * Un deuxième encaissement ne change rien (ex. QR code payé après un encaissement noté à la main).
+     *
+     * @return bool faux si le reste était déjà encaissé
+     * @throws DomainError réservation non confirmée ou pas encore commencée
+     */
+    public function encaisser(MoyenPaiement $moyen, \DateTimeImmutable $now): bool
+    {
+        $this->terminer($now);
+        if ($this->moyenSurPlace !== null) {
+            return false;
+        }
+        $this->moyenSurPlace = $moyen;
+        $this->encaisseLe = $now;
+        $this->status = ReservationStatus::Done;
+
+        return true;
+    }
+
     public static function hold(self $reservation, \DateTimeImmutable $now, int $holdMinutes): self
     {
         $reservation->holdExpiresAt = $now->modify(sprintf('+%d minutes', $holdMinutes));

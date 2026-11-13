@@ -7,6 +7,7 @@ namespace Bsandoz\Core\Booking\Infrastructure\Http;
 use Bsandoz\Core\Booking\Application\GererDisponibilites;
 use Bsandoz\Core\Booking\Application\GererRendezVousPro;
 use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
+use Bsandoz\Core\Payment\Application\CreerPaiementSurPlace;
 use Bsandoz\Core\Shared\Infrastructure\Http\InvalidRequest;
 use Bsandoz\Core\Shared\Infrastructure\Http\Json;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,7 +24,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * Rendez-vous :
  *   GET   /api/v1/admin/reservations?from=&to=            → planning
  *   POST  /api/v1/admin/reservations {…, "sendDepositLink"} → rendez-vous pris par téléphone
+ *   GET   /api/v1/admin/reservations/{id}                   → un rendez-vous (suivi du paiement par QR code)
  *   PATCH /api/v1/admin/reservations/{id} {"status": "done" | "no_show"}
+ *   POST  /api/v1/admin/reservations/{id}/encaisser {"moyen": "carte" | "especes" | "virement" | "cheque"}
+ *   POST  /api/v1/admin/reservations/{id}/paiement-qr       → {"url"} à afficher en QR code
  *   POST  /api/v1/admin/reservations/{id}/cancel {"refund": bool} ; POST …/{id}/refund {"amountCents"?}
  */
 #[Route('/api/v1/admin')]
@@ -34,6 +38,7 @@ final class AdminAgendaController
         private GererDisponibilites $disponibilites,
         private GererRendezVousPro $rendezVous,
         private SettingsProvider $settings,
+        private CreerPaiementSurPlace $paiementSurPlace,
     ) {
     }
 
@@ -99,6 +104,30 @@ final class AdminAgendaController
         $commande = ReservationRequest::toCommand($request)->avecConditionsAcceptees();
 
         return new JsonResponse($this->rendezVous->ajouterParTelephone($commande, $envoyerLien), Response::HTTP_CREATED);
+    }
+
+    #[Route('/reservations/{id}', name: 'bsandoz_admin_reservation', methods: ['GET'])]
+    public function detail(string $id): JsonResponse
+    {
+        return new JsonResponse($this->rendezVous->detail($id));
+    }
+
+    #[Route('/reservations/{id}/encaisser', name: 'bsandoz_admin_reservation_encaisser', methods: ['POST'])]
+    public function encaisser(string $id, Request $request): Response
+    {
+        $moyen = Json::corps($request)['moyen'] ?? null;
+        if (!is_string($moyen)) {
+            throw new InvalidRequest('« moyen » est obligatoire (carte, especes, virement ou cheque).');
+        }
+        $this->rendezVous->encaisser($id, $moyen);
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('/reservations/{id}/paiement-qr', name: 'bsandoz_admin_reservation_paiement_qr', methods: ['POST'])]
+    public function paiementQr(string $id): JsonResponse
+    {
+        return new JsonResponse(['url' => ($this->paiementSurPlace)($id)], Response::HTTP_CREATED);
     }
 
     #[Route('/reservations/{id}', name: 'bsandoz_admin_reservation_status', methods: ['PATCH'])]

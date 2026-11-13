@@ -22,5 +22,6 @@
         <field name="lignes" column="lines" type="json"/>
         <field name="total" column="total_cents" type="bsandoz_money"/>
         <field name="payeEnLigne" column="paid_online_cents" type="bsandoz_money"/>
+        <field name="moyenSurPlace" column="on_site_payment_method" type="string" length="40" nullable="true"/>
     </entity>
 </doctrine-mapping>

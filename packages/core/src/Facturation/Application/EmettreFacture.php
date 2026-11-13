@@ -80,6 +80,7 @@ final class EmettreFacture
                 $lignes,
                 $total,
                 $r->aPayerEnLigne()->min($total),
+                $r->moyenSurPlace()?->libelle(),
             );
             $this->factures->save($facture);
 

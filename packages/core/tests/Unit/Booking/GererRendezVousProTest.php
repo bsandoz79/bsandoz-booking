@@ -53,6 +53,7 @@ final class GererRendezVousProTest extends TestCase
     private ConfirmerPaiement $confirmer;
     private GererRendezVousPro $pro;
     private TableauDeBord $tableau;
+    private \Bsandoz\Core\Payment\Application\CreerPaiementSurPlace $paiementQr;
 
     protected function setUp(): void
     {
@@ -80,8 +81,9 @@ final class GererRendezVousProTest extends TestCase
 
         $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation($users, $tokens, $this->notifier, new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, $tokens, $notifications, new SequenceIdGenerator('r'), $this->clock);
         $this->session = new CreerSessionAcompte($this->reservations, $users, $prestations, $this->gateway, $payments, new SequenceIdGenerator('pay'), $this->clock, 'https://site.test/ok', 'https://site.test/ko');
-        $this->confirmer = new ConfirmerPaiement($this->gateway, $payments, $this->reservations, $occupations, $tokens, $notifications, $this->clock);
         $this->pro = new GererRendezVousPro($this->reservations, $users, $prestations, $this->reserver, $this->session, $rembourser, $notifications, $this->clock);
+        $this->confirmer = new ConfirmerPaiement($this->gateway, $payments, $this->reservations, $occupations, $tokens, $notifications, $this->clock, rendezVousPro: $this->pro);
+        $this->paiementQr = new \Bsandoz\Core\Payment\Application\CreerPaiementSurPlace($this->reservations, $users, $prestations, $this->gateway, $payments, new SequenceIdGenerator('qr'), $this->clock, 'https://site.test/');
         $this->tableau = new \Bsandoz\Core\Admin\Application\TableauDeBord($this->reservations, $settings, $this->clock);
     }
 
@@ -208,5 +210,73 @@ final class GererRendezVousProTest extends TestCase
         self::assertSame(0.5, $tableau['monthCancellationRate']);
         self::assertCount(1, $tableau['next']);
         self::assertSame(0, $tableau['today']);
+    }
+
+    public function testEncaisserSurPlaceNoteLeMoyenEtTermineLeRendezVous(): void
+    {
+        $id = $this->reservationPayee();
+        $this->clock->set('2026-11-10 09:30');
+
+        $this->pro->encaisser($id, 'especes');
+
+        $r = $this->reservations->get($id);
+        self::assertSame(ReservationStatus::Done, $r->status());
+        self::assertSame(\Bsandoz\Core\Booking\Domain\Model\MoyenPaiement::Especes, $r->moyenSurPlace());
+        $detail = $this->pro->detail($id);
+        self::assertSame('especes', $detail['moyenSurPlace']);
+        self::assertSame(7000, $detail['surPlaceCents'], 'acompte de 30 % payé en ligne, 70 € sur place');
+
+        // Un deuxième encaissement ne change rien.
+        $this->pro->encaisser($id, 'carte');
+        self::assertSame(\Bsandoz\Core\Booking\Domain\Model\MoyenPaiement::Especes, $this->reservations->get($id)->moyenSurPlace());
+    }
+
+    public function testEncaisserRefuseUnMoyenInconnuOuUnRendezVousPasCommence(): void
+    {
+        $id = $this->reservationPayee();
+        $this->clock->set('2026-11-10 09:30');
+        try {
+            $this->pro->encaisser($id, 'bitcoin');
+            self::fail('moyen inconnu accepté');
+        } catch (DomainError) {
+        }
+        $this->clock->set('2026-11-09 09:30');
+        $this->expectException(DomainError::class);
+        $this->pro->encaisser($id, 'carte');
+    }
+
+    public function testPaiementParQrCodeEncaisseLeRendezVousSansRembourser(): void
+    {
+        $id = $this->reservationPayee();
+        $this->clock->set('2026-11-10 09:30');
+        $paiementQr = $this->paiementQr;
+        $confirmer = $this->confirmer;
+
+        $url = $paiementQr($id);
+
+        $session = end($this->gateway->checkouts);
+        self::assertNotFalse($session);
+        self::assertSame(7000, $session['amount'], 'le reste à régler');
+        self::assertSame('https://site.test/paiement-recu', $session['successUrl']);
+        self::assertStringEndsWith('cs_test_' . count($this->gateway->checkouts), $url);
+
+        $confirmer(FakePaymentGateway::sessionReglee('cs_test_' . count($this->gateway->checkouts), 'evt_qr'), FakePaymentGateway::SIGNATURE);
+
+        $r = $this->reservations->get($id);
+        self::assertSame(ReservationStatus::Done, $r->status());
+        self::assertSame(\Bsandoz\Core\Booking\Domain\Model\MoyenPaiement::QrCode, $r->moyenSurPlace());
+        self::assertSame([], $this->gateway->refunds, 'un paiement sur place n\'est jamais pris pour un acompte en trop');
+
+        $this->expectException(DomainError::class);
+        $paiementQr($id);
+    }
+
+    public function testPasDeQrCodeAvantLeRendezVous(): void
+    {
+        $id = $this->reservationPayee();
+        $paiementQr = $this->paiementQr;
+
+        $this->expectException(DomainError::class);
+        $paiementQr($id);
     }
 }

@@ -7,7 +7,10 @@ namespace Bsandoz\Core\Payment\Domain\Model;
 use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\Money;
 
-/** Paiement de l'acompte d'une réservation, via une session de paiement du prestataire (Stripe Checkout). */
+/**
+ * Paiement en ligne d'une réservation, via une session de paiement du prestataire (Stripe Checkout) : acompte ou
+ * réservation payée d'avance, ou reste à régler sur place payé par le client en scannant le QR code du pro ($surPlace).
+ */
 class Payment
 {
     private PaymentStatus $status = PaymentStatus::Pending;
@@ -20,6 +23,7 @@ class Payment
         private string $providerSessionId,
         private Money $amount,
         private \DateTimeImmutable $createdAt,
+        private bool $surPlace = false,
     ) {
         $this->refunded = Money::zero();
     }
@@ -32,6 +36,8 @@ class Payment
     public function status(): PaymentStatus { return $this->status; }
     public function paidAt(): ?\DateTimeImmutable { return $this->paidAt; }
     public function createdAt(): \DateTimeImmutable { return $this->createdAt; }
+    /** Reste à régler sur place, payé par QR code (et non acompte / paiement à la réservation). */
+    public function surPlace(): bool { return $this->surPlace; }
 
     public function isPaid(): bool
     {

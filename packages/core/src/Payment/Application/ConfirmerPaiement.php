@@ -8,6 +8,7 @@ use Bsandoz\Core\Auth\Domain\Model\TokenType;
 use Bsandoz\Core\Auth\Domain\Port\TokenService;
 use Bsandoz\Core\Booking\Application\NotificationsReservation;
 use Bsandoz\Core\Booking\Application\Occupations;
+use Bsandoz\Core\Booking\Domain\Model\MoyenPaiement;
 use Bsandoz\Core\Booking\Domain\Model\Reservation;
 use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
@@ -17,12 +18,14 @@ use Bsandoz\Core\Payment\Domain\SignatureInvalide;
 use Bsandoz\Core\Fidelite\Application\GererFidelite;
 use Bsandoz\Core\Catalog\Application\StockProduits;
 use Bsandoz\Core\Shared\Domain\Clock;
+use Bsandoz\Core\Shared\Domain\DomainError;
 
 /**
  * Notification « session de paiement réglée » (webhook) : signature vérifiée, traitement idempotent, sous verrou d'agenda.
  *  - créneau toujours libre (y compris paiement arrivé après la fin du blocage) : réservation confirmée,
  *    mails de confirmation au client (avec .ics et lien « gérer mon rendez-vous ») et au pro ;
  *  - créneau repris entre-temps ou réservation annulée : acompte remboursé en totalité, mail « payment_refunded ».
+ *  - reste à régler sur place payé par QR code : rendez-vous encaissé (moyen « qr ») et facture émise.
  * Les autres notifications, et les sessions inconnues, sont ignorées.
  */
 final class ConfirmerPaiement
@@ -38,6 +41,7 @@ final class ConfirmerPaiement
         private ?GererFidelite $fidelite = null,
         private ?StockProduits $stock = null,
         private ?GererAvoirs $avoirs = null,
+        private ?\Bsandoz\Core\Booking\Application\GererRendezVousPro $rendezVousPro = null,
     ) {
     }
 
@@ -50,6 +54,20 @@ final class ConfirmerPaiement
         }
         $payment = $this->payments->bySessionId($evenement->sessionId);
         if ($payment === null) {
+            return;
+        }
+        // Reste à régler payé par QR code sur place : rendez-vous encaissé (moyen « qr »), facture émise.
+        if ($payment->surPlace()) {
+            if (!$payment->markPaid($this->clock->now())) {
+                return;
+            }
+            $this->payments->save($payment);
+            try {
+                $this->rendezVousPro?->encaisser($payment->reservationId(), MoyenPaiement::QrCode->value);
+            } catch (DomainError) {
+                // Rendez-vous changé entre-temps : le paiement reste enregistré, le pro le voit dans Stripe.
+            }
+
             return;
         }
 
