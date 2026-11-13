@@ -70,14 +70,21 @@ jobs:
           VITE_SITE_URL: ${{ vars.VITE_SITE_URL }}
       - name: Envoi FTPS
         if: steps.config.outputs.pret == 'true'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          local-dir: apps/detailing/front/dist/
-          server-dir: ${{ secrets.FTP_SERVER_DIR_FRONT }}
+        # lftp plutôt que FTP-Deploy-Action : ce dernier échoue en FTPS avec les versions récentes d'OpenSSL
+        # (« tls_process_new_session_ticket: length mismatch » sur le canal de données). Certificat vérifié :
+        # FTP_SERVER doit être le nom couvert par le certificat (chez o2switch, le nom du serveur, ex. muguet.o2switch.net).
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_SERVER_DIR_FRONT }}
+        run: |
+          sudo apt-get update -qq > /dev/null && sudo apt-get install -y -qq lftp > /dev/null
+          lftp -u "$FTP_USERNAME,$FTP_PASSWORD" "$FTP_SERVER" -e "
+            set ftp:ssl-force true; set ftp:ssl-protect-data true;
+            set net:max-retries 3; set net:reconnect-interval-base 5; set net:timeout 30;
+            mirror --reverse --no-perms --parallel=4 --verbose=1 apps/detailing/front/dist/ \"$FTP_DIR\";
+            bye"
 
   api:
     name: API (api.demo.bsandoz.fr)
@@ -129,14 +136,21 @@ jobs:
           ls -lh ../../../envoi-api/api.zip
       - name: Envoi FTPS (archive + script de décompression)
         if: steps.config.outputs.pret == 'true'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          local-dir: envoi-api/
-          server-dir: ${{ secrets.FTP_SERVER_DIR_API }}
+        # lftp plutôt que FTP-Deploy-Action : ce dernier échoue en FTPS avec les versions récentes d'OpenSSL
+        # (« tls_process_new_session_ticket: length mismatch » sur le canal de données). Certificat vérifié :
+        # FTP_SERVER doit être le nom couvert par le certificat (chez o2switch, le nom du serveur, ex. muguet.o2switch.net).
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_SERVER_DIR_API }}
+        run: |
+          sudo apt-get update -qq > /dev/null && sudo apt-get install -y -qq lftp > /dev/null
+          lftp -u "$FTP_USERNAME,$FTP_PASSWORD" "$FTP_SERVER" -e "
+            set ftp:ssl-force true; set ftp:ssl-protect-data true;
+            set net:max-retries 3; set net:reconnect-interval-base 5; set net:timeout 30;
+            mirror --reverse --no-perms --parallel=4 --verbose=1 envoi-api/ \"$FTP_DIR\";
+            bye"
       - name: Rappel
         if: steps.config.outputs.pret == 'true'
         run: |
