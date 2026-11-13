@@ -120,6 +120,12 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
     URL.revokeObjectURL(url);
   };
 
+  // Ce que la suppression fait perdre, annoncé avant de confirmer.
+  const perdus = [
+    ...((compte?.avoirCents ?? 0) > 0 ? [`un avoir de ${formatEuros(compte!.avoirCents!)}`] : []),
+    ...(fidelite?.actif && fidelite.tampons > 0 ? [`${fidelite.tampons} tampon${fidelite.tampons > 1 ? 's' : ''} de fidélité${fidelite.remiseDisponible ? ` (remise de ${fidelite.remisePercent} % prête)` : ''}`] : []),
+  ];
+
   const supprimer = async () => {
     setErreur('');
     try {
@@ -219,6 +225,9 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
           {suppression ? (
             <>
               <p><strong>Supprimer définitivement votre compte ?</strong> Cette action est irréversible.</p>
+              {perdus.length > 0 && (
+                <p className={styles.perte} role="alert">Vous avez {perdus.join(' et ')} : {perdus.length > 1 ? 'ils seront perdus' : 'il sera perdu'}.</p>
+              )}
               <div className={styles.actions}>
                 <button type="button" className={styles.boutonDanger} onClick={supprimer}><Icone nom="poubelle" taille={18} /> Oui, supprimer mon compte</button>
                 <Button variant="ghost" onClick={() => setSuppression(false)}>Non, garder mon compte</Button>

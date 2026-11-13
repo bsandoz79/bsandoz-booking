@@ -101,6 +101,8 @@ describe('Espace client', () => {
   it('se déconnecte et confirme avant de supprimer le compte', async () => {
     await seConnecterDemo();
     await userEvent.click(screen.getByRole('button', { name: 'Supprimer mon compte' }));
+    // Avertissement : ce qui sera perdu (démo : avoir de 30 € et 2 tampons).
+    expect(screen.getByRole('alert')).toHaveTextContent(/un avoir de 30,00\s€ et 2 tampons de fidélité : ils seront perdus/);
     expect(screen.getByRole('button', { name: 'Non, garder mon compte' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Oui, supprimer mon compte' }));
     expect(await screen.findByText(/compte a été supprimé/)).toBeInTheDocument();

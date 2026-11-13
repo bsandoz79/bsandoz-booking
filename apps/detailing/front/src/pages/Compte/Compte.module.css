@@ -58,3 +58,4 @@
   background: transparent; color: var(--bs-color-danger); font: inherit; font-weight: 600; cursor: pointer; }
 .boutonDanger:hover { background: color-mix(in srgb, var(--bs-color-danger) 8%, transparent); }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.perte { margin: 0; padding: .6rem .8rem; border-radius: 10px; font-weight: 700; color: var(--bs-color-danger); background: color-mix(in srgb, var(--bs-color-danger) 8%, transparent); }

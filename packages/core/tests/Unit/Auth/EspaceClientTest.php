@@ -91,7 +91,10 @@ final class EspaceClientTest extends TestCase
         self::assertSame(UserStatus::Deleted, $user->status());
         self::assertSame('', $user->lastname());
         self::assertNull($this->tokens->verify($session, TokenType::Refresh), 'sessions fermées');
-        self::assertSame('passee', $this->reservations->get('passee')->id(), 'réservations passées conservées');
+        $passee = $this->reservations->get('passee');
+        self::assertSame('passee', $passee->id(), 'réservations passées conservées');
+        self::assertSame(['', '', []], [$passee->address(), $passee->notes(), $passee->metierData()], 'sans adresse, précisions ni données métier');
+        self::assertSame(0.0, $passee->lat());
     }
 
     public function testSuppressionRefuseeAvecUnRendezVousAVenir(): void
