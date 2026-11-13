@@ -1,0 +1,9 @@
+{% extends '_base.html.twig' %}
+{% import '_macros.html.twig' as m %}
+{% block subject %}Votre facture {{ numero }}{% endblock %}
+{% block body %}
+<p>Bonjour {{ firstname }},</p>
+<p>Merci pour votre confiance. Votre facture <strong>{{ numero }}</strong> d'un montant de <strong>{{ totalCents|euros }}</strong> est disponible.</p>
+{{ m.bouton(front_url ~ '/facture/' ~ factureId, 'Voir ma facture') }}
+<p>Vous la retrouvez à tout moment dans votre espace client, d'où vous pouvez aussi l'enregistrer en PDF.</p>
+{% endblock %}

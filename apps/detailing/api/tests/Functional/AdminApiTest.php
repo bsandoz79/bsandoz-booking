@@ -127,6 +127,53 @@ final class AdminApiTest extends WebTestCase
         self::assertNotContains('2026-11-17', $this->json());
     }
 
+    public function testFactureEmiseQuandLaPrestationEstFaite(): void
+    {
+        $this->client->disableReboot();
+        $token = $this->login('pro@example.test', 'artisan2026');
+        $this->request('PUT', '/api/v1/admin/settings/rules', [
+            'minNoticeHours' => 0, 'horizonDays' => 60, 'bufferMin' => 0, 'slotStepMin' => 60,
+            'freeCancelHours' => 48, 'depositPercent' => 0, 'depositFixedCents' => null, 'holdMinutes' => 10,
+        ], $token);
+        $this->request('PUT', '/api/v1/admin/availability/hours', ['hours' => [['weekday' => 2, 'startsAt' => '08:00', 'endsAt' => '12:00']]], $token);
+        $this->request('POST', '/api/v1/admin/catalog/prestations', ['name' => 'Intérieur', 'basePriceCents' => 6900, 'baseDurationMin' => 60], $token);
+        $prestationId = $this->json()['id'];
+        $this->request('POST', '/api/v1/admin/reservations', [
+            'prestationId' => $prestationId, 'start' => '2026-11-10T08:00:00+00:00',
+            'address' => ['label' => '1 rue de l\'Exemple, Amiens', 'lat' => 49.8941, 'lng' => 2.2958],
+            'firstname' => 'Dominique', 'lastname' => 'Petit', 'email' => 'dominique@example.test', 'phone' => '0611111111',
+            'metierData' => ['entreprise' => 'Transports Petit', 'siret' => '12345678900012'],
+        ], $token);
+        $reservationId = $this->json()['reservationId'];
+        self::assertIsString($reservationId);
+
+        // Pas encore faite : pas de facture.
+        $this->request('POST', '/api/v1/admin/reservations/' . $reservationId . '/facture', token: $token);
+        self::assertResponseStatusCodeSame(422);
+
+        // Le mardi à 10 h, le pro marque la prestation faite : facture émise automatiquement.
+        $horloge = static::getContainer()->get(\Bsandoz\Core\Shared\Infrastructure\FrozenClock::class);
+        self::assertInstanceOf(\Bsandoz\Core\Shared\Infrastructure\FrozenClock::class, $horloge);
+        $horloge->set('2026-11-10 10:00');
+        $this->request('PATCH', '/api/v1/admin/reservations/' . $reservationId, ['status' => 'done'], $token);
+        self::assertResponseIsSuccessful();
+
+        $this->request('GET', '/api/v1/admin/factures', token: $token);
+        $factures = $this->json();
+        self::assertCount(1, $factures);
+        self::assertSame(['F-2026-0001', 'Transports Petit', 6900], [$factures[0]['numero'], $factures[0]['client'], $factures[0]['totalCents']]);
+
+        $this->request('GET', '/api/v1/admin/factures/' . $factures[0]['id'], token: $token);
+        $facture = $this->json();
+        self::assertSame([['libelle' => 'Intérieur', 'montantCents' => 6900]], $facture['lignes']);
+        self::assertSame(['12345678900012', '[à compléter]'], [$facture['client']['siret'], $facture['vendeur']['siret']]);
+        self::assertSame([0, 6900], [$facture['payeEnLigneCents'], $facture['payeSurPlaceCents']]);
+
+        // Une seule facture par prestation ; le client la retrouve dans son espace.
+        $this->request('POST', '/api/v1/admin/reservations/' . $reservationId . '/facture', token: $token);
+        self::assertSame('F-2026-0001', $this->json()['numero']);
+    }
+
     public function testRegleIncoherenteEn422(): void
     {
         $this->request('PUT', '/api/v1/admin/settings/rules', ['minNoticeHours' => 0], $this->login('pro@example.test', 'artisan2026'));

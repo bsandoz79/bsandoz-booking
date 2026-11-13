@@ -17,4 +17,5 @@ return static function (RoutingConfigurator $routes): void {
     $routes->import('../src/Notification/Infrastructure/Http/', 'attribute');
     $routes->import('../src/Admin/Infrastructure/Http/', 'attribute');
     $routes->import('../src/Fidelite/Infrastructure/Http/', 'attribute');
+    $routes->import('../src/Facturation/Infrastructure/Http/', 'attribute');
 };
