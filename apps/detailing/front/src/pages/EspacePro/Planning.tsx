@@ -6,6 +6,8 @@ import { dateHeure, jourLocal, localIso, plusJours } from './dates';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
 import { defilerVers } from '../../app/defilement';
+import { Link } from 'react-router-dom';
+import { emettreFacture } from '../../services/factures';
 import styles from './Pro.module.css';
 
 const STATUTS: Record<RendezVousPro['status'], string> = {
@@ -171,6 +173,7 @@ function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: { rdv: 
         {rdv.produits && rdv.produits.length > 0 && (
           <><dt>Produits à apporter</dt><dd><strong>{rdv.produits.map((p) => `${p.quantite} × ${p.nom}`).join(', ')}</strong> ({formatEuros(rdv.produitsCents ?? 0)})</dd></>
         )}
+        {rdv.status === 'done' && <><dt>Facture</dt><dd><BoutonFacture reservationId={rdv.id} /></dd></>}
         {rdv.clientId && <><dt>Fidélité</dt><dd><Fidelite clientId={rdv.clientId} /></dd></>}
       </dl>
       {message && <p className={styles.ok} role="status">{message}</p>}
@@ -213,5 +216,18 @@ function Fidelite({ clientId }: { clientId: string }) {
       <Button variant="ghost" onClick={() => ajuster(1)}>Ajouter un tampon</Button>
       <Button variant="ghost" disabled={carte.tampons === 0} onClick={() => ajuster(-1)}>Retirer un tampon</Button>
     </span>
+  );
+}
+
+/** Prestation faite : ouvre sa facture (émise automatiquement, ou créée à la demande pour un rendez-vous plus ancien). */
+function BoutonFacture({ reservationId }: { reservationId: string }) {
+  const [facture, setFacture] = useState<{ id: string; numero: string }>();
+  const [erreur, setErreur] = useState('');
+  if (facture) return <Link to={`/facture/${facture.id}`}>Voir la facture {facture.numero}</Link>;
+  return (
+    <>
+      <Button variant="ghost" onClick={async () => { try { setFacture(await emettreFacture(reservationId)); } catch (e) { setErreur((e as Error).message); } }}>Ouvrir la facture</Button>
+      {erreur && <span className={styles.erreur} role="alert"> {erreur}</span>}
+    </>
   );
 }
