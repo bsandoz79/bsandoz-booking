@@ -8,7 +8,7 @@ import { getCatalog } from '../../services/api';
 import { maCarteFidelite, type CarteFidelite as Carte } from '../../services/fidelite';
 import {
   annulerMonRendezVous, deplacerMonRendezVous, payerMonRendezVous, exporterMesDonnees, mesRendezVous, monCompte, reprendreSession,
-  seConnecter, seDeconnecter, supprimerMonCompte, type Compte, type RendezVous,
+  rolesSession, seConnecter, seDeconnecter, supprimerMonCompte, type Compte, type RendezVous,
 } from '../../services/compte';
 import styles from '../Compte/Compte.module.css';
 
@@ -123,6 +123,9 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
   return (
     <main className={`container ${styles.page}`}>
       <h1>Bonjour{compte ? ` ${compte.firstname}` : ''}</h1>
+      {(compte?.roles.includes('ROLE_PRO') || rolesSession().includes('ROLE_PRO')) && (
+        <p className={styles.accesPro}>Vous êtes connecté avec un compte professionnel. <Link to="/pro" className="btn">Accéder à l’espace pro</Link></p>
+      )}
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
 
       {fidelite?.actif && <CarteFidelite carte={fidelite} />}
