@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { Dialog } from '@bsandoz/ui';
 import { estAppareilApple, useInstallation } from '../../pwa/installation';
 import { Icone } from '../Icone/Icone';
@@ -10,15 +11,22 @@ import styles from './Installer.module.css';
  * écran comme une application. Invitation du navigateur quand il en propose une (Android, ordinateur) ; sinon (iPhone,
  * Firefox…) une fenêtre explique les deux gestes à faire. Masqué quand le site est déjà ouvert depuis l'icône.
  */
-export function Installer({ className, onAction }: { className?: string; onAction?: () => void }) {
+export function Installer({ className, onAction, page }: {
+  className?: string; onAction?: () => void;
+  /** Page à enregistrer sur iPhone (Safari garde la page ouverte au moment de l'ajout). */
+  page?: string;
+}) {
   const { visible, installer } = useInstallation();
+  const naviguer = useNavigate();
   const [aide, setAide] = useState(false);
   if (!visible) return null;
   const apple = estAppareilApple();
 
   const cliquer = async () => {
     onAction?.();
-    if (!(await installer())) setAide(true);
+    if (await installer()) return;
+    if (apple && page && window.location.pathname !== page) naviguer(page);
+    setAide(true);
   };
 
   return (

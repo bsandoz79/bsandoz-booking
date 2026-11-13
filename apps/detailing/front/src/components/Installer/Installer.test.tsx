@@ -1,11 +1,12 @@
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { Installer } from './Installer';
 import { ecouterInstallation, estAppareilApple } from '../../pwa/installation';
 
 describe('Installer l’application', () => {
   it('explique la marche à suivre quand le navigateur ne propose pas d’invitation', async () => {
-    render(<Installer />);
+    render(<MemoryRouter><Installer /></MemoryRouter>);
     await userEvent.click(screen.getByRole('button', { name: /Installer l’application/ }));
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByText(/Ajouter à l’écran d’accueil/)).toBeInTheDocument();
@@ -15,7 +16,7 @@ describe('Installer l’application', () => {
     ecouterInstallation();
     const prompt = vi.fn(async () => undefined);
     const invitation = Object.assign(new Event('beforeinstallprompt'), { prompt, userChoice: Promise.resolve({ outcome: 'accepted' as const }) });
-    render(<Installer />);
+    render(<MemoryRouter><Installer /></MemoryRouter>);
     act(() => { window.dispatchEvent(invitation); });
     await userEvent.click(screen.getByRole('button', { name: /Installer l’application/ }));
     expect(prompt).toHaveBeenCalled();

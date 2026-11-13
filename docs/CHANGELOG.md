@@ -188,6 +188,7 @@
 - Accueil : arrivée animée sobre (titre mot par mot, photo en lent zoom arrière, points forts un à un, une impulsion sur « Réserver un créneau »), coupée si moins d'animations.
 - Bouton « Installer l'application » dans le menu : invitation du navigateur (Android, ordinateur) ou aide pas à pas (iPhone), masqué une fois le site installé.
 - « Installer l'application » réservé au compte pro (absent du menu des clients).
+- L'application installée s'ouvre sur l'Espace pro (raccourcis : Espace pro, Site public, Réserver) ; service worker v6.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

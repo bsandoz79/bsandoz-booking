@@ -3,7 +3,8 @@
   "short_name": "Perfect Clean",
   "description": "Nettoyage auto à domicile à Abbeville et alentours : intérieur, extérieur, rénovation des phares.",
   "lang": "fr",
-  "start_url": "/",
+  "id": "/",
+  "start_url": "/pro",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -14,8 +15,8 @@
     { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Réserver", "url": "/reserver" },
-    { "name": "Mon espace", "url": "/mon-espace" },
-    { "name": "Espace pro", "url": "/pro" }
+    { "name": "Espace pro", "url": "/pro" },
+    { "name": "Site public", "url": "/" },
+    { "name": "Réserver", "url": "/reserver" }
   ]
 }
