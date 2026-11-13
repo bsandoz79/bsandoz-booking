@@ -35,7 +35,7 @@ describe('Header', () => {
     await userEvent.keyboard('{Escape}');
     expect(menu).toHaveAttribute('aria-expanded', 'false');
     await userEvent.click(menu);
-    await userEvent.click(screen.getByRole('link', { name: 'Mon espace' }));
+    await userEvent.click(screen.getByRole('link', { name: 'Pro' }));
     expect(menu).toHaveAttribute('aria-expanded', 'false');
   });
 

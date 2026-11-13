@@ -33,6 +33,8 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 
 - ✅ Chaque clic dans la barre de navigation (Pro, Mon espace…) ramène tout en haut de la page, même sur la page déjà ouverte ; le bouton « Retour » garde la position.
 
+- ✅ Barre de navigation dans l'ordre logique : logo, liens (Prestations, Fidélité, Pro), bouton principal « Réserver », puis téléphone, « Espace pro » (compte pro), « Mon espace » en pastille avec icône, et thème clair / nuit tout à droite ; icônes seules sur écran moyen et téléphone.
+
 ### Site public
 - ✅ Formules, options et prix modifiables depuis le site.
 - ✅ Bug : le crayon « Modifier » d'une carte de prestation ouvrait la réservation au lieu de la modification.

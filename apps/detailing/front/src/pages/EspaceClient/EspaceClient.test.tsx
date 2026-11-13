@@ -31,10 +31,11 @@ describe('Espace client', () => {
     expect(screen.getByRole('link', { name: 'Mot de passe oublié ?' })).toHaveAttribute('href', '/compte/mot-de-passe');
   });
 
-  it('compte pro : le lien « Espace pro » est dans la barre de navigation, plus dans Mon espace', async () => {
+  it('compte pro : le lien « Espace pro » est dans l’en-tête, à côté de « Mon espace », plus dans la page', async () => {
     await seConnecterDemo();
-    const nav = screen.getByRole('navigation', { name: 'Navigation principale' });
-    expect(await within(nav).findByRole('link', { name: 'Espace pro' })).toHaveAttribute('href', '/pro');
+    const entete = screen.getAllByRole('banner')[0];
+    expect(await within(entete).findByRole('link', { name: 'Espace pro' })).toHaveAttribute('href', '/pro');
+    expect(within(entete).getByRole('link', { name: 'Mon espace' })).toHaveAttribute('href', '/mon-espace');
     expect(within(screen.getByRole('main')).queryByRole('link', { name: /espace pro/i })).not.toBeInTheDocument();
   });
 
