@@ -31,9 +31,11 @@ describe('Espace client', () => {
     expect(screen.getByRole('link', { name: 'Mot de passe oublié ?' })).toHaveAttribute('href', '/compte/mot-de-passe');
   });
 
-  it('donne accès à l’espace pro quand le compte est professionnel', async () => {
+  it('compte pro : le lien « Espace pro » est dans la barre de navigation, plus dans Mon espace', async () => {
     await seConnecterDemo();
-    expect(screen.getByRole('link', { name: 'Accéder à l’espace pro' })).toHaveAttribute('href', '/pro');
+    const nav = screen.getByRole('navigation', { name: 'Navigation principale' });
+    expect(await within(nav).findByRole('link', { name: 'Espace pro' })).toHaveAttribute('href', '/pro');
+    expect(within(screen.getByRole('main')).queryByRole('link', { name: /espace pro/i })).not.toBeInTheDocument();
   });
 
   it('affiche l’avoir du client, déduit de son prochain rendez-vous', async () => {

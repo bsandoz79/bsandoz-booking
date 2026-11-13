@@ -5,6 +5,8 @@ import { changerTheme, themeActuel, type Theme } from '../../app/theme';
 import { regleFidelite } from '../../services/fidelite';
 import { IconeTelephone } from '../Telephone/Telephone';
 import { lienTel, useTelephone } from '../Telephone/numeroTelephone';
+import { useModeEdition } from '../../app/modeEditionContexte';
+import { Icone } from '../Icone/Icone';
 import styles from './Header.module.css';
 
 /**
@@ -16,6 +18,8 @@ export function Header() {
   const [fidelite, setFidelite] = useState(false);
   const [ouvert, setOuvert] = useState(false);
   const telephone = useTelephone();
+  // Compte pro connecté : accès direct à l'espace pro, bien distinct des autres liens.
+  const { peutModifier: pro } = useModeEdition();
   useEffect(() => { regleFidelite().then((r) => setFidelite(r.actif)).catch(() => undefined); }, []);
   useEffect(() => {
     if (!ouvert) return;
@@ -43,6 +47,7 @@ export function Header() {
           {fidelite && <Link to="/#fidelite">Fidélité</Link>}
           <NavLink to="/professionnels">Pro</NavLink>
           <NavLink to="/mon-espace">Mon espace</NavLink>
+          {pro && <NavLink to="/pro" className={styles.espacePro}><Icone nom="tableau" taille={17} /> Espace pro</NavLink>}
         </nav>
         <div className={styles.actions}>
           <button type="button" className={styles.astre} onClick={basculer} aria-pressed={theme === 'nuit'} title={theme === 'nuit' ? 'Passer en version claire' : 'Passer en version nuit'}>

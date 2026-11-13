@@ -10,7 +10,7 @@ import { mesFactures, type FactureResume } from '../../services/factures';
 import { formatEuros } from '@bsandoz/ui';
 import {
   annulerMonRendezVous, deplacerMonRendezVous, payerMonRendezVous, exporterMesDonnees, mesRendezVous, modifierMonCompte, monCompte, reprendreSession,
-  rolesSession, seConnecter, seDeconnecter, supprimerMonCompte, type Compte, type RendezVous,
+  seConnecter, seDeconnecter, supprimerMonCompte, type Compte, type RendezVous,
 } from '../../services/compte';
 import { Icone, type NomIcone } from '../../components/Icone/Icone';
 import styles from '../Compte/Compte.module.css';
@@ -148,9 +148,6 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
           <Icone nom="sortie" taille={18} /> Se déconnecter
         </button>
       </header>
-      {(compte?.roles.includes('ROLE_PRO') || rolesSession().includes('ROLE_PRO')) && (
-        <p className={styles.accesPro}>Vous êtes connecté avec un compte professionnel. <Link to="/pro" className="btn">Accéder à l’espace pro</Link></p>
-      )}
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
 
       <Rubrique id="a-venir" titre="Mes rendez-vous" description="Vos prochains rendez-vous : déplacez-les, annulez-les ou ajoutez-les à votre agenda."
