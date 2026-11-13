@@ -126,9 +126,9 @@ final class ListerCreneauxTest extends TestCase
         [$lister] = $this->useCases();
         $slots = $lister('2026-11-10', 60, self::LAT + 0.2, self::LNG);
 
-        self::assertSame('08:35', self::starts($slots)[0], 'ouverture + 35 min de trajet');
+        self::assertSame('08:00', self::starts($slots)[0], 'heure ronde dès l\'ouverture, malgré 35 min de trajet');
         self::assertSame('UTC', $slots[0]->start->getTimezone()->getName());
-        self::assertSame('2026-11-10T07:35:00+00:00', $slots[0]->start->format(DATE_ATOM));
+        self::assertSame('2026-11-10T07:00:00+00:00', $slots[0]->start->format(DATE_ATOM));
     }
 
     public function testActiviteSurPlaceSansAdresse(): void

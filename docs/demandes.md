@@ -46,6 +46,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ « Mon espace » plus structuré : nom, puis e-mail et téléphone modifiables, déconnexion bien visible, zone de danger (suppression du compte) en pointillés rouges tout en bas.
 
 ### Bugs et mise en ligne
+- ✅ Heures de rendez-vous rondes (8 h 00, 8 h 30…) au lieu de 8 h 05, 8 h 35 : le trajet vers le premier rendez-vous se fait avant l'ouverture ; entre deux rendez-vous, le trajet est toujours compté.
 - ✅ « « lastname » est obligatoire » au paiement (champ « Nom et prénom » unique).
 - ✅ Minutes GitHub Actions épuisées : dépôt rendu public (minutes illimitées).
 - ✅ Déploiement : certificat FTPS (intermédiaires Let's Encrypt), TLS 1.2, dossiers « "demo.bsandoz.fr » créés par erreur (à supprimer dans cPanel), CSS/JS envoyés avant les pages.

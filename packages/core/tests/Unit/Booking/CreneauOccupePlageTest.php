@@ -58,9 +58,9 @@ final class CreneauOccupePlageTest extends TestCase
         self::assertSame(['08:00–12:00', '14:00–18:00'], $this->format($this->slots(150)));
     }
 
-    public function testLeTrajetDecaleLeDebut(): void
+    public function testLeTrajetSeFaitAvantLOuverture(): void
     {
-        self::assertSame(['08:30–12:00', '14:30–18:00'], $this->format($this->slots(150, 30)));
+        self::assertSame(['08:00–12:00', '14:00–18:00'], $this->format($this->slots(150, 30)));
     }
 
     public function testUnPetitRendezVousLeMatinLaisseSeulementLApresMidi(): void

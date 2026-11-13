@@ -60,11 +60,14 @@ final class CreneauCalculator
                 continue;
             }
             $open = new TimeRange($this->at($localDay, $opening->startsAt), $this->at($localDay, $opening->endsAt));
-            $start = $open->start->modify(sprintf('+%d minutes', $travelMin));
+            // Heures d'arrivée « rondes » : la grille du pas (8 h 00, 8 h 30…) part de l'ouverture ; le trajet vers le premier
+            // rendez-vous se fait avant (seuls les autres rendez-vous et indisponibilités le limitent, pas l'ouverture).
+            $start = $this->surLaGrille($open->start, $localDay, $rules->slotStepMin);
 
             if ($occupePlage) {
                 $fits = $start->modify(sprintf('+%d minutes', $durationMin)) <= $open->end;
-                if ($fits && $start >= $earliest && $start <= $latest && !$this->overlapsAny($open, $busy)) {
+                $plage = new TimeRange($start->modify(sprintf('-%d minutes', $travelMin)), $open->end);
+                if ($fits && $start >= $earliest && $start <= $latest && !$this->overlapsAny($plage, $busy)) {
                     $slots[$start->getTimestamp()] = new TimeRange($start, $open->end);
                 }
                 continue;
@@ -138,5 +141,15 @@ final class CreneauCalculator
         }
 
         return false;
+    }
+
+    /** Premier horaire de la grille (multiples du pas depuis minuit) à partir de $debut. */
+    private function surLaGrille(\DateTimeImmutable $debut, \DateTimeImmutable $minuit, int $pasMin): \DateTimeImmutable
+    {
+        $pas = max(1, $pasMin) * 60;
+        $ecart = $debut->getTimestamp() - $minuit->getTimestamp();
+        $reste = $ecart % $pas;
+
+        return $reste === 0 ? $debut : $debut->modify(sprintf('+%d seconds', $pas - $reste));
     }
 }
