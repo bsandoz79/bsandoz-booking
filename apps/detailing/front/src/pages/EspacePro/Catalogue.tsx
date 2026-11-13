@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { Button, DataTable, Field, Toggle, formatEuros } from '@bsandoz/ui';
 import { CATEGORIES as CATEGORIES_SITE, VEHICLE_TYPES } from '../../data/demo';
 import { catalogue, enregistrerOption, enregistrerPrestation, type OptionPro, type PrestationPro, type Tarif } from '../../services/pro';
+import { nouvellePrestation } from './nouvellePrestation';
 import styles from './Pro.module.css';
 
 /** Catégories du site (intérieur, extérieur, phares, soins à la carte). */
@@ -11,9 +12,6 @@ const euros = (cents: number) => (cents / 100).toFixed(2).replace('.', ',');
 const centimes = (texte: string) => Math.round(Number(texte.replace(',', '.').replace(/\s/g, '')) * 100);
 const prixValide = (texte: string) => /^\d+([.,]\d{1,2})?$/.test(texte.trim());
 
-const nouvellePrestation = (position: number): PrestationPro => ({
-  name: '', description: '', basePriceCents: 0, baseDurationMin: 60, active: true, categoryId: 'interieur', position, occupePlage: false, tarifs: {}, optionIds: [],
-});
 
 export function CatalogueOnglet() {
   const [prestations, setPrestations] = useState<PrestationPro[]>([]);
@@ -76,7 +74,7 @@ export function CatalogueOnglet() {
   );
 }
 
-function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
+export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
   initiale: PrestationPro; options: OptionPro[]; onAnnuler: () => void; onEnregistree: (p: PrestationPro) => void;
 }) {
   const [p, setP] = useState(initiale);
@@ -179,7 +177,7 @@ function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
   );
 }
 
-function FormulaireOption({ initiale, onAnnuler, onEnregistree }: { initiale: OptionPro; onAnnuler: () => void; onEnregistree: (o: OptionPro) => void }) {
+export function FormulaireOption({ initiale, onAnnuler, onEnregistree }: { initiale: OptionPro; onAnnuler: () => void; onEnregistree: (o: OptionPro) => void }) {
   const [o, setO] = useState(initiale);
   const [prix, setPrix] = useState(initiale.id ? euros(initiale.priceCents) : '');
   const [duree, setDuree] = useState(String(initiale.durationMin));

@@ -1,6 +1,11 @@
 import { useEffect, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { formatEuros } from '@bsandoz/ui';
+import { Button, Dialog, formatEuros } from '@bsandoz/ui';
+import { useModeEdition } from '../../app/modeEditionContexte';
+import { Crayon } from '../../components/ModeEdition';
+import { FormulaireOption, FormulairePrestation } from '../EspacePro/Catalogue';
+import { nouvellePrestation } from '../EspacePro/nouvellePrestation';
+import { catalogue as cataloguePro, enregistrerPrestation, type OptionPro, type PrestationPro } from '../../services/pro';
 import { useContenu } from '../../app/contenuContexte';
 import { CarteFidelite } from '../../components/CarteFidelite/CarteFidelite';
 import { CarteZone } from '../../components/CarteZone/CarteZone';
@@ -29,7 +34,32 @@ export function Accueil() {
   useEffect(() => {
     getCatalog().then((c) => { if (c.formules.length > 0) { setFormules(c.formules); setOptions(c.options); } }).catch(() => undefined);
   }, []);
-  const categories = CATEGORIES.filter((c) => formules.some((f) => f.category === c.value));
+  // Mode modification (pro connecté) : catalogue complet de l'espace pro, formules retirées comprises.
+  const { actif: edition } = useModeEdition();
+  const [pro, setPro] = useState<{ prestations: PrestationPro[]; options: OptionPro[] }>();
+  const [enEdition, setEnEdition] = useState<{ prestation: PrestationPro } | { option: OptionPro }>();
+  const [messageEdition, setMessageEdition] = useState('');
+  const chargerPro = () => cataloguePro().then(setPro).catch((e: Error) => setMessageEdition(e.message));
+  useEffect(() => { if (edition) chargerPro(); }, [edition]);
+  /** Après un enregistrement : le site affiche tout de suite le catalogue à jour (formules proposées seulement). */
+  const appliquer = (c: { prestations: PrestationPro[]; options: OptionPro[] }) => {
+    setPro(c);
+    setFormules(c.prestations.filter((p) => p.active && p.id).sort((a, b) => a.position - b.position).map(versFormule));
+    setOptions(c.options.filter((o) => o.active && o.id).map((o) => ({ id: o.id!, name: o.name, description: o.description, priceCents: o.priceCents, durationMin: o.durationMin })));
+  };
+  const enregistree = async (texte: string) => {
+    setEnEdition(undefined);
+    setMessageEdition(texte);
+    appliquer(await cataloguePro());
+  };
+  const remettre = async (p: PrestationPro) => {
+    await enregistrerPrestation({ ...p, active: true });
+    await enregistree(`« ${p.name} » est de nouveau proposée.`);
+  };
+  const prestationPro = (id: string) => pro?.prestations.find((p) => p.id === id);
+  const optionPro = (id: string) => pro?.options.find((o) => o.id === id);
+
+  const categories = CATEGORIES.filter((c) => edition || formules.some((f) => f.category === c.value));
   const [onglet, setOnglet] = useState<Category>('interieur');
   const categorie = categories.find((c) => c.value === onglet) ?? categories[0];
   const formulesOnglet = formules.filter((f) => f.category === categorie?.value);
@@ -108,6 +138,7 @@ export function Accueil() {
                 return (
                   <article key={f.id} className={`${styles.formule} ${f.badge ? styles.vedette : ''}`}>
                     {f.badge && <span className={styles.badge}>{f.badge}</span>}
+                    {prestationPro(f.id) && <div className={styles.crayonCarte}><Crayon libelle={`Modifier ${f.name}`} onClick={() => setEnEdition({ prestation: prestationPro(f.id)! })} /></div>}
                     <h3>{f.name}</h3>
                     <p className={styles.prix}>{formatEuros(prixMin(f))}</p>
                     {detail.duree && <p className={styles.duree}><span aria-hidden="true">⏱</span> {detail.duree}</p>}
@@ -131,11 +162,41 @@ export function Accueil() {
                 );
               })}
             </div>
+            {edition && pro && categorie && (
+              <div className={styles.edition}>
+                <Button variant="secondary" onClick={() => { setMessageEdition(''); setEnEdition({ prestation: nouvellePrestation(pro.prestations.length, categorie.value) }); }}>
+                  + Ajouter une formule « {categorie.label} »
+                </Button>
+                {pro.prestations.filter((p) => !p.active && p.categoryId === categorie.value).map((p) => (
+                  <p key={p.id} className={styles.retiree}>« {p.name} » n’est plus proposée. <Button variant="ghost" onClick={() => remettre(p)}>La proposer à nouveau</Button></p>
+                ))}
+                {messageEdition && <p role="status" className={styles.messageEdition}>{messageEdition}</p>}
+              </div>
+            )}
             {optionsOnglet.length > 0 && (
               <div className={styles.options}>
                 <h3>Options</h3>
-                <ul>{optionsOnglet.map((o) => <li key={o.id}><span>{o.name}</span><strong>+ {formatEuros(o.priceCents)}</strong></li>)}</ul>
+                <ul>{optionsOnglet.map((o) => (
+                  <li key={o.id}>
+                    <span>{o.name}</span>
+                    <span className={styles.optionPrix}>
+                      <strong>+ {formatEuros(o.priceCents)}</strong>
+                      {optionPro(o.id) && <Crayon libelle={`Modifier l’option ${o.name}`} onClick={() => setEnEdition({ option: optionPro(o.id)! })} />}
+                    </span>
+                  </li>
+                ))}</ul>
               </div>
+            )}
+            {pro && enEdition && (
+              <Dialog open title={'prestation' in enEdition ? (enEdition.prestation.id ? `Modifier « ${enEdition.prestation.name} »` : 'Nouvelle formule') : `Modifier l’option « ${enEdition.option.name} »`}
+                description="Les changements sont visibles tout de suite sur le site." onClose={() => setEnEdition(undefined)}>
+                {'prestation' in enEdition ? (
+                  <FormulairePrestation initiale={enEdition.prestation} options={pro.options} onAnnuler={() => setEnEdition(undefined)}
+                    onEnregistree={(p) => enregistree(p.active ? `« ${p.name} » enregistrée.` : `« ${p.name} » n’est plus proposée aux clients.`)} />
+                ) : (
+                  <FormulaireOption initiale={enEdition.option} onAnnuler={() => setEnEdition(undefined)} onEnregistree={(o) => enregistree(`Option « ${o.name} » enregistrée.`)} />
+                )}
+              </Dialog>
             )}
           </div>
         )}
@@ -290,4 +351,12 @@ export function Accueil() {
       )}
     </main>
   );
+}
+
+/** Prestation de l'espace pro → formule affichée sur le site. */
+function versFormule(p: PrestationPro): Formule {
+  return {
+    id: p.id!, category: p.categoryId ?? '', name: p.name, description: p.description, basePriceCents: p.basePriceCents, baseDurationMin: p.baseDurationMin,
+    tarifs: p.tarifs, optionIds: p.optionIds, occupePlage: p.occupePlage, badge: p.badge ?? null, remiseUniteCents: p.remiseUniteCents ?? 0,
+  };
 }
