@@ -160,8 +160,14 @@ final class AdminApiTest extends WebTestCase
         $horloge = static::getContainer()->get(\Bsandoz\Core\Shared\Infrastructure\FrozenClock::class);
         self::assertInstanceOf(\Bsandoz\Core\Shared\Infrastructure\FrozenClock::class, $horloge);
         $horloge->set('2026-11-10 10:00');
+        // Lien de la page d'avis : joint au mail de facture.
+        $this->request('PUT', '/api/v1/admin/settings/avis', ['lien' => 'https://g.page/r/exemple/review'], $token);
+        self::assertSame(['actif' => true, 'lien' => 'https://g.page/r/exemple/review'], $this->json());
         $this->request('PATCH', '/api/v1/admin/reservations/' . $reservationId, ['status' => 'done'], $token);
         self::assertResponseIsSuccessful();
+        $mailFacture = array_values(array_filter(self::getMailerMessages(), static fn ($m): bool => $m instanceof \Symfony\Component\Mime\Email && str_contains((string) $m->getSubject(), 'Votre facture')));
+        self::assertCount(1, $mailFacture);
+        self::assertEmailHtmlBodyContains($mailFacture[0], 'https://g.page/r/exemple/review');
 
         $this->request('GET', '/api/v1/admin/factures', token: $token);
         $factures = $this->json();

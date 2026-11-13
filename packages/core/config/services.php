@@ -316,6 +316,9 @@ return static function (ContainerConfigurator $container): void {
     $services->alias(\Bsandoz\Core\Facturation\Domain\Port\FactureRepository::class, \Bsandoz\Core\Facturation\Infrastructure\Persistence\DoctrineFactureRepository::class);
     $services->set(\Bsandoz\Core\Facturation\Application\InfosFacturation::class);
     $services->set(\Bsandoz\Core\Facturation\Application\EmettreFacture::class);
+    // Demande d'avis (lien joint au mail de facture)
+    $services->set(\Bsandoz\Core\Notification\Application\DemandeAvis::class);
+    $services->set(\Bsandoz\Core\Notification\Infrastructure\Http\AvisController::class)->public()->tag('controller.service_arguments');
     $services->set(\Bsandoz\Core\Facturation\Application\ConsulterFactures::class);
     $services->set(\Bsandoz\Core\Facturation\Infrastructure\Http\FactureController::class)->public()->tag('controller.service_arguments');
 

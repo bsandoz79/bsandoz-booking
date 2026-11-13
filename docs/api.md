@@ -136,6 +136,10 @@ Règle par défaut (`bsandoz_core.fidelite`) : 4 prestations réalisées, 20 % s
 ## Avoirs
 Annulation tardive (après le délai d'annulation gratuite) d'un rendez-vous confirmé : rien n'est remboursé, la somme payée en ligne devient un avoir du client. L'avoir est déduit automatiquement de sa réservation suivante (après la remise de fidélité, acompte recalculé, ligne « Avoir déduit » sur la facture) et rendu si cette réservation est annulée ou expire. Mail d'annulation au client et au pro avec le montant (`avoirCents`). `GET /me` renvoie `avoirCents` (solde).
 
+## Demande d'avis
+- `GET /admin/settings/avis`, `PUT /admin/settings/avis` `{"actif", "lien"}` (pro) : lien https:// de la page d'avis (ex. fiche Google), 500 caractères au plus (sinon 422). Sans lien, rien n'est demandé.
+- Le lien est joint au mail de facture (`invoice_issued`, variable `avisUrl`), envoyé au client quand le rendez-vous passe à « done » : un seul mail par prestation.
+
 ## Notifications push du pro (Web Push)
 - `GET /push/key` → `{"publicKey": "…" | null}` : clé publique VAPID (null : notifications non configurées).
 - `POST /admin/push` (rôle pro) : corps = `PushSubscription` du navigateur, `{"endpoint", "keys": {"p256dh", "auth"}}` → 204. Le même appareil remplace son abonnement. Endpoint non https ou clés invalides : 422 ; notifications non configurées : 422.
