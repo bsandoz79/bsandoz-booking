@@ -45,8 +45,12 @@ export function CatalogueOnglet() {
     setErreur('');
     try {
       if (type === 'options') {
-        setOptions((liste) => ids.map((id) => liste.find((o) => o.id === id)!).filter(Boolean));
-        await enregistrerOrdre({ options: ids });
+        // Liste filtrée par catégorie : seules ces options changent de place entre elles, les autres restent où elles sont.
+        const ensemble = new Set(ids);
+        const restants = [...ids];
+        const ordre = options.map((o) => (o.id && ensemble.has(o.id) ? restants.shift()! : o.id!)).filter(Boolean);
+        setOptions((liste) => ordre.map((id) => liste.find((o) => o.id === id)!).filter(Boolean));
+        await enregistrerOrdre({ options: ordre });
       } else {
         const triees = [...prestations].sort((a, b) => a.position - b.position);
         const ensemble = new Set(ids);
@@ -88,12 +92,22 @@ export function CatalogueOnglet() {
                         </div>
     </div>
   );
+  /** Formules qui proposent l'option (dans l'ordre du catalogue). */
+  const formulesDe = (o: OptionPro) => [...prestations].sort((a, b) => a.position - b.position).filter((p) => !!o.id && p.optionIds.includes(o.id));
+  // Filtre de catégorie : seulement les options proposées par une formule de cette catégorie.
+  const optionsVisibles = filtreCategorie ? options.filter((o) => formulesDe(o).some((p) => p.categoryId === filtreCategorie)) : options;
+
   const ligneOption = (o: OptionPro) => (
     <div className={`${r.ligne} ${o.active ? '' : r.estompee}`}>
                     <Icone nom="etoile" className={r.ligneIcone} />
                     <div className={r.ligneTexte}>
                       <span className={r.ligneTitre}>{o.name}</span>
                       <span className={r.ligneSous}>+ {formatEuros(o.priceCents)}{o.durationMin > 0 ? ` · + ${duree(o.durationMin)}` : ''}{o.active ? '' : ' · non proposée'}</span>
+                      <span className={r.ligneSous}>
+                        {formulesDe(o).length > 0
+                          ? <>Proposée avec : {formulesDe(o).map((p) => p.name).join(', ')}</>
+                          : <span className={r.attention}>Proposée avec aucune formule : cochez-la dans une formule (Modifier).</span>}
+                      </span>
                     </div>
                     <div className={r.ligneActions}>
                       <button type="button" className={r.boutonContour} aria-label={`Modifier l’option ${o.name}`} onClick={() => { setMessage(''); setOption(o); }}>Modifier</button>
@@ -152,17 +166,17 @@ export function CatalogueOnglet() {
             <div className={r.rubriqueEntete}>
               <div>
                 <h3 id="cat-options">Options</h3>
-                <p className={r.aide}>Suppléments au choix du client, à cocher pour chaque prestation concernée.</p>
+                <p className={r.aide}>Une liste commune : chaque formule choisit les siennes (bouton « Modifier » de la formule, cases « Options proposées »). L’ordre ci-dessous est celui de la réservation.</p>
               </div>
               <button type="button" className={r.boutonContour} onClick={() => { setMessage(''); setOption({ name: '', description: '', priceCents: 0, durationMin: 0, active: true }); }}>
                 Ajouter une option
               </button>
             </div>
-            {options.length === 0 ? <p className={r.aide}>Aucune option.</p> : (
+            {optionsVisibles.length === 0 ? <p className={r.aide}>{options.length === 0 ? 'Aucune option.' : 'Aucune option pour cette catégorie.'}</p> : (
               recherche.trim() ? (
-                <ul className={r.panneau}>{filtrer(options, recherche, '', (o) => o.name, () => '').map((o) => <li key={o.id ?? o.name}>{ligneOption(o)}</li>)}</ul>
+                <ul className={r.panneau}>{filtrer(optionsVisibles, recherche, '', (o) => `${o.name} ${formulesDe(o).map((p) => p.name).join(' ')}`, () => '').map((o) => <li key={o.id ?? o.name}>{ligneOption(o)}</li>)}</ul>
               ) : (
-                <SortableList items={options} getKey={(o) => o.id ?? o.name} label="Ordre des options" className={r.panneau}
+                <SortableList items={optionsVisibles} getKey={(o) => o.id ?? o.name} label="Ordre des options" className={r.panneau}
                   handleLabel={(o) => `Déplacer ${o.name}`} movedMessage={(o, n, t) => `${o.name} : position ${n} sur ${t}`}
                   renderItem={ligneOption} onReorder={(ids) => ranger('options', ids)} />
               )
@@ -260,11 +274,15 @@ export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistr
       {options.length > 0 && (
         <fieldset className={styles.liste} style={{ border: 0, padding: 0 }}>
           <legend className={styles.choix}>Options proposées avec cette prestation</legend>
+          <p className={styles.aide}>Cochez les suppléments que le client pourra ajouter à cette formule. Elles s’affichent dans l’ordre réglé dans la liste des options.</p>
           {options.map((o) => o.id && (
-            <label key={o.id} className={styles.case}>
+            <label key={o.id} className={styles.caseOption}>
               <input type="checkbox" checked={p.optionIds.includes(o.id)}
                 onChange={() => setP({ ...p, optionIds: p.optionIds.includes(o.id!) ? p.optionIds.filter((x) => x !== o.id) : [...p.optionIds, o.id!] })} />
-              {o.name}{o.active ? '' : ' (non proposée)'}
+              <span>
+                <strong>{o.name}</strong> · + {formatEuros(o.priceCents)}{o.active ? '' : ' (non proposée)'}
+                {o.description && <span className={styles.aide}><br />{o.description}</span>}
+              </span>
             </label>
           ))}
         </fieldset>

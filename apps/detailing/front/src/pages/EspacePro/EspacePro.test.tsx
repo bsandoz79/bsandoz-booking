@@ -188,6 +188,17 @@ describe('Espace pro', () => {
     expect(screen.queryByRole('region', { name: 'Nettoyage extérieur' })).not.toBeInTheDocument();
   });
 
+  it('options : formules qui les proposent, filtre par catégorie', async () => {
+    await ouvrirConnecte();
+    await rubrique('Catalogue');
+    const ordre = await screen.findByRole('list', { name: 'Ordre des options' });
+    expect(ordre).toHaveTextContent(/Désodorisant Perfect Clean.*Proposée avec : Intérieur Éclat/);
+    await userEvent.click(within(screen.getByRole('group', { name: 'Filtrer par catégorie' })).getByRole('button', { name: 'Nettoyage extérieur' }));
+    const options = within(screen.getByRole('list', { name: 'Ordre des options' })).getAllByRole('listitem');
+    expect(options).toHaveLength(1);
+    expect(options[0]).toHaveTextContent(/Véhicule très sale.*Extérieur Éclat/);
+  });
+
   it('réordonne les options : le désodorisant remonte en première position', async () => {
     await ouvrirConnecte();
     await rubrique('Catalogue');
