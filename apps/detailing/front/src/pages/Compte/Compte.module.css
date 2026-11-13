@@ -8,7 +8,22 @@
 .aide { font-size: .9rem; color: var(--bs-color-text-muted); }
 .ok { color: var(--bs-color-success); font-weight: 600; }
 .erreur { color: var(--bs-color-danger); font-weight: 600; }
-.danger { border: 1px solid color-mix(in srgb, var(--bs-color-danger) 20%, transparent); border-radius: var(--bs-radius-md); padding: 1rem; display: flex; flex-direction: column; gap: .75rem; }
+/* Zone de danger : tout en bas, encadré rouge en pointillés. */
+.danger { margin-top: 1rem; border: 2px dashed var(--bs-color-danger); border-radius: var(--bs-radius-md); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: .75rem; }
+.danger h2 { color: var(--bs-color-danger); font-size: 1.1rem; margin: 0; }
+.dangerContenu { display: flex; flex-direction: column; gap: .75rem; }
 
 /* Compte pro connecté sur « Mon espace » : accès direct à l'espace pro. */
 .accesPro { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; padding: 1rem; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); }
+
+/* En-tête de « Mon espace » : nom, coordonnées, déconnexion. */
+.profil { display: flex; flex-direction: column; gap: .9rem; padding: 1.25rem; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); }
+.profilEntete { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: .75rem 1rem; }
+.bonjour { margin: 0; color: var(--bs-color-text-muted); font-weight: 600; }
+.profilNom { margin: 0; font-size: clamp(1.5rem, 4vw, 2rem); overflow-wrap: anywhere; }
+.coordonnees { display: grid; gap: .5rem; margin: 0; }
+.coordonnees div { display: flex; flex-wrap: wrap; gap: .25rem .75rem; }
+.coordonnees dt { min-width: 6rem; font-weight: 600; color: var(--bs-color-text-muted); }
+.coordonnees dd { margin: 0; overflow-wrap: anywhere; }
+.profilFormulaire { display: flex; flex-direction: column; gap: .75rem; max-width: 460px; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

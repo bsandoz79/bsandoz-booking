@@ -152,6 +152,20 @@ final class SessionApiTest extends WebTestCase
         self::assertSame('camille@example.test', $this->json()['email']);
     }
 
+    public function testLeClientModifieSesCoordonnees(): void
+    {
+        $token = $this->login();
+        $this->request('PATCH', '/api/v1/me', ['firstname' => 'Camille Durand', 'lastname' => '', 'phone' => '06 11 22 33 44', 'email' => 'Camille.D@Example.test'], $token);
+        self::assertResponseIsSuccessful();
+        self::assertSame(['Camille Durand', '06 11 22 33 44', 'camille.d@example.test'], [$this->json()['firstname'], $this->json()['phone'], $this->json()['email']]);
+
+        // Toujours connecté (la session suit l'identifiant, pas l'e-mail) ; l'e-mail d'un autre compte est refusé.
+        $this->request('PATCH', '/api/v1/me', ['email' => 'autre@example.test'], $token);
+        self::assertResponseStatusCodeSame(422);
+        $this->request('PATCH', '/api/v1/me', ['phone' => 'abc'], $token);
+        self::assertResponseStatusCodeSame(422);
+    }
+
     public function testMesReservationsSeulement(): void
     {
         $token = $this->login();

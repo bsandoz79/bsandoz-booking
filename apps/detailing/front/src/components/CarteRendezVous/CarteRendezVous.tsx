@@ -3,6 +3,8 @@ import { Button, Calendar, SlotPicker, formatEuros } from '@bsandoz/ui';
 import type { Formule } from '../../data/demo';
 import { getAvailableDays, getSlots, type Slot } from '../../services/api';
 import type { RendezVous } from '../../services/compte';
+import { AjouterAgenda } from '../AjouterAgenda/AjouterAgenda';
+import { SITE } from '../../data/site';
 import styles from './CarteRendezVous.module.css';
 
 const STATUTS: Record<RendezVous['status'], string> = {
@@ -96,6 +98,10 @@ export function CarteRendezVous({ rdv, formule, maintenant: maintenantFourni, on
             ? `Annulation gratuite jusqu’au ${dateLongue(rdv.freeCancelUntil)}${payeEnLigne ? ' : ce que vous avez payé en ligne vous sera remboursé' : ''}.`
             : payeEnLigne ? 'Le délai d’annulation gratuite est dépassé : en cas d’annulation, le paiement en ligne reste dû.' : 'Le délai d’annulation gratuite est dépassé : merci de prévenir au plus tôt en cas d’empêchement.'}
         </p>
+      )}
+
+      {modifiable && mode === 'aucun' && (
+        <AjouterAgenda evenement={{ titre: `${SITE.brand} : ${formule?.name ?? 'rendez-vous'}`, debut: rdv.start, fin: rdv.end, lieu: rdv.address }} />
       )}
 
       {impayee && (

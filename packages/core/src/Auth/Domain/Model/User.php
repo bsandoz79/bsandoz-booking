@@ -39,6 +39,15 @@ class User
         $this->status = UserStatus::Active;
     }
 
+    /** Coordonnées modifiées par le titulaire (espace client). L'e-mail, déjà normalisé, est vérifié unique par le cas d'usage. */
+    public function changerCoordonnees(string $email, string $firstname, string $lastname, string $phone): void
+    {
+        $this->email = $email;
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
+        $this->phone = $phone;
+    }
+
     public function changePassword(string $passwordHash): void
     {
         $this->passwordHash = $passwordHash;

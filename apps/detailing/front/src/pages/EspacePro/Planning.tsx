@@ -5,6 +5,7 @@ import { annulerRendezVous, catalogue, changerStatut, horaires, indisponibilites
 import { dateHeure, jourLocal, localIso, plusJours } from './dates';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
+import { BoutonItineraire } from '../../components/Itineraire/Itineraire';
 import { defilerVers } from '../../app/defilement';
 import { Link } from 'react-router-dom';
 import { emettreFacture } from '../../services/factures';
@@ -160,7 +161,7 @@ function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: { rdv: 
         <dt>Client</dt><dd>{rdv.client.name || '—'}</dd>
         <dt>Téléphone</dt><dd>{rdv.client.phone ? <a className={styles.appelClient} href={lienTel(rdv.client.phone)}><IconeTelephone /> Appeler {rdv.client.phone}</a> : '—'}</dd>
         <dt>E-mail</dt><dd>{rdv.client.email ? <a href={`mailto:${rdv.client.email}`}>{rdv.client.email}</a> : '—'}</dd>
-        <dt>Adresse</dt><dd>{rdv.address ? <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rdv.address)}`} target="_blank" rel="noreferrer">{rdv.address}</a> : 'Sur place'}</dd>
+        <dt>Adresse</dt><dd>{rdv.address ? <>{rdv.address} <BoutonItineraire destination={{ address: rdv.address }} nom={rdv.client.name} /></> : 'Sur place'}</dd>
         {(rdv.quantite ?? 1) > 1 && (
           <><dt>Véhicules</dt><dd>{rdv.quantite}{Array.isArray(rdv.metierData.vehicules) && <ul className={styles.liste}>{(rdv.metierData.vehicules as string[]).map((v) => <li key={v}>{v}</li>)}</ul>}</dd></>
         )}

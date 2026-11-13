@@ -9,7 +9,7 @@ import { maCarteFidelite, type CarteFidelite as Carte } from '../../services/fid
 import { mesFactures, type FactureResume } from '../../services/factures';
 import { formatEuros } from '@bsandoz/ui';
 import {
-  annulerMonRendezVous, deplacerMonRendezVous, payerMonRendezVous, exporterMesDonnees, mesRendezVous, monCompte, reprendreSession,
+  annulerMonRendezVous, deplacerMonRendezVous, payerMonRendezVous, exporterMesDonnees, mesRendezVous, modifierMonCompte, monCompte, reprendreSession,
   rolesSession, seConnecter, seDeconnecter, supprimerMonCompte, type Compte, type RendezVous,
 } from '../../services/compte';
 import styles from '../Compte/Compte.module.css';
@@ -126,7 +126,11 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
 
   return (
     <main className={`container ${styles.page}`}>
-      <h1>Bonjour{compte ? ` ${compte.firstname}` : ''}</h1>
+      <h1 className={styles.srOnly}>Mon espace</h1>
+      {compte && (
+        <Profil compte={compte} onModifie={setCompte}
+          onDeconnecter={async () => { await seDeconnecter(); onDeconnecte('Vous êtes déconnecté.'); }} />
+      )}
       {(compte?.roles.includes('ROLE_PRO') || rolesSession().includes('ROLE_PRO')) && (
         <p className={styles.accesPro}>Vous êtes connecté avec un compte professionnel. <Link to="/pro" className="btn">Accéder à l’espace pro</Link></p>
       )}
@@ -165,14 +169,16 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
       )}
 
       <section className={styles.section} aria-labelledby="titre-compte">
-        <h2 id="titre-compte">Mon compte</h2>
-        {compte && <p>{compte.firstname} {compte.lastname} · {compte.email} · {compte.phone}</p>}
+        <h2 id="titre-compte">Sécurité et données</h2>
         <div className={styles.actions}>
-          <Button variant="secondary" onClick={telecharger}>Télécharger mes données</Button>
-          <Link to="/compte/mot-de-passe">Changer de mot de passe</Link>
-          <Button variant="ghost" onClick={async () => { await seDeconnecter(); onDeconnecte('Vous êtes déconnecté.'); }}>Se déconnecter</Button>
+          <Link to="/compte/mot-de-passe" className="btn btn--ghost">Changer de mot de passe</Link>
+          <Button variant="ghost" onClick={telecharger}>Télécharger mes données</Button>
         </div>
-        <div className={styles.danger}>
+      </section>
+
+      <section className={styles.danger} aria-labelledby="titre-danger">
+        <h2 id="titre-danger">Zone de danger</h2>
+        <div className={styles.dangerContenu}>
           {suppression ? (
             <>
               <p><strong>Supprimer définitivement votre compte ?</strong> Vos données personnelles seront anonymisées. Impossible s'il vous reste un rendez-vous à venir : annulez-le d'abord.</p>
@@ -187,5 +193,66 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
         </div>
       </section>
     </main>
+  );
+}
+
+/** En-tête de « Mon espace » : nom, e-mail et téléphone, modifiables ; déconnexion bien visible. */
+function Profil({ compte, onModifie, onDeconnecter }: { compte: Compte; onModifie: (c: Compte) => void; onDeconnecter: () => void }) {
+  const [edition, setEdition] = useState(false);
+  const [valeurs, setValeurs] = useState({ nom: '', email: '', phone: '' });
+  const [message, setMessage] = useState('');
+  const [erreur, setErreur] = useState('');
+  const [enCours, setEnCours] = useState(false);
+  const nomComplet = `${compte.firstname} ${compte.lastname}`.trim();
+  const valide = valeurs.nom.trim() !== '' && /\S+@\S+\.\S+/.test(valeurs.email) && valeurs.phone.trim() !== '';
+
+  const ouvrir = () => { setValeurs({ nom: nomComplet, email: compte.email, phone: compte.phone }); setMessage(''); setErreur(''); setEdition(true); };
+  const enregistrer = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!valide) return;
+    setErreur(''); setEnCours(true);
+    try {
+      // « Nom et prénom » en un seul champ, comme à la réservation.
+      onModifie(await modifierMonCompte({ firstname: valeurs.nom.trim(), lastname: '', email: valeurs.email.trim(), phone: valeurs.phone.trim() }));
+      setEdition(false);
+      setMessage('Vos informations sont enregistrées.');
+    } catch (err) {
+      setErreur((err as Error).message);
+    } finally {
+      setEnCours(false);
+    }
+  };
+
+  return (
+    <section className={styles.profil} aria-labelledby="titre-profil">
+      <div className={styles.profilEntete}>
+        <div>
+          <p className={styles.bonjour}>Bonjour</p>
+          <h2 id="titre-profil" className={styles.profilNom}>{nomComplet || compte.email}</h2>
+        </div>
+        <Button variant="secondary" onClick={onDeconnecter}>Se déconnecter</Button>
+      </div>
+      {edition ? (
+        <form className={styles.profilFormulaire} onSubmit={enregistrer} noValidate>
+          <Field label="Nom et prénom" value={valeurs.nom} autoComplete="name" onChange={(e) => setValeurs({ ...valeurs, nom: e.target.value })} />
+          <Field label="E-mail" type="email" value={valeurs.email} autoComplete="email" hint="Sert aussi à vous connecter." onChange={(e) => setValeurs({ ...valeurs, email: e.target.value })} />
+          <Field label="Téléphone" type="tel" value={valeurs.phone} autoComplete="tel" placeholder="01 02 03 04 05" onChange={(e) => setValeurs({ ...valeurs, phone: e.target.value })} />
+          {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
+          <div className={styles.actions}>
+            <Button type="submit" loading={enCours} disabled={!valide}>Enregistrer</Button>
+            <Button variant="ghost" onClick={() => setEdition(false)}>Annuler</Button>
+          </div>
+        </form>
+      ) : (
+        <>
+          <dl className={styles.coordonnees}>
+            <div><dt>E-mail</dt><dd>{compte.email}</dd></div>
+            <div><dt>Téléphone</dt><dd>{compte.phone || '—'}</dd></div>
+          </dl>
+          <div><Button variant="ghost" onClick={ouvrir}>Modifier mes informations</Button></div>
+        </>
+      )}
+      {message && <p className={styles.ok} role="status">{message}</p>}
+    </section>
   );
 }

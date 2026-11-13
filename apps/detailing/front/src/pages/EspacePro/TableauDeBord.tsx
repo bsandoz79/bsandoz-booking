@@ -4,14 +4,11 @@ import { tableauDeBord, type ChoseAFaire, type RendezVousDuJour, type TableauDeB
 import { dateHeure } from './dates';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
+import { BoutonItineraire } from '../../components/Itineraire/Itineraire';
 import styles from './Pro.module.css';
 
 const heure = (iso: string) => new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 const jourCourt = (iso: string) => new Date(iso).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
-
-/** Lien GPS vers l'adresse (Google Maps, ouvre l'application sur téléphone). */
-const lienGps = (r: Pick<RendezVousDuJour, 'address' | 'lat' | 'lng'>) =>
-  `https://www.google.com/maps/dir/?api=1&destination=${r.lat && r.lng ? `${r.lat},${r.lng}` : encodeURIComponent(r.address)}`;
 
 /** Tournée complète : dernier rendez-vous en destination, les autres en étapes, dans l'ordre. */
 const lienTournee = (liste: RendezVousDuJour[]) => {
@@ -81,7 +78,7 @@ export function TableauDeBordOnglet() {
                   {r.notes && <p className={styles.aide}>Note : {r.notes}</p>}
                   {r.status !== 'done' && r.resteSurPlaceCents > 0 && <p>À encaisser sur place : <strong>{formatEuros(r.resteSurPlaceCents)}</strong></p>}
                   <div className={styles.actions}>
-                    {r.address && <a className="btn btn--ghost" href={lienGps(r)} target="_blank" rel="noreferrer" aria-label={`Itinéraire vers ${r.client || 'le client'}`}>Itinéraire</a>}
+                    {r.address && <BoutonItineraire destination={r} nom={r.client || 'le client'} />}
                     {r.phone && <a className={styles.appelClient} href={lienTel(r.phone)}><IconeTelephone /> Appeler {r.phone}</a>}
                   </div>
                 </div>
@@ -172,7 +169,7 @@ function ProchainRdv({ rdv }: { rdv?: TableauDeBord['next'][number] }) {
           {rdv.produits && rdv.produits.length > 0 && <p className={styles.produitsJour}>À apporter : {rdv.produits.map((p) => `${p.quantite} × ${p.nom}`).join(', ')}</p>}
           {rdv.notes && <p className={styles.aide}>Note : {rdv.notes}</p>}
           <div className={styles.actions}>
-            {rdv.address && <a className="btn btn--ghost" href={lienGps({ address: rdv.address, lat: rdv.lat ?? 0, lng: rdv.lng ?? 0 })} target="_blank" rel="noreferrer">Itinéraire</a>}
+            {rdv.address && <BoutonItineraire destination={rdv} nom={rdv.client || 'le client'} />}
             {rdv.phone && <a className={styles.appelClient} href={lienTel(rdv.phone)}><IconeTelephone /> Appeler {rdv.phone}</a>}
           </div>
         </>

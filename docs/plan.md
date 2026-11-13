@@ -55,3 +55,4 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/comptabilite` : module `Comptabilite` (dépenses ponctuelles ou mensuelles), chiffre d'affaires, dépenses et résultat par mois, onglet Comptabilité
 - [x] `feature/edition-partout` : crayons « Modifier » sur tout le site pour le pro connecté (sans bouton), aperçu en direct dans le catalogue, suivi des demandes dans `docs/demandes.md`
 - [x] `feature/pro-affichage` : planning à la hauteur de l'écran, prochain rendez-vous sur le tableau de bord, « Utiliser ma position », réservation guidée d'étape en étape
+- [x] `feature/agenda-espace` : ajout à l'agenda (client et pro), « Mon espace » restructuré (coordonnées modifiables), itinéraire Google Maps ou Waze

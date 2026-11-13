@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { AddressInput, Button, Field, Toggle } from '@bsandoz/ui';
 import { searchAddress, type Address } from '../../services/api';
 import { modifierRegleFidelite, regleFidelite, type RegleFidelite } from '../../services/fidelite';
-import { enregistrerRegles, enregistrerSeuilCreneauxGroupes, enregistrerZone, reglages, seuilCreneauxGroupes, type Regles, type Zone } from '../../services/pro';
+import { adresseAgendaPro, enregistrerRegles, enregistrerSeuilCreneauxGroupes, enregistrerZone, reglages, seuilCreneauxGroupes, type Regles, type Zone } from '../../services/pro';
 import { enregistrerAvis, reglageAvis, type ReglageAvis } from '../../services/avis';
 import { NotificationsPro } from './Notifications';
 import styles from './Pro.module.css';
@@ -36,6 +36,7 @@ export function ReglagesOnglet() {
   return (
     <>
       <NotificationsPro />
+      <SynchroAgenda />
       <FormulaireRegles initiales={regles} />
       <FormulaireCreneauxGroupes />
       <FormulaireZone initiale={zone} />
@@ -273,5 +274,38 @@ function FormulaireCreneauxGroupes() {
         <div><Button type="submit" disabled={!valide}>Enregistrer les créneaux groupés</Button></div>
       </div>
     </form>
+  );
+}
+
+/**
+ * Agenda du pro : le flux iCal (tous les rendez-vous, mis à jour tout seul) s'ajoute une fois dans Google Agenda,
+ * Apple Calendrier ou Outlook ; chaque nouveau rendez-vous y apparaît ensuite automatiquement.
+ */
+function SynchroAgenda() {
+  const [url, setUrl] = useState<string | null>();
+  const [copie, setCopie] = useState(false);
+  useEffect(() => { adresseAgendaPro().then(setUrl).catch(() => setUrl(null)); }, []);
+  if (url === undefined) return null;
+  const webcal = url?.replace(/^https?:/, 'webcal:');
+
+  return (
+    <section className={styles.section} aria-labelledby="titre-agenda">
+      <h2 id="titre-agenda">Mon agenda</h2>
+      <div className={styles.panneau}>
+        {url ? (
+          <>
+            <p className={styles.aide}>À faire une seule fois : tous vos rendez-vous apparaissent ensuite automatiquement dans votre agenda (nouveaux, déplacés, annulés). Google met parfois quelques heures à rafraîchir.</p>
+            <div className={styles.actions}>
+              <a className="btn" href={`https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal!)}`} target="_blank" rel="noreferrer">Ajouter à Google Agenda</a>
+              <a className="btn btn--ghost" href={webcal}>Apple Calendrier / Outlook</a>
+              <Button variant="ghost" onClick={async () => { await navigator.clipboard?.writeText(url); setCopie(true); }}>{copie ? 'Adresse copiée' : 'Copier l’adresse'}</Button>
+            </div>
+            <p className={styles.aide}>Gardez cette adresse pour vous : elle donne accès à vos rendez-vous.</p>
+          </>
+        ) : (
+          <p className={styles.aide}>Pas encore activé : sur le serveur, ajoutez <code>BSANDOZ_ICAL_SECRET=</code> suivi d’une suite d’au moins 32 caractères au hasard dans le fichier <code>.env.local</code> de l’API, puis relancez <code>sh deploy/apres-envoi.sh</code>.</p>
+        )}
+      </div>
+    </section>
   );
 }
