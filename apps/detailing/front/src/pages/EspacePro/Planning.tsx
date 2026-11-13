@@ -162,12 +162,13 @@ function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: { rdv: 
   const heureFin = new Date(rdv.end).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   const dureeMin = Math.round((new Date(rdv.end).getTime() - new Date(rdv.start).getTime()) / 60000);
   const enLigne = rdv.enLigneCents ?? (rdv.paiementEnLigne === false ? rdv.depositCents : rdv.depositCents + (rdv.produitsCents ?? 0));
-  const surPlace = rdv.surPlaceCents;
+  // À encaisser : fourni par l'API, sinon total moins ce qui est réglé en ligne.
+  const surPlace = rdv.surPlaceCents ?? Math.max(0, rdv.totalCents + (rdv.produitsCents ?? 0) - (rdv.status === 'pending_payment' ? 0 : enLigne));
   const vehicules = Array.isArray(m.vehicules) ? (m.vehicules as string[]) : [];
+  const vehicule = vehicules.length > 0 ? vehicules.join(' · ') : texte('modele');
 
   return (
     <div className={`${styles.panneau} ${styles.detailRdv}`} role="region" aria-label={`Rendez-vous du ${dateHeure(rdv.start)}`}>
-      {/* En-tête : quand, combien de temps, statut. */}
       <div className={styles.detailEntete}>
         <div>
           <p className={styles.detailQuand}>{dateHeure(rdv.start)} → {heureFin}</p>
@@ -177,120 +178,71 @@ function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: { rdv: 
         {onFermer && <button type="button" className={r.boutonContour} onClick={onFermer}>Fermer</button>}
       </div>
 
-      <section className={r.rubrique} aria-label="Client">
-        <h3 className={styles.detailTitre}>Client</h3>
-        <div className={r.panneau}>
-          <div className={r.ligne}>
-            <Icone nom="utilisateur" className={r.ligneIcone} />
-            <div className={r.ligneTexte}>
-              <span className={r.ligneTitre}>{rdv.client.name || 'Client'}</span>
-              {texte('entreprise') && <span className={r.ligneSous}>{texte('entreprise')}{texte('siret') ? ` · SIRET ${texte('siret')}` : ''}</span>}
-            </div>
-          </div>
-          {rdv.client.phone && (
-            <div className={r.ligne}>
-              <Icone nom="telephone" className={r.ligneIcone} />
-              <div className={r.ligneTexte}><span className={r.ligneTitre}>{rdv.client.phone}</span></div>
-              <div className={r.ligneActions}><a className={styles.appelClient} href={lienTel(rdv.client.phone)}><IconeTelephone /> Appeler {rdv.client.phone}</a></div>
-            </div>
-          )}
-          {rdv.client.email && (
-            <div className={r.ligne}>
-              <Icone nom="mail" className={r.ligneIcone} />
-              <div className={r.ligneTexte}><span className={r.ligneTitre}>{rdv.client.email}</span></div>
-              <div className={r.ligneActions}><a className={r.boutonContour} href={`mailto:${rdv.client.email}`}>Écrire</a></div>
-            </div>
-          )}
-          <div className={r.ligne}>
-            <Icone nom="position" className={r.ligneIcone} />
-            <div className={r.ligneTexte}>
-              <span className={r.ligneTitre}>{rdv.address || 'Sur place'}</span>
-              {texte('adresseFacturation') && <span className={r.ligneSous}>Facturation : {texte('adresseFacturation')}</span>}
-            </div>
-            {rdv.address && <div className={r.ligneActions}><BoutonItineraire destination={{ address: rdv.address }} nom={rdv.client.name} /></div>}
-          </div>
-          {rdv.clientId && (
-            <div className={r.ligne}>
-              <Icone nom="ticket" className={r.ligneIcone} />
-              <div className={r.ligneTexte}><span className={r.ligneTitre}>Carte de fidélité</span></div>
-              <div className={r.ligneActions}><Fidelite clientId={rdv.clientId} /></div>
-            </div>
-          )}
+      {/* Fiche compacte : une ligne par information, sans défilement. */}
+      <dl className={styles.fiche}>
+        <div aria-label="Client">
+          <dt><Icone nom="utilisateur" taille={17} /><span>Client</span></dt>
+          <dd><strong>{rdv.client.name || '—'}</strong>{texte('entreprise') ? ` · ${texte('entreprise')}${texte('siret') ? ` (SIRET ${texte('siret')})` : ''}` : ''}</dd>
         </div>
-      </section>
+        <div>
+          <dt><Icone nom="position" taille={17} /><span>Adresse</span></dt>
+          <dd>{rdv.address || 'Sur place'}{texte('adresseFacturation') ? <span className={r.ligneSous}> · facturation : {texte('adresseFacturation')}</span> : null}</dd>
+        </div>
+        <div aria-label="Prestation">
+          <dt><Icone nom="catalogue" taille={17} /><span>Prestation</span></dt>
+          <dd><strong>{rdv.prestation || '—'}</strong>{(rdv.quantite ?? 1) > 1 ? ` × ${rdv.quantite} véhicules` : ''}{options.length > 0 ? <span className={r.ligneSous}> · {options.join(', ')}</span> : null}</dd>
+        </div>
+        {vehicule && (
+          <div>
+            <dt><Icone nom="carteIdentite" taille={17} /><span>Véhicule</span></dt>
+            <dd>{vehicule}</dd>
+          </div>
+        )}
+        {rdv.produits && rdv.produits.length > 0 && (
+          <div>
+            <dt><Icone nom="produit" taille={17} /><span>À apporter</span></dt>
+            <dd className={r.attention}>{rdv.produits.map((p) => `${p.quantite} × ${p.nom}`).join(', ')}</dd>
+          </div>
+        )}
+        {rdv.notes && (
+          <div>
+            <dt><Icone nom="facture" taille={17} /><span>Précisions</span></dt>
+            <dd>{rdv.notes}</dd>
+          </div>
+        )}
+        <div aria-label="Paiement">
+          <dt><Icone nom="euro" taille={17} /><span>Paiement</span></dt>
+          <dd>
+            Total <strong>{formatEuros(rdv.totalCents + (rdv.produitsCents ?? 0))}</strong>
+            {enLigne > 0 ? ` · ${rdv.status === 'pending_payment' ? 'en ligne en attente' : 'payé en ligne'} ${formatEuros(enLigne)}` : ''}
+            {' · '}<span className={surPlace > 0 ? r.accent : undefined}>{surPlace > 0 ? `À encaisser sur place ${formatEuros(surPlace)}` : 'tout est réglé'}</span>
+            {rdv.travelFeeCents > 0 || rdv.remiseFideliteCents ? (
+              <span className={r.ligneSous}>{' '}({rdv.travelFeeCents > 0 ? `déplacement ${formatEuros(rdv.travelFeeCents)}` : ''}{rdv.travelFeeCents > 0 && rdv.remiseFideliteCents ? ', ' : ''}{rdv.remiseFideliteCents ? `remise fidélité ${formatEuros(rdv.remiseFideliteCents)}` : ''})</span>
+            ) : null}
+          </dd>
+        </div>
+        {rdv.clientId && (
+          <div>
+            <dt><Icone nom="ticket" taille={17} /><span>Fidélité</span></dt>
+            <dd><Fidelite clientId={rdv.clientId} /></dd>
+          </div>
+        )}
+        {rdv.status === 'done' && (
+          <div>
+            <dt><Icone nom="facture" taille={17} /><span>Facture</span></dt>
+            <dd><BoutonFacture reservationId={rdv.id} /></dd>
+          </div>
+        )}
+      </dl>
 
-      <section className={r.rubrique} aria-label="Prestation">
-        <h3 className={styles.detailTitre}>Prestation</h3>
-        <div className={r.panneau}>
-          <div className={r.ligne}>
-            <Icone nom="catalogue" className={r.ligneIcone} />
-            <div className={r.ligneTexte}>
-              <span className={r.ligneTitre}>{rdv.prestation || 'Prestation'}{(rdv.quantite ?? 1) > 1 ? ` × ${rdv.quantite} véhicules` : ''}</span>
-              {options.length > 0 && <span className={r.ligneSous}>Options : {options.join(', ')}</span>}
-            </div>
-          </div>
-          {(texte('modele') || vehicules.length > 0) && (
-            <div className={r.ligne}>
-              <Icone nom="carteIdentite" className={r.ligneIcone} />
-              <div className={r.ligneTexte}>
-                <span className={r.ligneTitre}>{vehicules.length > 0 ? 'Véhicules' : 'Véhicule'}</span>
-                <span className={r.ligneSous}>{vehicules.length > 0 ? vehicules.join(' · ') : texte('modele')}</span>
-              </div>
-            </div>
-          )}
-          {rdv.produits && rdv.produits.length > 0 && (
-            <div className={r.ligne}>
-              <Icone nom="produit" className={r.ligneIcone} />
-              <div className={r.ligneTexte}>
-                <span className={r.ligneTitre}>Produits à apporter</span>
-                <span className={`${r.ligneSous} ${r.attention}`}>{rdv.produits.map((p) => `${p.quantite} × ${p.nom}`).join(', ')}</span>
-              </div>
-              <span className={r.ligneValeur}>{formatEuros(rdv.produitsCents ?? 0)}</span>
-            </div>
-          )}
-          {rdv.notes && (
-            <div className={r.ligne}>
-              <Icone nom="facture" className={r.ligneIcone} />
-              <div className={r.ligneTexte}><span className={r.ligneTitre}>Précisions du client</span><span className={r.ligneSous}>{rdv.notes}</span></div>
-            </div>
-          )}
+      {/* Contacter le client : tout en bas de la fiche. */}
+      {(rdv.client.phone || rdv.client.email || rdv.address) && (
+        <div className={styles.detailContact}>
+          {rdv.client.phone && <a className={styles.appelClient} href={lienTel(rdv.client.phone)}><IconeTelephone /> Appeler {rdv.client.phone}</a>}
+          {rdv.client.email && <a className={r.boutonContour} href={`mailto:${rdv.client.email}`}><Icone nom="mail" taille={17} /> Écrire</a>}
+          {rdv.address && <BoutonItineraire destination={{ address: rdv.address }} nom={rdv.client.name} />}
         </div>
-      </section>
-
-      <section className={r.rubrique} aria-label="Paiement">
-        <h3 className={styles.detailTitre}>Paiement</h3>
-        <div className={r.panneau}>
-          <div className={r.ligne}>
-            <Icone nom="euro" className={r.ligneIcone} />
-            <div className={r.ligneTexte}>
-              <span className={r.ligneTitre}>Total</span>
-              {(rdv.travelFeeCents > 0 || !!rdv.remiseFideliteCents) && (
-                <span className={r.ligneSous}>{rdv.travelFeeCents > 0 ? `dont déplacement ${formatEuros(rdv.travelFeeCents)}` : ''}{rdv.travelFeeCents > 0 && rdv.remiseFideliteCents ? ' · ' : ''}{rdv.remiseFideliteCents ? `remise fidélité ${formatEuros(rdv.remiseFideliteCents)} déduite` : ''}</span>
-              )}
-            </div>
-            <span className={r.ligneValeur}>{formatEuros(rdv.totalCents + (rdv.produitsCents ?? 0))}</span>
-          </div>
-          {enLigne > 0 && (
-            <div className={r.ligne}>
-              <Icone nom="cadenas" className={r.ligneIcone} />
-              <div className={r.ligneTexte}><span className={r.ligneTitre}>{rdv.status === 'pending_payment' ? 'À payer en ligne (en attente)' : 'Payé en ligne'}</span></div>
-              <span className={r.ligneValeur}>{formatEuros(enLigne)}</span>
-            </div>
-          )}
-          <div className={r.ligne}>
-            <Icone nom="horloge" className={r.ligneIcone} />
-            <div className={r.ligneTexte}><span className={r.ligneTitre}>À encaisser sur place</span></div>
-            <span className={`${r.ligneValeur} ${(surPlace ?? 0) > 0 ? r.accent : ''}`}>{surPlace === undefined ? '—' : surPlace > 0 ? formatEuros(surPlace) : 'Rien, tout est réglé'}</span>
-          </div>
-          {rdv.status === 'done' && (
-            <div className={r.ligne}>
-              <Icone nom="facture" className={r.ligneIcone} />
-              <div className={r.ligneTexte}><span className={r.ligneTitre}>Facture</span></div>
-              <div className={r.ligneActions}><BoutonFacture reservationId={rdv.id} /></div>
-            </div>
-          )}
-        </div>
-      </section>
+      )}
 
       {message && <p className={styles.ok} role="status">{message}</p>}
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}

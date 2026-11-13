@@ -9,6 +9,7 @@ import { PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
 import { defilerVers } from '../../app/defilement';
 import { memoriserReservation } from '../../app/agenda';
+import { estConnecte, monCompte, reprendreSession } from '../../services/compte';
 import { Icone } from '../../components/Icone/Icone';
 import { SITE } from '../../data/site';
 import { ChoixProduits } from '../../components/ChoixProduits/ChoixProduits';
@@ -54,6 +55,25 @@ export function Reserver() {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [start, setStart] = useState<string>();
   const [contact, setContact] = useState({ nom: '', email: '', phone: '', notes: '' });
+  // Client connecté : coordonnées pré-remplies (modifiables, pour réserver pour quelqu'un d'autre).
+  const [prerempli, setPrerempli] = useState(false);
+  useEffect(() => {
+    let annule = false;
+    (estConnecte() ? Promise.resolve(true) : reprendreSession())
+      .then((ok) => (ok ? monCompte() : undefined))
+      .then((c) => {
+        if (annule || !c) return;
+        setContact((actuel) => ({
+          ...actuel,
+          nom: actuel.nom || `${c.firstname} ${c.lastname}`.trim(),
+          email: actuel.email || c.email,
+          phone: actuel.phone || c.phone,
+        }));
+        setPrerempli(true);
+      })
+      .catch(() => undefined);
+    return () => { annule = true; };
+  }, []);
   const [modele, setModele] = useState('');
   const [entreprise, setEntreprise] = useState({ active: false, nom: '', siret: '', adresse: '' });
   // Pas d'acompte : le client paie tout en ligne maintenant, ou tout sur place une fois la prestation faite.
@@ -130,7 +150,7 @@ export function Reserver() {
   const next = async () => {
     setError('');
     if (step < ETAPES.length - 1) { etapeSuivante(step + 1); return; }
-    if (produits.length > 0 && proposition !== 'vue') { setProposition('ouverte'); return; }
+    if (produits.some((p) => p.stock > 0) && proposition !== 'vue') { setProposition('ouverte'); return; }
     await payer(quantites);
   };
 
@@ -309,7 +329,9 @@ export function Reserver() {
 
           <div id="resa-etape-2" className={styles.ancre}>
           <StepCard number={3} title={ETAPES[2]} status={statut(2)}>
-            <p className={styles.hint}>Pour confirmer le rendez-vous et vous prévenir le jour J.</p>
+            <p className={styles.hint}>{prerempli
+              ? 'Vos informations sont déjà remplies. Vous réservez pour quelqu’un d’autre ? Modifiez simplement les champs.'
+              : 'Pour confirmer le rendez-vous et vous prévenir le jour J.'}</p>
             <label className={styles.field}>Nom et prénom<input value={contact.nom} onChange={(e) => setContact({ ...contact, nom: e.target.value })} autoComplete="name" /></label>
             <label className={styles.field}>Téléphone<input type="tel" value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} autoComplete="tel" placeholder="01 02 03 04 05" /></label>
             <label className={styles.field}><span>E-mail <span className={styles.facultatif}>pour recevoir le récapitulatif</span></span><input type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} autoComplete="email" /></label>

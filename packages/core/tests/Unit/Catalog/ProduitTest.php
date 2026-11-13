@@ -83,19 +83,22 @@ final class ProduitTest extends TestCase
         $catalogue = new GererCatalogue(new InMemoryPrestationRepository(), new InMemoryOptionRepository(), new SequenceIdGenerator('p'), $depot);
 
         $cree = $catalogue->enregistrerProduit(['name' => 'Lave-vitres', 'description' => '500 ml', 'priceCents' => 790, 'stock' => 4]);
-        self::assertSame(['id' => 'p-1', 'name' => 'Lave-vitres', 'description' => '500 ml', 'priceCents' => 790, 'stock' => 4, 'active' => true, 'position' => 0, 'photo' => null], $cree);
+        self::assertSame(['id' => 'p-1', 'name' => 'Lave-vitres', 'description' => '500 ml', 'priceCents' => 790, 'stock' => 4, 'active' => true, 'position' => 0, 'photo' => null, 'category' => null], $cree);
 
-        $catalogue->enregistrerProduit(['name' => 'Lave-vitres 1 L', 'priceCents' => 1290, 'stock' => 0, 'photo' => 'https://x.test/a.jpg'], 'p-1');
+        $catalogue->enregistrerProduit(['name' => 'Lave-vitres 1 L', 'priceCents' => 1290, 'stock' => 0, 'photo' => 'https://x.test/a.jpg', 'category' => ' Vitres '], 'p-1');
         self::assertSame(['Lave-vitres 1 L', 1290, 0, 'https://x.test/a.jpg'], [$depot->get('p-1')->nom(), $depot->get('p-1')->prix()->cents, $depot->get('p-1')->stock(), $depot->get('p-1')->photo()]);
 
         $public = new ListerCatalogue(new InMemoryPrestationRepository(), new InMemoryOptionRepository(), $depot);
-        self::assertSame([], $public()['produits'], 'stock à 0 : plus proposé');
+        self::assertSame([['id' => 'p-1', 'name' => 'Lave-vitres 1 L', 'description' => '', 'priceCents' => 1290, 'stock' => 0, 'photo' => 'https://x.test/a.jpg', 'category' => 'Vitres']], $public()['produits'], 'stock à 0 : affiché épuisé, catégorie nettoyée');
 
         $catalogue->enregistrerProduit(['name' => 'Lave-vitres 1 L', 'priceCents' => 1290, 'stock' => 25], 'p-1');
-        self::assertSame([['id' => 'p-1', 'name' => 'Lave-vitres 1 L', 'description' => '', 'priceCents' => 1290, 'stock' => 10, 'photo' => null]], $public()['produits'], 'quantité proposée plafonnée à 10');
+        self::assertSame(25, $public()['produits'][0]['stock'], 'stock réel (la quantité par réservation reste plafonnée à 10)');
 
         $catalogue->retirerProduit('p-1');
         self::assertSame([], $public()['produits']);
         self::assertCount(1, $catalogue->lister()['produits'], 'toujours visible dans l\'espace pro');
+
+        $catalogue->supprimerProduit('p-1');
+        self::assertSame([], $catalogue->lister()['produits'], 'supprimé définitivement');
     }
 }

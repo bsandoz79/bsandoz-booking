@@ -81,3 +81,12 @@
   .nav { margin-left: 0; }
   .brand { margin-right: auto; }
 }
+
+/* Allègement : téléphone et espace pro en petits ronds, « Mon espace » sans contour, espacements réduits. */
+.actions { gap: .35rem; }
+.appel { width: 40px; min-width: 40px; height: 40px; padding: 0; border-radius: 50%; }
+.espacePro { width: 40px; height: 40px; min-height: 40px; padding: 0; justify-content: center; border-radius: 50%; box-shadow: none; }
+.compte { border-color: transparent; background: transparent; padding: 0 .7rem; min-height: 40px; }
+.compte:hover { border-color: transparent; background: color-mix(in srgb, var(--bs-color-text) 6%, transparent); }
+.compte[aria-current='page'] { border-color: transparent; background: var(--bs-color-primary-soft); }
+.nav { gap: 1.1rem; }

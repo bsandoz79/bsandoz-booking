@@ -20,3 +20,9 @@
   .photo { width: 48px; height: 48px; }
   .ajouter, .quantite { grid-column: 1 / -1; justify-self: end; }
 }
+/* Stock visible du client : « Il en reste 2 », « Épuisé ». */
+.stockBas { font-size: .8rem; font-weight: 700; color: #a34e00; }
+:global(:root[data-theme='nuit']) .stockBas { color: #fdba74; }
+.stockEpuise { font-size: .8rem; font-weight: 700; color: var(--bs-color-danger); }
+.epuise { opacity: .6; }
+.indisponible { font-weight: 700; color: var(--bs-color-text-muted); }

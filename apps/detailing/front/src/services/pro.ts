@@ -86,8 +86,8 @@ export interface PrestationPro {
   optionIds: string[];
 }
 
-/** Produit vendu avec les réservations ; stock à 0 ou inactif : plus proposé sur le site. */
-export interface ProduitPro { id?: string; name: string; description: string; priceCents: number; stock: number; active: boolean; position: number; photo: string | null }
+/** Produit vendu avec les réservations ; stock à 0 : affiché « épuisé » sur le site ; inactif : plus proposé. */
+export interface ProduitPro { id?: string; name: string; description: string; priceCents: number; stock: number; active: boolean; position: number; photo: string | null; category?: string | null }
 
 export interface OptionPro { id?: string; name: string; description: string; priceCents: number; durationMin: number; active: boolean }
 
@@ -275,6 +275,12 @@ export async function enregistrerProduit(p: ProduitPro): Promise<ProduitPro> {
     return enregistre;
   }
   return authHttp(id ? `/admin/catalog/produits/${encodeURIComponent(id)}` : '/admin/catalog/produits', { method: id ? 'PUT' : 'POST', ...json(donnees) });
+}
+
+/** Suppression définitive (les réservations passées gardent le nom et le prix). */
+export async function supprimerProduit(id: string): Promise<void> {
+  if (isDemo()) { demo.produits = demo.produits.filter((p) => p.id !== id); return; }
+  await authHttp(`/admin/catalog/produits/${encodeURIComponent(id)}/definitif`, { method: 'DELETE' });
 }
 
 // ——— Horaires et congés ———

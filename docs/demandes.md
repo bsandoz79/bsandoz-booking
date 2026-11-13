@@ -20,6 +20,12 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Onglet Comptabilité (dépenses ponctuelles ou mensuelles, chiffre d'affaires, résultat par mois).
 - ✅ Créneaux groupés (« Conseillé » à côté d'un rendez-vous déjà prévu, écart réglable).
 - ✅ Avis Google : bouton dans le mail de facture (lien à coller dans Réglages quand la fiche Google existera).
+- ✅ Produits en grille de cartes façon boutique (photo carrée, catégorie, nom, prix, stock − / +), ajout, modification, retrait de la vente, suppression définitive ; filtres par catégorie et par nom (aussi dans le Catalogue).
+- ✅ Côté client : « Il en reste 2 », « Épuisé » (produit grisé, non commandable) dans la fenêtre des produits.
+- ✅ Détail du rendez-vous compact (fiche d'une ligne par information, sans défilement), Appeler / Écrire / Itinéraire tout en bas.
+- ✅ Mon espace encore moins large (580 px) ; barre de navigation allégée (téléphone et espace pro en petits ronds, « Mon espace » sans contour).
+- ✅ Réservation : coordonnées pré-remplies pour un client connecté, modifiables pour réserver pour quelqu'un d'autre.
+- 🔧 Historique des rendez-vous dans l'espace pro : une ligne par réservation, tri par date (récent / ancien), filtres par période, statut et nom.
 - ✅ Catalogue repensé : formules rangées par catégorie (comme sur l'accueil), une ligne par formule (prix, durée, options, étiquettes « Le plus choisi », « Retirée du site »…), « Modifier » et « Retirer » à droite ; options à part.
 - ✅ Détail d'un rendez-vous structuré : en-tête (quand, durée, statut), blocs Client (appel, e-mail, itinéraire, fidélité), Prestation (véhicules, options, produits à apporter, précisions), Paiement (total, payé en ligne, à encaisser sur place, facture), puis les actions.
 - ✅ Catalogue : aperçu en direct de la carte à droite pendant la modification.

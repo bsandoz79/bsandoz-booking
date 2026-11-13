@@ -6,6 +6,7 @@ import { ChoixProduits } from './ChoixProduits';
 const PRODUITS = [
   { id: 'micro', name: 'Microfibre', description: 'Chiffon', priceCents: 500, stock: 2, photo: null },
   { id: 'vitres', name: 'Lave-vitres', description: '', priceCents: 790, stock: 5, photo: null },
+  { id: 'cire', name: 'Cire', description: '', priceCents: 1500, stock: 0, photo: null },
 ];
 
 function Choix() {
@@ -14,6 +15,13 @@ function Choix() {
 }
 
 describe('ChoixProduits', () => {
+  it('indique le stock restant et les produits épuisés, qu’on ne peut pas ajouter', () => {
+    render(<Choix />);
+    expect(screen.getByText('Il en reste 2')).toBeInTheDocument();
+    expect(screen.getAllByText('Épuisé').length).toBeGreaterThan(0);
+    expect(screen.queryByRole('button', { name: 'Ajouter Cire' })).not.toBeInTheDocument();
+  });
+
   it('ajoute un produit, change la quantité dans la limite du stock et affiche le total', async () => {
     render(<Choix />);
     expect(screen.getByRole('heading', { name: 'À ajouter à votre commande ?' })).toBeInTheDocument();

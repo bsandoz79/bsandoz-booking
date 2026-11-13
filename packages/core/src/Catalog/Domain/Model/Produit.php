@@ -25,8 +25,11 @@ class Produit
         private bool $actif = true,
         private int $position = 0,
         private ?string $photo = null,
+        /** Catégorie libre (ex. « Jantes », « Intérieur ») pour classer et filtrer ; null : sans catégorie. */
+        private ?string $categorie = null,
     ) {
         self::valider($nom, $prix, $stock);
+        $this->categorie = self::normaliserCategorie($categorie);
     }
 
     public function id(): string { return $this->id; }
@@ -37,6 +40,7 @@ class Produit
     public function actif(): bool { return $this->actif; }
     public function position(): int { return $this->position; }
     public function photo(): ?string { return $this->photo; }
+    public function categorie(): ?string { return $this->categorie; }
 
     /** Proposé aux clients : actif et en stock. */
     public function enVente(): bool
@@ -45,8 +49,9 @@ class Produit
     }
 
     /** @throws DomainError */
-    public function modifier(string $nom, string $description, Money $prix, int $stock, bool $actif, int $position, ?string $photo): void
+    public function modifier(string $nom, string $description, Money $prix, int $stock, bool $actif, int $position, ?string $photo, ?string $categorie = null): void
     {
+        $this->categorie = self::normaliserCategorie($categorie);
         self::valider($nom, $prix, $stock);
         $this->nom = $nom;
         $this->description = $description;
@@ -84,6 +89,17 @@ class Produit
     public function reprendre(int $quantite): void
     {
         $this->stock = max(0, $this->stock - max(0, $quantite));
+    }
+
+    /** @throws DomainError trop longue */
+    private static function normaliserCategorie(?string $categorie): ?string
+    {
+        $categorie = trim((string) $categorie);
+        if (mb_strlen($categorie) > 60) {
+            throw new DomainError('La catégorie est limitée à 60 caractères.');
+        }
+
+        return $categorie === '' ? null : $categorie;
     }
 
     /** @throws DomainError */

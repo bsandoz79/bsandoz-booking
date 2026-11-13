@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { AppRoutes } from '../../app/App';
 import { Reserver } from './Reserver';
+import { seConnecter, seDeconnecter } from '../../services/compte';
 
 const bouton = (nom: string | RegExp) => screen.getByRole('button', { name: nom });
 
@@ -78,6 +79,25 @@ describe('Parcours de réservation', () => {
     await userEvent.click(await screen.findByRole('radio', { name: /Ciel de toit/ }));
     await userEvent.click(screen.getByRole('button', { name: /Utiliser ma position/ }));
     expect(await screen.findByText(/Position refusée/)).toBeInTheDocument();
+  });
+
+  it('client connecté : coordonnées pré-remplies, modifiables pour réserver pour quelqu’un d’autre', async () => {
+    await seConnecter('camille@example.org', 'motdepasse1');
+    render(<MemoryRouter><Reserver /></MemoryRouter>);
+    await userEvent.click(screen.getByRole('radio', { name: 'Nettoyage extérieur' }));
+    await userEvent.click(await screen.findByRole('radio', { name: /Extérieur Éclat/ }));
+    await userEvent.click(bouton('Choisir le créneau'));
+    await userEvent.type(screen.getByRole('combobox', { name: /Adresse de l'intervention/ }), '1 place max');
+    await userEvent.click(await screen.findByRole('option', { name: /Abbeville/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /vendredi 13 novembre 2026/ }));
+    await userEvent.click(await screen.findByRole('button', { name: '10:30' }));
+    const nom = await screen.findByDisplayValue('Camille Martin');
+    expect(screen.getByDisplayValue('camille@example.org')).toBeInTheDocument();
+    expect(screen.getByText(/Vous réservez pour quelqu’un d’autre/)).toBeInTheDocument();
+    await userEvent.clear(nom);
+    await userEvent.type(nom, 'Alex Durand');
+    expect(screen.getByDisplayValue('Alex Durand')).toBeInTheDocument();
+    await seDeconnecter();
   });
 
   it('présélectionne la formule choisie sur l’accueil', async () => {

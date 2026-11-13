@@ -115,10 +115,9 @@ describe('Espace pro', () => {
     await userEvent.click(await screen.findByRole('button', { name: /Client démo A · Intérieur Éclat/ }));
     const detail = screen.getByRole('region', { name: /Rendez-vous du/ });
     expect(within(detail).getByRole('link', { name: /Appeler 01 02 03 04 05/ })).toHaveAttribute('href', 'tel:0102030405');
-    // Détail structuré : client, prestation, paiement.
-    expect(within(detail).getByRole('region', { name: 'Client' })).toHaveTextContent('Client démo A');
-    expect(within(detail).getByRole('region', { name: 'Prestation' })).toHaveTextContent('Intérieur Éclat');
-    expect(within(detail).getByRole('region', { name: 'Paiement' })).toHaveTextContent('À encaisser sur place');
+    // Fiche compacte : client, prestation, paiement ; contact tout en bas.
+    expect(detail).toHaveTextContent(/Client.*Client démo A.*Prestation.*Intérieur Éclat.*Paiement.*À encaisser sur place/);
+    expect(within(detail).getByRole('link', { name: /Écrire/ })).toHaveAttribute('href', 'mailto:client@example.org');
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler le rendez-vous' }));
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler et rembourser l’acompte' }));
     expect(await within(detail).findByRole('status')).toHaveTextContent('Rendez-vous annulé, 8,70');
@@ -143,6 +142,15 @@ describe('Espace pro', () => {
     await userEvent.click(within(interieur).getByRole('button', { name: 'Retirer Intérieur Éclat' }));
     expect(await screen.findByRole('status')).toHaveTextContent('« Intérieur Éclat » n’est plus proposée.');
     expect(within(screen.getByRole('region', { name: 'Nettoyage intérieur' })).getByText('Retirée du site')).toBeInTheDocument();
+
+    // Filtres : une catégorie, puis une recherche par nom.
+    await userEvent.click(within(screen.getByRole('group', { name: 'Filtrer par catégorie' })).getByRole('button', { name: 'Rénovation des phares' }));
+    expect(screen.queryByRole('region', { name: 'Nettoyage intérieur' })).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Rénovation des phares' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Toutes' }));
+    await userEvent.type(screen.getByLabelText('Rechercher une prestation'), 'ciel');
+    expect(screen.getByRole('region', { name: 'Soins à la carte' })).toHaveTextContent('Ciel de toit');
+    expect(screen.queryByRole('region', { name: 'Nettoyage extérieur' })).not.toBeInTheDocument();
   });
 
   it('modifie le tarif d’une prestation du catalogue', async () => {

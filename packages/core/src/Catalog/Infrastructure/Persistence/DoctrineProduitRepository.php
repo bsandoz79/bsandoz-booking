@@ -41,4 +41,10 @@ final class DoctrineProduitRepository implements ProduitRepository
         $this->em->persist($produit);
         $this->em->flush();
     }
+
+    public function remove(Produit $produit): void
+    {
+        $this->em->remove($produit);
+        $this->em->flush();
+    }
 }

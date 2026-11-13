@@ -170,6 +170,8 @@
 - En-tête : lien « Espace pro » pour un compte pro connecté (pastille ambre, distincte des autres liens), mis à jour dès la connexion ou la déconnexion ; retiré de Mon espace. Mon espace moins large, valeurs alignées après l'intitulé. Test.
 - Espace pro : catalogue rangé par catégorie, une ligne par formule (prix, durée, options, étiquettes) avec « Modifier » et « Retirer » ; détail d'un rendez-vous en blocs Client, Prestation et Paiement (à encaisser sur place mis en avant), actions en bas. Styles « réglages » partagés (`components/Reglages`). Tests.
 - En-tête réordonné : logo, liens, « Réserver », puis téléphone, « Espace pro » (pro), « Mon espace » en pastille avec icône et thème tout à droite ; libellés remplacés par les icônes sur écran moyen et téléphone. Tests.
+- Produits : grille de cartes dans l'espace pro (photo, catégorie, prix, stock − / +, modifier, retirer, supprimer), catégorie libre (colonne `catalog_product.category`, migration), suppression définitive (`DELETE /admin/catalog/produits/{id}/definitif`), filtres par catégorie et par nom (aussi dans le Catalogue). Côté client : « Il en reste N » et « Épuisé ». Tests.
+- Détail d'un rendez-vous en fiche compacte (une ligne par information), contact (Appeler, Écrire, Itinéraire) tout en bas ; réservation pré-remplie pour un client connecté (modifiable) ; Mon espace plus étroit ; en-tête allégé. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

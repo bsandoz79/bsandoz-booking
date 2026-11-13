@@ -1,0 +1,4 @@
+.filtres { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .75rem 1rem; }
+.recherche { flex: 1 1 220px; max-width: 360px; }
+.puces { display: flex; flex-wrap: wrap; gap: .4rem; }
+.puce[aria-pressed='true'] { background: var(--bs-color-primary-soft); border-color: var(--bs-color-primary); color: var(--bs-color-primary-dark); }
