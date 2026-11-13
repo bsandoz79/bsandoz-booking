@@ -13,8 +13,8 @@ use Bsandoz\Core\Shared\Domain\DomainError;
 
 /**
  * RGPD : suppression du compte par le client. Refusée s'il reste un rendez-vous à venir (à annuler d'abord).
- * Le compte est anonymisé (les réservations passées restent pour la comptabilité, sans donnée personnelle du compte)
- * et tous ses liens et sessions sont invalidés.
+ * Le compte est anonymisé, ses réservations aussi (adresse, précisions, données métier effacées ; montants et dates
+ * gardés pour la comptabilité ; les factures conservent leurs mentions légales) et tous ses liens et sessions sont invalidés.
  */
 final class SupprimerCompte
 {
@@ -34,6 +34,11 @@ final class SupprimerCompte
             if ($reservation->period()->end > $now && $reservation->blocks($now)) {
                 throw new DomainError('Vous avez un rendez-vous à venir : merci de l\'annuler avant de supprimer votre compte.');
             }
+        }
+
+        foreach ($this->reservations->forUser($userId) as $reservation) {
+            $reservation->anonymiser();
+            $this->reservations->save($reservation);
         }
 
         $user = $this->users->get($userId);

@@ -10,3 +10,5 @@
 - Notifications push : clés VAPID (`BSANDOZ_VAPID_PUBLIC_KEY`, `BSANDOZ_VAPID_PRIVATE_KEY`) générées par `php bin/console bsandoz:push:cles`, dans `.env.local` uniquement ; messages chiffrés de bout en bout (aes128gcm) jusqu'à l'appareil ; seul un compte pro peut abonner un appareil ; aucune donnée sensible (adresse, téléphone) dans le texte de la notification.
 - o2switch : racine web sur `public/`, `.env.local` en 600, un utilisateur MySQL par base, sauvegardes séparées.
 - RGPD : mention de création de compte, export JSON, suppression du compte, anonymisation après 3 ans.
+
+Suppression du compte client : le compte est anonymisé, ainsi que ses réservations (adresse, position, précisions, données métier effacées) ; montants, dates et factures (obligation comptable de 10 ans) sont conservés.

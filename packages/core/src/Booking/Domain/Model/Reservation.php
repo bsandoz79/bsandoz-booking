@@ -248,6 +248,20 @@ class Reservation
      *
      * @throws DomainError réservation déjà payée ou annulée, ou rendez-vous passé
      */
+    /**
+     * Compte supprimé (RGPD) : plus aucune donnée personnelle sur la réservation (adresse, position, précisions, données
+     * métier comme le modèle du véhicule ou l'entreprise). Montants, dates et prestation restent pour la comptabilité ;
+     * la facture, elle, garde ses mentions obligatoires.
+     */
+    public function anonymiser(): void
+    {
+        $this->address = '';
+        $this->lat = 0.0;
+        $this->lng = 0.0;
+        $this->notes = '';
+        $this->metierData = [];
+    }
+
     public function rebloquer(\DateTimeImmutable $now, int $holdMinutes): void
     {
         if (!$this->estImpayee()) {
