@@ -1,5 +1,11 @@
+.libelle { display: inline-flex; align-items: center; gap: .45rem; }
 .choix { display: grid; gap: .75rem; }
 @media (min-width: 480px) { .choix { grid-template-columns: 1fr 1fr; } }
-.app { justify-content: center; min-height: 52px; font-size: 1.05rem; }
-.waze { background: #33ccff; border-color: #33ccff; color: #0b2530; }
-.waze:hover { background: #1fb8eb; }
+.app { justify-content: center; gap: .6rem; min-height: 56px; font-size: 1.05rem; }
+.logo { flex: none; }
+/* Google Maps : bouton blanc, le logo apporte la couleur. */
+.app.maps { background: #fff; color: #1f1f1f; border: 1.5px solid #dadce0; }
+.app.maps:hover { background: #f6f8fb; }
+/* Waze : bleu de la marque. */
+.app.waze { background: #33ccff; border-color: #33ccff; color: #0b2530; }
+.app.waze:hover { background: #1fb8eb; }
