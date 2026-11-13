@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Button, Field } from '@bsandoz/ui';
 import { reprendreSession, rolesSession, seConnecter, seDeconnecter } from '../../services/compte';
 import { CatalogueOnglet } from './Catalogue';
+import { ClientsOnglet } from './Clients';
 import { HorairesOnglet } from './Horaires';
 import { MonSiteOnglet } from './MonSite';
 import { PlanningOnglet } from './Planning';
@@ -15,6 +16,7 @@ import styles from './Pro.module.css';
 const ONGLETS = [
   { id: 'tableau', label: 'Tableau de bord' },
   { id: 'planning', label: 'Planning' },
+  { id: 'clients', label: 'Clients' },
   { id: 'telephone', label: 'Rendez-vous par téléphone' },
   { id: 'catalogue', label: 'Catalogue' },
   { id: 'produits', label: 'Produits' },
@@ -54,6 +56,7 @@ export function EspacePro() {
       </nav>
       {onglet === 'tableau' && <TableauDeBordOnglet />}
       {onglet === 'planning' && <PlanningOnglet />}
+      {onglet === 'clients' && <ClientsOnglet />}
       {onglet === 'telephone' && <RdvTelephoneOnglet />}
       {onglet === 'catalogue' && <CatalogueOnglet />}
       {onglet === 'produits' && <ProduitsOnglet />}

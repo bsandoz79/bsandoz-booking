@@ -82,6 +82,19 @@ final class AdminApiTest extends WebTestCase
         self::assertSame(0, $this->json()['clients']['nouveauxMois']);
     }
 
+    public function testFichesClientsReserveesAuPro(): void
+    {
+        $this->request('GET', '/api/v1/admin/clients', token: $this->login('client@example.test', 'bonjour2026'));
+        self::assertResponseStatusCodeSame(403);
+
+        $token = $this->login('pro@example.test', 'artisan2026');
+        $this->request('GET', '/api/v1/admin/clients', token: $token);
+        self::assertResponseIsSuccessful();
+        self::assertSame([], $this->json());
+        $this->request('GET', '/api/v1/admin/clients/inconnu', token: $token);
+        self::assertResponseStatusCodeSame(404);
+    }
+
     public function testParcoursDuPro(): void
     {
         $token = $this->login('pro@example.test', 'artisan2026');

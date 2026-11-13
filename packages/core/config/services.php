@@ -237,6 +237,8 @@ return static function (ContainerConfigurator $container): void {
     $services->set(GererDisponibilites::class);
     $services->set(GererRendezVousPro::class);
     $services->set(TableauDeBord::class);
+    $services->set(\Bsandoz\Core\Admin\Application\FichesClients::class);
+    $services->set(\Bsandoz\Core\Admin\Infrastructure\Http\ClientsController::class)->public()->tag('controller.service_arguments');
     $services->set(CreerComptePro::class);
     $services->set(CreerCompteProCommand::class);
     $services->set(AdminController::class)->public()->tag('controller.service_arguments');

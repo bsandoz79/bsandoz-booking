@@ -136,6 +136,11 @@ Règle par défaut (`bsandoz_core.fidelite`) : 4 prestations réalisées, 20 % s
 ## Avoirs
 Annulation tardive (après le délai d'annulation gratuite) d'un rendez-vous confirmé : rien n'est remboursé, la somme payée en ligne devient un avoir du client. L'avoir est déduit automatiquement de sa réservation suivante (après la remise de fidélité, acompte recalculé, ligne « Avoir déduit » sur la facture) et rendu si cette réservation est annulée ou expire. Mail d'annulation au client et au pro avec le montant (`avoirCents`). `GET /me` renvoie `avoirCents` (solde).
 
+## Fiches clients (pro)
+- `GET /admin/clients` → `[{userId, nom, email, phone, visites, depenseCents, derniereVisite, prochainRdv, aRelancer}]` (clients ayant réservé, comptes supprimés exclus ; dépensé = prestations faites, produits compris ; à relancer : dernière visite il y a plus de 90 jours et rien de prévu).
+- `GET /admin/clients/{id}` → résumé + `panierMoyenCents`, `avoirCents`, `fidelite`, `historique: [{id, start, status, prestation, quantite, totalCents}]` (404 si inconnu ou supprimé).
+- `PUT /admin/clients/{id}/avoir` `{"avoirCents"}` → `{"avoirCents"}` : correction de l'avoir (geste commercial).
+
 ## Créneaux groupés
 - `GET /admin/settings/creneaux-groupes`, `PUT /admin/settings/creneaux-groupes` `{"seuilMin": 0–240}` (pro, défaut 30 ; 0 : désactivé). Les créneaux proches d'un rendez-vous déjà prévu sont renvoyés avec `groupe: true` et mis en avant sur le site (« Conseillé »).
 
