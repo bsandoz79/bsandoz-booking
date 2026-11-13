@@ -6,4 +6,8 @@
 <p>Merci pour votre confiance. Votre facture <strong>{{ numero }}</strong> d'un montant de <strong>{{ totalCents|euros }}</strong> est disponible.</p>
 {{ m.bouton(front_url ~ '/facture/' ~ factureId, 'Voir ma facture') }}
 <p>Vous la retrouvez à tout moment dans votre espace client, d'où vous pouvez aussi l'enregistrer en PDF.</p>
+{% if avisUrl is defined and avisUrl %}
+<p><strong>Satisfait de la prestation ?</strong> Votre avis aide beaucoup : il ne prend qu'une minute.</p>
+{{ m.bouton(avisUrl, 'Laisser un avis') }}
+{% endif %}
 {% endblock %}

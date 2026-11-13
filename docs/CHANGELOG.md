@@ -151,6 +151,7 @@
 - Démo : « Désodorisant Perfect Clean » (option et formules).
 - Espace pro : nouveau tableau de bord. « Ma journée » (rendez-vous dans l'ordre, itinéraire GPS par rendez-vous et pour toute la tournée, appel, produits à apporter, reste à encaisser, liste « À charger dans le camion »), « Choses à faire » (paiements attendus, rendez-vous à marquer faits, stock bas, facturation à compléter), chiffres (mois en cours comparé au précédent, panier moyen, produits vendus), clients (nouveaux du mois, à relancer après 90 jours). API `/admin/dashboard` enrichie. Tests.
 - Site : mode « Modifier le site » pour le pro connecté (bouton en bas à gauche). Crayons ✏️ sur les formules et les options de l'accueil : prix, description, durée, options, mise en avant, remise par véhicule, retrait ; ajout d'une formule dans l'onglet affiché ; formules retirées proposables à nouveau ; changements visibles aussitôt. Tests.
+- Kit et site : demande d'avis Google. Bouton « Laisser un avis » dans le mail de facture envoyé quand le rendez-vous passe à « Terminé » ; lien réglé dans Réglages (vide par défaut : rien n'est demandé) ; routes `GET` / `PUT /admin/settings/avis`. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

@@ -3,6 +3,7 @@ import { AddressInput, Button, Field, Toggle } from '@bsandoz/ui';
 import { searchAddress, type Address } from '../../services/api';
 import { modifierRegleFidelite, regleFidelite, type RegleFidelite } from '../../services/fidelite';
 import { enregistrerRegles, enregistrerZone, reglages, type Regles, type Zone } from '../../services/pro';
+import { enregistrerAvis, reglageAvis, type ReglageAvis } from '../../services/avis';
 import { NotificationsPro } from './Notifications';
 import styles from './Pro.module.css';
 
@@ -38,6 +39,7 @@ export function ReglagesOnglet() {
       <FormulaireRegles initiales={regles} />
       <FormulaireZone initiale={zone} />
       <FormulaireFidelite />
+      <FormulaireAvis />
     </>
   );
 }
@@ -187,6 +189,44 @@ function FormulaireFidelite() {
         {message && <p className={styles.ok} role="status">{message}</p>}
         {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
         <div><Button type="submit" disabled={!valide}>Enregistrer la carte de fidélité</Button></div>
+      </div>
+    </form>
+  );
+}
+
+function FormulaireAvis() {
+  const [avis, setAvis] = useState<ReglageAvis>();
+  const [message, setMessage] = useState('');
+  const [erreur, setErreur] = useState('');
+
+  useEffect(() => { reglageAvis().then((r) => setAvis({ ...r, actif: r.actif || r.lien === '' })).catch((e: Error) => setErreur(e.message)); }, []);
+
+  if (!avis) return null;
+  const valide = avis.lien.trim() === '' || /^https:\/\/\S+$/.test(avis.lien.trim());
+
+  const enregistrer = async (e: FormEvent) => {
+    e.preventDefault();
+    setMessage(''); setErreur('');
+    try {
+      const r = await enregistrerAvis(avis);
+      setAvis({ ...r, actif: r.actif || r.lien === '' });
+      setMessage(r.lien ? (r.actif ? 'Demande d’avis activée.' : 'Demande d’avis désactivée.') : 'Aucun lien : pas de demande d’avis pour le moment.');
+    } catch (err) {
+      setErreur((err as Error).message);
+    }
+  };
+
+  return (
+    <form className={styles.section} onSubmit={enregistrer} noValidate aria-labelledby="titre-avis">
+      <h2 id="titre-avis">Avis Google</h2>
+      <div className={styles.panneau}>
+        <p className={styles.aide}>Quand un rendez-vous passe à « Terminé », le client reçoit sa facture par e-mail avec un bouton « Laisser un avis ». Lien à copier depuis votre fiche Google (« Demander des avis »).</p>
+        <Field label="Lien de votre page d’avis" type="url" value={avis.lien} placeholder="https://g.page/r/…/review" onChange={(e) => setAvis({ ...avis, lien: e.target.value })}
+          hint="Vide : pas de demande d’avis (à compléter quand votre fiche Google sera créée)." error={valide ? undefined : 'Adresse https:// complète attendue.'} />
+        <Toggle label="Demander un avis après chaque prestation" checked={avis.actif} onChange={(actif) => setAvis({ ...avis, actif })} />
+        {message && <p className={styles.ok} role="status">{message}</p>}
+        {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
+        <div><Button type="submit" disabled={!valide}>Enregistrer</Button></div>
       </div>
     </form>
   );

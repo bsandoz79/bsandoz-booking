@@ -38,6 +38,18 @@ describe('Espace pro', () => {
     expect(within(screen.getByRole('region', { name: 'Clients' })).getByText('Personne pour le moment.')).toBeInTheDocument();
   });
 
+  it('règle le lien d’avis Google joint au mail de fin de prestation', async () => {
+    await ouvrirConnecte();
+    await rubrique('Réglages');
+    const lien = await screen.findByLabelText(/Lien de votre page d’avis/);
+    await userEvent.type(lien, 'pas-un-lien');
+    expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
+    await userEvent.clear(lien);
+    await userEvent.type(lien, 'https://g.page/r/exemple/review');
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    expect(await screen.findByText('Demande d’avis activée.')).toBeInTheDocument();
+  });
+
   it('ajoute un tampon de fidélité au client depuis le détail du rendez-vous', async () => {
     await ouvrirConnecte();
     await rubrique('Planning');
