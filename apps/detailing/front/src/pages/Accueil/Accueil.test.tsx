@@ -3,8 +3,40 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { seConnecter, seDeconnecter } from '../../services/compte';
 import { Accueil } from './Accueil';
+import { ModeEditionProvider } from '../../app/modeEdition';
+import { BoutonModifier } from '../../components/ModeEdition';
 
 describe('Accueil', () => {
+  it('le pro connecté modifie une formule et ajoute une formule depuis le site', async () => {
+    await seConnecter('pro@example.org', 'motdepasse1');
+    render(<MemoryRouter><ModeEditionProvider><Accueil /><BoutonModifier /></ModeEditionProvider></MemoryRouter>);
+    expect(screen.queryByRole('button', { name: /Modifier Intérieur Éclat/ })).not.toBeInTheDocument();
+
+    await userEvent.click(await screen.findByRole('button', { name: /Modifier le site/ }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Modifier Intérieur Éclat' }));
+    const fenetre = screen.getByRole('dialog', { name: 'Modifier « Intérieur Éclat »' });
+    const prix = within(fenetre).getByLabelText(/^Prix \(€\)/);
+    await userEvent.clear(prix);
+    await userEvent.type(prix, '35');
+    await userEvent.click(within(fenetre).getByRole('button', { name: 'Enregistrer' }));
+
+    const eclat = (await screen.findByRole('heading', { level: 3, name: 'Intérieur Éclat' })).closest('article')!;
+    expect(eclat).toHaveTextContent('35,00 €');
+    expect(screen.getByText('« Intérieur Éclat » enregistrée.')).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /Ajouter une formule « Nettoyage intérieur »/ }));
+    const nouvelle = screen.getByRole('dialog', { name: 'Nouvelle formule' });
+    await userEvent.type(within(nouvelle).getByLabelText(/^Nom/), 'Intérieur Express');
+    await userEvent.type(within(nouvelle).getByLabelText(/^Prix \(€\)/), '19');
+    await userEvent.click(within(nouvelle).getByRole('button', { name: 'Enregistrer' }));
+    expect(await screen.findByRole('heading', { level: 3, name: 'Intérieur Express' })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /Terminer/ }));
+    expect(screen.queryByRole('button', { name: /Modifier Intérieur Éclat/ })).not.toBeInTheDocument();
+    await seDeconnecter();
+  });
+
   it('présente les prestations, les étapes, les réalisations, la zone, les avis et la FAQ', async () => {
     render(<MemoryRouter><Accueil /></MemoryRouter>);
 

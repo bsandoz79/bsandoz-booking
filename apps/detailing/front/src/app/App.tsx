@@ -1,5 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ContenuProvider } from './ContenuContext';
+import { ModeEditionProvider } from './modeEdition';
+import { BoutonModifier } from '../components/ModeEdition';
 import { DefilementAncre } from './DefilementAncre';
 import { Footer } from '../components/Footer/Footer';
 import { Header } from '../components/Header/Header';
@@ -20,6 +22,7 @@ import { Devis } from '../pages/Professionnels/Devis';
 export function AppRoutes() {
   return (
     <ContenuProvider>
+     <ModeEditionProvider>
       <DefilementAncre />
       <Header />
       <Routes>
@@ -42,6 +45,8 @@ export function AppRoutes() {
       </Routes>
       <Footer />
       <RemonterEnHaut />
+      <BoutonModifier />
+     </ModeEditionProvider>
     </ContenuProvider>
   );
 }
