@@ -12,7 +12,7 @@ import styles from './Header.module.css';
 
 /**
  * En-tête minimal, sur une ligne à toutes les tailles d'écran : logo, « Réserver », téléphone, thème clair / nuit et
- * menu. Le menu (Prestations, Fidélité, Pro, Mon espace, Espace pro, Installer l'application) se déroule sous la barre ; il se referme en
+ * menu. Le menu (Prestations, Fidélité, Pro, Mon espace, et pour le pro : Espace pro, Installer l'application) se déroule sous la barre ; il se referme en
  * choisissant un lien, avec Échap ou en cliquant ailleurs.
  */
 export function Header() {
@@ -80,8 +80,8 @@ export function Header() {
           <NavLink to="/professionnels">Pro</NavLink>
           <NavLink to="/mon-espace" className={styles.lienCompte}><Icone nom="utilisateur" taille={18} /> Mon espace</NavLink>
           {pro && <NavLink to="/pro" className={styles.espacePro}><Icone nom="tableau" taille={18} /> Espace pro</NavLink>}
-          {/* Ajouter le site sur l'écran d'accueil du téléphone (masqué s'il est déjà installé). */}
-          <Installer className={styles.installer} onAction={() => setOuvert(false)} />
+          {/* Compte pro seulement : ajouter le site sur l'écran d'accueil du téléphone (masqué s'il est déjà installé). */}
+          {pro && <Installer className={styles.installer} onAction={() => setOuvert(false)} />}
         </nav>
       </div>
     </header>
