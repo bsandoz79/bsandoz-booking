@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dépenses saisies par le pro (ponctuelles ou mensuelles). -->
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Bsandoz\Core\Comptabilite\Domain\Model\Depense" table="expense">
+        <indexes>
+            <index name="idx_expense_date" columns="spent_on"/>
+        </indexes>
+        <id name="id" type="string" length="36"/>
+        <field name="le" column="spent_on" type="date_immutable"/>
+        <field name="libelle" column="label" type="string" length="120"/>
+        <field name="montant" column="amount_cents" type="bsandoz_money"/>
+        <field name="mensuelle" column="monthly" type="boolean"/>
+        <field name="finLe" column="ends_on" type="date_immutable" nullable="true"/>
+    </entity>
+</doctrine-mapping>

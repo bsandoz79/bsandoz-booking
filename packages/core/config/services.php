@@ -339,4 +339,10 @@ return static function (ContainerConfigurator $container): void {
             param('bsandoz_core.sms.passerelle_utilisateur'),
             param('bsandoz_core.sms.passerelle_mot_de_passe'),
         ]);
+
+    // Comptabilité simple (chiffre d'affaires, dépenses, résultat par mois)
+    $services->set(\Bsandoz\Core\Comptabilite\Infrastructure\Persistence\DoctrineDepenses::class);
+    $services->alias(\Bsandoz\Core\Comptabilite\Domain\Port\Depenses::class, \Bsandoz\Core\Comptabilite\Infrastructure\Persistence\DoctrineDepenses::class);
+    $services->set(\Bsandoz\Core\Comptabilite\Application\GererComptabilite::class);
+    $services->set(\Bsandoz\Core\Comptabilite\Infrastructure\Http\ComptabiliteController::class)->public()->tag('controller.service_arguments');
 };

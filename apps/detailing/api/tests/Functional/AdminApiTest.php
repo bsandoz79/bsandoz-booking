@@ -82,6 +82,28 @@ final class AdminApiTest extends WebTestCase
         self::assertSame(0, $this->json()['clients']['nouveauxMois']);
     }
 
+    public function testComptabiliteDepensesEtBilan(): void
+    {
+        $token = $this->login('pro@example.test', 'artisan2026');
+        $this->request('POST', '/api/v1/admin/depenses', ['le' => '2026-10-12', 'libelle' => 'Produits', 'montantCents' => 3000], $token);
+        self::assertResponseStatusCodeSame(201);
+        $id = $this->json()['id'];
+        $this->request('POST', '/api/v1/admin/depenses', ['le' => '2026-10-12', 'libelle' => '', 'montantCents' => 3000], $token);
+        self::assertResponseStatusCodeSame(422);
+
+        $this->request('GET', '/api/v1/admin/comptabilite?annee=2026', token: $token);
+        self::assertResponseIsSuccessful();
+        $bilan = $this->json();
+        self::assertCount(12, $bilan['mois']);
+        self::assertSame(3000, $bilan['mois'][9]['depensesCents']);
+        self::assertSame(-3000, $bilan['totaux']['resultatCents']);
+
+        $this->request('DELETE', '/api/v1/admin/depenses/' . $id, token: $token);
+        self::assertResponseStatusCodeSame(204);
+        $this->request('GET', '/api/v1/admin/comptabilite?annee=2026', token: $token);
+        self::assertSame([], $this->json()['depenses']);
+    }
+
     public function testFichesClientsReserveesAuPro(): void
     {
         $this->request('GET', '/api/v1/admin/clients', token: $this->login('client@example.test', 'bonjour2026'));

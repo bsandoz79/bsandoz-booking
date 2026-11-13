@@ -53,6 +53,19 @@ describe('Espace pro', () => {
     expect(screen.getByText('Intérieur Signature', { exact: false })).toBeInTheDocument();
   });
 
+  it('ajoute une dépense mensuelle et la voit dans le résultat du mois', async () => {
+    await ouvrirConnecte();
+    await rubrique('Comptabilité');
+    await userEvent.type(await screen.findByLabelText(/^Libellé/), 'Assurance');
+    await userEvent.type(screen.getByLabelText(/^Montant/), '40');
+    await userEvent.click(screen.getByRole('switch', { name: /Dépense mensuelle/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Ajouter la dépense' }));
+    expect(await screen.findByText('Dépense « Assurance » ajoutée.')).toBeInTheDocument();
+    expect(await screen.findByText(/40,00\s€ par mois/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Arrêter Assurance' }));
+    expect(await screen.findByText('« Assurance » arrêtée.')).toBeInTheDocument();
+  });
+
   it('règle le lien d’avis Google joint au mail de fin de prestation', async () => {
     await ouvrirConnecte();
     await rubrique('Réglages');

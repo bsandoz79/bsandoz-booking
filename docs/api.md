@@ -141,6 +141,11 @@ Annulation tardive (après le délai d'annulation gratuite) d'un rendez-vous con
 - `GET /admin/clients/{id}` → résumé + `panierMoyenCents`, `avoirCents`, `fidelite`, `historique: [{id, start, status, prestation, quantite, totalCents}]` (404 si inconnu ou supprimé).
 - `PUT /admin/clients/{id}/avoir` `{"avoirCents"}` → `{"avoirCents"}` : correction de l'avoir (geste commercial).
 
+## Comptabilité simple (pro)
+- `GET /admin/comptabilite?annee=AAAA` → `{annee, mois: [{mois: "AAAA-MM", chiffreAffairesCents, depensesCents, resultatCents}] (12), totaux, depenses: [{id, le, libelle, montantCents, mensuelle, finLe}]}`. Chiffre d'affaires : prestations « done » (produits compris) au mois de la prestation (heure locale). Dépenses mensuelles comptées chaque mois depuis leur date jusqu'au mois en cours (ou à leur arrêt).
+- `POST /admin/depenses` `{le: "AAAA-MM-JJ", libelle, montantCents, mensuelle}` → 201 ; libellé 1–120 caractères, montant positif (sinon 422).
+- `DELETE /admin/depenses/{id}` → 204 : dépense ponctuelle supprimée ; mensuelle déjà commencée : arrêtée ce mois-ci (historique gardé).
+
 ## Créneaux groupés
 - `GET /admin/settings/creneaux-groupes`, `PUT /admin/settings/creneaux-groupes` `{"seuilMin": 0–240}` (pro, défaut 30 ; 0 : désactivé). Les créneaux proches d'un rendez-vous déjà prévu sont renvoyés avec `groupe: true` et mis en avant sur le site (« Conseillé »).
 

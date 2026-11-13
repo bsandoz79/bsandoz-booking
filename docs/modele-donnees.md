@@ -19,6 +19,7 @@
 | push_subscription | Notification | id, user_id, endpoint (unique par appareil), public_key (p256dh), auth_token, created_at (UTC) : appareils du pro abonnés aux notifications push |
 | loyalty_card | Fidelite | user_id, stamps (tampons vers la prochaine remise), updated_at (UTC) |
 | customer_credit | Payment | user_id, balance_cents (avoir : somme payée non remboursée, déduite de la prochaine réservation), updated_at (UTC) |
+| expense | Comptabilite | id, spent_on (date), label, amount_cents, monthly (comptée chaque mois), ends_on (arrêt d'une dépense mensuelle) |
 | setting | Admin | setting_key (« rules », « zone »), value JSON, updated_at (UTC) : réglages du pro, prioritaires sur la configuration |
 | audit_log | Admin | user_id, action, target, created_at, ip |
 
