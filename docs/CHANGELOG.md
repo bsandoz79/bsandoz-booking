@@ -149,6 +149,7 @@
 - Kit et site : remise par véhicule supplémentaire réglable par formule (Catalogue de l'espace pro, champ `remiseUniteCents`, colonne `prestation.remise_unite_cents`) ; rénovation des phares : 45 € puis 40 € par véhicule supplémentaire, l'option « Deuxième véhicule » est remplacée par le compteur de véhicules. Tests.
 - Kit et site : avoirs. Annulation tardive d'un rendez-vous payé en ligne : pas de remboursement, la somme devient un avoir déduit automatiquement du rendez-vous suivant (rendu si celui-ci est annulé ou expire), indiqué dans les mails d'annulation, sur la facture et dans « Mon espace » ; table `customer_credit` et colonne `reservation.credit_used_cents` (migration). Tests.
 - Démo : « Désodorisant Perfect Clean » (option et formules).
+- Espace pro : nouveau tableau de bord. « Ma journée » (rendez-vous dans l'ordre, itinéraire GPS par rendez-vous et pour toute la tournée, appel, produits à apporter, reste à encaisser, liste « À charger dans le camion »), « Choses à faire » (paiements attendus, rendez-vous à marquer faits, stock bas, facturation à compléter), chiffres (mois en cours comparé au précédent, panier moyen, produits vendus), clients (nouveaux du mois, à relancer après 90 jours). API `/admin/dashboard` enrichie. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

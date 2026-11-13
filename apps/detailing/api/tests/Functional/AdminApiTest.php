@@ -75,6 +75,11 @@ final class AdminApiTest extends WebTestCase
         $this->request('GET', '/api/v1/admin/dashboard', token: $this->login('pro@example.test', 'artisan2026'));
         self::assertResponseIsSuccessful();
         self::assertSame(0, $this->json()['monthBookings']);
+        // Blocs « Ma journée », « Choses à faire », chiffres et clients ; informations de facturation encore à compléter.
+        self::assertSame([], $this->json()['journee']);
+        self::assertContains('facturation', array_column($this->json()['aFaire'], 'type'));
+        self::assertSame(0, $this->json()['chiffres']['panierMoyenCents']);
+        self::assertSame(0, $this->json()['clients']['nouveauxMois']);
     }
 
     public function testParcoursDuPro(): void
