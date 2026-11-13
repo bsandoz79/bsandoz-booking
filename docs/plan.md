@@ -46,3 +46,10 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/upsell-fenetre` : produits proposés dans une fenêtre au paiement (bloc `Dialog`)
 - [x] `feature/devis-hors-zone` : page `/devis` et lien depuis une adresse hors zone
 - [x] `feature/facturation` : factures numérotées émises à la prestation faite, envoyées au client, imprimables en PDF
+- [x] `feature/reglages-details` : remise par véhicule supplémentaire (phares 45 € puis 40 €), avoirs à l'annulation tardive, « Désodorisant Perfect Clean »
+- [ ] `feature/tableau-de-bord` : Ma journée (tournée, GPS, produits à charger), Choses à faire, Chiffres du mois, Clients
+- [ ] `feature/modifier-formules` : mode « Modifier » sur le site public : formules, options et prix modifiables en place
+- [ ] `feature/avis-google` : demande d'avis automatique par e-mail après une prestation faite (lien Google `[à compléter]`)
+- [ ] `feature/creneaux-groupes` : créneaux proches d'un rendez-vous déjà prévu proposés en premier
+- [ ] `feature/fiche-client` : fiche client (total dépensé, panier moyen, dernière visite, avoir, relance après 90 jours)
+- [ ] `feature/comptabilite` : chiffre d'affaires et dépenses par mois
