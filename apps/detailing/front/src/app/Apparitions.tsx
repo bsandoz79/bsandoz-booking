@@ -14,20 +14,22 @@ export function Apparitions() {
     const observateur = new IntersectionObserver((entrees) => {
       for (const e of entrees) {
         if (e.isIntersecting) {
-          e.target.classList.add('visible');
+          // Attribut et non classe : React réécrit `className` à chaque changement de style (ex. mode édition qui
+          // s'active après le chargement) et effacerait la marque, rendant l'élément invisible pour de bon.
+          e.target.setAttribute('data-vu', '');
           observateur.unobserve(e.target);
         }
       }
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
 
-    const observer = (noeud: ParentNode) => noeud.querySelectorAll?.('[data-apparition]:not(.visible)').forEach((el) => observateur.observe(el));
+    const observer = (noeud: ParentNode) => noeud.querySelectorAll?.('[data-apparition]:not([data-vu])').forEach((el) => observateur.observe(el));
     observer(document);
     // Contenu ajouté plus tard (catalogue chargé depuis l'API, changement de page).
     const mutations = new MutationObserver((liste) => {
       for (const m of liste) {
         m.addedNodes.forEach((n) => {
           if (!(n instanceof HTMLElement)) return;
-          if (n.matches('[data-apparition]:not(.visible)')) observateur.observe(n);
+          if (n.matches('[data-apparition]:not([data-vu])')) observateur.observe(n);
           observer(n);
         });
       }

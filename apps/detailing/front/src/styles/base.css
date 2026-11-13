@@ -18,10 +18,10 @@ a { color: var(--bs-color-primary-dark); }
 main section[id] { scroll-margin-top: 5rem; }
 
 /* Apparition au défilement (voir app/Apparitions.tsx) : seulement quand le script est actif et sans « moins d'animations ». */
-html.anim [data-apparition]:not(.visible) { opacity: 0; transform: translateY(26px); }
+html.anim [data-apparition]:not([data-vu]) { opacity: 0; transform: translateY(26px); }
 html.anim [data-apparition] { transition: opacity .7s ease var(--delai, 0ms), transform .7s cubic-bezier(.2, .7, .2, 1) var(--delai, 0ms); }
 @media (prefers-reduced-motion: reduce) {
-  html.anim [data-apparition]:not(.visible) { opacity: 1; transform: none; }
+  html.anim [data-apparition]:not([data-vu]) { opacity: 1; transform: none; }
 }
 
 /* Boutons : léger relief au survol (désactivé si moins d'animations). */
