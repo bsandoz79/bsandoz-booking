@@ -36,6 +36,13 @@ export function ChampsRubrique({ rubrique, c, setC, onErreur }: {
             onBlur={() => setC({ ...c, accueil: { ...c.accueil, arguments: lignes(c.accueil.arguments.join('\n')) } })} />
         </>
       );
+    case 'photo':
+      return (
+        <>
+          <p className={styles.aide}>Format conseillé : carré ou vertical, 1 200 pixels de large au moins, 5 Mo au plus. Sans photo choisie, celle du camion est affichée.</p>
+          <Photo libelle="Photo de l’accueil" url={c.accueil.photo} onChange={(url) => setC({ ...c, accueil: { ...c.accueil, photo: url } })} onErreur={onErreur} />
+        </>
+      );
     case 'etapes':
       return (
         <Liste<Etape> elements={c.etapes} vide={{ titre: '', texte: '' }} nom="l’étape" onChange={(etapes) => setC({ ...c, etapes })}

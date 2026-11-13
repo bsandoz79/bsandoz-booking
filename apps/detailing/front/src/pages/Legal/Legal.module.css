@@ -4,3 +4,4 @@
 .page h2 { font-size: 1.2rem; }
 .page ul { margin: 0; padding-left: 1.25rem; }
 .maj { font-size: .85rem; color: var(--bs-color-text-muted); }
+.contenuLegal { display: flex; flex-direction: column; gap: inherit; }

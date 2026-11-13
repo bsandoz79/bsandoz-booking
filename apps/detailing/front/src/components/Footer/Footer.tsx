@@ -1,4 +1,4 @@
-import { ModifierRubrique } from '../ModeEdition';
+import { ModifierRubrique, Zone } from '../ModeEdition';
 import { Link } from 'react-router-dom';
 import { useContenu } from '../../app/contenuContexte';
 import { SITE } from '../../data/site';
@@ -16,7 +16,7 @@ export function Footer() {
     <footer className={styles.footer}>
       <div className={`container ${styles.inner}`}>
         <div><strong>{SITE.brand}</strong><p>{SITE.activity} · {coordonnees.adresse || SITE.city} et alentours</p></div>
-        <div><p>Téléphone : {telephone} · E-mail : {email}</p><p>Horaires : {coordonnees.horaires}</p><ModifierRubrique rubrique="coordonnees" /></div>
+        <Zone crayons={<ModifierRubrique rubrique="coordonnees" />}><div className={styles.coordonnees}><p>Téléphone : {telephone} · E-mail : {email}</p><p>Horaires : {coordonnees.horaires}</p></div></Zone>
         <nav aria-label="Liens légaux" className={styles.legal}>
           <Link to="/mentions-legales">Mentions légales</Link>
           <Link to="/cgv">CGV</Link>

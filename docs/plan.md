@@ -57,3 +57,4 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/pro-affichage` : planning à la hauteur de l'écran, prochain rendez-vous sur le tableau de bord, « Utiliser ma position », réservation guidée d'étape en étape
 - [x] `feature/agenda-espace` : ajout à l'agenda (client et pro), « Mon espace » restructuré (coordonnées modifiables), itinéraire Google Maps ou Waze
 - [x] `feature/crayons-planning` : crayons en icône bien placés, planning semaine lisible avec clic vers le détail, rubriques de l'espace pro dans une colonne à gauche
+- [x] `feature/profil-icones` : Mon espace façon réglages, icônes au trait, zones modifiables en pointillés avec crayon en haut à droite, photo de l'accueil modifiable

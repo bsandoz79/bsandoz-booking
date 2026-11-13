@@ -27,6 +27,7 @@ describe('Accueil', () => {
     await userEvent.click(within(faq).getByRole('button', { name: 'Enregistrer' }));
     expect(await screen.findByText('Intervenez-vous le dimanche ?')).toBeInTheDocument();
 
+    expect(screen.getByRole('button', { name: 'Modifier : Photo de l’accueil' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Modifier : Horaires et congés' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Modifier : Zone et frais de déplacement' })).toBeInTheDocument();
     await seDeconnecter();
