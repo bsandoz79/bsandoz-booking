@@ -79,3 +79,10 @@ Copier `apps/detailing` en `apps/<client>`, ajouter ses deux jobs dans `deploy.y
 
 ## Paiement sans acompte
 Par défaut, aucun acompte (`deposit_percent: 0`) : le client choisit de tout payer en ligne ou sur place. Si un pourcentage d'acompte a déjà été enregistré dans l'espace pro (Réglages → Règles de réservation), le remettre à 0.
+
+## SMS (désactivés par défaut)
+Rien à faire tant qu'on n'en veut pas : sans `SMS_FOURNISSEUR`, aucun SMS n'est envoyé. Pour les activer, ajouter dans `.env.local` du serveur, puis `sh deploy/apres-envoi.sh` :
+- **Brevo** (payant, quelques centimes par SMS) : `SMS_FOURNISSEUR=brevo`, `SMS_BREVO_CLE=<clé d'API Brevo>`, `SMS_EXPEDITEUR=PERFCLEAN` (11 caractères au plus).
+- **Téléphone Android** (gratuit avec un forfait SMS illimités, application libre « SMS Gateway for Android », téléphone allumé et connecté) : `SMS_FOURNISSEUR=android`, `SMS_PASSERELLE_URL=https://api.sms-gate.app/3rdparty/v1` (mode cloud de l'application), `SMS_PASSERELLE_UTILISATEUR=` et `SMS_PASSERELLE_MOT_DE_PASSE=` (affichés par l'application).
+
+SMS envoyés au client (numéro de mobile seulement) : confirmation, rappel la veille, déplacement, annulation. Un échec est écrit dans le journal, jamais bloquant. Les clés restent dans `.env.local`, jamais dans le code.

@@ -30,6 +30,7 @@ final class NotificationsReservation
         private ?string $proEmail = null,
         private ?NotifierProParPush $push = null,
         private string $timezone = 'UTC',
+        private ?\Bsandoz\Core\Notification\Domain\Port\EnvoiSms $sms = null,
     ) {
     }
 
@@ -40,6 +41,7 @@ final class NotificationsReservation
         $this->notifier->send($user->email(), 'booking_confirmed', $context + ['manageToken' => $manageToken], [$this->piece($reservation, $context)]);
         $this->auPro('pro_new_booking', $context);
         $this->pousser('Nouveau rendez-vous', $reservation, $context);
+        $this->texto($user, sprintf('%s : votre rendez-vous du %s est confirmé. Détails et gestion dans l\'e-mail reçu.', $this->brand, $this->quand($reservation)));
     }
 
     public function annulee(Reservation $reservation, bool $refundable): void
@@ -48,6 +50,7 @@ final class NotificationsReservation
         $this->notifier->send($user->email(), 'booking_cancelled', $context + ['refundable' => $refundable]);
         $this->auPro('pro_booking_cancelled', $context + ['refundable' => $refundable]);
         $this->pousser('Rendez-vous annulé', $reservation, $context);
+        $this->texto($user, sprintf('%s : votre rendez-vous du %s est annulé.', $this->brand, $this->quand($reservation)));
     }
 
     public function deplacee(Reservation $reservation, \DateTimeImmutable $previousStart): void
@@ -57,6 +60,7 @@ final class NotificationsReservation
         $this->notifier->send($user->email(), 'booking_moved', $context, [$this->piece($reservation, $context)]);
         $this->auPro('pro_booking_moved', $context);
         $this->pousser('Rendez-vous déplacé', $reservation, $context);
+        $this->texto($user, sprintf('%s : votre rendez-vous est déplacé au %s.', $this->brand, $this->quand($reservation)));
     }
 
     /** Rendez-vous pris par téléphone : lien de paiement de l'acompte envoyé au client. */
@@ -70,6 +74,7 @@ final class NotificationsReservation
     {
         [$user, $context] = $this->contexte($reservation);
         $this->notifier->send($user->email(), 'reminder', $context + ['manageToken' => $manageToken]);
+        $this->texto($user, sprintf('%s : rappel de votre rendez-vous demain, %s. Un empêchement ? Gérez-le depuis l\'e-mail de confirmation.', $this->brand, $this->quand($reservation)));
     }
 
     /** @param string $reason ex. « creneau_indisponible » */
@@ -154,5 +159,26 @@ final class NotificationsReservation
     private static function iso(\DateTimeImmutable $date): string
     {
         return $date->setTimezone(new \DateTimeZone('UTC'))->format(DATE_ATOM);
+    }
+
+    /** SMS au client si un fournisseur est configuré et que son numéro est un mobile (sinon rien). */
+    private function texto(User $user, string $texte): void
+    {
+        if ($this->sms === null || !$this->sms->actif()) {
+            return;
+        }
+        $numero = \Bsandoz\Core\Notification\Domain\Service\NumeroMobile::international($user->phone());
+        if ($numero !== null) {
+            $this->sms->envoyer($numero, $texte);
+        }
+    }
+
+    /** « mar. 17/11 à 9h00 », heure locale. */
+    private function quand(Reservation $r): string
+    {
+        $debut = $r->period()->start->setTimezone(new \DateTimeZone($this->timezone));
+        $jours = ['lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'];
+
+        return sprintf('%s %s à %sh%s', $jours[(int) $debut->format('N') - 1], $debut->format('d/m'), $debut->format('G'), $debut->format('i'));
     }
 }

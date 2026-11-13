@@ -145,6 +145,7 @@
 - Planning : cases réduites au client et au service (plus les produits à apporter), bleues, orange quand un produit est à apporter, grises une fois terminées ; option `showTime` du bloc `PlanningView`.
 - Kit et API : facturation (module `Facturation`) : facture émise quand la prestation est faite, numéro chronologique F-AAAA-NNNN, lignes, vendeur et client figés, mail au client ; factures dans l'espace pro et l'espace client ; informations du vendeur réglables ; migration `invoice`.
 - Site : page de facture imprimable en PDF, onglet « Factures » de l'espace pro (informations du vendeur, liste), « Mes factures » dans Mon espace, facture accessible depuis le planning.
+- SMS prêts mais désactivés : port `EnvoiSms` du kit avec fournisseurs Brevo et téléphone Android (SMS Gateway for Android), choisis par `SMS_FOURNISSEUR` ; confirmation, rappel, déplacement et annulation envoyés aussi par SMS une fois activés.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
