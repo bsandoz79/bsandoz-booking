@@ -40,3 +40,12 @@
 .legende span { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
 .legendeAttente { background: repeating-linear-gradient(135deg, #2563eb 0 4px, #93b4f5 4px 8px); }
 .legendeConge { background: repeating-linear-gradient(45deg, #9ca3af 0 3px, #b8bec7 3px 6px); }
+
+/* Planning, vue jour : emploi du temps à gauche, détail du rendez-vous à droite (dessous sur téléphone). */
+.vueJour { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+.colonneDetail { display: flex; flex-direction: column; gap: .5rem; scroll-margin-top: 5rem; }
+.surtitreDetail { margin: 0; font-size: .8rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--bs-color-text-muted); }
+@media (min-width: 1000px) {
+  .vueJour { grid-template-columns: minmax(0, 1.2fr) minmax(340px, 1fr); }
+  .colonneDetail { position: sticky; top: 5rem; }
+}
