@@ -77,6 +77,15 @@ final class AdminCatalogueController
         return new JsonResponse($this->catalogue->enregistrerProduit(Json::corps($request), $id));
     }
 
+    /** Suppression définitive (DELETE /produits/{id} seul : retiré de la vente, gardé). */
+    #[Route('/produits/{id}/definitif', name: 'bsandoz_admin_produit_delete', methods: ['DELETE'])]
+    public function supprimerProduit(string $id): Response
+    {
+        $this->catalogue->supprimerProduit($id);
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
     #[Route('/produits/{id}', name: 'bsandoz_admin_produit_disable', methods: ['DELETE'])]
     public function retirerProduit(string $id): Response
     {

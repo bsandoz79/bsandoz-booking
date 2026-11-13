@@ -19,4 +19,7 @@ interface ProduitRepository
     public function enVente(): array;
 
     public function save(Produit $produit): void;
+
+    /** Suppression définitive (les réservations gardent nom et prix du produit). */
+    public function remove(Produit $produit): void;
 }

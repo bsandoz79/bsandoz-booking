@@ -5,6 +5,8 @@ import r from '../../components/Reglages/Reglages.module.css';
 import { CATEGORIES as CATEGORIES_SITE, VEHICLE_TYPES } from '../../data/demo';
 import { catalogue, enregistrerOption, enregistrerPrestation, type OptionPro, type PrestationPro, type Tarif } from '../../services/pro';
 import { nouvellePrestation } from './nouvellePrestation';
+import { Filtres } from './Filtres';
+import { filtrer } from './filtrer';
 import { CarteFormule } from '../Accueil/CarteFormule';
 import type { Formule } from '../../data/demo';
 import styles from './Pro.module.css';
@@ -21,6 +23,8 @@ const prixValide = (texte: string) => /^\d+([.,]\d{1,2})?$/.test(texte.trim());
 
 export function CatalogueOnglet() {
   const [prestations, setPrestations] = useState<PrestationPro[]>([]);
+  const [recherche, setRecherche] = useState('');
+  const [filtreCategorie, setFiltreCategorie] = useState('');
   const [options, setOptions] = useState<OptionPro[]>([]);
   const [prestation, setPrestation] = useState<PrestationPro>();
   const [option, setOption] = useState<OptionPro>();
@@ -49,10 +53,14 @@ export function CatalogueOnglet() {
         <FormulaireOption initiale={option} onAnnuler={() => setOption(undefined)} onEnregistree={(o) => apres(`Option « ${o.name} » enregistrée.`)} />
       ) : (
         <>
+          <Filtres recherche={recherche} onRecherche={setRecherche} categories={CATEGORIES} categorie={filtreCategorie} onCategorie={setFiltreCategorie}
+            libelleRecherche="Rechercher une prestation" />
           {[...CATEGORIES, { value: '', label: 'Sans catégorie' }].map((c) => {
-            const liste = prestations.filter((p) => (p.categoryId ?? '') === c.value || (c.value === '' && !CATEGORIES.some((x) => x.value === p.categoryId)))
+            if (filtreCategorie && c.value !== filtreCategorie) return null;
+            const liste = filtrer(prestations.filter((p) => (p.categoryId ?? '') === c.value || (c.value === '' && !CATEGORIES.some((x) => x.value === p.categoryId))),
+              recherche, '', (p) => `${p.name} ${p.description}`, () => '')
               .sort((a, b) => a.position - b.position);
-            if (c.value === '' && liste.length === 0) return null;
+            if ((c.value === '' || recherche.trim()) && liste.length === 0) return null;
             return (
               <section key={c.value || 'aucune'} className={r.rubrique} aria-labelledby={`cat-${c.value || 'aucune'}`}>
                 <div className={r.rubriqueEntete}>
@@ -112,7 +120,7 @@ export function CatalogueOnglet() {
             </div>
             {options.length === 0 ? <p className={r.aide}>Aucune option.</p> : (
               <ul className={r.panneau}>
-                {options.map((o) => (
+                {filtrer(options, recherche, '', (o) => o.name, () => '').map((o) => (
                   <li key={o.id ?? o.name} className={`${r.ligne} ${o.active ? '' : r.estompee}`}>
                     <Icone nom="etoile" className={r.ligneIcone} />
                     <div className={r.ligneTexte}>

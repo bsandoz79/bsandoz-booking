@@ -12,5 +12,6 @@
         <field name="actif" column="active" type="boolean"/>
         <field name="position" type="integer"/>
         <field name="photo" type="string" length="255" nullable="true"/>
+        <field name="categorie" column="category" type="string" length="60" nullable="true"/>
     </entity>
 </doctrine-mapping>

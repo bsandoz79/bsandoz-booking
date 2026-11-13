@@ -42,4 +42,9 @@ final class InMemoryProduitRepository implements ProduitRepository
     {
         $this->items[$produit->id()] = $produit;
     }
+
+    public function remove(Produit $produit): void
+    {
+        unset($this->items[$produit->id()]);
+    }
 }

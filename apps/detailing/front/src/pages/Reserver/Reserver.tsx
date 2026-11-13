@@ -130,7 +130,7 @@ export function Reserver() {
   const next = async () => {
     setError('');
     if (step < ETAPES.length - 1) { etapeSuivante(step + 1); return; }
-    if (produits.length > 0 && proposition !== 'vue') { setProposition('ouverte'); return; }
+    if (produits.some((p) => p.stock > 0) && proposition !== 'vue') { setProposition('ouverte'); return; }
     await payer(quantites);
   };
 

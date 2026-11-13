@@ -27,12 +27,12 @@ export interface Formule {
 export interface OptionItem { id: string; name: string; description: string; priceCents: number; durationMin: number }
 
 /** Produit vendu avec la réservation (réglé avec la prestation, apporté le jour du rendez-vous). `stock` : quantité maximale. */
-export interface ProduitItem { id: string; name: string; description: string; priceCents: number; stock: number; photo: string | null }
+export interface ProduitItem { id: string; name: string; description: string; priceCents: number; stock: number; photo: string | null; category?: string | null }
 
 /** Produits de démonstration (mode hors API) : prix d'exemple, les vrais produits et prix sont saisis dans l'espace pro. */
 export const PRODUITS: ProduitItem[] = [
-  { id: 'microfibre', name: 'Microfibre', description: 'Chiffon microfibre pour l’entretien entre deux passages.', priceCents: 500, stock: 10, photo: null },
-  { id: 'anti-buee', name: 'Anti-buée', description: 'Pour garder des vitres claires l’hiver.', priceCents: 900, stock: 3, photo: null },
+  { id: 'microfibre', name: 'Microfibre', description: 'Chiffon microfibre pour l’entretien entre deux passages.', priceCents: 500, stock: 10, photo: null, category: 'Entretien' },
+  { id: 'anti-buee', name: 'Anti-buée', description: 'Pour garder des vitres claires l’hiver.', priceCents: 900, stock: 3, photo: null, category: 'Vitres' },
 ];
 
 export const CATEGORIES: { value: Category; label: string; description: string }[] = [

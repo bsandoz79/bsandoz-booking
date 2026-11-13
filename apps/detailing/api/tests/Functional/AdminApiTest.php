@@ -247,18 +247,18 @@ final class AdminApiTest extends WebTestCase
     public function testLeProGereSesProduitsEtLeurStock(): void
     {
         $token = $this->login('pro@example.test', 'artisan2026');
-        $this->request('POST', '/api/v1/admin/catalog/produits', ['name' => 'Microfibre', 'description' => 'Lot de 2', 'priceCents' => 600, 'stock' => 3], $token);
+        $this->request('POST', '/api/v1/admin/catalog/produits', ['name' => 'Microfibre', 'description' => 'Lot de 2', 'priceCents' => 600, 'stock' => 3, 'category' => 'Entretien'], $token);
         self::assertResponseStatusCodeSame(201);
         $id = $this->json()['id'] ?? null;
         self::assertIsString($id);
 
         $this->request('GET', '/api/v1/catalog');
-        self::assertSame([['id' => $id, 'name' => 'Microfibre', 'description' => 'Lot de 2', 'priceCents' => 600, 'stock' => 3, 'photo' => null]], $this->json()['produits'] ?? null);
+        self::assertSame([['id' => $id, 'name' => 'Microfibre', 'description' => 'Lot de 2', 'priceCents' => 600, 'stock' => 3, 'photo' => null, 'category' => 'Entretien']], $this->json()['produits'] ?? null);
 
         $this->request('PUT', '/api/v1/admin/catalog/produits/' . $id, ['name' => 'Microfibre', 'priceCents' => 700, 'stock' => 0], $token);
         self::assertResponseIsSuccessful();
         $this->request('GET', '/api/v1/catalog');
-        self::assertSame([], $this->json()['produits'] ?? null, 'stock à 0 : plus proposé sur le site');
+        self::assertSame(0, $this->json()['produits'][0]['stock'] ?? null, 'stock à 0 : affiché « épuisé » sur le site');
 
         $this->request('DELETE', '/api/v1/admin/catalog/produits/' . $id, token: $token);
         self::assertResponseStatusCodeSame(204);
@@ -267,5 +267,11 @@ final class AdminApiTest extends WebTestCase
 
         $this->request('POST', '/api/v1/admin/catalog/produits', ['name' => 'Gratuit', 'priceCents' => 0, 'stock' => 1], $token);
         self::assertResponseStatusCodeSame(422);
+
+        // Suppression définitive.
+        $this->request('DELETE', '/api/v1/admin/catalog/produits/' . $id . '/definitif', token: $token);
+        self::assertResponseStatusCodeSame(204);
+        $this->request('GET', '/api/v1/admin/catalog', token: $token);
+        self::assertSame([], $this->json()['produits'] ?? null);
     }
 }

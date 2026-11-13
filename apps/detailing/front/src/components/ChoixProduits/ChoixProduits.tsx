@@ -1,6 +1,11 @@
 import { formatEuros } from '@bsandoz/ui';
 import type { ProduitItem } from '../../data/demo';
+import { etatStock } from '../../app/stock';
+import { Icone } from '../Icone/Icone';
 import styles from './ChoixProduits.module.css';
+
+/** Quantité maximale d'un produit par réservation (limite de l'API). */
+const QUANTITE_MAX = 10;
 
 export interface ChoixProduitsProps {
   produits: ProduitItem[];
@@ -26,21 +31,25 @@ export function ChoixProduits({ produits, quantites, onChange, avecTitre = true 
       <ul className={styles.liste}>
         {produits.map((p) => {
           const q = quantites[p.id] ?? 0;
+          const epuise = p.stock <= 0;
           return (
-            <li key={p.id} className={`${styles.produit} ${q > 0 ? styles.choisi : ''}`}>
-              {p.photo ? <img className={styles.photo} src={p.photo} alt="" width="64" height="64" loading="lazy" /> : <span className={styles.photo} aria-hidden="true">✦</span>}
+            <li key={p.id} className={`${styles.produit} ${q > 0 ? styles.choisi : ''} ${epuise ? styles.epuise : ''}`}>
+              {p.photo ? <img className={styles.photo} src={p.photo} alt="" width="64" height="64" loading="lazy" /> : <span className={styles.photo} aria-hidden="true"><Icone nom="produit" taille={28} /></span>}
               <div className={styles.texte}>
                 <strong>{p.name}</strong>
                 {p.description && <span className={styles.description}>{p.description}</span>}
                 <span className={styles.prix}>{formatEuros(p.priceCents)}</span>
+                {(epuise || p.stock <= 5) && <span className={epuise ? styles.stockEpuise : styles.stockBas}>{etatStock(p.stock)}</span>}
               </div>
-              {q === 0 ? (
+              {epuise ? (
+                <span className={styles.indisponible}>Épuisé</span>
+              ) : q === 0 ? (
                 <button type="button" className={`btn btn--ghost ${styles.ajouter}`} onClick={() => onChange(p.id, 1)} aria-label={`Ajouter ${p.name}`}>Ajouter</button>
               ) : (
                 <div className={styles.quantite} role="group" aria-label={`Quantité de ${p.name}`}>
                   <button type="button" onClick={() => onChange(p.id, q - 1)} aria-label={q === 1 ? `Retirer ${p.name}` : `Un ${p.name} de moins`}>−</button>
                   <span className={styles.nombre} aria-live="polite">{q}</span>
-                  <button type="button" onClick={() => onChange(p.id, q + 1)} disabled={q >= p.stock} aria-label={`Un ${p.name} de plus`}>+</button>
+                  <button type="button" onClick={() => onChange(p.id, q + 1)} disabled={q >= Math.min(p.stock, QUANTITE_MAX)} aria-label={`Un ${p.name} de plus`}>+</button>
                 </div>
               )}
             </li>

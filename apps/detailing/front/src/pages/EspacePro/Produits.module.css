@@ -1,0 +1,25 @@
+/* Grille de produits façon boutique : photo carrée, nom, prix, stock, actions. */
+.grille { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1.25rem; }
+.carte { display: flex; flex-direction: column; border: 1px solid var(--bs-color-border); border-radius: 16px; background: var(--bs-color-surface); overflow: hidden; }
+.retire { opacity: .65; }
+.photo { position: relative; aspect-ratio: 1; display: grid; place-items: center; background: color-mix(in srgb, var(--bs-color-text) 4%, var(--bs-color-surface)); }
+.photo img { width: 100%; height: 100%; object-fit: cover; }
+.sansPhoto { color: var(--bs-color-text-muted); opacity: .5; }
+.etat { position: absolute; top: .6rem; left: .6rem; padding: .15rem .6rem; border-radius: 999px; font-size: .75rem; font-weight: 800;
+  background: color-mix(in srgb, var(--bs-color-success) 16%, var(--bs-color-surface)); color: var(--bs-color-success); }
+.etatBas { background: #fff4d6; color: #5c4300; }
+.etatEpuise { background: color-mix(in srgb, var(--bs-color-danger) 14%, var(--bs-color-surface)); color: var(--bs-color-danger); }
+.etatRetire { background: var(--bs-color-surface); color: var(--bs-color-text-muted); border: 1px solid var(--bs-color-border); }
+.corps { display: flex; flex-direction: column; align-items: center; gap: .35rem; padding: .9rem 1rem 1rem; text-align: center; }
+.categorie { font-size: .72rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--bs-color-text-muted); }
+.nom { margin: 0; font-size: 1rem; }
+.prix { margin: 0; font-size: 1.05rem; }
+.stock { display: flex; align-items: center; gap: .5rem; margin-top: .25rem; }
+.pas { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--bs-color-border); background: transparent;
+  color: var(--bs-color-text); font: inherit; font-size: 1.15rem; font-weight: 700; cursor: pointer; }
+.pas:hover { border-color: var(--bs-color-text-muted); }
+.pas:disabled { opacity: .4; cursor: not-allowed; }
+.pas:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
+.quantite { min-width: 6.5rem; font-size: .9rem; }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem; margin-top: .5rem; }
+.supprimer { padding: 0 .65rem; color: var(--bs-color-danger); }

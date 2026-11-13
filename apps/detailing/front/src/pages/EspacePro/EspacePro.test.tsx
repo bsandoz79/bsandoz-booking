@@ -143,6 +143,15 @@ describe('Espace pro', () => {
     await userEvent.click(within(interieur).getByRole('button', { name: 'Retirer Intérieur Éclat' }));
     expect(await screen.findByRole('status')).toHaveTextContent('« Intérieur Éclat » n’est plus proposée.');
     expect(within(screen.getByRole('region', { name: 'Nettoyage intérieur' })).getByText('Retirée du site')).toBeInTheDocument();
+
+    // Filtres : une catégorie, puis une recherche par nom.
+    await userEvent.click(within(screen.getByRole('group', { name: 'Filtrer par catégorie' })).getByRole('button', { name: 'Rénovation des phares' }));
+    expect(screen.queryByRole('region', { name: 'Nettoyage intérieur' })).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Rénovation des phares' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Toutes' }));
+    await userEvent.type(screen.getByLabelText('Rechercher une prestation'), 'ciel');
+    expect(screen.getByRole('region', { name: 'Soins à la carte' })).toHaveTextContent('Ciel de toit');
+    expect(screen.queryByRole('region', { name: 'Nettoyage extérieur' })).not.toBeInTheDocument();
   });
 
   it('modifie le tarif d’une prestation du catalogue', async () => {

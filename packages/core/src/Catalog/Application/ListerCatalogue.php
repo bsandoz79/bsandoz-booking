@@ -13,12 +13,13 @@ use Bsandoz\Core\Catalog\Domain\Port\ProduitRepository;
 
 /**
  * Renvoie le catalogue public : prestations actives (« formules ») avec leurs tarifs par variante,
- * les options actives proposées par au moins une de ces prestations, et les produits en vente (actifs et en stock ;
+ * les options actives proposées par au moins une de ces prestations, et les produits actifs, épuisés compris (stock 0 :
+ * affichés « épuisé », non commandables ;
  * `stock` sert de quantité maximale à proposer).
  *
  * @phpstan-type Formule array{id: string, category: string|null, name: string, description: string, basePriceCents: int, baseDurationMin: int, occupePlage: bool, badge: string|null, remiseUniteCents: int, tarifs: array<string, array{priceCents: int, durationMin: int}>, optionIds: list<string>}
  * @phpstan-type OptionItem array{id: string, name: string, description: string, priceCents: int, durationMin: int}
- * @phpstan-type ProduitItem array{id: string, name: string, description: string, priceCents: int, stock: int, photo: string|null}
+ * @phpstan-type ProduitItem array{id: string, name: string, description: string, priceCents: int, stock: int, photo: string|null, category: string|null}
  */
 final class ListerCatalogue
 {
@@ -55,9 +56,13 @@ final class ListerCatalogue
         }
 
         $produits = [];
-        foreach ($this->produits?->enVente() ?? [] as $p) {
+        foreach ($this->produits?->all() ?? [] as $p) {
+            if (!$p->actif()) {
+                continue;
+            }
+            // Stock réel (« il en reste 2 », « épuisé ») ; la quantité par réservation reste limitée à Produit::QUANTITE_MAX.
             $produits[] = ['id' => $p->id(), 'name' => $p->nom(), 'description' => $p->description(), 'priceCents' => $p->prix()->cents,
-                'stock' => min($p->stock(), Produit::QUANTITE_MAX), 'photo' => $p->photo()];
+                'stock' => $p->stock(), 'photo' => $p->photo(), 'category' => $p->categorie()];
         }
 
         return ['formules' => $formules, 'options' => $options, 'produits' => $produits];

@@ -24,7 +24,7 @@ use Bsandoz\Core\Shared\Domain\NotFound;
  *               "occupePlage", "badge" (mise en avant, ex. « Le plus choisi »),
  *               "remiseUniteCents" (remise par unité au-delà de la première, défaut 0), "tarifs": {"<variante>": {"priceCents", "durationMin"}}, "optionIds": []}
  * Option     : {"name", "description", "priceCents", "durationMin", "active"}
- * Produit    : {"name", "description", "priceCents", "stock", "active", "position", "photo"} (vendu avec une réservation)
+ * Produit    : {"name", "description", "priceCents", "stock", "active", "position", "photo", "category"} (vendu avec une réservation)
  */
 final class GererCatalogue
 {
@@ -65,12 +65,14 @@ final class GererCatalogue
         $position = is_int($data['position'] ?? null) ? $data['position'] : 0;
         $actif = ($data['active'] ?? true) === true;
         $description = self::texte($data, 'description', '');
+        $categorie = $data['category'] ?? null;
+        $categorie = is_string($categorie) ? $categorie : null;
 
         if ($id === null) {
-            $produit = new Produit($this->ids->generate(), $nom, $prix, $stock, $description, $actif, $position, $photo);
+            $produit = new Produit($this->ids->generate(), $nom, $prix, $stock, $description, $actif, $position, $photo, $categorie);
         } else {
             $produit = $depot->get($id);
-            $produit->modifier($nom, $description, $prix, $stock, $actif, $position, $photo);
+            $produit->modifier($nom, $description, $prix, $stock, $actif, $position, $photo, $categorie);
         }
         $depot->save($produit);
 
@@ -82,8 +84,15 @@ final class GererCatalogue
     {
         $depot = $this->depotProduits();
         $p = $depot->get($id);
-        $p->modifier($p->nom(), $p->description(), $p->prix(), $p->stock(), false, $p->position(), $p->photo());
+        $p->modifier($p->nom(), $p->description(), $p->prix(), $p->stock(), false, $p->position(), $p->photo(), $p->categorie());
         $depot->save($p);
+    }
+
+    /** Supprime définitivement un produit (les réservations passées gardent son nom et son prix). @throws NotFound */
+    public function supprimerProduit(string $id): void
+    {
+        $depot = $this->depotProduits();
+        $depot->remove($depot->get($id));
     }
 
     private function depotProduits(): ProduitRepository
@@ -97,6 +106,7 @@ final class GererCatalogue
         return [
             'id' => $p->id(), 'name' => $p->nom(), 'description' => $p->description(), 'priceCents' => $p->prix()->cents,
             'stock' => $p->stock(), 'active' => $p->actif(), 'position' => $p->position(), 'photo' => $p->photo(),
+            'category' => $p->categorie(),
         ];
     }
 
