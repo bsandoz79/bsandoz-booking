@@ -3,6 +3,7 @@ import { Button, Field } from '@bsandoz/ui';
 import { reprendreSession, rolesSession, seConnecter, seDeconnecter } from '../../services/compte';
 import { CatalogueOnglet } from './Catalogue';
 import { ClientsOnglet } from './Clients';
+import { HistoriqueOnglet } from './Historique';
 import { ComptabiliteOnglet } from './Comptabilite';
 import { HorairesOnglet } from './Horaires';
 import { MonSiteOnglet } from './MonSite';
@@ -18,6 +19,7 @@ import styles from './Pro.module.css';
 const ONGLETS = [
   { id: 'tableau', icone: 'tableau', label: 'Tableau de bord' },
   { id: 'planning', icone: 'calendrier', label: 'Planning' },
+  { id: 'historique', icone: 'historique', label: 'Historique' },
   { id: 'clients', icone: 'clients', label: 'Clients' },
   { id: 'telephone', icone: 'telephone', label: 'Rendez-vous par téléphone' },
   { id: 'catalogue', icone: 'catalogue', label: 'Catalogue' },
@@ -63,6 +65,7 @@ export function EspacePro() {
       <div id="contenu-pro" className={styles.contenu}>
       {onglet === 'tableau' && <TableauDeBordOnglet />}
       {onglet === 'planning' && <PlanningOnglet />}
+      {onglet === 'historique' && <HistoriqueOnglet />}
       {onglet === 'clients' && <ClientsOnglet />}
       {onglet === 'telephone' && <RdvTelephoneOnglet />}
       {onglet === 'catalogue' && <CatalogueOnglet />}

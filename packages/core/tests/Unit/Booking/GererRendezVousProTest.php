@@ -115,6 +115,7 @@ final class GererRendezVousProTest extends TestCase
         self::assertSame(['name' => 'Camille Martin', 'email' => 'camille@example.test', 'phone' => '0600000000'], $planning[0]['client']);
         self::assertSame('Nettoyage', $planning[0]['prestation']);
         self::assertSame('confirmed', $planning[0]['status']);
+        self::assertSame($this->clock->now()->setTimezone(new \DateTimeZone('UTC'))->format(DATE_ATOM), $planning[0]['createdAt'], 'date de prise du rendez-vous');
     }
 
     public function testMarquerFaitOuAbsentApresLeDebut(): void

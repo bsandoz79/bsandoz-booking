@@ -53,6 +53,16 @@ class Reservation
     ) {
     }
 
+    /** Date à laquelle le rendez-vous a été pris (historique) ; null pour les réservations antérieures. */
+    private ?\DateTimeImmutable $creeLe = null;
+
+    public function marquerCreeLe(\DateTimeImmutable $quand): void
+    {
+        $this->creeLe ??= $quand;
+    }
+
+    public function creeLe(): ?\DateTimeImmutable { return $this->creeLe; }
+
     public static function hold(self $reservation, \DateTimeImmutable $now, int $holdMinutes): self
     {
         $reservation->holdExpiresAt = $now->modify(sprintf('+%d minutes', $holdMinutes));

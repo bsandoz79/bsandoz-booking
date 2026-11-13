@@ -59,3 +59,5 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/crayons-planning` : crayons en icône bien placés, planning semaine lisible avec clic vers le détail, rubriques de l'espace pro dans une colonne à gauche
 - [x] `feature/profil-icones` : Mon espace façon réglages, icônes au trait, zones modifiables en pointillés avec crayon en haut à droite, photo de l'accueil modifiable
 - [x] `feature/navbar-ordre` : catalogue par catégorie, détail de rendez-vous structuré, barre de navigation dans l'ordre logique (liens, Réserver, compte, thème)
+- [x] `feature/produits-grille` : produits en grille avec catégories et filtres, stock visible du client, détail de rendez-vous compact, réservation pré-remplie
+- [x] `feature/historique` : historique des rendez-vous (date de réservation, tri, filtres, fiche au clic)
