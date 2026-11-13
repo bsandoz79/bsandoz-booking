@@ -91,7 +91,7 @@ export function FactureVue() {
         </table>
 
         <footer className={styles.pied}>
-          <p><strong>Facture acquittée</strong>{facture.payeEnLigneCents > 0 ? ` : ${formatEuros(facture.payeEnLigneCents)} réglés en ligne` : ''}{facture.payeSurPlaceCents > 0 ? `${facture.payeEnLigneCents > 0 ? ',' : ' :'} ${formatEuros(facture.payeSurPlaceCents)} réglés sur place` : ''}.</p>
+          <p><strong>Facture acquittée</strong>{facture.payeEnLigneCents > 0 ? ` : ${formatEuros(facture.payeEnLigneCents)} réglés en ligne` : ''}{facture.payeSurPlaceCents > 0 ? `${facture.payeEnLigneCents > 0 ? ',' : ' :'} ${formatEuros(facture.payeSurPlaceCents)} réglés sur place${facture.moyenSurPlace ? ` par ${facture.moyenSurPlace}` : ''}` : ''}.</p>
           <p>{vendeur.mentionTva}</p>
         </footer>
       </article>

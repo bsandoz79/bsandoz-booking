@@ -280,6 +280,8 @@ return static function (ContainerConfigurator $container): void {
         ->arg('$successUrl', param('bsandoz_core.payment.success_url'))
         ->arg('$cancelUrl', param('bsandoz_core.payment.cancel_url'));
     $services->set(ConfirmerPaiement::class);
+    // Reste à régler sur place payé par QR code (retour client : page « paiement reçu » du site).
+    $services->set(\Bsandoz\Core\Payment\Application\CreerPaiementSurPlace::class)->arg('$frontUrl', param('bsandoz_core.mail.front_url'));
     $services->set(\Bsandoz\Core\Payment\Application\ReprendrePaiement::class);
     $services->set(RembourserAcompte::class);
     // Avoirs (somme payée non remboursée, déduite de la réservation suivante)

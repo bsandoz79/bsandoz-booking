@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { formatEuros } from '@bsandoz/ui';
-import { tableauDeBord, type ChoseAFaire, type RendezVousDuJour, type TableauDeBord } from '../../services/pro';
+import { rendezVousPro, tableauDeBord, type ChoseAFaire, type RendezVousDuJour, type RendezVousPro, type TableauDeBord } from '../../services/pro';
+import { Encaisser } from './Encaisser';
 import { dateHeure } from './dates';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
@@ -31,8 +32,15 @@ function texteAFaire(t: ChoseAFaire): string {
 export function TableauDeBordOnglet() {
   const [tdb, setTdb] = useState<TableauDeBord>();
   const [erreur, setErreur] = useState('');
+  // Rendez-vous en cours d'encaissement (fenêtre « Encaisser ») et message après encaissement.
+  const [aEncaisser, setAEncaisser] = useState<RendezVousPro>();
+  const [message, setMessage] = useState('');
+  const [maintenant] = useState(() => Date.now());
 
-  useEffect(() => { tableauDeBord().then(setTdb).catch((e: Error) => setErreur(e.message)); }, []);
+  const charger = () => tableauDeBord().then(setTdb).catch((e: Error) => setErreur(e.message));
+  useEffect(() => { void charger(); }, []);
+  // Montant : celui de la carte du jour (même calcul que l'affichage « À encaisser sur place »).
+  const ouvrirEncaissement = (r: RendezVousDuJour) => { rendezVousPro(r.id).then((d) => setAEncaisser({ ...d, surPlaceCents: r.resteSurPlaceCents })).catch((e: Error) => setErreur(e.message)); };
 
   if (erreur) return <p className={styles.erreur} role="alert">{erreur}</p>;
   if (!tdb) return <p aria-busy="true">Chargement…</p>;
@@ -78,6 +86,10 @@ export function TableauDeBordOnglet() {
                   {r.notes && <p className={styles.aide}>Note : {r.notes}</p>}
                   {r.status !== 'done' && r.resteSurPlaceCents > 0 && <p>À encaisser sur place : <strong>{formatEuros(r.resteSurPlaceCents)}</strong></p>}
                   <div className={styles.actions}>
+                    {/* Sur place, une fois le rendez-vous commencé : encaisser le reste (moyen noté ou QR code). */}
+                    {r.status === 'confirmed' && r.resteSurPlaceCents > 0 && new Date(r.start).getTime() <= maintenant && (
+                      <button type="button" className="btn" onClick={() => ouvrirEncaissement(r)}>Encaisser {formatEuros(r.resteSurPlaceCents)}</button>
+                    )}
                     {r.address && <BoutonItineraire destination={r} nom={r.client || 'le client'} />}
                     {r.phone && <a className={styles.appelClient} href={lienTel(r.phone)} aria-label={`Appeler ${r.phone}`}><IconeTelephone /> {r.phone}</a>}
                   </div>
@@ -85,6 +97,11 @@ export function TableauDeBordOnglet() {
               </li>
             ))}
           </ol>
+        )}
+        {message && <p className={styles.ok} role="status">{message}</p>}
+        {aEncaisser && (
+          <Encaisser rdv={aEncaisser} onClose={() => setAEncaisser(undefined)}
+            onEncaisse={(texte) => { setAEncaisser(undefined); setMessage(texte); void charger(); }} />
         )}
         {(tdb.aCharger ?? []).length > 0 && (
           <div>

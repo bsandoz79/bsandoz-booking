@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Button, PlanningView, formatEuros, startOfWeek, type PlanningEvent, type PlanningMode } from '@bsandoz/ui';
 import { ajusterCarte, carteClient, type CarteFidelite } from '../../services/fidelite';
-import { annulerRendezVous, catalogue, changerStatut, horaires, indisponibilites, planning, rembourser, type Indisponibilite, type Plage, type RendezVousPro } from '../../services/pro';
+import { annulerRendezVous, catalogue, changerStatut, horaires, indisponibilites, planning, rembourser, type Indisponibilite, type MoyenPaiement, type Plage, type RendezVousPro } from '../../services/pro';
+import { Encaisser } from './Encaisser';
 import { dateHeure, jourLocal, localIso, plusJours } from './dates';
 import { STATUTS } from './statutsRdv';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
@@ -130,6 +131,9 @@ export function PlanningOnglet() {
   );
 }
 
+/** Moyen de paiement sur place, en clair. */
+const LIBELLES_MOYENS: Record<MoyenPaiement, string> = { carte: 'carte bancaire', especes: 'espèces', virement: 'virement', cheque: 'chèque', qr: 'QR code' };
+
 /** « 1 h 30 », « 45 min ». */
 const dureeTexte = (min: number) => (min >= 60 ? `${Math.floor(min / 60)} h${min % 60 ? ` ${String(min % 60).padStart(2, '0')}` : ''}` : `${min} min`);
 
@@ -144,6 +148,7 @@ export function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: 
   const [message, setMessage] = useState('');
   const [erreur, setErreur] = useState('');
   const [annulation, setAnnulation] = useState(false);
+  const [encaissement, setEncaissement] = useState(false);
   const [maintenant] = useState(() => Date.now());
   const passe = new Date(rdv.start).getTime() <= maintenant;
 
@@ -213,7 +218,9 @@ export function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: 
           <dd>
             Total <strong>{formatEuros(rdv.totalCents + (rdv.produitsCents ?? 0))}</strong>
             {enLigne > 0 ? ` · ${rdv.status === 'pending_payment' ? 'en ligne en attente' : 'payé en ligne'} ${formatEuros(enLigne)}` : ''}
-            {' · '}<span className={surPlace > 0 ? r.accent : undefined}>{surPlace > 0 ? `À encaisser sur place ${formatEuros(surPlace)}` : 'tout est réglé'}</span>
+            {' · '}{rdv.moyenSurPlace
+              ? <span>encaissé sur place {formatEuros(surPlace)} ({LIBELLES_MOYENS[rdv.moyenSurPlace]})</span>
+              : <span className={surPlace > 0 ? r.accent : undefined}>{surPlace > 0 ? `À encaisser sur place ${formatEuros(surPlace)}` : 'tout est réglé'}</span>}
             {rdv.travelFeeCents > 0 || rdv.remiseFideliteCents ? (
               <span className={r.ligneSous}>{' '}({rdv.travelFeeCents > 0 ? `déplacement ${formatEuros(rdv.travelFeeCents)}` : ''}{rdv.travelFeeCents > 0 && rdv.remiseFideliteCents ? ', ' : ''}{rdv.remiseFideliteCents ? `remise fidélité ${formatEuros(rdv.remiseFideliteCents)}` : ''})</span>
             ) : null}
@@ -247,10 +254,17 @@ export function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: 
 
       {rdv.status === 'confirmed' && !annulation && (
         <div className={styles.detailActions}>
-          {passe && <Button onClick={() => agir(async () => { await changerStatut(rdv.id, 'done'); return 'Rendez-vous marqué comme terminé.'; })}>Terminé</Button>}
+          {/* Reste à régler : « Encaisser » (moyen noté ou QR code), qui termine le rendez-vous ; sinon « Terminé ». */}
+          {passe && (surPlace > 0
+            ? <Button onClick={() => setEncaissement(true)}>Encaisser {formatEuros(surPlace)}</Button>
+            : <Button onClick={() => agir(async () => { await changerStatut(rdv.id, 'done'); return 'Rendez-vous marqué comme terminé.'; })}>Terminé</Button>)}
           {passe && <Button variant="secondary" onClick={() => agir(async () => { await changerStatut(rdv.id, 'no_show'); return 'Client marqué absent.'; })}>Client absent</Button>}
           <button type="button" className={r.boutonDanger} onClick={() => setAnnulation(true)}>Annuler le rendez-vous</button>
         </div>
+      )}
+      {encaissement && (
+        <Encaisser rdv={{ ...rdv, surPlaceCents: surPlace }} onClose={() => setEncaissement(false)}
+          onEncaisse={(texteMessage) => { setEncaissement(false); setMessage(texteMessage); onChange(); }} />
       )}
       {annulation && rdv.status !== 'cancelled' && (
         <div className={styles.detailAnnulation}>

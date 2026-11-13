@@ -50,6 +50,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Barre du haut minimale à toutes les tailles d'écran : logo, Réserver, téléphone, thème et menu ☰ ; le menu (Prestations, Fidélité, Pro, Mon espace, Espace pro) se déroule sous la barre et se referme en cliquant ailleurs.
 - ✅ Mouvement dès l'arrivée sur l'accueil, sobre : titre révélé mot par mot, photo en lent zoom arrière puis respiration très lente, points forts un à un, une seule impulsion sur « Réserver un créneau » ; tout reste immobile si « moins d'animations » est demandé.
 - ✅ Site installable sur le téléphone comme une application : « Installer l'application » dans le menu ☰, visible seulement avec le compte pro. L'application installée s'ouvre directement sur l'Espace pro (connexion si besoin). Sur Android, la fenêtre d'installation du navigateur s'ouvre ; sur iPhone, une fenêtre explique les deux gestes (Partager, puis « Sur l'écran d'accueil »). Le bouton disparaît une fois le site installé. Raccourcis sur l'icône (appui long) : Espace pro, Site public, Réserver.
+- ✅ Encaisser sur place : bouton « Encaisser X € » (Ma journée et détail du rendez-vous) à la place de « Terminé » quand il reste à payer. Moyen au choix (carte au terminal, espèces, virement, chèque) ou QR code : le client scanne et paie sur son téléphone (carte, Apple Pay, Google Pay, via Stripe), la fenêtre affiche « Paiement reçu » toute seule. Rendez-vous terminé, facture envoyée avec « réglés sur place par … », recettes par moyen de paiement dans Comptabilité.
 - ✅ Cartes des onglets Intérieur / Extérieur parfois vides avec le compte pro : l'activation du mode édition après le chargement effaçait la marque d'apparition et les cartes restaient invisibles. Corrigé (marque posée en attribut, que React ne réécrit pas).
 - ✅ Bouton « Itinéraire » avec une icône de trajet ; dans la fenêtre de choix, Google Maps (bouton blanc) et Waze (bouton bleu) avec leur logo.
 - ✅ Plus de « jeu » sur téléphone : champs en 16 px minimum sur écran tactile (l'iPhone ne zoome plus en touchant un champ), page qui ne peut plus glisser de côté, liste « Trier par » de l'Historique contenue à l'écran (375 px), en-tête resserré sur les très petits téléphones (320 px). Vérifié sur toutes les pages et tous les onglets de l'Espace pro à 320, 375 et 390 px.
@@ -108,8 +109,8 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ⏳ Photos des réalisations (avant / après), vrais produits (photos, prix, stock).
 
 ### Serveur
-- ⏳ Lancer `sh deploy/apres-envoi.sh` après chaque déploiement de l'API (migrations en attente : catégorie des produits, date de réservation, ordre des options).
-- ⏳ `.env.local` de l'API : clés Stripe (paiement en ligne réel), `PRO_EMAIL`, `BSANDOZ_ICAL_SECRET` (agenda du pro, 32 caractères au moins).
+- ⏳ Lancer `sh deploy/apres-envoi.sh` après chaque déploiement de l'API (migrations en attente : catégorie des produits, date de réservation, ordre des options, encaissement sur place).
+- ⏳ `.env.local` de l'API : clés Stripe (paiement en ligne réel et QR code d'encaissement sur place), `PRO_EMAIL`, `BSANDOZ_ICAL_SECRET` (agenda du pro, 32 caractères au moins).
 - ⏳ Supprimer les dossiers « "demo.bsandoz.fr » et « "api.demo.bsandoz.fr » (créés par erreur).
 
 ### Idées pour la suite

@@ -7,6 +7,8 @@ export interface Bilan {
   annee: number;
   mois: MoisCompta[];
   totaux: { chiffreAffairesCents: number; depensesCents: number; resultatCents: number };
+  /** Recettes de l'année par moyen de paiement (en ligne, puis chaque moyen sur place ; « nonPrecise » : marqué fait sans moyen). */
+  parMoyenCents?: Partial<Record<'enLigne' | 'carte' | 'qr' | 'especes' | 'virement' | 'cheque' | 'nonPrecise', number>>;
   depenses: Depense[];
 }
 export interface NouvelleDepense { le: string; libelle: string; montantCents: number; mensuelle: boolean }

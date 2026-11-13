@@ -34,7 +34,7 @@ final class GererComptabilite
     }
 
     /**
-     * @return array{annee: int, mois: list<array{mois: string, chiffreAffairesCents: int, depensesCents: int, resultatCents: int}>, totaux: array{chiffreAffairesCents: int, depensesCents: int, resultatCents: int}, depenses: list<DepenseVue>}
+     * @return array{annee: int, mois: list<array{mois: string, chiffreAffairesCents: int, depensesCents: int, resultatCents: int}>, totaux: array{chiffreAffairesCents: int, depensesCents: int, resultatCents: int}, parMoyenCents: array<string, int>, depenses: list<DepenseVue>}
      * @throws DomainError année invalide
      */
     public function bilan(int $annee): array
@@ -45,6 +45,8 @@ final class GererComptabilite
         $tz = $this->settings->timezone();
         $debut = new \DateTimeImmutable(sprintf('%d-01-01', $annee), $tz);
         $ca = array_fill_keys(array_map(static fn (int $m): string => sprintf('%d-%02d', $annee, $m), range(1, 12)), 0);
+        // Recettes de l'année par moyen de paiement (en ligne, puis chaque moyen sur place ; « nonPrecise » : marqué fait sans moyen).
+        $parMoyen = ['enLigne' => 0, 'carte' => 0, 'qr' => 0, 'especes' => 0, 'virement' => 0, 'cheque' => 0, 'nonPrecise' => 0];
         foreach ($this->reservations->between($debut, $debut->modify('+1 year')) as $r) {
             if ($r->status() !== ReservationStatus::Done) {
                 continue;
@@ -52,6 +54,10 @@ final class GererComptabilite
             $mois = $r->period()->start->setTimezone($tz)->format('Y-m');
             if (isset($ca[$mois])) {
                 $ca[$mois] += self::encaisse($r);
+                $enLigne = $r->aPayerEnLigne()->min($r->total()->add($r->totalProduits()))->cents;
+                $parMoyen['enLigne'] += $enLigne;
+                $moyen = $r->moyenSurPlace();
+                $parMoyen[$moyen === null ? 'nonPrecise' : $moyen->value] += self::encaisse($r) - $enLigne;
             }
         }
 
@@ -77,6 +83,7 @@ final class GererComptabilite
             'annee' => $annee,
             'mois' => $mois,
             'totaux' => ['chiffreAffairesCents' => $somme('chiffreAffairesCents'), 'depensesCents' => $somme('depensesCents'), 'resultatCents' => $somme('resultatCents')],
+            'parMoyenCents' => $parMoyen,
             'depenses' => array_values(array_map(self::vue(...), array_filter($toutes, static fn (Depense $d): bool => (int) $d->le()->format('Y') === $annee
                 || ($d->mensuelle() && (int) $d->le()->format('Y') < $annee && ($d->finLe() === null || (int) $d->finLe()->format('Y') >= $annee))))),
         ];

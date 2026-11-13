@@ -19,6 +19,7 @@ import { FactureVue } from '../pages/Facture/Facture';
 import { Professionnels } from '../pages/Professionnels/Professionnels';
 import { Devis } from '../pages/Professionnels/Devis';
 import { Desinscription } from '../pages/Desinscription/Desinscription';
+import { PaiementRecu } from '../pages/PaiementRecu/PaiementRecu';
 
 export function AppRoutes() {
   return (
@@ -40,6 +41,7 @@ export function AppRoutes() {
         <Route path="/compte/mot-de-passe" element={<MotDePasse />} />
         <Route path="/rendez-vous" element={<RendezVous />} />
         <Route path="/desinscription" element={<Desinscription />} />
+        <Route path="/paiement-recu" element={<PaiementRecu />} />
         <Route path="/pro" element={<EspacePro />} />
         <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/cgv" element={<Cgv />} />

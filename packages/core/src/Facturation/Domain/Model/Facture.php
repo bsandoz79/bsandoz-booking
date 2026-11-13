@@ -31,6 +31,8 @@ class Facture
         private array $lignes,
         private Money $total,
         private Money $payeEnLigne,
+        /** Moyen du paiement sur place, en clair (« carte bancaire », « espèces »…) ; null si non précisé. */
+        private ?string $moyenSurPlace = null,
     ) {
         if (!preg_match('/^F-\d{4}-\d{4,}$/', $numero)) {
             throw new DomainError('Numéro de facture invalide.');
@@ -54,6 +56,7 @@ class Facture
     public function lignes(): array { return $this->lignes; }
     public function total(): Money { return $this->total; }
     public function payeEnLigne(): Money { return $this->payeEnLigne; }
+    public function moyenSurPlace(): ?string { return $this->moyenSurPlace; }
     /** Réglé sur place (le reste du total). */
     public function payeSurPlace(): Money { return $this->total->subtract($this->payeEnLigne->min($this->total)); }
 

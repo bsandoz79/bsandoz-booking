@@ -70,6 +70,24 @@ final class GererComptabiliteTest extends TestCase
         self::assertSame(['Produits de nettoyage', 'Assurance'], array_column($b['depenses'], 'libelle'));
     }
 
+    public function testRecettesParMoyenDePaiement(): void
+    {
+        $this->faite('2026-10-05 09:00', 6900); // marquée faite sans moyen
+        $d = new \DateTimeImmutable('2026-10-06 09:00', new \DateTimeZone('UTC'));
+        $r = new Reservation('r-carte', 'u', 'p', null, [], new TimeRange($d, $d->modify('+1 hour')), 'a', 50.0, 1.8,
+            Money::cents(4500), Money::cents(1000), Money::zero(), [], '', null, null, 1, false);
+        $r->confirm();
+        $r->encaisser(\Bsandoz\Core\Booking\Domain\Model\MoyenPaiement::Carte, $d->modify('+1 hour'));
+        $this->reservations->save($r);
+
+        $parMoyen = $this->compta->bilan(2026)['parMoyenCents'];
+
+        self::assertSame(1000, $parMoyen['enLigne'], 'acompte payé en ligne');
+        self::assertSame(3500, $parMoyen['carte'], 'reste encaissé au terminal');
+        self::assertSame(6900, $parMoyen['nonPrecise']);
+        self::assertSame(0, $parMoyen['especes']);
+    }
+
     public function testDepenseMensuelleArreteeGardeLHistorique(): void
     {
         $assurance = $this->compta->ajouter(['le' => '2026-09-01', 'libelle' => 'Assurance', 'montantCents' => 4000, 'mensuelle' => true]);

@@ -10,6 +10,8 @@ export interface Facture extends Omit<FactureResume, 'client'> {
   lignes: { libelle: string; montantCents: number }[];
   payeEnLigneCents: number;
   payeSurPlaceCents: number;
+  /** Moyen du paiement sur place, en clair (« carte bancaire », « espèces »…) ; absent si non précisé. */
+  moyenSurPlace?: string | null;
 }
 export type InfosVendeur = Facture['vendeur'];
 

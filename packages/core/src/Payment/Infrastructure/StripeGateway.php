@@ -42,7 +42,8 @@ final class StripeGateway implements PaymentGateway
                     'quantity' => 1,
                     'price_data' => ['currency' => 'eur', 'unit_amount' => $amount->cents, 'product_data' => ['name' => $description]],
                 ]],
-                'customer_email' => $customerEmail,
+                // Adresse préremplie si connue (Stripe refuse une adresse vide).
+                ...($customerEmail !== '' ? ['customer_email' => $customerEmail] : []),
                 'client_reference_id' => $reservationId,
                 'metadata' => ['reservation_id' => $reservationId],
                 'payment_intent_data' => ['metadata' => ['reservation_id' => $reservationId]],

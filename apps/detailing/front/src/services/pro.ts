@@ -63,6 +63,9 @@ export interface RendezVousPro {
   paiementEnLigne?: boolean | null;
   enLigneCents?: number;
   surPlaceCents?: number;
+  /** Moyen du paiement sur place, noté à l'encaissement (null : pas encore encaissé). */
+  moyenSurPlace?: MoyenPaiement | null;
+  encaisseLe?: string | null;
   travelFeeCents: number;
   notes: string;
   metierData: Record<string, unknown>;
@@ -201,6 +204,37 @@ export async function tableauDeBord(): Promise<TableauDeBord> {
 export async function planning(from: string, to: string): Promise<RendezVousPro[]> {
   if (isDemo()) return demo.rdv;
   return authHttp(`/admin/reservations?from=${from}&to=${to}`);
+}
+
+/** Moyens de paiement sur place : terminal de carte (TPE), espèces, virement, chèque, ou QR code payé par le client. */
+export type MoyenPaiement = 'carte' | 'especes' | 'virement' | 'cheque' | 'qr';
+
+/** Encaisse le reste à régler sur place : moyen noté, rendez-vous terminé, facture envoyée au client. */
+export async function encaisser(id: string, moyen: Exclude<MoyenPaiement, 'qr'>): Promise<void> {
+  if (isDemo()) { demo.rdv = demo.rdv.map((r) => (r.id === id ? { ...r, status: 'done', moyenSurPlace: moyen, encaisseLe: new Date().toISOString() } : r)); return; }
+  return authHttp(`/admin/reservations/${encodeURIComponent(id)}/encaisser`, { method: 'POST', ...json({ moyen }) });
+}
+
+/** Lien de paiement du reste à régler, à montrer en QR code au client (il paie sur son téléphone). */
+export async function lienPaiementQr(id: string): Promise<string> {
+  if (isDemo()) {
+    // Démonstration : le « client » paie au bout de quelques secondes.
+    window.setTimeout(() => {
+      demo.rdv = demo.rdv.map((r) => (r.id === id ? { ...r, status: 'done', moyenSurPlace: 'qr', encaisseLe: new Date().toISOString() } : r));
+    }, 6000);
+    return `https://demo.bsandoz.fr/paiement-recu?demo=${encodeURIComponent(id)}`;
+  }
+  return (await authHttp<{ url: string }>(`/admin/reservations/${encodeURIComponent(id)}/paiement-qr`, { method: 'POST' })).url;
+}
+
+/** Un rendez-vous (suivi du paiement par QR code). */
+export async function rendezVousPro(id: string): Promise<RendezVousPro> {
+  if (isDemo()) {
+    const r = demo.rdv.find((x) => x.id === id);
+    if (!r) throw new Error('Rendez-vous introuvable.');
+    return r;
+  }
+  return authHttp(`/admin/reservations/${encodeURIComponent(id)}`);
 }
 
 export async function changerStatut(id: string, status: 'done' | 'no_show'): Promise<void> {

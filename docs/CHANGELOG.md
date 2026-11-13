@@ -190,6 +190,7 @@
 - « Installer l'application » réservé au compte pro (absent du menu des clients).
 - L'application installée s'ouvre sur l'Espace pro (raccourcis : Espace pro, Site public, Réserver) ; service worker v6.
 - Itinéraire : icône de trajet sur le bouton, logos Google Maps et Waze dans la fenêtre de choix.
+- Encaisser sur place : moyen noté (carte au terminal, espèces, virement, chèque) ou QR code Stripe payé par le client sur son téléphone ; rendez-vous terminé, facture « réglés sur place par … », recettes par moyen dans Comptabilité, page /paiement-recu (migration Version20261113230000).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
