@@ -1,20 +1,19 @@
+/* En-tête minimal, sur une ligne : logo à gauche ; Réserver, téléphone, thème et menu à droite ; menu déroulant dessous. */
 .header { background: var(--bs-color-surface); border-bottom: 1px solid var(--bs-color-border); position: sticky; top: 0; z-index: 10; }
-.inner { display: flex; align-items: center; gap: 1rem; padding-block: 0.5rem; flex-wrap: wrap; }
+.inner { position: relative; display: flex; align-items: center; gap: .75rem; padding-block: .5rem; }
 .brand { display: inline-flex; line-height: 0; margin-right: auto; }
 /* Logo sur pastille blanche : lisible aussi en version nuit. */
 .brand img { height: 48px; width: auto; background: #fff; border-radius: 10px; padding: 2px 4px; box-sizing: content-box; }
-.nav { display: flex; align-items: center; gap: 1.25rem; font-weight: 600; }
-.nav a { color: var(--bs-color-text); text-decoration: none; white-space: nowrap; }
-.actions { display: flex; align-items: center; gap: .75rem; }
+.actions { display: flex; align-items: center; gap: .5rem; }
+.reserver { flex: none; }
 .rond { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); font-size: 1.2rem; cursor: pointer; }
 .rond:hover { border-color: var(--bs-color-primary); }
-.menu { display: none; }
-/* Téléphone de l'entreprise : rond vert avec le combiné, numéro écrit sur grand écran. */
-.appel { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; min-width: 44px; height: 44px; padding: 0 .9rem;
-  border-radius: 999px; background: #13794a; color: #fff; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.rond:focus-visible { outline: 2px solid var(--bs-color-primary); outline-offset: 2px; }
+
+/* Téléphone de l'entreprise : rond vert avec le combiné. */
+.appel { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #13794a; color: #fff; text-decoration: none; }
 .appel:hover { background: #0f6640; }
 .appel:focus-visible { outline: 2px solid var(--bs-color-primary); outline-offset: 2px; }
-@media (max-width: 1099px) { .appel { padding: 0; width: 44px; } .appelNumero { display: none; } }
 
 /* Bouton clair / nuit : un rond de ciel ; au changement, le soleil se couche et la lune se lève (roue d'un demi-tour). */
 .astre { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
@@ -39,64 +38,20 @@
 @media (prefers-reduced-motion: reduce) { .ciel, .etoiles, .roue { transition: none; } }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* Téléphone : une seule ligne (logo, clair / nuit, Réserver, Menu) ; les liens s'ouvrent en dessous. */
+/* Menu déroulant : panneau sous la barre, à droite sur grand écran, pleine largeur sur téléphone. */
+.nav { display: none; position: absolute; top: calc(100% + 1px); right: 1.25rem; z-index: 20; min-width: 240px; flex-direction: column; padding: .4rem;
+  background: var(--bs-color-surface); border: 1px solid var(--bs-color-border); border-radius: 14px; box-shadow: 0 16px 40px rgb(0 0 0 / .14); font-weight: 600; }
+.nav.ouvert { display: flex; }
+.nav a { display: flex; align-items: center; gap: .55rem; min-height: 46px; padding: 0 .85rem; border-radius: 10px; color: var(--bs-color-text); text-decoration: none; white-space: nowrap; }
+.nav a:hover, .nav a[aria-current='page'] { background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); }
+.nav .lienCompte { margin-top: .3rem; border-top: 1px solid var(--bs-color-border); border-radius: 0 0 10px 10px; padding-top: .3rem; }
+/* Espace pro (compte pro) : se distingue en ambre. */
+.nav .espacePro { color: #2a1d00; background: #f5b833; margin-top: .3rem; }
+.nav .espacePro:hover { background: #ffc94d; color: #2a1d00; }
 @media (max-width: 760px) {
-  .inner { gap: .5rem; }
+  .inner { gap: .4rem; }
   .brand img { height: 40px; }
-  .actions { gap: .5rem; }
-  .reserver { padding: 0 1.1rem; min-height: 44px; }
-  .menu { display: inline-grid; }
-  .nav { display: none; order: 3; width: 100%; flex-direction: column; align-items: stretch; gap: 0; padding-bottom: .25rem; }
-  .nav.ouvert { display: flex; }
-  .nav a { display: flex; align-items: center; min-height: 48px; padding-inline: .25rem; border-top: 1px solid var(--bs-color-border); }
-}
-
-/* Lien « Espace pro » (compte pro connecté) : pastille ambre, distincte des liens et du bouton « Réserver ». */
-.espacePro { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .85rem; border-radius: 999px;
-  background: #f5b833; color: #2a1d00; font-weight: 800; text-decoration: none; box-shadow: 0 0 0 2px rgb(245 184 51 / .25); }
-.espacePro:hover { background: #ffc94d; color: #2a1d00; }
-.espacePro:focus-visible { outline: 3px solid #f5b833; outline-offset: 3px; }
-.espacePro[aria-current='page'] { box-shadow: 0 0 0 3px rgb(245 184 51 / .45); }
-@media (max-width: 760px) {
-  .espacePro { align-self: flex-start; min-height: 44px; margin-block: .5rem .25rem; padding-inline: 1rem; border-top: none; }
-}
-
-/* Bouton principal juste après les liens ; compte et thème regroupés à droite. */
-.nav { margin-left: auto; }
-.brand { margin-right: 0; }
-.inner { gap: 1rem 1.25rem; }
-.reserver { flex: none; }
-.compte, .espacePro { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: 0 1rem; border-radius: 999px; text-decoration: none; font-weight: 700; white-space: nowrap; }
-.compte { border: 1.5px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); }
-.compte:hover { border-color: var(--bs-color-text-muted); }
-.compte[aria-current='page'] { border-color: var(--bs-color-primary); color: var(--bs-color-primary-dark); }
-.compte:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
-.espacePro { padding: 0 1rem; }
-/* Écrans moyens et téléphone : icônes seules (le libellé reste lu par les lecteurs d'écran). */
-@media (max-width: 1099px) {
-  .compte, .espacePro { width: 44px; padding: 0; justify-content: center; }
-  .libelleCompte { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-}
-@media (max-width: 760px) {
-  .nav { margin-left: 0; }
-  .brand { margin-right: auto; }
-}
-
-/* Allègement : téléphone et espace pro en petits ronds, « Mon espace » sans contour, espacements réduits. */
-.actions { gap: .35rem; }
-.appel { width: 40px; min-width: 40px; height: 40px; padding: 0; border-radius: 50%; }
-.espacePro { width: 40px; height: 40px; min-height: 40px; padding: 0; justify-content: center; border-radius: 50%; box-shadow: none; }
-.compte { border-color: transparent; background: transparent; padding: 0 .7rem; min-height: 40px; }
-.compte:hover { border-color: transparent; background: color-mix(in srgb, var(--bs-color-text) 6%, transparent); }
-.compte[aria-current='page'] { border-color: transparent; background: var(--bs-color-primary-soft); }
-.nav { gap: 1.1rem; }
-
-/* Liens du compte : dans la barre sur grand écran, dans le menu sur téléphone. */
-.dansMenu { display: none; }
-@media (max-width: 760px) {
-  .horsMenu { display: none !important; }
-  .nav .dansMenu { display: flex; }
-  .inner { flex-wrap: wrap; row-gap: 0; }
+  .actions { gap: .35rem; }
   .reserver { padding: 0 1rem; min-height: 42px; font-size: .95rem; }
-  .actions { gap: .3rem; }
+  .nav { left: .75rem; right: .75rem; min-width: 0; }
 }
