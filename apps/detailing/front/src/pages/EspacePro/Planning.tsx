@@ -236,7 +236,7 @@ export function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: 
       {/* Contacter le client : tout en bas de la fiche. */}
       {(rdv.client.phone || rdv.client.email || rdv.address) && (
         <div className={styles.detailContact}>
-          {rdv.client.phone && <a className={styles.appelClient} href={lienTel(rdv.client.phone)}><IconeTelephone /> Appeler {rdv.client.phone}</a>}
+          {rdv.client.phone && <a className={styles.appelClient} href={lienTel(rdv.client.phone)} aria-label={`Appeler ${rdv.client.phone}`}><IconeTelephone /> {rdv.client.phone}</a>}
           {rdv.client.email && <a className={r.boutonContour} href={`mailto:${rdv.client.email}`}><Icone nom="mail" taille={17} /> Écrire</a>}
           {rdv.address && <BoutonItineraire destination={{ address: rdv.address }} nom={rdv.client.name} />}
         </div>

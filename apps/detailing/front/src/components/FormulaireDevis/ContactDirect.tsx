@@ -10,7 +10,7 @@ export function ContactDirect({ sujet }: { sujet: string }) {
 
   return (
     <p className={styles.contacts}>
-      {telephone ? <a className="btn btn--ghost" href={`tel:${telephone.replace(/[^\d+]/g, '')}`}>Appeler le {telephone}</a> : <span>Téléphone : {A_COMPLETER}</span>}
+      {telephone ? <a className="btn btn--ghost" href={`tel:${telephone.replace(/[^\d+]/g, '')}`} aria-label={`Appeler le ${telephone}`}>{telephone}</a> : <span>Téléphone : {A_COMPLETER}</span>}
       {email ? <a className="btn btn--ghost" href={`mailto:${email}?subject=${encodeURIComponent(sujet)}`}>Écrire à {email}</a> : <span>E-mail : {A_COMPLETER}</span>}
     </p>
   );

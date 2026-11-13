@@ -79,7 +79,7 @@ export function TableauDeBordOnglet() {
                   {r.status !== 'done' && r.resteSurPlaceCents > 0 && <p>À encaisser sur place : <strong>{formatEuros(r.resteSurPlaceCents)}</strong></p>}
                   <div className={styles.actions}>
                     {r.address && <BoutonItineraire destination={r} nom={r.client || 'le client'} />}
-                    {r.phone && <a className={styles.appelClient} href={lienTel(r.phone)}><IconeTelephone /> Appeler {r.phone}</a>}
+                    {r.phone && <a className={styles.appelClient} href={lienTel(r.phone)} aria-label={`Appeler ${r.phone}`}><IconeTelephone /> {r.phone}</a>}
                   </div>
                 </div>
               </li>
@@ -133,7 +133,7 @@ export function TableauDeBordOnglet() {
               {tdb.clients.aRelancer.map((c) => (
                 <li key={c.userId} className={styles.prochain}>
                   <span><strong>{c.client || 'Client'}</strong> · dernière visite le {new Date(c.derniereVisite).toLocaleDateString('fr-FR')}</span>
-                  {c.phone && <a className={styles.appelClient} href={lienTel(c.phone)}><IconeTelephone /> Appeler {c.phone}</a>}
+                  {c.phone && <a className={styles.appelClient} href={lienTel(c.phone)} aria-label={`Appeler ${c.phone}`}><IconeTelephone /> {c.phone}</a>}
                 </li>
               ))}
             </ul>
@@ -147,7 +147,7 @@ export function TableauDeBordOnglet() {
           {tdb.next.map((r) => (
             <li key={r.id} className={styles.prochain}>
               <span><strong>{dateHeure(r.start)}</strong>{r.client ? ` · ${r.client}` : ''}{r.address ? ` · ${r.address}` : ''}</span>
-              {r.phone && <a className={styles.appelClient} href={lienTel(r.phone)}><IconeTelephone /> Appeler {r.phone}</a>}
+              {r.phone && <a className={styles.appelClient} href={lienTel(r.phone)} aria-label={`Appeler ${r.phone}`}><IconeTelephone /> {r.phone}</a>}
             </li>
           ))}
         </ul>
@@ -170,7 +170,7 @@ function ProchainRdv({ rdv }: { rdv?: TableauDeBord['next'][number] }) {
           {rdv.notes && <p className={styles.aide}>Note : {rdv.notes}</p>}
           <div className={styles.actions}>
             {rdv.address && <BoutonItineraire destination={rdv} nom={rdv.client || 'le client'} />}
-            {rdv.phone && <a className={styles.appelClient} href={lienTel(rdv.phone)}><IconeTelephone /> Appeler {rdv.phone}</a>}
+            {rdv.phone && <a className={styles.appelClient} href={lienTel(rdv.phone)} aria-label={`Appeler ${rdv.phone}`}><IconeTelephone /> {rdv.phone}</a>}
           </div>
         </>
       )}

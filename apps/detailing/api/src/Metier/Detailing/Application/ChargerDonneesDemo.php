@@ -6,6 +6,7 @@ namespace App\Metier\Detailing\Application;
 
 use Bsandoz\Core\Booking\Application\GererDisponibilites;
 use Bsandoz\Core\Catalog\Application\GererCatalogue;
+use Bsandoz\Core\Facturation\Application\InfosFacturation;
 
 /**
  * Charge le catalogue et les horaires de démonstration via les cas d'usage du kit.
@@ -16,7 +17,27 @@ final class ChargerDonneesDemo
     public function __construct(
         private GererCatalogue $catalogue,
         private GererDisponibilites $disponibilites,
+        private ?InfosFacturation $facturation = null,
     ) {
+    }
+
+    /**
+     * Vendeur des factures de démonstration (fictif, signalé comme tel) : seulement les champs encore « [à compléter] ».
+     * Les informations déjà saisies par le pro ne sont jamais écrasées.
+     */
+    private function vendeurDemo(): void
+    {
+        if ($this->facturation === null) {
+            return;
+        }
+        $actuel = $this->facturation->vendeur();
+        $demo = DonneesDemo::vendeur();
+        $valeurs = [];
+        foreach ($actuel as $champ => $valeur) {
+            $valeurs[$champ] = $valeur === InfosFacturation::A_COMPLETER && isset($demo[$champ]) ? $demo[$champ] : ($valeur === InfosFacturation::A_COMPLETER ? '' : $valeur);
+        }
+        $valeurs['siret'] = $actuel['siret'] === InfosFacturation::A_COMPLETER ? '' : $actuel['siret'];
+        $this->facturation->changer($valeurs);
     }
 
     /** @return array{charge: bool, prestations: int, options: int, plages: int} */
@@ -50,6 +71,8 @@ final class ChargerDonneesDemo
         }
 
         $plages = $this->disponibilites->definirHoraires(DonneesDemo::horaires());
+
+        $this->vendeurDemo();
 
         return ['charge' => true, 'prestations' => count($prestations), 'options' => count($ids), 'plages' => count($plages)];
     }
@@ -105,6 +128,8 @@ final class ChargerDonneesDemo
                 break;
             }
         }
+
+        $this->vendeurDemo();
 
         return ['prestations' => $alignees, 'options' => $creees];
     }

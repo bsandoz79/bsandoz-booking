@@ -14,9 +14,10 @@ describe('Pages légales', () => {
     expect(screen.getByRole('heading', { level: 1, name: titre })).toBeInTheDocument();
   });
 
-  it('laisse l’identité de l’entreprise à compléter', () => {
+  it('affiche une identité de démonstration signalée comme fictive', () => {
     ouvrir('/mentions-legales');
-    expect(screen.getByText(/SIRET/)).toHaveTextContent('[à compléter]');
+    expect(screen.getByText(/SIRET/)).toHaveTextContent('000 000 000 00000 (fictif, démonstration)');
+    expect(screen.getAllByText(/Baptiste Sandoz/).length).toBeGreaterThan(0);
   });
 
   it('reprend le paiement au choix et le délai d’annulation dans les CGV', () => {

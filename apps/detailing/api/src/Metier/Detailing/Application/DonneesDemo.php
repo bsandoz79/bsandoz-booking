@@ -68,4 +68,20 @@ final class DonneesDemo
 
         return $plages;
     }
+
+    /**
+     * Vendeur des factures de démonstration : volontairement fictif et signalé comme tel (le SIRET reste vide, car un
+     * numéro inventé passerait pour réel). À remplacer par les vraies informations dans l'onglet Factures.
+     *
+     * @return array<string, string>
+     */
+    public static function vendeur(): array
+    {
+        return [
+            'nom' => 'Baptiste Sandoz — Perfect Clean (démonstration)',
+            'adresse' => '12 rue de la Démonstration, 80100 Abbeville (adresse fictive)',
+            'email' => 'contact@bsandoz.fr',
+            'telephone' => '01 02 03 04 05',
+        ];
+    }
 }
