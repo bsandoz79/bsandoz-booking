@@ -163,12 +163,14 @@ export function PlanningView({
     else onDateChange(`${addMonths(month, sens)}-01`);
   };
 
+  /** Texte complet au survol (le texte de la case peut être coupé). */
+  const infobulle = (e: PlanningEvent) => (e.subtitle ? `${e.title} · ${e.subtitle}` : e.title);
   const classeEvenement = (e: PlanningEvent, extra = '') => [styles.event, styles[e.tone ?? 'default'], extra].join(' ').trim();
   const couleur = (e: PlanningEvent): CSSProperties | undefined => (e.color && (e.tone ?? 'default') !== 'blocked' ? ({ '--couleur': e.color } as CSSProperties) : undefined);
   const bouton = (e: PlanningEvent, contenu: React.ReactNode, classe: string, style?: CSSProperties) => (
     onEventClick
-      ? <button type="button" className={classe} style={style} onClick={() => onEventClick(e)}>{contenu}</button>
-      : <div className={classe} style={style}>{contenu}</div>
+      ? <button type="button" className={classe} style={style} title={infobulle(e)} onClick={() => onEventClick(e)}>{contenu}</button>
+      : <div className={classe} style={style} title={infobulle(e)}>{contenu}</div>
   );
 
   const colonneJour = (day: string, i: number) => {

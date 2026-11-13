@@ -1,7 +1,12 @@
-.crayon { display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; padding: 0 .85rem; border-radius: 999px; cursor: pointer;
-  border: 1px dashed var(--bs-color-primary); background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); font: inherit; font-size: .85rem; font-weight: 700; }
-.crayon:hover { border-style: solid; }
+/* Crayon : rond transparent, icône seule, bien visible au survol et au clavier. */
+.crayon { display: inline-grid; place-items: center; flex: none; width: 36px; height: 36px; padding: 0; border-radius: 50%; cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--bs-color-primary) 45%, transparent); background: color-mix(in srgb, var(--bs-color-surface) 55%, transparent);
+  color: var(--bs-color-primary-dark); backdrop-filter: blur(3px); transition: background .15s ease, transform .15s ease; vertical-align: middle; }
+.crayon:hover { background: var(--bs-color-primary-soft); transform: scale(1.06); }
 .crayon:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
+/* Zone de toucher de 44 px sur écran tactile, sans grossir l'icône. */
+@media (pointer: coarse) { .crayon { position: relative; } .crayon::after { content: ''; position: absolute; inset: -4px; } }
+@media (prefers-reduced-motion: reduce) { .crayon { transition: none; } .crayon:hover { transform: none; } }
 
 /* Fenêtre de modification d'une rubrique. */
 .formulaire { display: flex; flex-direction: column; gap: 1rem; }

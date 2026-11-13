@@ -22,10 +22,14 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Avis Google : bouton dans le mail de facture (lien à coller dans Réglages quand la fiche Google existera).
 - ✅ Catalogue : aperçu en direct de la carte à droite pendant la modification.
 
+- ✅ Planning en semaine : texte des cases resserré (2 lignes, coupé proprement, texte complet au survol) ; un clic amène au détail du rendez-vous.
+- 🔧 Rubriques de l'espace pro (Tableau de bord, Planning, Clients…) dans une colonne à gauche, sans menu à faire défiler.
+
 ### Site public
 - ✅ Formules, options et prix modifiables depuis le site.
 - ✅ Bug : le crayon « Modifier » d'une carte de prestation ouvrait la réservation au lieu de la modification.
 - ✅ Tout le site modifiable sur place : titre et présentation, coordonnées, étapes, réalisations (photos), zone et frais de déplacement, communes, horaires et congés, carte de fidélité, avis, FAQ, pages légales.
+- ✅ Crayons de modification : icône seule, ronde et transparente (sans le mot « Modifier »), placée en haut à droite des cartes, à côté des titres de section, en haut à droite du bandeau d'accueil.
 - ✅ Plus de bouton « Modifier le site » : connecté avec le compte pro, les crayons sont affichés directement partout.
 - ✅ Réservation : chaque choix amène à l'endroit logique suivant (formules, options, étape suivante, calendrier, heures, coordonnées).
 - ✅ Adresse : bouton « Utiliser ma position » (GPS du téléphone, avec accord).

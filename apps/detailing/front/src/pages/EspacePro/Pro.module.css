@@ -79,3 +79,4 @@
 .prochainRdv { border-color: var(--bs-color-primary); }
 .prochainRdv p { margin: 0; }
 .prochainQuand { font-size: 1.15rem; font-weight: 800; color: var(--bs-color-primary-dark); text-transform: capitalize; }
+.ancreDetail { scroll-margin-top: 5rem; }

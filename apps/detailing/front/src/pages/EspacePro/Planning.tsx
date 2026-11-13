@@ -108,8 +108,8 @@ export function PlanningOnglet() {
           onEventClick={(e) => {
             if (e.id.startsWith('conge-')) return;
             setChoisi(e.id);
-            // Téléphone : le détail est sous l'emploi du temps, on y descend.
-            if (mode === 'day' && window.matchMedia?.('(max-width: 999px)').matches) defilerVers('detail-rdv');
+            // Semaine et mois : le détail s'ouvre sous le planning, on y descend ; jour : à droite, sauf sur téléphone (dessous).
+            if (mode !== 'day' || window.matchMedia?.('(max-width: 999px)').matches) defilerVers('detail-rdv');
           }} />
         {mode === 'day' ? (
           <aside id="detail-rdv" className={styles.colonneDetail} aria-label="Détail du rendez-vous">
@@ -120,7 +120,11 @@ export function PlanningOnglet() {
               </>
             ) : <p className={styles.aide}>Aucun rendez-vous à venir. Touchez un rendez-vous du planning pour voir son détail.</p>}
           </aside>
-        ) : selection && <DetailRendezVous rdv={selection} nomsOptions={nomsOptions} onFermer={() => setChoisi(undefined)} onChange={charger} />}
+        ) : selection && (
+          <div id="detail-rdv" className={styles.ancreDetail}>
+            <DetailRendezVous rdv={selection} nomsOptions={nomsOptions} onFermer={() => setChoisi(undefined)} onChange={charger} />
+          </div>
+        )}
       </div>
     </section>
   );
