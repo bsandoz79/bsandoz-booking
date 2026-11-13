@@ -74,7 +74,16 @@ final class CreneauCalculatorTest extends TestCase
 
     public function testTrajetEtOccupationRetirentDesCreneaux(): void
     {
-        self::assertSame(['08:30'], $this->starts('2026-11-10', 60, 30, busy: [$this->busy('2026-11-10 10:00', '2026-11-10 11:00')]));
+        // Arrivées à l'heure ronde dès l'ouverture (le trajet vers le premier rendez-vous se fait avant) ;
+        // 11 h 00 tomberait pendant le trajet qui suit le rendez-vous de 10 h.
+        self::assertSame(['08:00', '09:00'], $this->starts('2026-11-10', 60, 30, busy: [$this->busy('2026-11-10 10:00', '2026-11-10 11:00')]));
+    }
+
+    public function testHeuresRondesMemeSiLOuvertureNeLEstPas(): void
+    {
+        $rules = new BookingRules(bufferMin: 0, slotStepMin: 30);
+
+        self::assertSame(['08:30', '09:00', '09:30', '10:00', '10:30', '11:00'], $this->starts('2026-11-10', 60, 5, hours: [new OpeningHour(2, '08:10', '12:00')], rules: $rules));
     }
 
     public function testChaqueCreneauDureLeTempsDeLaPrestation(): void
