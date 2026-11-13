@@ -53,6 +53,27 @@ final class PrixCalculatorTest extends TestCase
         self::assertSame(90 * 3 + 30 * 2 + 20, $devis->durationMin);
     }
 
+    public function testRemiseParVehiculeSupplementaire(): void
+    {
+        $p = new Prestation('phares', 'Phares', Money::cents(4500), 90);
+        $p->changerRemiseUniteSupplementaire(500);
+
+        // 45 € le premier, 40 € chacun des suivants.
+        self::assertSame(4500, (new PrixCalculator())->calculer($p, null, [], Money::zero(), null, null, 1)->total->cents);
+        $devis = (new PrixCalculator())->calculer($p, null, [], Money::zero(), null, null, 3);
+        self::assertSame([['Phares × 3', 12500]], array_map(static fn (array $l): array => [$l['label'], $l['price']->cents], $devis->lines));
+
+        // Remise plus grande que le prix : jamais de prix négatif.
+        $p->changerRemiseUniteSupplementaire(9000);
+        self::assertSame(4500, (new PrixCalculator())->calculer($p, null, [], Money::zero(), null, null, 2)->total->cents);
+    }
+
+    public function testRemiseNegativeRefusee(): void
+    {
+        $this->expectException(\Bsandoz\Core\Shared\Domain\DomainError::class);
+        (new Prestation('p', 'P', Money::cents(100), 10))->changerRemiseUniteSupplementaire(-1);
+    }
+
     public function testUneOptionAuPlusUneFoisParVehicule(): void
     {
         $poils = new Option('poils', 'Poils', Money::cents(1000), 30);

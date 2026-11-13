@@ -38,6 +38,7 @@ final class MeController
         private SupprimerCompte $supprimer,
         private SettingsProvider $settings,
         private ReprendrePaiement $reprendrePaiement,
+        private ?\Bsandoz\Core\Payment\Application\GererAvoirs $avoirs = null,
     ) {
     }
 
@@ -53,6 +54,8 @@ final class MeController
             'lastname' => $compte->lastname(),
             'phone' => $compte->phone(),
             'roles' => $compte->roles(),
+            // Avoir (somme déjà payée, déduite automatiquement de la prochaine réservation)
+            'avoirCents' => $this->avoirs?->solde($compte->id())->cents ?? 0,
         ]);
     }
 

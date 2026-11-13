@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <!-- Avoir : un par client (somme payée non remboursée, déduite des réservations suivantes). -->
+    <entity name="Bsandoz\Core\Payment\Domain\Model\Avoir" table="customer_credit">
+        <id name="userId" column="user_id" type="string" length="36"/>
+        <field name="soldeCents" column="balance_cents" type="integer"/>
+        <field name="updatedAt" column="updated_at" type="datetime_utc_immutable"/>
+    </entity>
+</doctrine-mapping>

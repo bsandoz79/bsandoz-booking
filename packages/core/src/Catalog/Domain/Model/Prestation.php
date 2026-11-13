@@ -32,6 +32,8 @@ class Prestation
         private bool $occupePlage = false,
         /** Mise en avant affichée sur la formule (ex. « Le plus choisi ») ; null : aucune. */
         private ?string $badge = null,
+        /** Remise par unité au-delà de la première (ex. 5 € de moins par véhicule supplémentaire), en centimes. */
+        private int $remiseUniteSupplementaire = 0,
     ) {
     }
 
@@ -46,6 +48,16 @@ class Prestation
     /** Vrai si la durée est incertaine : la prestation bloque toute la demi-journée. */
     public function occupePlage(): bool { return $this->occupePlage; }
     public function badge(): ?string { return $this->badge; }
+    public function remiseUniteSupplementaire(): Money { return Money::cents($this->remiseUniteSupplementaire); }
+
+    /** Remise par unité supplémentaire (0 : aucune). @throws DomainError négative */
+    public function changerRemiseUniteSupplementaire(int $cents): void
+    {
+        if ($cents < 0) {
+            throw new DomainError('La remise par unité supplémentaire ne peut pas être négative.');
+        }
+        $this->remiseUniteSupplementaire = $cents;
+    }
 
     /** Mise en avant (ex. « Le plus choisi ») : texte court, vide pour l'enlever. @throws DomainError trop long */
     public function changerBadge(?string $badge): void

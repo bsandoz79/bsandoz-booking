@@ -37,6 +37,7 @@ final class ConfirmerPaiement
         private Clock $clock,
         private ?GererFidelite $fidelite = null,
         private ?StockProduits $stock = null,
+        private ?GererAvoirs $avoirs = null,
     ) {
     }
 
@@ -67,6 +68,7 @@ final class ConfirmerPaiement
                 // Idem pour les produits remis en stock à l'expiration : ils sont payés, ils sont repris.
                 if ($reservation->status() === ReservationStatus::Expired) {
                     $this->stock?->reprendre($reservation->produits());
+                    $this->avoirs?->utiliser($reservation->userId(), $reservation->avoirUtilise());
                 }
                 $reservation->confirm();
                 $this->reservations->save($reservation);

@@ -63,6 +63,7 @@ final class ParcoursPaiementTest extends TestCase
     private \Bsandoz\Core\Payment\Application\ReprendrePaiement $reprendre;
     private \Bsandoz\Core\Booking\Application\DeplacerReservation $deplacer;
     private \Bsandoz\Core\Tests\Double\InMemoryProduitRepository $produits;
+    private \Bsandoz\Core\Payment\Application\GererAvoirs $avoirs;
 
     protected function setUp(): void
     {
@@ -75,6 +76,7 @@ final class ParcoursPaiementTest extends TestCase
         $users = new InMemoryUserRepository();
         $this->produits = new \Bsandoz\Core\Tests\Double\InMemoryProduitRepository(new \Bsandoz\Core\Catalog\Domain\Model\Produit('micro', 'Microfibre', Money::cents(600), 5));
         $stock = new \Bsandoz\Core\Catalog\Application\StockProduits($this->produits);
+        $this->avoirs = new \Bsandoz\Core\Payment\Application\GererAvoirs(new \Bsandoz\Core\Tests\Double\InMemoryAvoirs(), $this->clock);
 
         $settings = new ConfiguredSettingsProvider(
             [
@@ -94,20 +96,20 @@ final class ParcoursPaiementTest extends TestCase
 
         $notifications = new NotificationsReservation($this->notifier, $users, $prestations, new IcsGenerator(), 'Marque', 'pro@example.test');
 
-        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation($users, $this->tokens, $this->notifier, new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, $this->tokens, $notifications, new SequenceIdGenerator('r'), $this->clock, stock: $stock);
+        $this->reserver = new ReserverCreneau($devis, $creneaux, new CreerCompteDepuisReservation($users, $this->tokens, $this->notifier, new SequenceIdGenerator('u'), $this->clock), $this->reservations, $settings, $this->tokens, $notifications, new SequenceIdGenerator('r'), $this->clock, stock: $stock, avoirs: $this->avoirs);
         $this->session = new CreerSessionAcompte($this->reservations, $users, $prestations, $this->gateway, $this->payments, new SequenceIdGenerator('pay'), $this->clock, 'https://site.test/confirmation?reservation={reservationId}', 'https://site.test/reserver?annule={reservationId}');
         $this->confirmer = new ConfirmerPaiement($this->gateway, $this->payments, $this->reservations, $occupations, $this->tokens, $notifications, $this->clock, stock: $stock);
         $this->rembourser = new RembourserAcompte($this->payments, $this->gateway);
         $this->reprendre = new \Bsandoz\Core\Payment\Application\ReprendrePaiement($this->reservations, $creneaux, $devis, $settings, $this->session, $this->clock, stock: $stock);
         $this->deplacer = new \Bsandoz\Core\Booking\Application\DeplacerReservation($this->reservations, $creneaux, $devis, $settings, $notifications, $this->clock);
-        $this->annuler = new AnnulerReservation($this->reservations, $settings, $this->rembourser, $notifications, $this->clock, stock: $stock);
+        $this->annuler = new AnnulerReservation($this->reservations, $settings, $this->rembourser, $notifications, $this->clock, stock: $stock, avoirs: $this->avoirs);
     }
 
     /** @param array<string, int> $produits */
-    private function reserver(string $email = 'camille@example.test', string $heure = '09:00', array $produits = []): string
+    private function reserver(string $email = 'camille@example.test', string $heure = '09:00', array $produits = [], string $date = '2026-11-10'): string
     {
         return ($this->reserver)(new ReserverCreneauCommand(
-            'p', [], [], new \DateTimeImmutable('2026-11-10 ' . $heure, new \DateTimeZone('Europe/Paris')),
+            'p', [], [], new \DateTimeImmutable($date . ' ' . $heure, new \DateTimeZone('Europe/Paris')),
             '', null, null, $email, 'Camille', 'Martin', '0600000000', '', true, null, $produits,
         ))->reservationId;
     }
@@ -243,6 +245,44 @@ final class ParcoursPaiementTest extends TestCase
 
         self::assertFalse(($this->annuler)($id, 'u-1'));
         self::assertSame([], $this->gateway->refunds);
+    }
+
+    public function testAnnulationTardiveLaSommePayeeDevientUnAvoirDeduitDuRendezVousSuivant(): void
+    {
+        $id = $this->reserver();
+        ($this->session)($id);
+        $this->payer('cs_test_1');
+        $this->clock->set('2026-11-09 10:00');
+
+        ($this->annuler)($id, 'u-1');
+
+        self::assertSame([], $this->gateway->refunds);
+        self::assertSame(3000, $this->avoirs->solde('u-1')->cents);
+        $mail = array_values(array_filter($this->notifier->sent, static fn (array $m): bool => $m['template'] === 'booking_cancelled'))[0];
+        self::assertSame(3000, $mail['context']['avoirCents']);
+
+        // Rendez-vous suivant : 100 € moins 30 € d'avoir.
+        $this->clock->set('2026-11-09 10:00');
+        $suivant = $this->reserver(heure: '10:00', date: '2026-11-17');
+        $r = $this->reservations->get($suivant);
+        self::assertSame(7000, $r->total()->cents);
+        self::assertSame(3000, $r->avoirUtilise()->cents);
+        self::assertSame(0, $this->avoirs->solde('u-1')->cents);
+
+        // Annulé à temps : l'avoir est rendu.
+        ($this->annuler)($suivant, 'u-1');
+        self::assertSame(3000, $this->avoirs->solde('u-1')->cents);
+    }
+
+    public function testAnnulationGratuiteNeCreePasDAvoir(): void
+    {
+        $id = $this->reserver();
+        ($this->session)($id);
+        $this->payer('cs_test_1');
+
+        ($this->annuler)($id, 'u-1');
+
+        self::assertSame(0, $this->avoirs->solde('u-1')->cents);
     }
 
     public function testRemboursementPartielPuisSolde(): void

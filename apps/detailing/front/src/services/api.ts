@@ -131,7 +131,7 @@ export async function getQuote(selection: Selection, address?: Address): Promise
   const fois = (label: string, n: number) => (n > 1 ? `${label} × ${n}` : label);
   const opts = OPTIONS.map((o) => ({ o, n: optionIds.filter((id) => id === o.id).length })).filter((x) => x.n > 0);
   const lines = [
-    { label: fois(formule.name, quantite), amountCents: tarif.priceCents * quantite },
+    { label: fois(formule.name, quantite), amountCents: tarif.priceCents * quantite - Math.min(formule.remiseUniteCents ?? 0, tarif.priceCents) * (quantite - 1) },
     ...opts.map(({ o, n }) => ({ label: fois(o.name, n), amountCents: o.priceCents * n })),
   ];
   let travelFeeCents = 0;

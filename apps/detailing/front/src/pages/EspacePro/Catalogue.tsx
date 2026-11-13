@@ -82,6 +82,7 @@ function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
   const [p, setP] = useState(initiale);
   const [prix, setPrix] = useState(initiale.id ? euros(initiale.basePriceCents) : '');
   const [duree, setDuree] = useState(String(initiale.baseDurationMin));
+  const [remise, setRemise] = useState(initiale.remiseUniteCents ? euros(initiale.remiseUniteCents) : '');
   const [parVehicule, setParVehicule] = useState(Object.keys(initiale.tarifs).length > 0);
   const [tarifs, setTarifs] = useState<Record<string, { prix: string; duree: string }>>(() =>
     Object.fromEntries(Object.entries(initiale.tarifs).map(([v, t]) => [v, { prix: euros(t.priceCents), duree: String(t.durationMin) }])));
@@ -90,7 +91,7 @@ function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
 
   const dureeValide = (d: string) => /^\d+$/.test(d) && Number(d) > 0;
   const tarifsValides = !parVehicule || Object.values(tarifs).filter((t) => t.prix || t.duree).every((t) => prixValide(t.prix) && dureeValide(t.duree));
-  const valide = p.name.trim() !== '' && prixValide(prix) && dureeValide(duree) && tarifsValides;
+  const valide = p.name.trim() !== '' && prixValide(prix) && dureeValide(duree) && tarifsValides && (remise.trim() === '' || prixValide(remise));
 
   const soumettre = async (e: FormEvent) => {
     e.preventDefault();
@@ -105,7 +106,7 @@ function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
     setErreur('');
     setEnCours(true);
     try {
-      onEnregistree(await enregistrerPrestation({ ...p, name: p.name.trim(), tarifs: liste, basePriceCents: centimes(prix), baseDurationMin: Number(duree) }));
+      onEnregistree(await enregistrerPrestation({ ...p, name: p.name.trim(), tarifs: liste, basePriceCents: centimes(prix), baseDurationMin: Number(duree), remiseUniteCents: remise.trim() === '' ? 0 : centimes(remise) }));
     } catch (err) {
       setErreur((err as Error).message);
     } finally {
@@ -166,6 +167,8 @@ function FormulairePrestation({ initiale, options, onAnnuler, onEnregistree }: {
         hint="Proposée seulement en début de matinée ou d’après-midi libre ; le reste de la demi-journée n’est plus réservable." />
       <Field label="Mise en avant (facultatif)" value={p.badge ?? ''} maxLength={40} placeholder="Ex. Le plus choisi"
         hint="Petit badge affiché sur la formule, sur l’accueil et à la réservation. Vide : aucun." onChange={(e) => setP({ ...p, badge: e.target.value })} />
+      <Field label="Remise par véhicule supplémentaire, en € (facultatif)" value={remise} inputMode="decimal" placeholder="Ex. 5"
+        hint="Retirée du prix pour chaque véhicule au-delà du premier (ex. 5 : 45 € puis 40 € le 2e). Vide : aucune." onChange={(e) => setRemise(e.target.value)} />
       <Toggle label="Proposée aux clients" checked={p.active} onChange={(v) => setP({ ...p, active: v })} />
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
       <div className={styles.actions}>

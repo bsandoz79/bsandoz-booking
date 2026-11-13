@@ -53,7 +53,9 @@ final class ChargerDemoTest extends WebTestCase
         $noms = array_column($catalogue['formules'], 'name');
         self::assertCount(15, $noms);
         self::assertSame(['Intérieur Éclat', 'Intérieur Signature', 'Intérieur Excellence', 'Extérieur Éclat'], array_slice($noms, 0, 4));
-        self::assertCount(5, $catalogue['options']);
+        self::assertCount(4, $catalogue['options']);
+        $phares = array_values(array_filter($catalogue['formules'], static fn (array $f): bool => $f['name'] === 'Rénovation des phares'))[0];
+        self::assertSame(500, $phares['remiseUniteCents']);
 
         $excellence = $catalogue['formules'][2];
         self::assertTrue($excellence['occupePlage'], 'durée incertaine : demi-journée');

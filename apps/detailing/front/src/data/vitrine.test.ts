@@ -11,7 +11,7 @@ describe('mise en forme de l’accueil', () => {
     expect(signature.inclus[0]).toBe('Formule Éclat incluse');
     expect(signature.elements[0].formule).toBe(true);
     expect(signature.inclus[1]).toBe('Shampooing des tapis et moquettes');
-    expect(signature.elements).toContainEqual({ texte: 'Désodorisant voiture', etiquette: 'Offert · durée limitée' });
+    expect(signature.elements).toContainEqual({ texte: 'Désodorisant Perfect Clean', etiquette: 'Offert · durée limitée' });
   });
 
   it('garde une phrase telle quelle quand elle ne se découpe pas en liste', () => {

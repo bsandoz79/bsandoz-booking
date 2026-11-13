@@ -48,6 +48,8 @@ class Reservation
          * s'il y en a un, se paie en ligne) ; null : réservations antérieures (acompte et produits en ligne).
          */
         private ?bool $paiementEnLigne = null,
+        /** Avoir du client déjà déduit du total (null : aucun). */
+        private ?Money $avoirUtilise = null,
     ) {
     }
 
@@ -76,6 +78,7 @@ class Reservation
     public function notes(): string { return $this->notes; }
     public function remiseFidelite(): Money { return $this->remiseFidelite ?? Money::zero(); }
     public function quantite(): int { return $this->quantite ?? 1; }
+    public function avoirUtilise(): Money { return $this->avoirUtilise ?? Money::zero(); }
     /** @return list<array{id: string, nom: string, prixCents: int, quantite: int}> */
     public function produits(): array { return $this->produits ?? []; }
 

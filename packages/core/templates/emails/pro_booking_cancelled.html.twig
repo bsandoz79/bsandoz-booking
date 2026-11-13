@@ -3,6 +3,6 @@
 {% block subject %}Rendez-vous annulé : {{ start|date('d/m/Y', timezone) }}{% endblock %}
 {% block body %}
 <p>{{ client }} a annulé son rendez-vous du <strong>{{ m.date(start, timezone) }}</strong>.</p>
-<p>{% if refundable %}L'acompte a été remboursé automatiquement.{% else %}Annulation tardive : l'acompte éventuel est conservé.{% endif %}</p>
+<p>{% if refundable %}L'acompte a été remboursé automatiquement.{% elseif avoirCents is defined and avoirCents > 0 %}Annulation tardive : rien n'est remboursé, {{ avoirCents|euros }} sont gardés en avoir pour son prochain rendez-vous.{% else %}Annulation tardive : l'acompte éventuel est conservé.{% endif %}</p>
 <p>Le créneau est de nouveau proposé à la réservation.</p>
 {% endblock %}

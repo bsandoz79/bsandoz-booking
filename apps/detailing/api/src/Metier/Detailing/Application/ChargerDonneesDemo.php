@@ -43,6 +43,7 @@ final class ChargerDonneesDemo
                 'position' => $position,
                 'occupePlage' => $p['occupePlage'],
                 'badge' => $p['badge'] ?? null,
+                'remiseUniteCents' => $p['remiseUniteCents'] ?? 0,
                 'tarifs' => [],
                 'optionIds' => array_map(static fn (string $cle): string => $ids[$cle], $p['options']),
             ]);
@@ -96,6 +97,7 @@ final class ChargerDonneesDemo
                     'position' => $existante['position'] ?? 0,
                     'occupePlage' => $p['occupePlage'],
                     'badge' => $p['badge'] ?? null,
+                    'remiseUniteCents' => $p['remiseUniteCents'] ?? 0,
                     'tarifs' => $existante['tarifs'] ?? [],
                     'optionIds' => array_map(static fn (string $cle): string => $ids[$cle], $p['options']),
                 ], $existante['id']);

@@ -113,13 +113,16 @@ final class EmettreFacture
             } catch (NotFound) {
                 $nom = 'Prestation';
             }
-            $lignes[] = ['libelle' => $nom, 'montantCents' => $r->total()->subtract($r->travelFee())->add($r->remiseFidelite())->cents];
+            $lignes[] = ['libelle' => $nom, 'montantCents' => $r->total()->subtract($r->travelFee())->add($r->remiseFidelite())->add($r->avoirUtilise())->cents];
         }
         if ($r->travelFee()->cents > 0) {
             $lignes[] = ['libelle' => 'Frais de déplacement', 'montantCents' => $r->travelFee()->cents];
         }
         if ($r->remiseFidelite()->cents > 0) {
             $lignes[] = ['libelle' => 'Remise carte de fidélité', 'montantCents' => -$r->remiseFidelite()->cents];
+        }
+        if ($r->avoirUtilise()->cents > 0) {
+            $lignes[] = ['libelle' => 'Avoir déduit (déjà réglé)', 'montantCents' => -$r->avoirUtilise()->cents];
         }
         foreach ($r->produits() as $p) {
             $lignes[] = ['libelle' => sprintf('%s%s', $p['quantite'] > 1 ? $p['quantite'] . ' × ' : '', $p['nom']), 'montantCents' => Money::cents($p['prixCents'])->multiply($p['quantite'])->cents];

@@ -46,6 +46,7 @@ final class ReserverCreneau
         private Clock $clock,
         private ?GererFidelite $fidelite = null,
         private ?StockProduits $stock = null,
+        private ?\Bsandoz\Core\Payment\Application\GererAvoirs $avoirs = null,
     ) {
     }
 
@@ -77,8 +78,10 @@ final class ReserverCreneau
             $now = $this->clock->now();
 
             $remise = $this->fidelite?->utiliserRemise($userId, $devis->total->subtract($devis->travelFee)) ?? Money::zero();
-            $total = $devis->total->subtract($remise);
-            $acompte = $remise->cents === 0 ? $devis->deposit : $this->acompte($total);
+            // Avoir du client (somme déjà payée, ex. annulation tardive) : déduit après la remise de fidélité.
+            $avoir = $this->avoirs?->utiliser($userId, $devis->total->subtract($remise)) ?? Money::zero();
+            $total = $devis->total->subtract($remise)->subtract($avoir);
+            $acompte = $remise->cents === 0 && $avoir->cents === 0 ? $devis->deposit : $this->acompte($total);
             $produits = $c->produits === [] || $this->stock === null ? [] : $this->stock->retirer($c->produits);
 
             $reservation = new Reservation(
@@ -100,6 +103,7 @@ final class ReserverCreneau
                 $produits === [] ? null : $produits,
                 $c->quantite,
                 $c->paiementEnLigne,
+                $avoir->cents > 0 ? $avoir : null,
             );
 
             if ($reservation->aPayerEnLigne()->cents === 0) {

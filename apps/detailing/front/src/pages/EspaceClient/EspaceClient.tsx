@@ -132,6 +132,9 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
       )}
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
 
+      {(compte?.avoirCents ?? 0) > 0 && (
+        <p className={styles.accesPro}>Vous avez un avoir de <strong>{formatEuros(compte!.avoirCents!)}</strong> : il sera déduit automatiquement de votre prochain rendez-vous.</p>
+      )}
       {fidelite?.actif && <CarteFidelite carte={fidelite} />}
 
       <section className={styles.section} aria-labelledby="titre-a-venir">

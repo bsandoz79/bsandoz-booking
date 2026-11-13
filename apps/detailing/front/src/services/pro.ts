@@ -60,6 +60,8 @@ export interface PrestationPro {
   position: number;
   /** Mise en avant affichée sur la formule (ex. « Le plus choisi »). */
   badge?: string | null;
+  /** Remise par véhicule au-delà du premier, en centimes. */
+  remiseUniteCents?: number;
   occupePlage: boolean;
   tarifs: Record<string, Tarif>;
   optionIds: string[];
@@ -126,7 +128,7 @@ const demo = {
     demoRdv('d3', 3, 8, 120, 'ext-signature', 'Client démo C', 'pending_payment'),
   ],
   prestations: FORMULES.map((f, i): PrestationPro => {
-    return { id: f.id, name: f.name, description: f.description, basePriceCents: f.basePriceCents, baseDurationMin: f.baseDurationMin, active: true, categoryId: f.category, position: i, occupePlage: !!f.occupePlage, tarifs: f.tarifs, optionIds: f.optionIds, badge: f.badge ?? null };
+    return { id: f.id, name: f.name, description: f.description, basePriceCents: f.basePriceCents, baseDurationMin: f.baseDurationMin, active: true, categoryId: f.category, position: i, occupePlage: !!f.occupePlage, tarifs: f.tarifs, optionIds: f.optionIds, badge: f.badge ?? null, remiseUniteCents: f.remiseUniteCents ?? 0 };
   }),
   options: OPTIONS.map((o): OptionPro => ({ ...o, active: true })),
   produits: PRODUITS.map(({ photo, ...p }, i): ProduitPro => ({ ...p, photo, active: true, position: i })),

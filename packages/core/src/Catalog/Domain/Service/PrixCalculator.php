@@ -15,7 +15,8 @@ use Bsandoz\Core\Shared\Domain\Money;
  *
  * Quantité (ex. plusieurs véhicules) : la prestation est la même pour toutes les unités, multipliée en prix comme en
  * durée ; les options se choisissent unité par unité, chacune comptée autant de fois qu'elle est demandée (au plus
- * une fois par unité) ; le déplacement n'est compté qu'une fois.
+ * une fois par unité) ; le déplacement n'est compté qu'une fois. La remise par unité supplémentaire de la prestation
+ * (ex. 5 € de moins dès le 2e véhicule) s'applique à chaque unité au-delà de la première, sans descendre sous zéro.
  */
 final class PrixCalculator
 {
@@ -43,7 +44,12 @@ final class PrixCalculator
         }
         $fois = static fn (string $label, int $n): string => $n > 1 ? sprintf('%s × %d', $label, $n) : $label;
 
-        $base = $prestation->priceFor($variante)->multiply($quantite);
+        $unite = $prestation->priceFor($variante);
+        $remise = $prestation->remiseUniteSupplementaire()->min($unite);
+        $base = $unite->multiply($quantite);
+        if ($quantite > 1 && $remise->cents > 0) {
+            $base = Money::cents($base->cents - $remise->cents * ($quantite - 1));
+        }
         $lines = [['label' => $fois($prestation->name(), $quantite), 'price' => $base]];
         $total = $base;
         $duration = $prestation->durationFor($variante) * $quantite;
