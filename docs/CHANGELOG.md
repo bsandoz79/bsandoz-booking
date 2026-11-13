@@ -179,3 +179,4 @@
 - Déploiement : erreur « gnutls_record_recv: Error in parsing » de lftp sur le canal de données en TLS 1.3 ; envoi forcé en TLS 1.2 (toujours chiffré, certificat vérifié).
 - Réservation : « « lastname » est obligatoire » au paiement. Le formulaire envoie « Nom et prénom » en un seul champ, le nom de famille est désormais facultatif pour l'API. Test.
 - Déploiement : lftp envoyait le site et l'API dans des dossiers commençant par un guillemet (« "demo.bsandoz.fr ») ; chemin transmis sans guillemets.
+- Déploiement : page sans mise en forme si elle était ouverte pendant l'envoi (CSS pas encore arrivé, gardé en cache). Fichiers CSS/JS envoyés avant les pages HTML ; cache hors-ligne (service worker) passé en v5 pour effacer les copies ratées.
