@@ -14,7 +14,7 @@ export interface TableauDeBord {
   monthBookings: number;
   pendingPayments: number;
   monthCancellationRate: number;
-  next: { id: string; start: string; address: string }[];
+  next: { id: string; start: string; address: string; client?: string; phone?: string }[];
 }
 
 export interface RendezVousPro {
@@ -148,7 +148,7 @@ export async function tableauDeBord(): Promise<TableauDeBord> {
       today: actifs.filter((r) => new Date(r.start).toDateString() === new Date().toDateString()).length, week: actifs.length,
       monthRevenueCents: actifs.reduce((s, r) => s + r.totalCents, 0), monthBookings: actifs.length,
       pendingPayments: demo.rdv.filter((r) => r.status === 'pending_payment').length, monthCancellationRate: 0,
-      next: actifs.map((r) => ({ id: r.id, start: r.start, address: r.address })),
+      next: actifs.map((r) => ({ id: r.id, start: r.start, address: r.address, client: r.client.name, phone: r.client.phone })),
     };
   }
   return authHttp('/admin/dashboard');

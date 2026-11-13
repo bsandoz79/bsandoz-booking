@@ -3,6 +3,8 @@ import { flushSync } from 'react-dom';
 import { Link, NavLink } from 'react-router-dom';
 import { changerTheme, themeActuel, type Theme } from '../../app/theme';
 import { regleFidelite } from '../../services/fidelite';
+import { IconeTelephone } from '../Telephone/Telephone';
+import { lienTel, useTelephone } from '../Telephone/numeroTelephone';
 import styles from './Header.module.css';
 
 /**
@@ -13,6 +15,7 @@ export function Header() {
   const [theme, setTheme] = useState<Theme>(() => themeActuel());
   const [fidelite, setFidelite] = useState(false);
   const [ouvert, setOuvert] = useState(false);
+  const telephone = useTelephone();
   useEffect(() => { regleFidelite().then((r) => setFidelite(r.actif)).catch(() => undefined); }, []);
   useEffect(() => {
     if (!ouvert) return;
@@ -54,6 +57,11 @@ export function Header() {
             </span>
             <span className={styles.srOnly}>Version nuit</span>
           </button>
+          {telephone && (
+            <a href={lienTel(telephone)} className={styles.appel} aria-label={`Appeler le ${telephone}`}>
+              <IconeTelephone /><span className={styles.appelNumero}>{telephone}</span>
+            </a>
+          )}
           <Link to="/reserver" className={`btn ${styles.reserver}`}>Réserver</Link>
           <button type="button" className={`${styles.rond} ${styles.menu}`} aria-expanded={ouvert} aria-controls="menu-principal" onClick={() => setOuvert(!ouvert)}>
             <span aria-hidden="true">{ouvert ? '✕' : '☰'}</span>

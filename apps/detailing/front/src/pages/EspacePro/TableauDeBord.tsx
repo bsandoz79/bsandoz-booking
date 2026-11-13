@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { formatEuros } from '@bsandoz/ui';
 import { tableauDeBord, type TableauDeBord } from '../../services/pro';
 import { dateHeure } from './dates';
+import { IconeTelephone } from '../../components/Telephone/Telephone';
+import { lienTel } from '../../components/Telephone/numeroTelephone';
 import styles from './Pro.module.css';
 
 export function TableauDeBordOnglet() {
@@ -18,7 +20,7 @@ export function TableauDeBordOnglet() {
     { valeur: String(tdb.week), libelle: 'Rendez-vous cette semaine' },
     { valeur: formatEuros(tdb.monthRevenueCents), libelle: 'Chiffre d’affaires du mois (rendez-vous confirmés)' },
     { valeur: String(tdb.monthBookings), libelle: 'Rendez-vous ce mois-ci' },
-    { valeur: String(tdb.pendingPayments), libelle: 'Acomptes en attente' },
+    { valeur: String(tdb.pendingPayments), libelle: 'Paiements en ligne en attente' },
     { valeur: `${Math.round(tdb.monthCancellationRate * 100)} %`, libelle: 'Taux d’annulation du mois' },
   ];
 
@@ -36,7 +38,12 @@ export function TableauDeBordOnglet() {
       <h3>Prochains rendez-vous</h3>
       {tdb.next.length === 0 ? <p>Aucun rendez-vous à venir.</p> : (
         <ul className={styles.liste}>
-          {tdb.next.map((r) => <li key={r.id}><strong>{dateHeure(r.start)}</strong>{r.address ? ` · ${r.address}` : ''}</li>)}
+          {tdb.next.map((r) => (
+            <li key={r.id} className={styles.prochain}>
+              <span><strong>{dateHeure(r.start)}</strong>{r.client ? ` · ${r.client}` : ''}{r.address ? ` · ${r.address}` : ''}</span>
+              {r.phone && <a className={styles.appelClient} href={lienTel(r.phone)}><IconeTelephone /> Appeler {r.phone}</a>}
+            </li>
+          ))}
         </ul>
       )}
     </section>
