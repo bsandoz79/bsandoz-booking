@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Button, PlanningView, formatEuros, startOfWeek, type PlanningEvent, type PlanningMode } from '@bsandoz/ui';
 import { ajusterCarte, carteClient, type CarteFidelite } from '../../services/fidelite';
-import { CATEGORIES } from '../../data/demo';
 import { annulerRendezVous, catalogue, changerStatut, horaires, indisponibilites, planning, rembourser, type Indisponibilite, type Plage, type RendezVousPro } from '../../services/pro';
 import { dateHeure, jourLocal, localIso, plusJours } from './dates';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
@@ -19,11 +18,11 @@ const LIBELLES = {
   dayWithCount: (jour: string, n: number) => `${jour}, ${n === 0 ? 'aucun rendez-vous' : n === 1 ? '1 élément' : `${n} éléments`}`,
 };
 
-/** Une couleur franche par type de prestation (cases du planning et légende). */
-const COULEURS: Record<string, string> = { interieur: '#2563eb', exterieur: '#0d9488', optique: '#d97706', carte: '#7c3aed' };
-const COULEUR_AUTRE = '#475569';
-/** Couleur selon la catégorie de la prestation (catalogue), à défaut celle enregistrée avec la réservation. */
-const couleurDe = (r: RendezVousPro, categories: Record<string, string>) => COULEURS[categories[r.prestationId] ?? String(r.metierData.category ?? '')] ?? COULEUR_AUTRE;
+/** Couleur des cases : bleu, ou orange quand des produits sont à apporter ; gris une fois terminé. */
+const COULEUR_RDV = '#2563eb';
+const COULEUR_PRODUITS = '#ea580c';
+const COULEUR_TERMINE = '#64748b';
+const avecProduits = (r: RendezVousPro) => (r.produits?.length ?? 0) > 0;
 const heureLocale = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
 
 /** Plage affichée : de la première ouverture à la dernière fermeture de la semaine (7 h – 20 h par défaut). */
@@ -50,12 +49,10 @@ export function PlanningOnglet() {
   const [mode, setMode] = useState<PlanningMode>('day');
   const [plage, setPlage] = useState<[number, number]>([7, 20]);
   const [maintenant, setMaintenant] = useState(heureLocale);
-  const [categories, setCategories] = useState<Record<string, string>>({});
   const [nomsOptions, setNomsOptions] = useState<Record<string, string>>({});
   useEffect(() => { horaires().then((h) => setPlage(plageHoraire(h))).catch(() => undefined); }, []);
   useEffect(() => {
     catalogue().then((c) => {
-      setCategories(Object.fromEntries(c.prestations.filter((p) => p.id && p.categoryId).map((p) => [p.id as string, p.categoryId as string])));
       setNomsOptions(Object.fromEntries(c.options.filter((o) => o.id).map((o) => [o.id as string, o.name])));
     }).catch(() => undefined);
   }, []);
@@ -77,10 +74,11 @@ export function PlanningOnglet() {
   const evenements: PlanningEvent[] = [
     ...rdv.filter((r) => r.status !== 'cancelled' && r.status !== 'expired').map((r) => ({
       id: r.id, start: localIso(r.start), end: localIso(r.end),
+      // Dans la case : le client et le service ; les produits à apporter s'il y en a (case orange).
       title: [r.client.name, r.prestation].filter(Boolean).join(' · ') || 'Rendez-vous',
-      subtitle: [r.status === 'pending_payment' ? STATUTS[r.status] : '', (r.quantite ?? 1) > 1 ? `${r.quantite} véhicules` : '', r.address].filter(Boolean).join(' · '),
+      subtitle: avecProduits(r) ? `+ ${r.produits!.map((p) => `${p.quantite > 1 ? `${p.quantite} × ` : ''}${p.nom}`).join(', ')}` : undefined,
       tone: r.status === 'pending_payment' ? ('muted' as const) : ('default' as const),
-      color: r.status === 'done' ? '#64748b' : couleurDe(r, categories),
+      color: r.status === 'done' ? COULEUR_TERMINE : avecProduits(r) ? COULEUR_PRODUITS : COULEUR_RDV,
     })),
     ...conges.map((c) => ({ id: `conge-${c.id}`, start: localIso(c.start), end: localIso(c.end), title: c.reason || 'Indisponible', tone: 'blocked' as const })),
   ];
@@ -94,13 +92,15 @@ export function PlanningOnglet() {
       <h2 id="titre-planning">Planning</h2>
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
       <ul className={styles.legende} aria-label="Couleurs du planning">
-        {CATEGORIES.map((c) => <li key={c.value}><span style={{ background: COULEURS[c.value] }} aria-hidden="true" />{c.label}</li>)}
+        <li><span style={{ background: COULEUR_RDV }} aria-hidden="true" />Rendez-vous</li>
+        <li><span style={{ background: COULEUR_PRODUITS }} aria-hidden="true" />Avec produit à apporter</li>
+        <li><span style={{ background: COULEUR_TERMINE }} aria-hidden="true" />Terminé</li>
         <li><span className={styles.legendeAttente} aria-hidden="true" />Paiement en attente</li>
         <li><span className={styles.legendeConge} aria-hidden="true" />Indisponible</li>
       </ul>
       <div className={mode === 'day' ? styles.vueJour : undefined}>
         <PlanningView mode={mode} date={jour} today={aujourdhui} events={evenements} labels={LIBELLES}
-          hourStart={plage[0]} hourEnd={plage[1]} now={maintenant}
+          hourStart={plage[0]} hourEnd={plage[1]} now={maintenant} showTime={false}
           onModeChange={setMode} onDateChange={setJour}
           onEventClick={(e) => {
             if (e.id.startsWith('conge-')) return;
