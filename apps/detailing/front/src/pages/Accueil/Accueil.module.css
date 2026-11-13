@@ -77,7 +77,7 @@ blockquote.card { margin: 0; }
 .vedette { border: 2px solid var(--bs-color-primary); box-shadow: 0 12px 28px -14px rgb(22 119 210 / 55%); background: linear-gradient(180deg, var(--bs-color-primary-soft) 0%, var(--bs-color-surface) 45%); }
 .vedette .badge { position: absolute; top: -.8rem; left: 1.25rem; background: var(--bs-color-primary); color: #fff; }
 .prix { font-size: 2rem; font-weight: 800; color: var(--bs-color-primary-dark); line-height: 1; }
-.duree { align-self: flex-start; font-size: .85rem; font-weight: 600; padding: 2px 10px; border-radius: var(--bs-radius-pill); background: var(--bs-color-primary-soft); }
+.duree { display: inline-flex; align-items: center; gap: .35rem; align-self: flex-start; font-size: .85rem; font-weight: 600; padding: 2px 10px; border-radius: var(--bs-radius-pill); background: var(--bs-color-primary-soft); }
 .compris { font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; color: var(--bs-color-text-muted); }
 .inclus { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .35rem; flex: 1; }
 .inclus li { position: relative; padding-left: 1.6rem; }
@@ -145,11 +145,9 @@ blockquote.card { margin: 0; }
 .retiree { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .75rem; color: var(--bs-color-text-muted); }
 .messageEdition { margin: 0; font-weight: 600; color: var(--bs-color-success); }
 .optionPrix { display: inline-flex; align-items: center; gap: .5rem; }
-.titreSection { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
-.heroGrille { position: relative; }
-.crayonsHero { position: absolute; top: -2.5rem; right: var(--bs-space-4, 1rem); z-index: 2; display: flex; gap: .5rem; }
-.crayonsHero:empty { display: none; }
 .ctas { align-items: center; }
-/* Crayons sur le bandeau sombre de l'accueil : blancs, pour rester bien visibles. */
-.hero button[aria-label^='Modifier'] { color: #fff; border-color: rgb(255 255 255 / .6); background: rgb(255 255 255 / .08); }
-.hero button[aria-label^='Modifier']:hover { background: rgb(255 255 255 / .18); }
+/* Mode modification : la photo garde sa place dans la grille du haut de page. */
+.zonePhoto { grid-area: photo; }
+.zonePhoto .heroPhoto { margin-inline: 0; }
+/* Cartes de formule modifiables : même contour en pointillés que les autres zones. */
+.enEdition { outline: 2px dashed color-mix(in srgb, var(--bs-color-primary) 55%, transparent); outline-offset: -6px; }

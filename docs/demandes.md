@@ -34,7 +34,9 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Réservation : chaque choix amène à l'endroit logique suivant (formules, options, étape suivante, calendrier, heures, coordonnées).
 - ✅ Adresse : bouton « Utiliser ma position » (GPS du téléphone, avec accord).
 - ✅ Après la réservation (page de confirmation) et dans « Mon espace » : « Ajouter à mon agenda » (Google Agenda, Apple / Outlook).
-- ✅ « Mon espace » plus visuel : bandeau de profil aux initiales, coordonnées avec icônes, tuiles « En bref » (prochain rendez-vous, prestations réalisées, fidélité, avoir), bouton « Réserver » bien visible.
+- ✅ « Mon espace » façon page de réglages (inspiré de Proton) : rubriques avec titre et explication, panneaux de lignes (icône, intitulé, valeur, « Modifier » à droite), coordonnées modifiables ligne par ligne, « Supprimer le compte » tout en bas avec un bouton rouge bordé.
+- ✅ Plus d'emojis en couleur : icônes au trait simples partout (Mon espace, menu de l'espace pro, agenda, durée, position).
+- ✅ Zones modifiables : contour en pointillés autour de chaque zone (haut de page, photo, prestations, étapes, réalisations, zone, horaires, fidélité, avis, FAQ, pied de page, pages légales), crayon dans le coin en haut à droite ; photo de l'accueil modifiable (envoi d'une photo).
 - ✅ « Mon espace » plus structuré : nom, puis e-mail et téléphone modifiables, déconnexion bien visible, zone de danger (suppression du compte) en pointillés rouges tout en bas.
 
 ### Bugs et mise en ligne

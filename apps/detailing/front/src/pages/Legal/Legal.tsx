@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useContenu } from '../../app/contenuContexte';
 import { SITE } from '../../data/site';
 import { useSeo } from '../../seo/useSeo';
-import { ModifierRubrique } from '../../components/ModeEdition';
+import { ModifierRubrique, Zone } from '../../components/ModeEdition';
 import styles from './Legal.module.css';
 
 /**
@@ -15,8 +15,7 @@ function PageLegale({ titre, children }: { titre: string; children: ReactNode })
   return (
     <main className={`container ${styles.page}`}>
       <h1>{titre}</h1>
-      <div><ModifierRubrique rubrique="legal" /></div>
-      {children}
+      <Zone crayons={<ModifierRubrique rubrique="legal" />}><div className={styles.contenuLegal}>{children}</div></Zone>
       <p className={styles.maj}>Dernière mise à jour : [à compléter]</p>
     </main>
   );

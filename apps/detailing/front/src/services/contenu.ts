@@ -14,7 +14,8 @@ export interface Realisation { titre: string; avant: string; apres: string }
 
 export interface ContenuSite {
   coordonnees: { telephone: string; email: string; adresse: string; horaires: string };
-  accueil: { surtitre: string; titre: string; introduction: string; arguments: string[] };
+  /** `photo` : adresse de la photo du haut de l'accueil (vide : photo du camion fournie avec le site). */
+  accueil: { surtitre: string; titre: string; introduction: string; arguments: string[]; photo: string };
   etapes: Etape[];
   faq: Question[];
   avis: Avis[];
@@ -32,6 +33,7 @@ export const CONTENU_PAR_DEFAUT: ContenuSite = {
     surtitre: 'Nettoyage intérieur · extérieur · rénovation optique à domicile',
     titre: 'Un habitacle comme au premier jour',
     introduction: 'On vient à vous, vous ne bougez pas.',
+    photo: '',
     arguments: ['Eau et électricité autonomes', 'Déplacement offert : Abbeville et 5 km autour', 'Désodorisant Perfect Clean offert', 'Intervention possible en moins de 24 h'],
   },
   etapes: [

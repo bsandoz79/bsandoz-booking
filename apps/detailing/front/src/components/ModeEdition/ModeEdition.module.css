@@ -14,3 +14,9 @@
 .erreur { margin: 0; color: var(--bs-color-danger); font-weight: 600; }
 /* Titre de section + crayon côte à côte. */
 .titreAvecCrayon { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
+
+/* Zone modifiable : contour en pointillés, crayons dans le coin en haut à droite. */
+.zone { position: relative; outline: 2px dashed color-mix(in srgb, var(--bs-color-primary) 55%, transparent); outline-offset: -6px; border-radius: 14px; }
+.zone:hover, .zone:focus-within { outline-color: var(--bs-color-primary); }
+.zoneCrayons { position: absolute; top: 14px; right: 14px; z-index: 5; display: flex; gap: .4rem; }
+.zoneCrayons .crayon { background: var(--bs-color-surface); box-shadow: 0 2px 8px rgb(0 0 0 / .15); }

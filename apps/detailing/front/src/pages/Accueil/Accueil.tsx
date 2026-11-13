@@ -2,7 +2,7 @@ import { useEffect, useState, type CSSProperties, type KeyboardEvent } from 'rea
 import { Link } from 'react-router-dom';
 import { Button, Dialog, formatEuros } from '@bsandoz/ui';
 import { useModeEdition } from '../../app/modeEditionContexte';
-import { Crayon, ModifierAvec, ModifierRubrique } from '../../components/ModeEdition';
+import { Crayon, ModifierAvec, ModifierRubrique, Zone } from '../../components/ModeEdition';
 import { HorairesOnglet } from '../EspacePro/Horaires';
 import { FormulaireFidelite, ReglageZone } from '../EspacePro/Reglages';
 import { FormulaireOption, FormulairePrestation } from '../EspacePro/Catalogue';
@@ -91,22 +91,29 @@ export function Accueil() {
 
   return (
     <main>
+      <Zone crayons={<><ModifierRubrique rubrique="accueil" libelle="Titre, présentation et points forts" /><ModifierRubrique rubrique="coordonnees" libelle="Téléphone et coordonnées" /></>}>
       <section className={styles.hero}>
         {/* Grand écran : texte à gauche, photo du camion à droite ; téléphone et tablette : photo sous le titre. */}
         <div className={`container ${styles.heroGrille}`}>
-          <div className={styles.crayonsHero}><ModifierRubrique rubrique="accueil" libelle="Titre, présentation et points forts" /></div>
           <p className={styles.eyebrow}>{accueil.surtitre}</p>
           <h1 className={styles.title}>{accueil.titre}</h1>
-          <picture className={styles.heroPhoto}>
-            <source srcSet="/camion.webp" type="image/webp" />
-            <img src="/camion.jpg" width="600" height="600" fetchPriority="high"
-              alt={`Le camion-atelier ${SITE.brand}, portes ouvertes : produits, enrouleurs et matériel autonome en eau et en électricité.`} />
-          </picture>
+          <Zone className={styles.zonePhoto} crayons={<ModifierRubrique rubrique="photo" />}>
+            {accueil.photo ? (
+              <picture className={styles.heroPhoto}>
+                <img src={accueil.photo} width="600" height="600" fetchPriority="high" alt={`${SITE.brand} : photo de présentation`} />
+              </picture>
+            ) : (
+              <picture className={styles.heroPhoto}>
+                <source srcSet="/camion.webp" type="image/webp" />
+                <img src="/camion.jpg" width="600" height="600" fetchPriority="high"
+                  alt={`Le camion-atelier ${SITE.brand}, portes ouvertes : produits, enrouleurs et matériel autonome en eau et en électricité.`} />
+              </picture>
+            )}
+          </Zone>
           <p className={styles.lead}>{accueil.introduction}</p>
           <div className={styles.ctas}>
             <Link to="/reserver" className="btn">Réserver un créneau</Link>
             {telephone && <a href={lienTel(telephone)} className={`btn ${styles.appeler}`}><IconeTelephone /> Appeler le {telephone}</a>}
-            <ModifierRubrique rubrique="coordonnees" libelle="Téléphone et coordonnées" />
             <a href="#prestations" className="btn btn--ghost">Voir les prestations</a>
           </div>
           {accueil.arguments.length > 0 && (
@@ -116,6 +123,7 @@ export function Accueil() {
           )}
         </div>
       </section>
+      </Zone>
 
       <section id="prestations" className={`container ${styles.section}`} aria-labelledby="titre-prestations">
         <h2 id="titre-prestations">Prestations</h2>
@@ -184,9 +192,10 @@ export function Accueil() {
       </section>
 
       {etapes.length > 0 && (
+        <Zone crayons={<ModifierRubrique rubrique="etapes" />}>
         <section className={styles.band} aria-labelledby="titre-etapes">
           <div className={`container ${styles.section}`}>
-            <div className={styles.titreSection}><h2 id="titre-etapes">Comment ça marche</h2><ModifierRubrique rubrique="etapes" /></div>
+            <h2 id="titre-etapes">Comment ça marche</h2>
             <ol className={styles.steps}>
               {etapes.map((e, i) => (
                 <li key={`${i}-${e.titre}`} className={styles.step}>
@@ -197,10 +206,12 @@ export function Accueil() {
             </ol>
           </div>
         </section>
+        </Zone>
       )}
 
+      <Zone crayons={<ModifierRubrique rubrique="realisations" />}>
       <section id="realisations" className={`container ${styles.section}`} aria-labelledby="titre-realisations">
-        <div className={styles.titreSection}><h2 id="titre-realisations">Réalisations</h2><ModifierRubrique rubrique="realisations" /></div>
+        <h2 id="titre-realisations">Réalisations</h2>
         <div className={styles.grid}>
           {realisations.map((r, i) => (
             <figure key={`${i}-${r.titre}`} className={styles.realisation}>
@@ -216,10 +227,12 @@ export function Accueil() {
           ))}
         </div>
       </section>
+      </Zone>
 
+      <Zone crayons={<><ModifierAvec titre="Zone et frais de déplacement" apresFermeture={() => getZone().then(setZone).catch(() => undefined)}><ReglageZone /></ModifierAvec><ModifierRubrique rubrique="communes" /></>}>
       <section id="zone" className={styles.band} aria-labelledby="titre-zone">
         <div className={`container ${styles.section}`}>
-          <div className={styles.titreSection}><h2 id="titre-zone">Zone d’intervention</h2><ModifierAvec titre="Zone et frais de déplacement" apresFermeture={() => getZone().then(setZone).catch(() => undefined)}><ReglageZone /></ModifierAvec><ModifierRubrique rubrique="communes" /></div>
+          <h2 id="titre-zone">Zone d’intervention</h2>
           {zone?.surPlace ? (
             <p>Les prestations se font sur place, à <strong>{SITE.city}</strong>.</p>
           ) : (
@@ -257,10 +270,12 @@ export function Accueil() {
           </details>
         </div>
       </section>
+      </Zone>
 
       {horaires && horaires.length > 0 && (
+        <Zone crayons={<ModifierAvec titre="Horaires et congés" apresFermeture={() => getHoraires().then(setHoraires).catch(() => undefined)}><HorairesOnglet /></ModifierAvec>}>
         <section id="horaires" className={`container ${styles.section}`} aria-labelledby="titre-horaires">
-          <div className={styles.titreSection}><h2 id="titre-horaires">Horaires</h2><ModifierAvec titre="Horaires et congés" apresFermeture={() => getHoraires().then(setHoraires).catch(() => undefined)}><HorairesOnglet /></ModifierAvec></div>
+          <h2 id="titre-horaires">Horaires</h2>
           <ul className={styles.horaires}>
             {semaine(horaires).map((j) => (
               <li key={j.weekday} className={`${j.weekday === aujourdhui ? styles.aujourdhui : ''} ${j.plages.length === 0 ? styles.ferme : ''}`}
@@ -272,6 +287,7 @@ export function Accueil() {
           </ul>
           <p className={styles.note}>Uniquement sur rendez-vous, aux créneaux proposés en ligne.</p>
         </section>
+        </Zone>
       )}
 
       {edition && !fidelite?.actif && (
@@ -280,13 +296,11 @@ export function Accueil() {
         </div>
       )}
       {fidelite?.actif && (
+        <Zone crayons={<ModifierAvec titre="Carte de fidélité" apresFermeture={() => regleFidelite().then(setFidelite).catch(() => undefined)}><FormulaireFidelite /></ModifierAvec>}>
         <section id="fidelite" className={styles.band} aria-labelledby="titre-fidelite">
           <div className={`container ${styles.section} ${styles.fidelite}`}>
             <div className={styles.fideliteTexte}>
-              <div className={styles.titreSection}>
-                <h2 id="titre-fidelite">{maCarte ? 'Votre carte de fidélité' : 'Carte de fidélité'}</h2>
-                <ModifierAvec titre="Carte de fidélité" apresFermeture={() => regleFidelite().then(setFidelite).catch(() => undefined)}><FormulaireFidelite /></ModifierAvec>
-              </div>
+              <h2 id="titre-fidelite">{maCarte ? 'Votre carte de fidélité' : 'Carte de fidélité'}</h2>
               <p>
                 Au bout de {fidelite.tamponsRequis} prestations, la suivante bénéficie de <strong>{fidelite.remisePercent} % de remise</strong>. Chaque
                 prestation terminée ajoute un tampon sur votre carte, et la remise s’applique d’elle-même à la réservation.
@@ -300,10 +314,12 @@ export function Accueil() {
               : <CarteFidelite carte={{ ...fidelite, tampons: Math.min(2, fidelite.tamponsRequis - 1), remiseDisponible: false }} titre="Carte de fidélité" exemple />}
           </div>
         </section>
+        </Zone>
       )}
 
+      <Zone crayons={<ModifierRubrique rubrique="avis" />}>
       <section id="avis" className={`container ${styles.section}`} aria-labelledby="titre-avis">
-        <div className={styles.titreSection}><h2 id="titre-avis">Avis clients</h2><ModifierRubrique rubrique="avis" /></div>
+        <h2 id="titre-avis">Avis clients</h2>
         {avisPublies.length === 0 ? (
           <>
             <p>{A_COMPLETER}</p>
@@ -321,11 +337,13 @@ export function Accueil() {
           </div>
         )}
       </section>
+      </Zone>
 
       {faq.length > 0 && (
+        <Zone crayons={<ModifierRubrique rubrique="faq" />}>
         <section id="faq" className={styles.band} aria-labelledby="titre-faq">
           <div className={`container ${styles.section}`}>
-            <div className={styles.titreSection}><h2 id="titre-faq">Questions fréquentes</h2><ModifierRubrique rubrique="faq" /></div>
+            <h2 id="titre-faq">Questions fréquentes</h2>
             <div className={styles.faq}>
               {faq.map((item, i) => (
                 <details key={`${i}-${item.question}`} className={styles.question}>
@@ -337,6 +355,7 @@ export function Accueil() {
             <Link to="/reserver" className={`btn ${styles.selfStart}`}>Réserver un créneau</Link>
           </div>
         </section>
+        </Zone>
       )}
     </main>
   );
