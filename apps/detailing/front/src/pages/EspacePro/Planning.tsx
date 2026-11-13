@@ -3,6 +3,8 @@ import { Button, PlanningView, formatEuros, startOfWeek, type PlanningEvent, typ
 import { ajusterCarte, carteClient, type CarteFidelite } from '../../services/fidelite';
 import { annulerRendezVous, changerStatut, indisponibilites, planning, rembourser, type Indisponibilite, type RendezVousPro } from '../../services/pro';
 import { dateHeure, jourLocal, localIso, plusJours } from './dates';
+import { IconeTelephone } from '../../components/Telephone/Telephone';
+import { lienTel } from '../../components/Telephone/numeroTelephone';
 import styles from './Pro.module.css';
 
 const STATUTS: Record<RendezVousPro['status'], string> = {
@@ -92,7 +94,7 @@ function DetailRendezVous({ rdv, onFermer, onChange }: { rdv: RendezVousPro; onF
       <dl className={styles.detail}>
         <dt>Quand</dt><dd>{dateHeure(rdv.start)} → {new Date(rdv.end).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</dd>
         <dt>Client</dt><dd>{rdv.client.name || '—'}</dd>
-        <dt>Téléphone</dt><dd>{rdv.client.phone ? <a href={`tel:${rdv.client.phone.replace(/\s/g, '')}`}>{rdv.client.phone}</a> : '—'}</dd>
+        <dt>Téléphone</dt><dd>{rdv.client.phone ? <a className={styles.appelClient} href={lienTel(rdv.client.phone)}><IconeTelephone /> Appeler {rdv.client.phone}</a> : '—'}</dd>
         <dt>E-mail</dt><dd>{rdv.client.email ? <a href={`mailto:${rdv.client.email}`}>{rdv.client.email}</a> : '—'}</dd>
         <dt>Adresse</dt><dd>{rdv.address ? <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rdv.address)}`} target="_blank" rel="noreferrer">{rdv.address}</a> : 'Sur place'}</dd>
         {(rdv.quantite ?? 1) > 1 && (

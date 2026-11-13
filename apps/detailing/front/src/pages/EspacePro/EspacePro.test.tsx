@@ -21,7 +21,7 @@ describe('Espace pro', () => {
   it('demande la connexion puis affiche le tableau de bord', async () => {
     await ouvrirConnecte();
     expect(await screen.findByRole('heading', { name: 'Tableau de bord' })).toBeInTheDocument();
-    expect(screen.getByText('Acomptes en attente')).toBeInTheDocument();
+    expect(screen.getByText('Paiements en ligne en attente')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Prochains rendez-vous' })).toBeInTheDocument();
   });
 
@@ -42,7 +42,7 @@ describe('Espace pro', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Jour' }));
     await userEvent.click(await screen.findByRole('button', { name: /Intérieur Éclat – Client démo A/ }));
     const detail = screen.getByRole('region', { name: /Rendez-vous du/ });
-    expect(within(detail).getByRole('link', { name: '01 02 03 04 05' })).toHaveAttribute('href', 'tel:0102030405');
+    expect(within(detail).getByRole('link', { name: /Appeler 01 02 03 04 05/ })).toHaveAttribute('href', 'tel:0102030405');
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler le rendez-vous' }));
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler et rembourser l’acompte' }));
     expect(await within(detail).findByRole('status')).toHaveTextContent('Rendez-vous annulé, 8,70');

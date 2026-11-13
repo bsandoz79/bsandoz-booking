@@ -137,6 +137,7 @@
 - Demande de devis professionnel : nom de l'entreprise, SIRET ou n° BCE (contrôlé) et adresse de facturation facultative, comme à la réservation pour une entreprise.
 - Zone : rayon de la ville de départ (`rayonVilleKm`, 4 km pour Abbeville) : toute la ville compte pour 0 km, le déplacement offert, les tranches et la distance maximale se comptent depuis sa sortie ; réglable dans l'espace pro ; carte, cartes des tranches et estimation à jour.
 - Accueil : photo du camion-atelier à droite de l'accroche (sous le titre sur téléphone et tablette) ; point fort « Déplacement offert : Abbeville et 5 km autour ».
+- Téléphone mis en avant : bouton d'appel vert dans l'en-tête de toutes les pages et « Appeler le … » dans l'accroche ; espace pro : bouton « Appeler » du client dans le planning et dans les prochains rendez-vous du tableau de bord (nom et téléphone du client ajoutés à `/admin/dashboard`).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

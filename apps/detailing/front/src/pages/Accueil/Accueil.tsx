@@ -4,6 +4,8 @@ import { formatEuros } from '@bsandoz/ui';
 import { useContenu } from '../../app/contenuContexte';
 import { CarteFidelite } from '../../components/CarteFidelite/CarteFidelite';
 import { CarteZone } from '../../components/CarteZone/CarteZone';
+import { IconeTelephone } from '../../components/Telephone/Telephone';
+import { lienTel, useTelephone } from '../../components/Telephone/numeroTelephone';
 import { CATEGORIES, FORMULES, OPTIONS, prixMin, type Category, type Formule, type OptionItem } from '../../data/demo';
 import { SITE } from '../../data/site';
 import { detailPrestation, jourIso, semaine, tranches, type Plage } from '../../data/vitrine';
@@ -18,6 +20,7 @@ import styles from './Accueil.module.css';
 
 /** Accueil : textes, étapes, réalisations, avis, FAQ et communes modifiables dans l'espace pro (« Mon site »). */
 export function Accueil() {
+  const telephone = useTelephone();
   const { contenu } = useContenu();
   useSeo(PAGES_SEO[0].titre, PAGES_SEO[0].description);
   // Catalogue réel (API) dès qu'il est chargé ; données de démonstration en attendant ou si l'API ne répond pas.
@@ -68,6 +71,7 @@ export function Accueil() {
           <p className={styles.lead}>{accueil.introduction}</p>
           <div className={styles.ctas}>
             <Link to="/reserver" className="btn">Réserver un créneau</Link>
+            {telephone && <a href={lienTel(telephone)} className={`btn ${styles.appeler}`}><IconeTelephone /> Appeler le {telephone}</a>}
             <a href="#prestations" className="btn btn--ghost">Voir les prestations</a>
           </div>
           {accueil.arguments.length > 0 && (

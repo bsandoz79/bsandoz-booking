@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Bsandoz\Core\Admin\Application;
 
+use Bsandoz\Core\Auth\Domain\Port\UserRepository;
 use Bsandoz\Core\Booking\Domain\Model\Reservation;
 use Bsandoz\Core\Booking\Domain\Model\ReservationStatus;
 use Bsandoz\Core\Booking\Domain\Port\ReservationRepository;
 use Bsandoz\Core\Booking\Domain\Port\SettingsProvider;
 use Bsandoz\Core\Shared\Domain\Clock;
+use Bsandoz\Core\Shared\Domain\NotFound;
 
 /**
  * Tableau de bord du pro (heure locale) : rendez-vous du jour et de la semaine, chiffre d'affaires du mois
- * (rendez-vous confirmés ou faits), réservations en attente de paiement, taux d'annulation du mois, prochains rendez-vous.
+ * (rendez-vous confirmés ou faits), réservations en attente de paiement, taux d'annulation du mois, prochains rendez-vous
+ * (avec le nom et le téléphone du client, pour l'appeler d'un geste).
  */
 final class TableauDeBord
 {
@@ -22,6 +25,7 @@ final class TableauDeBord
         private ReservationRepository $reservations,
         private SettingsProvider $settings,
         private Clock $clock,
+        private ?UserRepository $users = null,
     ) {
     }
 
@@ -54,11 +58,23 @@ final class TableauDeBord
             'monthBookings' => count($moisConfirmes),
             'pendingPayments' => count(array_filter($futur, static fn (Reservation $r): bool => $r->status() === ReservationStatus::PendingPayment && $r->blocks($now))),
             'monthCancellationRate' => $base === 0 ? 0.0 : round($annules / $base, 3),
-            'next' => array_map(static fn (Reservation $r): array => [
+            'next' => array_map(fn (Reservation $r): array => [
                 'id' => $r->id(),
                 'start' => $r->period()->start->setTimezone($utc)->format(DATE_ATOM),
                 'address' => $r->address(),
-            ], array_slice($aVenir, 0, self::PROCHAINS)),
+            ] + $this->client($r), array_slice($aVenir, 0, self::PROCHAINS)),
         ];
+    }
+
+    /** @return array{client: string, phone: string} */
+    private function client(Reservation $r): array
+    {
+        try {
+            $user = $this->users?->get($r->userId());
+        } catch (NotFound) {
+            $user = null;
+        }
+
+        return ['client' => $user === null ? '' : trim($user->firstname() . ' ' . $user->lastname()), 'phone' => $user?->phone() ?? ''];
     }
 }

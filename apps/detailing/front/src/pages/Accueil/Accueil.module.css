@@ -4,6 +4,8 @@
 .lead { margin-top: 1rem; max-width: 52ch; color: var(--brand-on-navy); font-size: 1.1rem; }
 .ctas { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1.5rem; }
 .ctas :global(.btn--ghost) { color: #fff; border-color: rgba(255,255,255,.5); }
+.ctas .appeler { gap: .5rem; background: #13794a; }
+.ctas .appeler:hover { background: #0f6640; }
 .args { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; font-size: .9rem; }
 .args li::before { content: "✓ "; color: var(--brand-accent); }
 
