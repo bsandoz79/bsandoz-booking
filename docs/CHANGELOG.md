@@ -146,6 +146,9 @@
 - Kit et API : facturation (module `Facturation`) : facture émise quand la prestation est faite, numéro chronologique F-AAAA-NNNN, lignes, vendeur et client figés, mail au client ; factures dans l'espace pro et l'espace client ; informations du vendeur réglables ; migration `invoice`.
 - Site : page de facture imprimable en PDF, onglet « Factures » de l'espace pro (informations du vendeur, liste), « Mes factures » dans Mon espace, facture accessible depuis le planning.
 - SMS prêts mais désactivés : port `EnvoiSms` du kit avec fournisseurs Brevo et téléphone Android (SMS Gateway for Android), choisis par `SMS_FOURNISSEUR` ; confirmation, rappel, déplacement et annulation envoyés aussi par SMS une fois activés.
+- Kit et site : remise par véhicule supplémentaire réglable par formule (Catalogue de l'espace pro, champ `remiseUniteCents`, colonne `prestation.remise_unite_cents`) ; rénovation des phares : 45 € puis 40 € par véhicule supplémentaire, l'option « Deuxième véhicule » est remplacée par le compteur de véhicules. Tests.
+- Kit et site : avoirs. Annulation tardive d'un rendez-vous payé en ligne : pas de remboursement, la somme devient un avoir déduit automatiquement du rendez-vous suivant (rendu si celui-ci est annulé ou expire), indiqué dans les mails d'annulation, sur la facture et dans « Mon espace » ; table `customer_credit` et colonne `reservation.credit_used_cents` (migration). Tests.
+- Démo : « Désodorisant Perfect Clean » (option et formules).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

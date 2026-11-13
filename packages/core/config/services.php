@@ -276,6 +276,10 @@ return static function (ContainerConfigurator $container): void {
     $services->set(ConfirmerPaiement::class);
     $services->set(\Bsandoz\Core\Payment\Application\ReprendrePaiement::class);
     $services->set(RembourserAcompte::class);
+    // Avoirs (somme payée non remboursée, déduite de la réservation suivante)
+    $services->set(\Bsandoz\Core\Payment\Infrastructure\Persistence\DoctrineAvoirs::class);
+    $services->alias(\Bsandoz\Core\Payment\Domain\Port\Avoirs::class, \Bsandoz\Core\Payment\Infrastructure\Persistence\DoctrineAvoirs::class);
+    $services->set(\Bsandoz\Core\Payment\Application\GererAvoirs::class);
     $services->set(PaymentController::class)->public()->tag('controller.service_arguments');
 
     $services->set(BookingController::class)->public()->tag('controller.service_arguments')

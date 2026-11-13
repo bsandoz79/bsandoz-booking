@@ -36,6 +36,7 @@ final class GererRendezVousPro
         private ?GererFidelite $fidelite = null,
         private ?\Bsandoz\Core\Facturation\Application\EmettreFacture $emettreFacture = null,
         private ?StockProduits $stock = null,
+        private ?\Bsandoz\Core\Payment\Application\GererAvoirs $avoirs = null,
     ) {
     }
 
@@ -90,6 +91,7 @@ final class GererRendezVousPro
             $this->fidelite?->rendreRemise($r->userId());
         }
         $this->stock?->remettre($r->produits());
+        $this->avoirs?->crediter($r->userId(), $r->avoirUtilise());
         $rembourse = $rembourser ? ($this->rembourser)($r->id()) : Money::zero();
         $this->notifications->annulee($r, $rembourse->cents > 0);
 

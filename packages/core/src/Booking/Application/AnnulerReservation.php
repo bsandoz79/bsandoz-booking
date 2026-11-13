@@ -17,6 +17,8 @@ use Bsandoz\Core\Shared\Domain\NotFound;
 /**
  * Annulation par le client titulaire, selon les règles d'annulation.
  * Annulation gratuite : l'acompte encaissé est remboursé aussitôt. Renvoie vrai dans ce cas.
+ * Annulation tardive d'un rendez-vous confirmé : rien n'est remboursé, la somme payée en ligne devient un avoir du client,
+ * déduit de sa prochaine réservation. Dans tous les cas, l'avoir utilisé pour cette réservation est rendu.
  * Le client et le pro sont prévenus par mail.
  */
 final class AnnulerReservation
@@ -29,6 +31,7 @@ final class AnnulerReservation
         private Clock $clock,
         private ?GererFidelite $fidelite = null,
         private ?StockProduits $stock = null,
+        private ?\Bsandoz\Core\Payment\Application\GererAvoirs $avoirs = null,
     ) {
     }
 
@@ -45,6 +48,7 @@ final class AnnulerReservation
 
         // Réservation expirée : remise de fidélité et produits ont déjà été rendus à l'expiration.
         $dejaRendue = $reservation->status() === ReservationStatus::Expired;
+        $etaitConfirmee = $reservation->status() === ReservationStatus::Confirmed;
         $refundable = $reservation->cancel($this->clock->now(), $this->settings->rules());
         $this->reservations->save($reservation);
         if (!$dejaRendue) {
@@ -52,12 +56,18 @@ final class AnnulerReservation
                 $this->fidelite?->rendreRemise($reservation->userId());
             }
             $this->stock?->remettre($reservation->produits());
+            $this->avoirs?->crediter($reservation->userId(), $reservation->avoirUtilise());
         }
 
+        $avoirCredite = $reservation->avoirUtilise();
         if ($refundable) {
             ($this->rembourser)($reservation->id());
+        } elseif ($etaitConfirmee && $this->avoirs !== null) {
+            $encaisse = $this->rembourser->encaisse($reservation->id());
+            $this->avoirs->crediter($reservation->userId(), $encaisse);
+            $avoirCredite = $avoirCredite->add($encaisse);
         }
-        $this->notifications->annulee($reservation, $refundable);
+        $this->notifications->annulee($reservation, $refundable, $refundable || $this->avoirs === null ? null : $avoirCredite);
 
         return $refundable;
     }

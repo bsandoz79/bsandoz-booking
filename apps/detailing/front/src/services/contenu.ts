@@ -32,7 +32,7 @@ export const CONTENU_PAR_DEFAUT: ContenuSite = {
     surtitre: 'Nettoyage intérieur · extérieur · rénovation optique à domicile',
     titre: 'Un habitacle comme au premier jour',
     introduction: 'On vient à vous, vous ne bougez pas.',
-    arguments: ['Eau et électricité autonomes', 'Déplacement offert : Abbeville et 5 km autour', 'Désodorisant offert', 'Intervention possible en moins de 24 h'],
+    arguments: ['Eau et électricité autonomes', 'Déplacement offert : Abbeville et 5 km autour', 'Désodorisant Perfect Clean offert', 'Intervention possible en moins de 24 h'],
   },
   etapes: [
     { titre: 'Choisissez votre prestation', texte: 'Intérieur, extérieur, phares ou soin à la carte : le prix s’affiche tout de suite, le même pour tous les véhicules.' },

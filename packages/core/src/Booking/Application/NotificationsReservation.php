@@ -44,11 +44,13 @@ final class NotificationsReservation
         $this->texto($user, sprintf('%s : votre rendez-vous du %s est confirmé. Détails et gestion dans l\'e-mail reçu.', $this->brand, $this->quand($reservation)));
     }
 
-    public function annulee(Reservation $reservation, bool $refundable): void
+    /** @param Money|null $avoir avoir crédité au client (annulation tardive), null : pas d'avoir */
+    public function annulee(Reservation $reservation, bool $refundable, ?Money $avoir = null): void
     {
         [$user, $context] = $this->contexte($reservation);
-        $this->notifier->send($user->email(), 'booking_cancelled', $context + ['refundable' => $refundable]);
-        $this->auPro('pro_booking_cancelled', $context + ['refundable' => $refundable]);
+        $context += ['refundable' => $refundable, 'avoirCents' => $avoir === null ? 0 : $avoir->cents];
+        $this->notifier->send($user->email(), 'booking_cancelled', $context);
+        $this->auPro('pro_booking_cancelled', $context);
         $this->pousser('Rendez-vous annulé', $reservation, $context);
         $this->texto($user, sprintf('%s : votre rendez-vous du %s est annulé.', $this->brand, $this->quand($reservation)));
     }

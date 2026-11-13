@@ -34,6 +34,7 @@ final class ReprendrePaiement
         private Clock $clock,
         private ?GererFidelite $fidelite = null,
         private ?StockProduits $stock = null,
+        private ?GererAvoirs $avoirs = null,
     ) {
     }
 
@@ -101,5 +102,6 @@ final class ReprendrePaiement
         if ($r->remiseFidelite()->cents > 0) {
             $this->fidelite?->reprendreRemise($r->userId());
         }
+        $this->avoirs?->utiliser($r->userId(), $r->avoirUtilise());
     }
 }

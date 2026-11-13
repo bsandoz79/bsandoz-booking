@@ -6,7 +6,8 @@ import { ApiError, http, isDemo } from './api';
  * Mode démo (sans VITE_API_URL) : un compte et un rendez-vous fictifs, rien n'est enregistré.
  */
 
-export interface Compte { id: string; email: string; firstname: string; lastname: string; phone: string; roles: string[] }
+/** `avoirCents` : somme déjà payée (annulation tardive), déduite automatiquement de la prochaine réservation. */
+export interface Compte { id: string; email: string; firstname: string; lastname: string; phone: string; roles: string[]; avoirCents?: number }
 
 export interface RendezVous {
   id: string;
@@ -98,7 +99,7 @@ export async function authHttp<T>(path: string, init: RequestInit = {}): Promise
 }
 
 export async function monCompte(): Promise<Compte> {
-  if (isDemo()) return { id: 'demo', email: 'camille@example.org', firstname: 'Camille', lastname: 'Martin', phone: '01 02 03 04 05', roles: ['ROLE_CLIENT'] };
+  if (isDemo()) return { id: 'demo', email: 'camille@example.org', firstname: 'Camille', lastname: 'Martin', phone: '01 02 03 04 05', roles: ['ROLE_CLIENT'], avoirCents: 3000 }; // démo : avoir d'exemple
   return authHttp('/me');
 }
 

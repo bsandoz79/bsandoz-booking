@@ -5,6 +5,7 @@
 <p>Bonjour {{ firstname }},</p>
 <p>Votre rendez-vous du <strong>{{ m.date(start, timezone) }}</strong> est annulé.</p>
 {% if refundable %}<p>Votre acompte vous est remboursé sur le moyen de paiement utilisé. Le délai dépend de votre banque (en général quelques jours).</p>
+{% elseif avoirCents is defined and avoirCents > 0 %}<p>L'annulation intervenant après le délai d'annulation gratuite, la somme payée n'est pas remboursée : elle est conservée en avoir ({{ avoirCents|euros }}) et sera déduite automatiquement de votre prochain rendez-vous.</p>
 {% elseif depositCents is defined and depositCents > 0 %}<p>L'annulation intervenant après le délai d'annulation gratuite, l'acompte n'est pas remboursé.</p>{% endif %}
 {{ m.bouton(front_url ~ '/reserver', 'Prendre un nouveau rendez-vous') }}
 {% endblock %}

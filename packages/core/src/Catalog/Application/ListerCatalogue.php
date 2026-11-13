@@ -16,7 +16,7 @@ use Bsandoz\Core\Catalog\Domain\Port\ProduitRepository;
  * les options actives proposées par au moins une de ces prestations, et les produits en vente (actifs et en stock ;
  * `stock` sert de quantité maximale à proposer).
  *
- * @phpstan-type Formule array{id: string, category: string|null, name: string, description: string, basePriceCents: int, baseDurationMin: int, occupePlage: bool, badge: string|null, tarifs: array<string, array{priceCents: int, durationMin: int}>, optionIds: list<string>}
+ * @phpstan-type Formule array{id: string, category: string|null, name: string, description: string, basePriceCents: int, baseDurationMin: int, occupePlage: bool, badge: string|null, remiseUniteCents: int, tarifs: array<string, array{priceCents: int, durationMin: int}>, optionIds: list<string>}
  * @phpstan-type OptionItem array{id: string, name: string, description: string, priceCents: int, durationMin: int}
  * @phpstan-type ProduitItem array{id: string, name: string, description: string, priceCents: int, stock: int, photo: string|null}
  */
@@ -83,6 +83,7 @@ final class ListerCatalogue
             'baseDurationMin' => $prestation->baseDurationMin(),
             'occupePlage' => $prestation->occupePlage(),
             'badge' => $prestation->badge(),
+            'remiseUniteCents' => $prestation->remiseUniteSupplementaire()->cents,
             'tarifs' => $tarifs,
             'optionIds' => $optionIds,
         ];

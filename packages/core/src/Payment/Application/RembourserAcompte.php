@@ -21,6 +21,12 @@ final class RembourserAcompte
     ) {
     }
 
+    /** Somme encaissée et pas encore remboursée pour cette réservation (zéro si rien n'a été payé). */
+    public function encaisse(string $reservationId): Money
+    {
+        return $this->payments->paidForReservation($reservationId)?->refundable() ?? Money::zero();
+    }
+
     /**
      * @return Money montant remboursé
      * @throws DomainError montant supérieur au reste remboursable, ou refus du prestataire

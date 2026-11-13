@@ -20,6 +20,7 @@ final class ExpirerReservationsNonPayees
         private Clock $clock,
         private ?GererFidelite $fidelite = null,
         private ?StockProduits $stock = null,
+        private ?\Bsandoz\Core\Payment\Application\GererAvoirs $avoirs = null,
     ) {
     }
 
@@ -36,6 +37,8 @@ final class ExpirerReservationsNonPayees
             }
             // Produits non payés : de nouveau en vente (repris si le paiement arrive quand même).
             $this->stock?->remettre($reservation->produits());
+            // Avoir déduit de cette réservation : rendu (repris si le paiement arrive quand même).
+            $this->avoirs?->crediter($reservation->userId(), $reservation->avoirUtilise());
         }
 
         return count($expired);

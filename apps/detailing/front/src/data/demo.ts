@@ -20,6 +20,8 @@ export interface Formule {
   occupePlage?: boolean;
   /** Mise en avant (ex. « Le plus choisi »), réglée dans l'espace pro. */
   badge?: string | null;
+  /** Remise par véhicule au-delà du premier, en centimes (ex. 500 : 5 € de moins dès le 2e). */
+  remiseUniteCents?: number;
 }
 
 export interface OptionItem { id: string; name: string; description: string; priceCents: number; durationMin: number }
@@ -55,12 +57,12 @@ const f = (id: string, category: Category, name: string, description: string, pr
 
 export const FORMULES: Formule[] = [
   f('int-eclat', 'interieur', 'Intérieur Éclat', 'Nettoyage approfondi des surfaces, aspiration minutieuse de l’habitacle, nettoyage des vitres intérieures, parfum d’ambiance. Durée : 1 h à 1 h 30.', 2900, 90, [...INTERIEUR_OPTIONS, 'desodorisant']),
-  f('int-signature', 'interieur', 'Intérieur Signature', 'Éclat, shampooing des tapis et moquettes, contours de portes (intérieur / extérieur / coffre), nettoyage du pare-brise intérieur, nettoyage du coffre, shampooing des sièges à l’injecteur-extracteur, entretien des cuirs à la main, entretien de l’alcantara à la main, imperméabilisation textile [Durée limitée], désodorisant voiture [Offert · durée limitée]. Durée : 2 h 30 à 3 h 30.', 6900, 150, INTERIEUR_OPTIONS, { occupePlage: true, badge: 'Le plus choisi' }),
-  f('int-excellence', 'interieur', 'Intérieur Excellence', 'Signature, désinfection intégrale à la vapeur, rénovation et entretien des joints, soin nourrissant longue durée des cuirs, protection des plastiques, nettoyage des ceintures, traitement anti-buée [Nouveau], désodorisant voiture [Offert · durée limitée]. Durée : 3 h 30 à 5 h.', 8900, 210, INTERIEUR_OPTIONS, { occupePlage: true }),
+  f('int-signature', 'interieur', 'Intérieur Signature', 'Éclat, shampooing des tapis et moquettes, contours de portes (intérieur / extérieur / coffre), nettoyage du pare-brise intérieur, nettoyage du coffre, shampooing des sièges à l’injecteur-extracteur, entretien des cuirs à la main, entretien de l’alcantara à la main, imperméabilisation textile [Durée limitée], désodorisant Perfect Clean [Offert · durée limitée]. Durée : 2 h 30 à 3 h 30.', 6900, 150, INTERIEUR_OPTIONS, { occupePlage: true, badge: 'Le plus choisi' }),
+  f('int-excellence', 'interieur', 'Intérieur Excellence', 'Signature, désinfection intégrale à la vapeur, rénovation et entretien des joints, soin nourrissant longue durée des cuirs, protection des plastiques, nettoyage des ceintures, traitement anti-buée [Nouveau], désodorisant Perfect Clean [Offert · durée limitée]. Durée : 3 h 30 à 5 h.', 8900, 210, INTERIEUR_OPTIONS, { occupePlage: true }),
   f('ext-eclat', 'exterieur', 'Extérieur Éclat', 'Prélavage à la mousse active, lavage à la main, séchage microfibre, vitres. Durée : 1 h à 1 h 30.', 2500, 90, ['tres-sale-ext']),
   f('ext-signature', 'exterieur', 'Extérieur Signature', 'Éclat, plus jantes nettoyées en profondeur, passages de roues, séchage complet, pneus lustrés. Durée : 1 h 30 à 2 h.', 4500, 120, ['tres-sale-ext'], { badge: 'Le plus choisi' }),
   f('ext-excellence', 'exterieur', 'Extérieur Excellence', 'Signature, plus prélavage renforcé, joints de portes, démoustiquage, plastiques et joints extérieurs rénovés, dégoudronnage. Durée : 2 h 30 à 3 h 30.', 7000, 210, ['tres-sale-ext'], { occupePlage: true }),
-  f('phares', 'optique', 'Rénovation des phares', 'Les deux phares retrouvent leur transparence, sans remplacement : meilleure visibilité et contrôle technique serein. Prix pour la paire. Durée : environ 1 h 30.', 4500, 90, ['deuxieme-vehicule']),
+  f('phares', 'optique', 'Rénovation des phares', 'Les deux phares retrouvent leur transparence, sans remplacement : meilleure visibilité et contrôle technique serein. Prix pour la paire, 5 € de moins par véhicule supplémentaire. Durée : environ 1 h 30.', 4500, 90, [], { remiseUniteCents: 500 }),
   f('carte-sieges', 'carte', 'Shampoing des sièges', 'Sièges en tissu nettoyés à l’injecteur-extracteur.', 3900, 60),
   f('carte-cuirs', 'carte', 'Nettoyage des cuirs', 'Cuirs nettoyés et entretenus à la main.', 3500, 60),
   f('carte-moquettes', 'carte', 'Moquettes et tapis de sol', 'Shampoing complet des moquettes et des tapis.', 3500, 60),
@@ -74,9 +76,8 @@ export const FORMULES: Formule[] = [
 export const OPTIONS: OptionItem[] = [
   { id: 'poils', name: 'Poils d’animaux', description: 'Retrait des poils incrustés dans les sièges et les moquettes.', priceCents: 1000, durationMin: 30 },
   { id: 'tres-sale-int', name: 'Véhicule très sale', description: 'Supplément pour un intérieur demandant plus de temps.', priceCents: 1000, durationMin: 30 },
-  { id: 'desodorisant', name: 'Désodorisant', description: 'Désodorisant laissé dans le véhicule.', priceCents: 400, durationMin: 0 },
+  { id: 'desodorisant', name: 'Désodorisant Perfect Clean', description: 'Désodorisant Perfect Clean laissé dans le véhicule.', priceCents: 400, durationMin: 0 },
   { id: 'tres-sale-ext', name: 'Véhicule très sale', description: 'Supplément pour une carrosserie très encrassée.', priceCents: 1000, durationMin: 20 },
-  { id: 'deuxieme-vehicule', name: 'Deuxième véhicule', description: 'Rénovation des phares d’un deuxième véhicule, le même jour.', priceCents: 4000, durationMin: 90 },
 ]
 
 /** Prix et durée d'une formule pour une variante (prix unique si l'artisan n'a pas défini de prix par véhicule). */

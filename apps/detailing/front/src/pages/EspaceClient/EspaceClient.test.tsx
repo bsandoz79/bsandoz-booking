@@ -36,6 +36,11 @@ describe('Espace client', () => {
     expect(screen.getByRole('link', { name: 'Accéder à l’espace pro' })).toHaveAttribute('href', '/pro');
   });
 
+  it('affiche l’avoir du client, déduit de son prochain rendez-vous', async () => {
+    await seConnecterDemo();
+    expect(screen.getByText(/avoir de/)).toHaveTextContent(/30,00\s€.*déduit automatiquement de votre prochain rendez-vous/);
+  });
+
   it('affiche la carte de fidélité du client', async () => {
     await seConnecterDemo();
     expect(screen.getByRole('img', { name: '2 tampons sur 4' })).toBeInTheDocument();

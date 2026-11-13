@@ -133,6 +133,9 @@ Règle par défaut (`bsandoz_core.fidelite`) : 4 prestations réalisées, 20 % s
 - `PUT /admin/settings/fidelite` `{"actif", "tamponsRequis", "remisePercent"}` (pro).
 - Tampon automatique quand le pro marque un rendez-vous « done » (sauf celui qui a reçu la remise). Carte pleine : la réservation suivante (en ligne ou par téléphone) reçoit la remise sur les prestations (hors déplacement), `totalCents` et l'acompte sont recalculés, `remiseFideliteCents` est indiqué dans le planning et l'espace client ; la carte repart. Réservation remisée annulée ou expirée : la carte redevient pleine (reprise si le paiement arrive après l'expiration).
 
+## Avoirs
+Annulation tardive (après le délai d'annulation gratuite) d'un rendez-vous confirmé : rien n'est remboursé, la somme payée en ligne devient un avoir du client. L'avoir est déduit automatiquement de sa réservation suivante (après la remise de fidélité, acompte recalculé, ligne « Avoir déduit » sur la facture) et rendu si cette réservation est annulée ou expire. Mail d'annulation au client et au pro avec le montant (`avoirCents`). `GET /me` renvoie `avoirCents` (solde).
+
 ## Notifications push du pro (Web Push)
 - `GET /push/key` → `{"publicKey": "…" | null}` : clé publique VAPID (null : notifications non configurées).
 - `POST /admin/push` (rôle pro) : corps = `PushSubscription` du navigateur, `{"endpoint", "keys": {"p256dh", "auth"}}` → 204. Le même appareil remplace son abonnement. Endpoint non https ou clés invalides : 422 ; notifications non configurées : 422.
