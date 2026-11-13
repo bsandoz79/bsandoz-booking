@@ -13,6 +13,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 /**
  * Géocodage gratuit via la Base Adresse Nationale (api-adresse.data.gouv.fr), sans clé ni abonnement.
  * GET https://api-adresse.data.gouv.fr/search/?q=…&limit=5 → features[].geometry.coordinates [lng, lat], properties.label
+ * GET https://api-adresse.data.gouv.fr/reverse/?lat=…&lon=… → adresse la plus proche d'une position (non mise en cache).
  *
  * Cache : 30 jours pour le géocodage d'une adresse, 1 jour pour l'autocomplétion.
  * API indisponible ou réponse invalide : aucun résultat (et rien n'est mis en cache), pour ne jamais bloquer une réservation.
@@ -20,6 +21,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final class ApiAdresseGeocoder implements Geocoder
 {
     private const URL = 'https://api-adresse.data.gouv.fr/search/';
+    private const URL_REVERSE = 'https://api-adresse.data.gouv.fr/reverse/';
     private const MIN_LENGTH = 3;
     private const MAX_LIMIT = 10;
     private const TTL_GEOCODE = 30 * 86400;
@@ -41,6 +43,15 @@ final class ApiAdresseGeocoder implements Geocoder
         return $this->search($query, max(1, min(self::MAX_LIMIT, $limit)), true, self::TTL_SUGGEST);
     }
 
+    public function reverse(float $lat, float $lng): ?array
+    {
+        if ($lat < -90 || $lat > 90 || $lng < -180 || $lng > 180) {
+            return null;
+        }
+        // Position personnelle : jamais mise en cache.
+        return $this->fetch(self::URL_REVERSE, ['lat' => round($lat, 6), 'lon' => round($lng, 6), 'limit' => 1])[0] ?? null;
+    }
+
     /** @return list<array{label: string, lat: float, lng: float}> */
     private function search(string $query, int $limit, bool $autocomplete, int $ttl): array
     {
@@ -52,7 +63,7 @@ final class ApiAdresseGeocoder implements Geocoder
         $key = sprintf('bsandoz_geo_%s_%d_%s', $autocomplete ? 'suggest' : 'geocode', $limit, md5(mb_strtolower($query)));
         $failed = false;
         $results = $this->cache->get($key, function (ItemInterface $item) use ($query, $limit, $autocomplete, $ttl, &$failed): array {
-            $results = $this->fetch($query, $limit, $autocomplete);
+            $results = $this->fetch(self::URL, ['q' => $query, 'limit' => $limit, 'autocomplete' => $autocomplete ? 1 : 0]);
             if ($results === null) {
                 $failed = true;
                 $item->expiresAfter(1);
@@ -71,12 +82,15 @@ final class ApiAdresseGeocoder implements Geocoder
         return $results;
     }
 
-    /** @return list<array{label: string, lat: float, lng: float}>|null null si l'API n'a pas répondu correctement */
-    private function fetch(string $query, int $limit, bool $autocomplete): ?array
+    /**
+     * @param array<string, string|int|float> $parametres
+     * @return list<array{label: string, lat: float, lng: float}>|null null si l'API n'a pas répondu correctement
+     */
+    private function fetch(string $url, array $parametres): ?array
     {
         try {
-            $data = $this->http->request('GET', self::URL, [
-                'query' => ['q' => $query, 'limit' => $limit, 'autocomplete' => $autocomplete ? 1 : 0],
+            $data = $this->http->request('GET', $url, [
+                'query' => $parametres,
                 'headers' => ['User-Agent' => 'bsandoz-booking'],
                 'timeout' => 5,
             ])->toArray();

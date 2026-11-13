@@ -38,6 +38,21 @@ final class ApiAdresseGeocoderTest extends TestCase
         ]], JSON_THROW_ON_ERROR));
     }
 
+    public function testAdresseAPartirDUnePosition(): void
+    {
+        $geocoder = $this->geocoder([self::features(), self::features()]);
+
+        self::assertSame(['label' => '12 Rue de l\'Exemple 80000 Amiens', 'lat' => 49.8941, 'lng' => 2.2958], $geocoder->reverse(49.894, 2.296));
+        [, $url, $options] = $this->requests[0];
+        self::assertStringStartsWith('https://api-adresse.data.gouv.fr/reverse/', $url);
+        self::assertSame(['lat' => 49.894, 'lon' => 2.296, 'limit' => 1], $options['query']);
+
+        // Jamais mise en cache : un second appel interroge de nouveau l'API.
+        $geocoder->reverse(49.894, 2.296);
+        self::assertCount(2, $this->requests);
+        self::assertNull($geocoder->reverse(120.0, 2.0));
+    }
+
     public function testAutocompletion(): void
     {
         $geocoder = $this->geocoder([self::features()]);

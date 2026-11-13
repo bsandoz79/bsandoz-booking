@@ -72,3 +72,10 @@
 @media (min-width: 900px) { .avecApercu { grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); } }
 .apercu { display: flex; flex-direction: column; gap: .5rem; }
 @media (min-width: 900px) { .apercu { position: sticky; top: 1rem; } }
+
+/* Tableau de bord : « Ma journée » et « Mon prochain rendez-vous » côte à côte sur grand écran. */
+.journeeEtProchain { display: grid; gap: 1rem; align-items: start; }
+@media (min-width: 1000px) { .journeeEtProchain { grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr); } }
+.prochainRdv { border-color: var(--bs-color-primary); }
+.prochainRdv p { margin: 0; }
+.prochainQuand { font-size: 1.15rem; font-weight: 800; color: var(--bs-color-primary-dark); text-transform: capitalize; }

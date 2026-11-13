@@ -55,6 +55,11 @@ export interface PlanningViewProps {
   now?: string;
   /** Heures écrites dans les cases des vues jour et semaine (false : la position dans la grille suffit). */
   showTime?: boolean;
+  /**
+   * Vues jour et semaine à la hauteur de l'écran : toute la plage horaire est visible sans faire défiler
+   * (hauteur réglable par la variable CSS --planning-hauteur, 28 px par heure au minimum).
+   */
+  fitHeight?: boolean;
 }
 
 const DEFAULT_WEEKDAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -126,6 +131,7 @@ export function PlanningView({
   hourEnd = 20,
   now,
   showTime = true,
+  fitHeight = false,
 }: PlanningViewProps) {
   const month = date.slice(0, 7);
   const lundi = startOfWeek(date);
@@ -138,8 +144,11 @@ export function PlanningView({
   const debutH = Math.min(hourStart, ...toutes.map((p) => Math.floor(p.debut / 60)));
   const finH = Math.max(hourEnd, ...toutes.map((p) => Math.ceil(p.fin / 60)));
   const heures = Array.from({ length: finH - debutH }, (_, i) => debutH + i);
-  const hauteur = (finH - debutH) * HEURE_PX;
+  const nbHeures = finH - debutH;
+  // Position verticale : en pixels (64 px par heure), ou en pourcentage de la hauteur disponible (fitHeight).
+  const hauteur: CSSProperties['height'] = fitHeight ? `max(${nbHeures * 28}px, var(--planning-hauteur, calc(100dvh - 260px)))` : nbHeures * HEURE_PX;
   const px = (min: number) => ((min - debutH * 60) / 60) * HEURE_PX;
+  const pos = (min: number): number | string => (fitHeight ? `${((min - debutH * 60) / (nbHeures * 60)) * 100}%` : px(min));
 
   const titre =
     mode === 'month'
@@ -171,7 +180,7 @@ export function PlanningView({
           {liste.map(({ event: e, debut, fin, col, cols }) => {
             const top = Math.max(0, px(debut));
             const h = Math.max(22, px(fin) - top);
-            const court = h < 44;
+            const court = fitHeight ? fin - debut < 45 : h < 44;
             const contenu = (
               <>
                 {showTime && <span className={styles.time}>{heure(e.start)} – {heure(e.end)}</span>}
@@ -179,12 +188,12 @@ export function PlanningView({
                 {!court && e.subtitle && <span className={styles.subtitle}>{e.subtitle}</span>}
               </>
             );
-            const style: CSSProperties = { top, height: h, left: `calc(${(col / cols) * 100}% + 2px)`, width: `calc(${100 / cols}% - 4px)`, ...couleur(e) };
+            const style: CSSProperties = { top: fitHeight ? pos(Math.max(debut, debutH * 60)) : top, height: fitHeight ? `max(22px, ${((fin - Math.max(debut, debutH * 60)) / (nbHeures * 60)) * 100}%)` : h, left: `calc(${(col / cols) * 100}% + 2px)`, width: `calc(${100 / cols}% - 4px)`, ...couleur(e) };
             return <li key={e.id}>{bouton(e, contenu, classeEvenement(e, court ? styles.court : ''), style)}</li>;
           })}
         </ul>
         {day === today && now && minutes(now) >= debutH * 60 && minutes(now) <= finH * 60 && (
-          <span className={styles.maintenant} style={{ top: px(minutes(now)) }} aria-hidden="true" />
+          <span className={styles.maintenant} style={{ top: pos(minutes(now)) }} aria-hidden="true" />
         )}
       </div>
     );
@@ -209,7 +218,7 @@ export function PlanningView({
       </div>
 
       {mode !== 'month' && (
-        <div className={[styles.agenda, mode === 'week' ? styles.agendaSemaine : ''].join(' ').trim()}>
+        <div className={[styles.agenda, mode === 'week' ? styles.agendaSemaine : '', fitHeight ? styles.agendaEntier : ''].join(' ').trim()}>
           <div className={styles.entete}>
             <span />
             {mode === 'week' ? semaine.map((day, i) => (
@@ -222,10 +231,10 @@ export function PlanningView({
           </div>
           <div className={styles.grille} style={{ height: hauteur }}>
             <div className={styles.heures} aria-hidden="true">
-              {heures.map((h) => <span key={h} style={{ top: (h - debutH) * HEURE_PX }}>{String(h).padStart(2, '0')}:00</span>)}
+              {heures.map((h) => <span key={h} style={{ top: pos(h * 60) }}>{String(h).padStart(2, '0')}:00</span>)}
             </div>
             <div className={styles.lignes} aria-hidden="true">
-              {heures.map((h) => <span key={h} style={{ top: (h - debutH) * HEURE_PX }} />)}
+              {heures.map((h) => <span key={h} style={{ top: pos(h * 60), height: fitHeight ? `${100 / nbHeures}%` : HEURE_PX }} />)}
             </div>
             {jours.map((day, i) => colonneJour(day, i))}
           </div>

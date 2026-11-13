@@ -60,6 +60,26 @@ describe('Parcours de réservation', () => {
     expect(await screen.findByText(/Poils d’animaux.* × 2/)).toBeInTheDocument();
   });
 
+  it('trouve l’adresse avec « Utiliser ma position », puis propose le calendrier', async () => {
+    vi.stubGlobal('navigator', { ...navigator, geolocation: { getCurrentPosition: (ok: PositionCallback) => ok({ coords: { latitude: 50.1054, longitude: 1.8357 } } as GeolocationPosition) } });
+    render(<MemoryRouter><Reserver /></MemoryRouter>);
+    await userEvent.click(screen.getByRole('radio', { name: 'Soins à la carte' }));
+    await userEvent.click(await screen.findByRole('radio', { name: /Ciel de toit/ }));
+
+    await userEvent.click(screen.getByRole('button', { name: /Utiliser ma position/ }));
+    expect(await screen.findByText(/déplacement offert/)).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: /Adresse de l'intervention/ })).toHaveValue('1 Place Max Lejeune 80100 Abbeville');
+  });
+
+  it('explique quoi faire si la position est refusée', async () => {
+    vi.stubGlobal('navigator', { ...navigator, geolocation: { getCurrentPosition: (_: PositionCallback, ko: PositionErrorCallback) => ko({ code: 1, PERMISSION_DENIED: 1 } as GeolocationPositionError) } });
+    render(<MemoryRouter><Reserver /></MemoryRouter>);
+    await userEvent.click(screen.getByRole('radio', { name: 'Soins à la carte' }));
+    await userEvent.click(await screen.findByRole('radio', { name: /Ciel de toit/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Utiliser ma position/ }));
+    expect(await screen.findByText(/Position refusée/)).toBeInTheDocument();
+  });
+
   it('présélectionne la formule choisie sur l’accueil', async () => {
     render(<MemoryRouter initialEntries={['/reserver?formule=ext-signature']}><Reserver /></MemoryRouter>);
     expect(await screen.findByRole('radio', { name: 'Nettoyage extérieur' })).toHaveAttribute('aria-checked', 'true');

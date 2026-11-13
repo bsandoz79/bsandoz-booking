@@ -157,6 +157,8 @@
 - Kit et site : comptabilité simple (module `Comptabilite`). Dépenses ponctuelles ou mensuelles (arrêtables, historique gardé) ; chiffre d'affaires des prestations faites, dépenses et résultat par mois et par année ; onglet « Comptabilité » de l'espace pro ; table `expense` (migration). Tests.
 - Site : tout est modifiable sur place pour le pro connecté, crayons ✏️ affichés d'office (plus de bouton « Modifier le site ») : titre et présentation, coordonnées, étapes, réalisations, zone et frais de déplacement, communes, horaires et congés, carte de fidélité, avis, FAQ, pages légales. Rubriques de « Mon site » réutilisées (`RubriquesSite`). Tests.
 - Espace pro : catalogue avec aperçu en direct de la carte de la formule à droite pendant la modification (composant `CarteFormule` partagé avec l'accueil). Suivi des demandes : `docs/demandes.md`. Test.
+- Espace pro : planning jour et semaine à la hauteur de l'écran, sans défilement (bloc `PlanningView`, prop `fitHeight`) ; « Mon prochain rendez-vous » à côté de « Ma journée » (prestation, adresse, produits, itinéraire, appel). Tests.
+- Réservation : bouton « Utiliser ma position » (GPS, adresse la plus proche via la Base Adresse Nationale, route `GET /geo/reverse`, position jamais mise en cache) ; chaque étape suivante, et chaque retour sur une étape, amène le visiteur au bon endroit. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
