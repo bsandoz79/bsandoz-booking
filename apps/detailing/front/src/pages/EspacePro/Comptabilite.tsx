@@ -45,6 +45,7 @@ export function ComptabiliteOnglet() {
             <div className={styles.tuile}><span className={styles.valeur}>{formatEuros(b.totaux.depensesCents)}</span><span className={styles.libelle}>Dépenses {b.annee}</span></div>
             <div className={styles.tuile}><span className={`${styles.valeur} ${b.totaux.resultatCents < 0 ? styles.negatif : ''}`}>{formatEuros(b.totaux.resultatCents)}</span><span className={styles.libelle}>Résultat {b.annee}</span></div>
           </div>
+          <RecettesParMoyen bilan={b} />
           <DataTable caption={`Par mois, ${b.annee}`} rows={b.mois} rowKey={(m) => m.mois} emptyLabel="—"
             columns={[
               { key: 'mois', header: 'Mois', render: (m) => nomMois(m.mois) },
@@ -74,6 +75,29 @@ export function ComptabiliteOnglet() {
         </>
       )}
     </section>
+  );
+}
+
+const MOYENS: { cle: keyof NonNullable<Bilan['parMoyenCents']>; libelle: string }[] = [
+  { cle: 'enLigne', libelle: 'Payé en ligne (réservation)' },
+  { cle: 'carte', libelle: 'Carte bancaire (terminal)' },
+  { cle: 'qr', libelle: 'Carte bancaire (QR code)' },
+  { cle: 'especes', libelle: 'Espèces' },
+  { cle: 'virement', libelle: 'Virement' },
+  { cle: 'cheque', libelle: 'Chèque' },
+  { cle: 'nonPrecise', libelle: 'Sur place, moyen non noté' },
+];
+
+/** Recettes de l'année par moyen de paiement (registre des recettes) : seulement les moyens utilisés. */
+function RecettesParMoyen({ bilan: b }: { bilan: Bilan }) {
+  const lignes = MOYENS.map((m) => ({ ...m, cents: b.parMoyenCents?.[m.cle] ?? 0 })).filter((m) => m.cents > 0);
+  if (lignes.length === 0) return null;
+  return (
+    <DataTable caption={`Recettes ${b.annee} par moyen de paiement`} rows={lignes} rowKey={(m) => m.cle} emptyLabel="—"
+      columns={[
+        { key: 'moyen', header: 'Moyen de paiement', render: (m) => m.libelle },
+        { key: 'montant', header: 'Montant', align: 'end', render: (m) => formatEuros(m.cents) },
+      ]} />
   );
 }
 
