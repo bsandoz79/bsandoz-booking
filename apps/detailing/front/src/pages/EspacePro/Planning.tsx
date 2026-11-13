@@ -6,6 +6,8 @@ import { dateHeure, jourLocal, localIso, plusJours } from './dates';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
 import { BoutonItineraire } from '../../components/Itineraire/Itineraire';
+import { Icone } from '../../components/Icone/Icone';
+import r from '../../components/Reglages/Reglages.module.css';
 import { defilerVers } from '../../app/defilement';
 import { Link } from 'react-router-dom';
 import { emettreFacture } from '../../services/factures';
@@ -130,6 +132,9 @@ export function PlanningOnglet() {
   );
 }
 
+/** « 1 h 30 », « 45 min ». */
+const dureeTexte = (min: number) => (min >= 60 ? `${Math.floor(min / 60)} h${min % 60 ? ` ${String(min % 60).padStart(2, '0')}` : ''}` : `${min} min`);
+
 function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: { rdv: RendezVousPro; nomsOptions?: Record<string, string>; onFermer?: () => void; onChange: () => void }) {
   // Ce que le client a demandé : options (avec le nombre de véhicules concernés), modèle, entreprise.
   const options = [...new Set(rdv.optionIds)].map((id) => {
@@ -154,54 +159,162 @@ function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: { rdv: 
     }
   };
 
+  const heureFin = new Date(rdv.end).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const dureeMin = Math.round((new Date(rdv.end).getTime() - new Date(rdv.start).getTime()) / 60000);
+  const enLigne = rdv.enLigneCents ?? (rdv.paiementEnLigne === false ? rdv.depositCents : rdv.depositCents + (rdv.produitsCents ?? 0));
+  const surPlace = rdv.surPlaceCents;
+  const vehicules = Array.isArray(m.vehicules) ? (m.vehicules as string[]) : [];
+
   return (
-    <div className={styles.panneau} role="region" aria-label={`Rendez-vous du ${dateHeure(rdv.start)}`}>
-      <div className={styles.actions} style={{ justifyContent: 'space-between' }}>
-        <h3>{rdv.prestation || 'Rendez-vous'} · {STATUTS[rdv.status]}</h3>
-        {onFermer && <Button variant="ghost" onClick={onFermer}>Fermer</Button>}
+    <div className={`${styles.panneau} ${styles.detailRdv}`} role="region" aria-label={`Rendez-vous du ${dateHeure(rdv.start)}`}>
+      {/* En-tête : quand, combien de temps, statut. */}
+      <div className={styles.detailEntete}>
+        <div>
+          <p className={styles.detailQuand}>{dateHeure(rdv.start)} → {heureFin}</p>
+          <p className={r.aide}>{dureeTexte(dureeMin)} sur place</p>
+        </div>
+        <span className={`${styles.pastilleStatut} ${styles[`statut_${rdv.status}`] ?? ''}`}>{STATUTS[rdv.status]}</span>
+        {onFermer && <button type="button" className={r.boutonContour} onClick={onFermer}>Fermer</button>}
       </div>
-      <dl className={styles.detail}>
-        <dt>Quand</dt><dd>{dateHeure(rdv.start)} → {new Date(rdv.end).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</dd>
-        <dt>Client</dt><dd>{rdv.client.name || '—'}</dd>
-        <dt>Téléphone</dt><dd>{rdv.client.phone ? <a className={styles.appelClient} href={lienTel(rdv.client.phone)}><IconeTelephone /> Appeler {rdv.client.phone}</a> : '—'}</dd>
-        <dt>E-mail</dt><dd>{rdv.client.email ? <a href={`mailto:${rdv.client.email}`}>{rdv.client.email}</a> : '—'}</dd>
-        <dt>Adresse</dt><dd>{rdv.address ? <>{rdv.address} <BoutonItineraire destination={{ address: rdv.address }} nom={rdv.client.name} /></> : 'Sur place'}</dd>
-        {(rdv.quantite ?? 1) > 1 && (
-          <><dt>Véhicules</dt><dd>{rdv.quantite}{Array.isArray(rdv.metierData.vehicules) && <ul className={styles.liste}>{(rdv.metierData.vehicules as string[]).map((v) => <li key={v}>{v}</li>)}</ul>}</dd></>
-        )}
-        <dt>Prestation</dt><dd><strong>{rdv.prestation || '—'}</strong>{(rdv.quantite ?? 1) > 1 ? ` × ${rdv.quantite} véhicules` : ''}</dd>
-        {options.length > 0 && (rdv.quantite ?? 1) <= 1 && <><dt>Options</dt><dd>{options.join(', ')}</dd></>}
-        {texte('modele') && <><dt>Véhicule</dt><dd>{texte('modele')}</dd></>}
-        {texte('entreprise') && <><dt>Entreprise</dt><dd>{texte('entreprise')}{texte('siret') ? ` · SIRET ${texte('siret')}` : ''}{texte('adresseFacturation') ? <><br />Facturation : {texte('adresseFacturation')}</> : null}</dd></>}
-        {rdv.notes && <><dt>Précisions</dt><dd>{rdv.notes}</dd></>}
-        <dt>Montant</dt><dd>{formatEuros(rdv.totalCents)}{rdv.surPlaceCents !== undefined ? ` · ${rdv.surPlaceCents > 0 ? `à encaisser sur place : ${formatEuros(rdv.surPlaceCents)}` : 'tout payé en ligne'}` : ` dont acompte ${formatEuros(rdv.depositCents)}`}{rdv.travelFeeCents > 0 ? ` (déplacement ${formatEuros(rdv.travelFeeCents)})` : ''}{rdv.remiseFideliteCents ? ` · remise fidélité ${formatEuros(rdv.remiseFideliteCents)}` : ''}</dd>
-        {rdv.produits && rdv.produits.length > 0 && (
-          <><dt>Produits à apporter</dt><dd><strong>{rdv.produits.map((p) => `${p.quantite} × ${p.nom}`).join(', ')}</strong> ({formatEuros(rdv.produitsCents ?? 0)})</dd></>
-        )}
-        {rdv.status === 'done' && <><dt>Facture</dt><dd><BoutonFacture reservationId={rdv.id} /></dd></>}
-        {rdv.clientId && <><dt>Fidélité</dt><dd><Fidelite clientId={rdv.clientId} /></dd></>}
-      </dl>
+
+      <section className={r.rubrique} aria-label="Client">
+        <h3 className={styles.detailTitre}>Client</h3>
+        <div className={r.panneau}>
+          <div className={r.ligne}>
+            <Icone nom="utilisateur" className={r.ligneIcone} />
+            <div className={r.ligneTexte}>
+              <span className={r.ligneTitre}>{rdv.client.name || 'Client'}</span>
+              {texte('entreprise') && <span className={r.ligneSous}>{texte('entreprise')}{texte('siret') ? ` · SIRET ${texte('siret')}` : ''}</span>}
+            </div>
+          </div>
+          {rdv.client.phone && (
+            <div className={r.ligne}>
+              <Icone nom="telephone" className={r.ligneIcone} />
+              <div className={r.ligneTexte}><span className={r.ligneTitre}>{rdv.client.phone}</span></div>
+              <div className={r.ligneActions}><a className={styles.appelClient} href={lienTel(rdv.client.phone)}><IconeTelephone /> Appeler {rdv.client.phone}</a></div>
+            </div>
+          )}
+          {rdv.client.email && (
+            <div className={r.ligne}>
+              <Icone nom="mail" className={r.ligneIcone} />
+              <div className={r.ligneTexte}><span className={r.ligneTitre}>{rdv.client.email}</span></div>
+              <div className={r.ligneActions}><a className={r.boutonContour} href={`mailto:${rdv.client.email}`}>Écrire</a></div>
+            </div>
+          )}
+          <div className={r.ligne}>
+            <Icone nom="position" className={r.ligneIcone} />
+            <div className={r.ligneTexte}>
+              <span className={r.ligneTitre}>{rdv.address || 'Sur place'}</span>
+              {texte('adresseFacturation') && <span className={r.ligneSous}>Facturation : {texte('adresseFacturation')}</span>}
+            </div>
+            {rdv.address && <div className={r.ligneActions}><BoutonItineraire destination={{ address: rdv.address }} nom={rdv.client.name} /></div>}
+          </div>
+          {rdv.clientId && (
+            <div className={r.ligne}>
+              <Icone nom="ticket" className={r.ligneIcone} />
+              <div className={r.ligneTexte}><span className={r.ligneTitre}>Carte de fidélité</span></div>
+              <div className={r.ligneActions}><Fidelite clientId={rdv.clientId} /></div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className={r.rubrique} aria-label="Prestation">
+        <h3 className={styles.detailTitre}>Prestation</h3>
+        <div className={r.panneau}>
+          <div className={r.ligne}>
+            <Icone nom="catalogue" className={r.ligneIcone} />
+            <div className={r.ligneTexte}>
+              <span className={r.ligneTitre}>{rdv.prestation || 'Prestation'}{(rdv.quantite ?? 1) > 1 ? ` × ${rdv.quantite} véhicules` : ''}</span>
+              {options.length > 0 && <span className={r.ligneSous}>Options : {options.join(', ')}</span>}
+            </div>
+          </div>
+          {(texte('modele') || vehicules.length > 0) && (
+            <div className={r.ligne}>
+              <Icone nom="carteIdentite" className={r.ligneIcone} />
+              <div className={r.ligneTexte}>
+                <span className={r.ligneTitre}>{vehicules.length > 0 ? 'Véhicules' : 'Véhicule'}</span>
+                <span className={r.ligneSous}>{vehicules.length > 0 ? vehicules.join(' · ') : texte('modele')}</span>
+              </div>
+            </div>
+          )}
+          {rdv.produits && rdv.produits.length > 0 && (
+            <div className={r.ligne}>
+              <Icone nom="produit" className={r.ligneIcone} />
+              <div className={r.ligneTexte}>
+                <span className={r.ligneTitre}>Produits à apporter</span>
+                <span className={`${r.ligneSous} ${r.attention}`}>{rdv.produits.map((p) => `${p.quantite} × ${p.nom}`).join(', ')}</span>
+              </div>
+              <span className={r.ligneValeur}>{formatEuros(rdv.produitsCents ?? 0)}</span>
+            </div>
+          )}
+          {rdv.notes && (
+            <div className={r.ligne}>
+              <Icone nom="facture" className={r.ligneIcone} />
+              <div className={r.ligneTexte}><span className={r.ligneTitre}>Précisions du client</span><span className={r.ligneSous}>{rdv.notes}</span></div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className={r.rubrique} aria-label="Paiement">
+        <h3 className={styles.detailTitre}>Paiement</h3>
+        <div className={r.panneau}>
+          <div className={r.ligne}>
+            <Icone nom="euro" className={r.ligneIcone} />
+            <div className={r.ligneTexte}>
+              <span className={r.ligneTitre}>Total</span>
+              {(rdv.travelFeeCents > 0 || !!rdv.remiseFideliteCents) && (
+                <span className={r.ligneSous}>{rdv.travelFeeCents > 0 ? `dont déplacement ${formatEuros(rdv.travelFeeCents)}` : ''}{rdv.travelFeeCents > 0 && rdv.remiseFideliteCents ? ' · ' : ''}{rdv.remiseFideliteCents ? `remise fidélité ${formatEuros(rdv.remiseFideliteCents)} déduite` : ''}</span>
+              )}
+            </div>
+            <span className={r.ligneValeur}>{formatEuros(rdv.totalCents + (rdv.produitsCents ?? 0))}</span>
+          </div>
+          {enLigne > 0 && (
+            <div className={r.ligne}>
+              <Icone nom="cadenas" className={r.ligneIcone} />
+              <div className={r.ligneTexte}><span className={r.ligneTitre}>{rdv.status === 'pending_payment' ? 'À payer en ligne (en attente)' : 'Payé en ligne'}</span></div>
+              <span className={r.ligneValeur}>{formatEuros(enLigne)}</span>
+            </div>
+          )}
+          <div className={r.ligne}>
+            <Icone nom="horloge" className={r.ligneIcone} />
+            <div className={r.ligneTexte}><span className={r.ligneTitre}>À encaisser sur place</span></div>
+            <span className={`${r.ligneValeur} ${(surPlace ?? 0) > 0 ? r.accent : ''}`}>{surPlace === undefined ? '—' : surPlace > 0 ? formatEuros(surPlace) : 'Rien, tout est réglé'}</span>
+          </div>
+          {rdv.status === 'done' && (
+            <div className={r.ligne}>
+              <Icone nom="facture" className={r.ligneIcone} />
+              <div className={r.ligneTexte}><span className={r.ligneTitre}>Facture</span></div>
+              <div className={r.ligneActions}><BoutonFacture reservationId={rdv.id} /></div>
+            </div>
+          )}
+        </div>
+      </section>
+
       {message && <p className={styles.ok} role="status">{message}</p>}
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
 
-      {rdv.status === 'confirmed' && (
-        <div className={styles.actions}>
+      {rdv.status === 'confirmed' && !annulation && (
+        <div className={styles.detailActions}>
           {passe && <Button onClick={() => agir(async () => { await changerStatut(rdv.id, 'done'); return 'Rendez-vous marqué comme terminé.'; })}>Terminé</Button>}
           {passe && <Button variant="secondary" onClick={() => agir(async () => { await changerStatut(rdv.id, 'no_show'); return 'Client marqué absent.'; })}>Client absent</Button>}
-          {!annulation && <Button variant="ghost" onClick={() => setAnnulation(true)}>Annuler le rendez-vous</Button>}
+          <button type="button" className={r.boutonDanger} onClick={() => setAnnulation(true)}>Annuler le rendez-vous</button>
         </div>
       )}
       {annulation && rdv.status !== 'cancelled' && (
-        <div className={styles.actions}>
-          <span>Annuler ce rendez-vous (le client est prévenu par e-mail) :</span>
-          <Button onClick={() => agir(async () => { const r = await annulerRendezVous(rdv.id, true); setAnnulation(false); return `Rendez-vous annulé, ${formatEuros(r.refundedCents)} remboursés.`; })}>Annuler et rembourser l’acompte</Button>
-          <Button variant="secondary" onClick={() => agir(async () => { await annulerRendezVous(rdv.id, false); setAnnulation(false); return 'Rendez-vous annulé sans remboursement.'; })}>Annuler sans rembourser</Button>
-          <Button variant="ghost" onClick={() => setAnnulation(false)}>Garder le rendez-vous</Button>
+        <div className={styles.detailAnnulation}>
+          <p><strong>Annuler ce rendez-vous ?</strong> Le client est prévenu par e-mail.</p>
+          <div className={styles.actions}>
+            <Button onClick={() => agir(async () => { const r2 = await annulerRendezVous(rdv.id, true); setAnnulation(false); return `Rendez-vous annulé, ${formatEuros(r2.refundedCents)} remboursés.`; })}>Annuler et rembourser l’acompte</Button>
+            <Button variant="secondary" onClick={() => agir(async () => { await annulerRendezVous(rdv.id, false); setAnnulation(false); return 'Rendez-vous annulé sans remboursement.'; })}>Annuler sans rembourser</Button>
+            <Button variant="ghost" onClick={() => setAnnulation(false)}>Garder le rendez-vous</Button>
+          </div>
         </div>
       )}
       {(rdv.status === 'cancelled' || rdv.status === 'no_show') && rdv.depositCents > 0 && (
-        <div className={styles.actions}>
-          <Button variant="secondary" onClick={() => agir(async () => { const r = await rembourser(rdv.id); return `${formatEuros(r.refundedCents)} remboursés.`; })}>Rembourser l’acompte</Button>
+        <div className={styles.detailActions}>
+          <Button variant="secondary" onClick={() => agir(async () => { const r2 = await rembourser(rdv.id); return `${formatEuros(r2.refundedCents)} remboursés.`; })}>Rembourser l’acompte</Button>
         </div>
       )}
     </div>
@@ -218,8 +331,8 @@ function Fidelite({ clientId }: { clientId: string }) {
   return (
     <span className={styles.actions}>
       <span>{carte.tampons} / {carte.tamponsRequis}{carte.remiseDisponible ? ` · −${carte.remisePercent} % à la prochaine réservation` : ''}</span>
-      <Button variant="ghost" onClick={() => ajuster(1)}>Ajouter un tampon</Button>
-      <Button variant="ghost" disabled={carte.tampons === 0} onClick={() => ajuster(-1)}>Retirer un tampon</Button>
+      <button type="button" className={r.boutonContour} disabled={carte.tampons === 0} onClick={() => ajuster(-1)} aria-label="Retirer un tampon">−</button>
+      <button type="button" className={r.boutonContour} onClick={() => ajuster(1)} aria-label="Ajouter un tampon">+</button>
     </span>
   );
 }

@@ -93,3 +93,18 @@
   .onglet { border-color: transparent; background: none; }
   .onglet[aria-current='page'] { background: var(--bs-color-primary-soft); border-color: transparent; }
 }
+
+/* Détail d'un rendez-vous : en-tête (quand, statut), blocs Client / Prestation / Paiement, actions. */
+.detailRdv { gap: 1.25rem; }
+.detailEntete { display: flex; flex-wrap: wrap; align-items: flex-start; gap: .5rem 1rem; }
+.detailEntete > div:first-child { flex: 1; min-width: 12rem; }
+.detailEntete p { margin: 0; }
+.detailQuand { font-size: 1.15rem; font-weight: 800; color: var(--bs-color-primary-dark); text-transform: capitalize; }
+.detailTitre { margin: 0; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--bs-color-text-muted); }
+.pastilleStatut { padding: .25rem .7rem; border-radius: 999px; font-size: .82rem; font-weight: 800; background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); }
+.statut_done { background: color-mix(in srgb, var(--bs-color-success) 14%, transparent); color: var(--bs-color-success); }
+.statut_cancelled, .statut_no_show, .statut_expired { background: color-mix(in srgb, var(--bs-color-danger) 12%, transparent); color: var(--bs-color-danger); }
+.statut_pending_payment { background: #fff4d6; color: #5c4300; }
+.detailActions { display: flex; flex-wrap: wrap; gap: .5rem; padding-top: .25rem; border-top: 1px solid var(--bs-color-border); padding-block-start: 1rem; }
+.detailAnnulation { display: flex; flex-direction: column; gap: .75rem; padding: 1rem; border: 1px dashed var(--bs-color-danger); border-radius: 12px; }
+.detailAnnulation p { margin: 0; }

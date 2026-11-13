@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { Button, DataTable, Field, Toggle, formatEuros } from '@bsandoz/ui';
+import { Button, Field, Toggle, formatEuros } from '@bsandoz/ui';
+import { Icone } from '../../components/Icone/Icone';
+import r from '../../components/Reglages/Reglages.module.css';
 import { CATEGORIES as CATEGORIES_SITE, VEHICLE_TYPES } from '../../data/demo';
 import { catalogue, enregistrerOption, enregistrerPrestation, type OptionPro, type PrestationPro, type Tarif } from '../../services/pro';
 import { nouvellePrestation } from './nouvellePrestation';
@@ -10,6 +12,8 @@ import styles from './Pro.module.css';
 /** Catégories du site (intérieur, extérieur, phares, soins à la carte). */
 const CATEGORIES: { value: string; label: string }[] = CATEGORIES_SITE;
 
+/** « 1 h 30 », « 45 min ». */
+const duree = (min: number) => (min >= 60 ? `${Math.floor(min / 60)} h${min % 60 ? ` ${String(min % 60).padStart(2, '0')}` : ''}` : `${min} min`);
 const euros = (cents: number) => (cents / 100).toFixed(2).replace('.', ',');
 const centimes = (texte: string) => Math.round(Number(texte.replace(',', '.').replace(/\s/g, '')) * 100);
 const prixValide = (texte: string) => /^\d+([.,]\d{1,2})?$/.test(texte.trim());
@@ -45,31 +49,84 @@ export function CatalogueOnglet() {
         <FormulaireOption initiale={option} onAnnuler={() => setOption(undefined)} onEnregistree={(o) => apres(`Option « ${o.name} » enregistrée.`)} />
       ) : (
         <>
-          <DataTable caption="Prestations" rows={prestations} rowKey={(p) => p.id ?? p.name} emptyLabel="Aucune prestation."
-            onRowClick={(p) => { setMessage(''); setPrestation(p); }} rowActionLabel={(p) => `Modifier ${p.name}`}
-            columns={[
-              { key: 'name', header: 'Prestation', sortValue: (p) => p.name },
-              { key: 'categorie', header: 'Catégorie', render: (p) => CATEGORIES.find((c) => c.value === p.categoryId)?.label ?? '—' },
-              { key: 'prix', header: 'À partir de', align: 'end', render: (p) => formatEuros(Math.min(p.basePriceCents, ...Object.values(p.tarifs).map((t) => t.priceCents))), sortValue: (p) => p.basePriceCents },
-              { key: 'duree', header: 'Durée', render: (p) => (p.occupePlage ? 'Demi-journée' : `${p.baseDurationMin} min`) },
-              { key: 'active', header: 'Proposée', render: (p) => (
-                <span className={styles.actions}>
-                  {p.active ? 'Oui' : 'Non'}
-                  <Button variant="ghost" onClick={() => basculer(p)}>{p.active ? `Retirer ${p.name}` : `Proposer ${p.name}`}</Button>
-                </span>
-              ) },
-            ]} />
-          <Button variant="secondary" onClick={() => { setMessage(''); setPrestation(nouvellePrestation(prestations.length)); }}>Ajouter une prestation</Button>
+          {[...CATEGORIES, { value: '', label: 'Sans catégorie' }].map((c) => {
+            const liste = prestations.filter((p) => (p.categoryId ?? '') === c.value || (c.value === '' && !CATEGORIES.some((x) => x.value === p.categoryId)))
+              .sort((a, b) => a.position - b.position);
+            if (c.value === '' && liste.length === 0) return null;
+            return (
+              <section key={c.value || 'aucune'} className={r.rubrique} aria-labelledby={`cat-${c.value || 'aucune'}`}>
+                <div className={r.rubriqueEntete}>
+                  <div>
+                    <h3 id={`cat-${c.value || 'aucune'}`}>{c.label}</h3>
+                    <p className={r.aide}>{liste.filter((p) => p.active).length} proposée{liste.filter((p) => p.active).length > 1 ? 's' : ''} sur le site{liste.some((p) => !p.active) ? `, ${liste.filter((p) => !p.active).length} retirée${liste.filter((p) => !p.active).length > 1 ? 's' : ''}` : ''}</p>
+                  </div>
+                  {c.value && (
+                    <button type="button" className={r.boutonContour} onClick={() => { setMessage(''); setPrestation(nouvellePrestation(prestations.length, c.value)); }}
+                      aria-label={`Ajouter une prestation : ${c.label}`}>+ Ajouter</button>
+                  )}
+                </div>
+                {liste.length === 0 ? <p className={r.aide}>Aucune prestation dans cette catégorie.</p> : (
+                  <ul className={r.panneau}>
+                    {liste.map((p) => (
+                      <li key={p.id ?? p.name} className={`${r.ligne} ${p.active ? '' : r.estompee}`}>
+                        <Icone nom="catalogue" className={r.ligneIcone} />
+                        <div className={r.ligneTexte}>
+                          <span className={r.ligneTitre}>{p.name}</span>
+                          <span className={r.ligneSous}>
+                            À partir de <strong>{formatEuros(Math.min(p.basePriceCents, ...Object.values(p.tarifs).map((t) => t.priceCents)))}</strong>
+                            {' · '}{p.occupePlage ? 'demi-journée' : duree(p.baseDurationMin)}
+                            {p.optionIds.length > 0 ? ` · ${p.optionIds.length} option${p.optionIds.length > 1 ? 's' : ''}` : ''}
+                          </span>
+                          {(p.badge || !p.active || (p.remiseUniteCents ?? 0) > 0 || Object.keys(p.tarifs).length > 0) && (
+                            <span className={r.etiquettes}>
+                              {!p.active && <span className={`${r.etiquette} ${r.etiquetteNeutre}`}>Retirée du site</span>}
+                              {p.badge && <span className={r.etiquette}>{p.badge}</span>}
+                              {Object.keys(p.tarifs).length > 0 && <span className={`${r.etiquette} ${r.etiquetteNeutre}`}>Prix selon le véhicule</span>}
+                              {(p.remiseUniteCents ?? 0) > 0 && <span className={`${r.etiquette} ${r.etiquetteNeutre}`}>−{formatEuros(p.remiseUniteCents!)} par véhicule en plus</span>}
+                            </span>
+                          )}
+                        </div>
+                        <div className={r.ligneActions}>
+                          <button type="button" className={r.boutonContour} aria-label={`Modifier ${p.name}`} onClick={() => { setMessage(''); setPrestation(p); }}>Modifier</button>
+                          <button type="button" className={r.boutonContour} aria-label={p.active ? `Retirer ${p.name}` : `Proposer ${p.name}`} onClick={() => basculer(p)}>
+                            {p.active ? 'Retirer' : 'Proposer'}
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            );
+          })}
 
-          <DataTable caption="Options" rows={options} rowKey={(o) => o.id ?? o.name} emptyLabel="Aucune option."
-            onRowClick={(o) => { setMessage(''); setOption(o); }} rowActionLabel={(o) => `Modifier l’option ${o.name}`}
-            columns={[
-              { key: 'name', header: 'Option', sortValue: (o) => o.name },
-              { key: 'prix', header: 'Prix', align: 'end', render: (o) => formatEuros(o.priceCents), sortValue: (o) => o.priceCents },
-              { key: 'duree', header: 'Durée', render: (o) => `+ ${o.durationMin} min` },
-              { key: 'active', header: 'Proposée', render: (o) => (o.active ? 'Oui' : 'Non') },
-            ]} />
-          <Button variant="secondary" onClick={() => { setMessage(''); setOption({ name: '', description: '', priceCents: 0, durationMin: 0, active: true }); }}>Ajouter une option</Button>
+          <section className={r.rubrique} aria-labelledby="cat-options">
+            <div className={r.rubriqueEntete}>
+              <div>
+                <h3 id="cat-options">Options</h3>
+                <p className={r.aide}>Suppléments au choix du client, à cocher pour chaque prestation concernée.</p>
+              </div>
+              <button type="button" className={r.boutonContour} onClick={() => { setMessage(''); setOption({ name: '', description: '', priceCents: 0, durationMin: 0, active: true }); }}>
+                Ajouter une option
+              </button>
+            </div>
+            {options.length === 0 ? <p className={r.aide}>Aucune option.</p> : (
+              <ul className={r.panneau}>
+                {options.map((o) => (
+                  <li key={o.id ?? o.name} className={`${r.ligne} ${o.active ? '' : r.estompee}`}>
+                    <Icone nom="etoile" className={r.ligneIcone} />
+                    <div className={r.ligneTexte}>
+                      <span className={r.ligneTitre}>{o.name}</span>
+                      <span className={r.ligneSous}>+ {formatEuros(o.priceCents)}{o.durationMin > 0 ? ` · + ${duree(o.durationMin)}` : ''}{o.active ? '' : ' · non proposée'}</span>
+                    </div>
+                    <div className={r.ligneActions}>
+                      <button type="button" className={r.boutonContour} aria-label={`Modifier l’option ${o.name}`} onClick={() => { setMessage(''); setOption(o); }}>Modifier</button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         </>
       )}
     </section>

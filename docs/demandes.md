@@ -20,6 +20,8 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Onglet Comptabilité (dépenses ponctuelles ou mensuelles, chiffre d'affaires, résultat par mois).
 - ✅ Créneaux groupés (« Conseillé » à côté d'un rendez-vous déjà prévu, écart réglable).
 - ✅ Avis Google : bouton dans le mail de facture (lien à coller dans Réglages quand la fiche Google existera).
+- ✅ Catalogue repensé : formules rangées par catégorie (comme sur l'accueil), une ligne par formule (prix, durée, options, étiquettes « Le plus choisi », « Retirée du site »…), « Modifier » et « Retirer » à droite ; options à part.
+- ✅ Détail d'un rendez-vous structuré : en-tête (quand, durée, statut), blocs Client (appel, e-mail, itinéraire, fidélité), Prestation (véhicules, options, produits à apporter, précisions), Paiement (total, payé en ligne, à encaisser sur place, facture), puis les actions.
 - ✅ Catalogue : aperçu en direct de la carte à droite pendant la modification.
 
 - ✅ Planning en semaine : texte des cases resserré (2 lignes, coupé proprement, texte complet au survol) ; un clic amène au détail du rendez-vous.
