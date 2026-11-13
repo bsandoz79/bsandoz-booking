@@ -317,14 +317,13 @@ export function Accueil() {
         </Zone>
       )}
 
+      {/* Sans avis réel, la section est masquée pour les visiteurs ; le pro la voit pour en ajouter. */}
+      {(avisPublies.length > 0 || edition) && (
       <Zone crayons={<ModifierRubrique rubrique="avis" />}>
       <section id="avis" className={`container ${styles.section}`} aria-labelledby="titre-avis">
         <h2 id="titre-avis">Avis clients</h2>
         {avisPublies.length === 0 ? (
-          <>
-            <p>{A_COMPLETER}</p>
-            <p className={styles.note}>Seuls des avis réels et vérifiables seront publiés ici.</p>
-          </>
+          <p className={styles.note}>Section masquée pour les visiteurs tant qu’aucun avis n’est publié. Ajoutez ici des avis réels (par exemple ceux de votre fiche Google), avec l’accord des clients.</p>
         ) : (
           <div className={styles.grid}>
             {avisPublies.map((a, i) => (
@@ -338,6 +337,7 @@ export function Accueil() {
         )}
       </section>
       </Zone>
+      )}
 
       {faq.length > 0 && (
         <Zone crayons={<ModifierRubrique rubrique="faq" />}>

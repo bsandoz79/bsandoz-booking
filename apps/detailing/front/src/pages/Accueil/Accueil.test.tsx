@@ -28,6 +28,8 @@ describe('Accueil', () => {
     expect(await screen.findByText('Intervenez-vous le dimanche ?')).toBeInTheDocument();
 
     expect(screen.getByRole('button', { name: 'Modifier : Photo de l’accueil' })).toBeInTheDocument();
+    // Section avis vide : visible pour le pro seulement, avec son crayon.
+    expect(screen.getByRole('button', { name: 'Modifier : Avis clients' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Modifier : Horaires et congés' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Modifier : Zone et frais de déplacement' })).toBeInTheDocument();
     await seDeconnecter();
@@ -62,7 +64,7 @@ describe('Accueil', () => {
     render(<MemoryRouter><Accueil /></MemoryRouter>);
 
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    for (const titre of ['Prestations', 'Comment ça marche', 'Réalisations', 'Zone d’intervention', 'Avis clients', 'Questions fréquentes']) {
+    for (const titre of ['Prestations', 'Comment ça marche', 'Réalisations', 'Zone d’intervention', 'Questions fréquentes']) {
       expect(screen.getByRole('heading', { level: 2, name: titre })).toBeInTheDocument();
     }
     expect(await screen.findByRole('heading', { level: 2, name: 'Horaires' })).toBeInTheDocument();
@@ -126,10 +128,9 @@ describe('Accueil', () => {
     await seDeconnecter();
   });
 
-  it('n’invente aucun avis ni photo', () => {
+  it('n’invente aucun avis ni photo : sans avis réel, la section avis est masquée', () => {
     render(<MemoryRouter><Accueil /></MemoryRouter>);
-    const avis = screen.getByRole('region', { name: 'Avis clients' });
-    expect(avis).toHaveTextContent('[à compléter]');
+    expect(screen.queryByRole('region', { name: 'Avis clients' })).not.toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Réalisations' }).querySelectorAll('img')).toHaveLength(0);
   });
 });
