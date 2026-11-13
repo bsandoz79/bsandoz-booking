@@ -6,6 +6,7 @@ import { annulerRendezVous, catalogue, changerStatut, horaires, indisponibilites
 import { dateHeure, jourLocal, localIso, plusJours } from './dates';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
+import { defilerVers } from '../../app/defilement';
 import styles from './Pro.module.css';
 
 const STATUTS: Record<RendezVousPro['status'], string> = {
@@ -50,8 +51,14 @@ export function PlanningOnglet() {
   const [plage, setPlage] = useState<[number, number]>([7, 20]);
   const [maintenant, setMaintenant] = useState(heureLocale);
   const [categories, setCategories] = useState<Record<string, string>>({});
+  const [nomsOptions, setNomsOptions] = useState<Record<string, string>>({});
   useEffect(() => { horaires().then((h) => setPlage(plageHoraire(h))).catch(() => undefined); }, []);
-  useEffect(() => { catalogue().then((c) => setCategories(Object.fromEntries(c.prestations.filter((p) => p.id && p.categoryId).map((p) => [p.id as string, p.categoryId as string])))).catch(() => undefined); }, []);
+  useEffect(() => {
+    catalogue().then((c) => {
+      setCategories(Object.fromEntries(c.prestations.filter((p) => p.id && p.categoryId).map((p) => [p.id as string, p.categoryId as string])));
+      setNomsOptions(Object.fromEntries(c.options.filter((o) => o.id).map((o) => [o.id as string, o.name])));
+    }).catch(() => undefined);
+  }, []);
   useEffect(() => { const t = window.setInterval(() => setMaintenant(heureLocale()), 60_000); return () => window.clearInterval(t); }, []);
   const [jour, setJour] = useState(aujourdhui);
   const [rdv, setRdv] = useState<RendezVousPro[]>([]);
@@ -77,7 +84,10 @@ export function PlanningOnglet() {
     })),
     ...conges.map((c) => ({ id: `conge-${c.id}`, start: localIso(c.start), end: localIso(c.end), title: c.reason || 'Indisponible', tone: 'blocked' as const })),
   ];
-  const selection = rdv.find((r) => r.id === choisi);
+  // Vue jour : détail à droite, le rendez-vous choisi ou, par défaut, le prochain à venir.
+  const actifs = rdv.filter((r) => r.status === 'confirmed' || r.status === 'pending_payment');
+  const prochain = [...actifs].filter((r) => new Date(r.end).getTime() >= Date.parse(`${aujourdhui}T${maintenant}`)).sort((a, b) => a.start.localeCompare(b.start))[0];
+  const selection = rdv.find((r) => r.id === choisi) ?? (mode === 'day' ? prochain : undefined);
 
   return (
     <section className={styles.section} aria-labelledby="titre-planning">
@@ -88,16 +98,39 @@ export function PlanningOnglet() {
         <li><span className={styles.legendeAttente} aria-hidden="true" />Paiement en attente</li>
         <li><span className={styles.legendeConge} aria-hidden="true" />Indisponible</li>
       </ul>
-      <PlanningView mode={mode} date={jour} today={aujourdhui} events={evenements} labels={LIBELLES}
-        hourStart={plage[0]} hourEnd={plage[1]} now={maintenant}
-        onModeChange={setMode} onDateChange={setJour}
-        onEventClick={(e) => { if (!e.id.startsWith('conge-')) setChoisi(e.id); }} />
-      {selection && <DetailRendezVous rdv={selection} onFermer={() => setChoisi(undefined)} onChange={charger} />}
+      <div className={mode === 'day' ? styles.vueJour : undefined}>
+        <PlanningView mode={mode} date={jour} today={aujourdhui} events={evenements} labels={LIBELLES}
+          hourStart={plage[0]} hourEnd={plage[1]} now={maintenant}
+          onModeChange={setMode} onDateChange={setJour}
+          onEventClick={(e) => {
+            if (e.id.startsWith('conge-')) return;
+            setChoisi(e.id);
+            // Téléphone : le détail est sous l'emploi du temps, on y descend.
+            if (mode === 'day' && window.matchMedia?.('(max-width: 999px)').matches) defilerVers('detail-rdv');
+          }} />
+        {mode === 'day' ? (
+          <aside id="detail-rdv" className={styles.colonneDetail} aria-label="Détail du rendez-vous">
+            {selection ? (
+              <>
+                {selection.id === prochain?.id && !choisi && <p className={styles.surtitreDetail}>Prochain rendez-vous</p>}
+                <DetailRendezVous rdv={selection} nomsOptions={nomsOptions} onChange={charger} />
+              </>
+            ) : <p className={styles.aide}>Aucun rendez-vous à venir. Touchez un rendez-vous du planning pour voir son détail.</p>}
+          </aside>
+        ) : selection && <DetailRendezVous rdv={selection} nomsOptions={nomsOptions} onFermer={() => setChoisi(undefined)} onChange={charger} />}
+      </div>
     </section>
   );
 }
 
-function DetailRendezVous({ rdv, onFermer, onChange }: { rdv: RendezVousPro; onFermer: () => void; onChange: () => void }) {
+function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: { rdv: RendezVousPro; nomsOptions?: Record<string, string>; onFermer?: () => void; onChange: () => void }) {
+  // Ce que le client a demandé : options (avec le nombre de véhicules concernés), modèle, entreprise.
+  const options = [...new Set(rdv.optionIds)].map((id) => {
+    const n = rdv.optionIds.filter((x) => x === id).length;
+    return `${nomsOptions[id] ?? 'Option'}${n > 1 ? ` × ${n}` : ''}`;
+  });
+  const m = rdv.metierData;
+  const texte = (cle: string) => (typeof m[cle] === 'string' && m[cle] !== '' ? String(m[cle]) : '');
   const [message, setMessage] = useState('');
   const [erreur, setErreur] = useState('');
   const [annulation, setAnnulation] = useState(false);
@@ -118,7 +151,7 @@ function DetailRendezVous({ rdv, onFermer, onChange }: { rdv: RendezVousPro; onF
     <div className={styles.panneau} role="region" aria-label={`Rendez-vous du ${dateHeure(rdv.start)}`}>
       <div className={styles.actions} style={{ justifyContent: 'space-between' }}>
         <h3>{rdv.prestation || 'Rendez-vous'} · {STATUTS[rdv.status]}</h3>
-        <Button variant="ghost" onClick={onFermer}>Fermer</Button>
+        {onFermer && <Button variant="ghost" onClick={onFermer}>Fermer</Button>}
       </div>
       <dl className={styles.detail}>
         <dt>Quand</dt><dd>{dateHeure(rdv.start)} → {new Date(rdv.end).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</dd>
@@ -129,7 +162,10 @@ function DetailRendezVous({ rdv, onFermer, onChange }: { rdv: RendezVousPro; onF
         {(rdv.quantite ?? 1) > 1 && (
           <><dt>Véhicules</dt><dd>{rdv.quantite}{Array.isArray(rdv.metierData.vehicules) && <ul className={styles.liste}>{(rdv.metierData.vehicules as string[]).map((v) => <li key={v}>{v}</li>)}</ul>}</dd></>
         )}
-        {Object.keys(rdv.metierData).length > 0 && <><dt>Détails</dt><dd>{Object.entries(rdv.metierData).filter(([k, v]) => k !== 'vehicules' && v !== '' && v !== null).map(([k, v]) => `${k} : ${String(v)}`).join(' · ')}</dd></>}
+        <dt>Prestation</dt><dd><strong>{rdv.prestation || '—'}</strong>{(rdv.quantite ?? 1) > 1 ? ` × ${rdv.quantite} véhicules` : ''}</dd>
+        {options.length > 0 && (rdv.quantite ?? 1) <= 1 && <><dt>Options</dt><dd>{options.join(', ')}</dd></>}
+        {texte('modele') && <><dt>Véhicule</dt><dd>{texte('modele')}</dd></>}
+        {texte('entreprise') && <><dt>Entreprise</dt><dd>{texte('entreprise')}{texte('siret') ? ` · SIRET ${texte('siret')}` : ''}{texte('adresseFacturation') ? <><br />Facturation : {texte('adresseFacturation')}</> : null}</dd></>}
         {rdv.notes && <><dt>Précisions</dt><dd>{rdv.notes}</dd></>}
         <dt>Montant</dt><dd>{formatEuros(rdv.totalCents)}{rdv.surPlaceCents !== undefined ? ` · ${rdv.surPlaceCents > 0 ? `à encaisser sur place : ${formatEuros(rdv.surPlaceCents)}` : 'tout payé en ligne'}` : ` dont acompte ${formatEuros(rdv.depositCents)}`}{rdv.travelFeeCents > 0 ? ` (déplacement ${formatEuros(rdv.travelFeeCents)})` : ''}{rdv.remiseFideliteCents ? ` · remise fidélité ${formatEuros(rdv.remiseFideliteCents)}` : ''}</dd>
         {rdv.produits && rdv.produits.length > 0 && (

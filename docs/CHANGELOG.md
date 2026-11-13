@@ -141,6 +141,7 @@
 - Cartes des formules : « Formule … incluse » en couleur, étiquettes en pastilles (« Nouveau », « Durée limitée », « Offert · durée limitée ») écrites entre crochets dans la description du Catalogue, carte mise en avant teintée.
 - Mon espace : bouton « Accéder à l’espace pro » pour un compte professionnel.
 - Planning de l'espace pro en emploi du temps : vues jour, semaine et mois, toute la journée affichée, une case colorée par rendez-vous de la hauteur de sa durée, une couleur par catégorie, rendez-vous qui se chevauchent côte à côte, heure courante.
+- Planning, vue jour : emploi du temps à gauche et détail du rendez-vous à droite (le prochain par défaut, dessous sur téléphone), avec tout ce qui a été demandé : prestation, véhicules, options, modèle, entreprise, précisions, produits.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
