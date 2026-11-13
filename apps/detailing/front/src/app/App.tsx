@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ContenuProvider } from './ContenuContext';
 import { ModeEditionProvider } from './modeEdition';
+import { Apparitions } from './Apparitions';
 import { DefilementAncre } from './DefilementAncre';
 import { Footer } from '../components/Footer/Footer';
 import { Header } from '../components/Header/Header';
@@ -24,6 +25,7 @@ export function AppRoutes() {
     <ContenuProvider>
      <ModeEditionProvider>
       <DefilementAncre />
+      <Apparitions />
       <Header />
       <Routes>
         <Route path="/" element={<Accueil />} />
