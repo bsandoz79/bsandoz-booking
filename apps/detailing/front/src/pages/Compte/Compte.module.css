@@ -8,43 +8,53 @@
 .aide { font-size: .9rem; color: var(--bs-color-text-muted); }
 .ok { color: var(--bs-color-success); font-weight: 600; }
 .erreur { color: var(--bs-color-danger); font-weight: 600; }
-/* Zone de danger : tout en bas, encadré rouge en pointillés. */
-.danger { margin-top: 1rem; border: 2px dashed var(--bs-color-danger); border-radius: var(--bs-radius-md); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: .75rem; }
-.danger h2 { color: var(--bs-color-danger); font-size: 1.1rem; margin: 0; }
-.dangerContenu { display: flex; flex-direction: column; gap: .75rem; }
+/* Suppression du compte : texte et bouton rouge bordé, tout en bas. */
+.danger { display: flex; flex-direction: column; gap: .75rem; }
+.danger p { margin: 0; }
 
 /* Compte pro connecté sur « Mon espace » : accès direct à l'espace pro. */
 .accesPro { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; padding: 1rem; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); }
 
-/* En-tête de « Mon espace » : bandeau sombre aux initiales, coordonnées dessous. */
-.profil { overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); box-shadow: 0 8px 24px rgb(0 0 0 / .06); }
-.profilBandeau { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem 1rem; padding: 1.25rem; color: #fff;
-  background: radial-gradient(circle at 85% 0%, color-mix(in srgb, var(--brand-accent) 35%, transparent), transparent 55%), var(--brand-navy); }
-.avatar { display: grid; place-items: center; flex: none; width: 64px; height: 64px; border-radius: 50%; font-size: 1.4rem; font-weight: 800; letter-spacing: .02em;
-  color: var(--brand-navy); background: var(--brand-accent); box-shadow: 0 0 0 4px rgb(255 255 255 / .18); }
-.profilIdentite { flex: 1; min-width: 12rem; }
-.bonjour { margin: 0; color: var(--brand-on-navy); font-weight: 600; }
-.profilNom { margin: 0; color: #fff; font-size: clamp(1.4rem, 4vw, 1.9rem); overflow-wrap: anywhere; }
-.deconnexion { min-height: 44px; padding: 0 1rem; border: 1px solid rgb(255 255 255 / .6); border-radius: 999px; background: rgb(255 255 255 / .08);
-  color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
-.deconnexion:hover { background: rgb(255 255 255 / .18); }
-.deconnexion:focus-visible { outline: 3px solid var(--brand-accent); outline-offset: 2px; }
-.coordonnees { display: grid; gap: .6rem; margin: 0; padding: 1rem 1.25rem 0; }
-.coordonnees div { display: flex; flex-wrap: wrap; gap: .25rem .75rem; }
-.coordonnees dt { min-width: 8rem; font-weight: 600; color: var(--bs-color-text-muted); }
-.coordonnees dd { margin: 0; overflow-wrap: anywhere; font-weight: 600; }
-.profilActions { padding: .5rem 1.25rem 1rem; }
-.profilFormulaire { display: flex; flex-direction: column; gap: .75rem; max-width: 460px; padding: 1rem 1.25rem; }
-.profil > [role='status'] { padding: 0 1.25rem 1rem; margin: 0; }
+/* « Mon espace », façon page de réglages : rubriques (titre + explication) et panneaux de lignes. */
+.espace { max-width: 860px; gap: 2.25rem; }
+.entete { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+.enteteTexte { flex: 1; min-width: 14rem; }
+.enteteTexte h1 { margin: 0; }
+.enteteTexte p { margin: .25rem 0 0; }
+.avatar { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 50%; font-size: 1.2rem; font-weight: 800;
+  color: var(--bs-color-primary-dark); background: var(--bs-color-primary-soft); border: 1px solid color-mix(in srgb, var(--bs-color-primary) 35%, transparent); }
 
-/* Tuiles « En bref ». */
-.tuiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .75rem; }
-.tuile { display: flex; flex-direction: column; gap: .2rem; padding: 1rem; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); }
-.tuileIcone { font-size: 1.4rem; }
-.tuileLibelle { font-size: .85rem; color: var(--bs-color-text-muted); }
-.tuileValeur { font-size: 1.15rem; color: var(--bs-color-primary-dark); text-transform: capitalize; }
-.tuileAvoir { border-color: var(--bs-color-success); background: color-mix(in srgb, var(--bs-color-success) 8%, var(--bs-color-surface)); }
-.tuileAvoir .tuileValeur { color: var(--bs-color-success); }
-.reserver { align-self: flex-start; }
-.section h2 { display: flex; align-items: center; gap: .25rem; }
+.rubrique { display: flex; flex-direction: column; gap: .9rem; }
+.rubriqueEntete { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: .5rem 1rem; }
+.rubriqueEntete h2 { margin: 0; font-size: 1.15rem; }
+.rubriqueEntete p { margin: .3rem 0 0; }
+
+.panneau { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--bs-color-border); border-radius: 16px;
+  background: var(--bs-color-surface); overflow: hidden; }
+.ligne { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto auto; align-items: center; gap: .5rem 1.1rem; min-height: 64px; padding: .85rem 1.25rem; }
+.ligne + .ligne { border-top: 1px solid var(--bs-color-border); }
+.ligneIcone { color: var(--bs-color-text-muted); }
+.ligneTexte { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+.ligneTitre { font-weight: 700; }
+.ligneTexte .aide, .ligneTexte .ok { font-size: .85rem; margin: 0; }
+.ligneValeur { color: var(--bs-color-text-muted); text-align: end; overflow-wrap: anywhere; }
+.ligneAccent { color: var(--bs-color-success); font-weight: 700; }
+.ligneAction { display: flex; justify-content: flex-end; }
+.ligneEdition { grid-template-columns: 28px minmax(0, 1fr); align-items: start; }
+.ligneEdition .ligneIcone { margin-top: 2.1rem; }
+.ligneChamp { display: flex; flex-direction: column; gap: .75rem; max-width: 460px; }
+/* Téléphone : la valeur passe sous l'intitulé, le bouton reste à droite. */
+@media (max-width: 600px) {
+  .ligne { grid-template-columns: 24px minmax(0, 1fr) auto; }
+  .ligneValeur { grid-column: 2; grid-row: 2; text-align: start; }
+  .ligneAction { grid-column: 3; grid-row: 1 / span 2; }
+}
+
+.boutonContour { display: inline-flex; align-items: center; gap: .45rem; min-height: 40px; padding: 0 1rem; border: 1px solid var(--bs-color-border); border-radius: 10px;
+  background: transparent; color: var(--bs-color-text); font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.boutonContour:hover { border-color: var(--bs-color-text-muted); background: color-mix(in srgb, var(--bs-color-text) 5%, transparent); }
+.boutonContour:focus-visible, .boutonDanger:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
+.boutonDanger { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: 0 1.1rem; border: 1px solid var(--bs-color-danger); border-radius: 10px;
+  background: transparent; color: var(--bs-color-danger); font: inherit; font-weight: 600; cursor: pointer; }
+.boutonDanger:hover { background: color-mix(in srgb, var(--bs-color-danger) 8%, transparent); }
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

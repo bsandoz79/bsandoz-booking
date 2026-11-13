@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { formatEuros } from '@bsandoz/ui';
 import { prixMin, type Formule } from '../../data/demo';
 import { detailPrestation } from '../../data/vitrine';
+import { Icone } from '../../components/Icone/Icone';
 import styles from './Accueil.module.css';
 
 /**
@@ -19,7 +20,7 @@ export function CarteFormule({ formule: f, enEdition = false, crayon, apercu = f
       {crayon && <div className={styles.crayonCarte}>{crayon}</div>}
       <h3>{f.name || 'Nom de la formule'}</h3>
       <p className={styles.prix}>{formatEuros(prixMin(f))}</p>
-      {detail.duree && <p className={styles.duree}><span aria-hidden="true">⏱</span> {detail.duree}</p>}
+      {detail.duree && <p className={styles.duree}><Icone nom="horloge" taille={16} /> {detail.duree}</p>}
       {detail.inclus.length > 0 ? (
         <>
           <p className={styles.compris}>Ce qui est compris</p>

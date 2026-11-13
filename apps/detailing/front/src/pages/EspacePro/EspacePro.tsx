@@ -12,21 +12,22 @@ import { FacturesOnglet } from './Factures';
 import { RdvTelephoneOnglet } from './RdvTelephone';
 import { ReglagesOnglet } from './Reglages';
 import { TableauDeBordOnglet } from './TableauDeBord';
+import { Icone, type NomIcone } from '../../components/Icone/Icone';
 import styles from './Pro.module.css';
 
 const ONGLETS = [
-  { id: 'tableau', icone: '📊', label: 'Tableau de bord' },
-  { id: 'planning', icone: '📅', label: 'Planning' },
-  { id: 'clients', icone: '👥', label: 'Clients' },
-  { id: 'telephone', icone: '📞', label: 'Rendez-vous par téléphone' },
-  { id: 'catalogue', icone: '🧽', label: 'Catalogue' },
-  { id: 'produits', icone: '🧴', label: 'Produits' },
-  { id: 'factures', icone: '🧾', label: 'Factures' },
-  { id: 'comptabilite', icone: '💶', label: 'Comptabilité' },
-  { id: 'horaires', icone: '🕒', label: 'Horaires et congés' },
-  { id: 'site', icone: '🌐', label: 'Mon site' },
-  { id: 'reglages', icone: '⚙️', label: 'Réglages' },
-] as const;
+  { id: 'tableau', icone: 'tableau', label: 'Tableau de bord' },
+  { id: 'planning', icone: 'calendrier', label: 'Planning' },
+  { id: 'clients', icone: 'clients', label: 'Clients' },
+  { id: 'telephone', icone: 'telephone', label: 'Rendez-vous par téléphone' },
+  { id: 'catalogue', icone: 'catalogue', label: 'Catalogue' },
+  { id: 'produits', icone: 'produit', label: 'Produits' },
+  { id: 'factures', icone: 'facture', label: 'Factures' },
+  { id: 'comptabilite', icone: 'euro', label: 'Comptabilité' },
+  { id: 'horaires', icone: 'horloge', label: 'Horaires et congés' },
+  { id: 'site', icone: 'globe', label: 'Mon site' },
+  { id: 'reglages', icone: 'reglages', label: 'Réglages' },
+] as const satisfies readonly { id: string; icone: NomIcone; label: string }[];
 type Onglet = (typeof ONGLETS)[number]['id'];
 
 const estPro = () => rolesSession().includes('ROLE_PRO');
@@ -55,7 +56,7 @@ export function EspacePro() {
         {ONGLETS.map((o) => (
           <button key={o.id} type="button" className={styles.onglet} aria-current={onglet === o.id ? 'page' : undefined}
             onClick={() => { setOnglet(o.id); document.getElementById('contenu-pro')?.scrollIntoView?.({ block: 'start' }); }}>
-            <span className={styles.ongletIcone} aria-hidden="true">{o.icone}</span>{o.label}
+            <Icone nom={o.icone} className={styles.ongletIcone} taille={19} />{o.label}
           </button>
         ))}
       </nav>

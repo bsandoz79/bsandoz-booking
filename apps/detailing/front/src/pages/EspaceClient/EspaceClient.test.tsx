@@ -12,7 +12,7 @@ async function seConnecterDemo() {
   await userEvent.type(await screen.findByLabelText(/E-mail/), 'camille@example.org');
   await userEvent.type(screen.getByLabelText(/^Mot de passe/), 'motdepasse1');
   await userEvent.click(screen.getByRole('button', { name: 'Se connecter' }));
-  await screen.findByRole('heading', { name: 'Camille Martin' });
+  await screen.findByRole('heading', { level: 1, name: 'Mon espace' });
 }
 
 describe('Espace client', () => {
@@ -55,7 +55,7 @@ describe('Espace client', () => {
 
     await userEvent.click(within(carte).getByRole('button', { name: 'Annuler le rendez-vous' }));
     await userEvent.click(within(carte).getByRole('button', { name: 'Oui, annuler' }));
-    expect(await screen.findByText('Aucun rendez-vous à venir.', { exact: false })).toBeInTheDocument();
+    expect(await screen.findByText('Aucun rendez-vous à venir')).toBeInTheDocument();
     expect(within(screen.getByRole('region', { name: 'Historique' })).getByText('Annulé')).toBeInTheDocument();
   });
 
@@ -70,27 +70,28 @@ describe('Espace client', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('Rendez-vous déplacé au vendredi 20 novembre 2026');
   });
 
-  it('montre le nom, l’e-mail et le téléphone, modifiables, et propose d’ajouter le rendez-vous à l’agenda', async () => {
+  it('profil façon réglages : coordonnées modifiables ligne par ligne, résumé, agenda, suppression en bas', async () => {
     await seConnecterDemo();
-    const profil = screen.getByRole('region', { name: 'Camille Martin' });
+    expect(screen.getByRole('button', { name: 'Se déconnecter' })).toBeInTheDocument();
+    const profil = screen.getByRole('region', { name: 'Mon profil' });
     expect(profil).toHaveTextContent('camille@example.org');
-    expect(within(profil).getByRole('button', { name: 'Se déconnecter' })).toBeInTheDocument();
-    const enBref = screen.getByRole('list', { name: 'En bref' });
-    expect(enBref).toHaveTextContent(/Prochain rendez-vous.*mar\. 17 nov\./);
-    expect(enBref).toHaveTextContent(/Avoir.*30,00/);
-    expect(screen.getByRole('link', { name: 'Réserver un nouveau rendez-vous' })).toHaveAttribute('href', '/reserver');
 
-    await userEvent.click(within(profil).getByRole('button', { name: 'Modifier mes informations' }));
-    const telephone = within(profil).getByLabelText(/Téléphone/);
+    await userEvent.click(within(profil).getByRole('button', { name: 'Modifier : Téléphone' }));
+    const telephone = within(profil).getByLabelText(/^Téléphone/);
     await userEvent.clear(telephone);
     await userEvent.type(telephone, '06 99 88 77 66');
     await userEvent.click(within(profil).getByRole('button', { name: 'Enregistrer' }));
     expect(await within(profil).findByText('06 99 88 77 66')).toBeInTheDocument();
-    expect(within(profil).getByText('Vos informations sont enregistrées.')).toBeInTheDocument();
+    expect(within(profil).getByText('Téléphone enregistré.')).toBeInTheDocument();
+
+    const enBref = screen.getByRole('list', { name: 'En bref' });
+    expect(enBref).toHaveTextContent(/Prochain rendez-vous.*mar\. 17 nov\./);
+    expect(enBref).toHaveTextContent(/Avoir.*30,00/);
+    expect(within(screen.getByRole('region', { name: 'Mes rendez-vous' })).getByRole('link', { name: 'Réserver' })).toHaveAttribute('href', '/reserver');
 
     const carte = screen.getByRole('article', { name: 'Intérieur Signature' });
     expect(within(carte).getByRole('link', { name: 'Google Agenda' })).toHaveAttribute('href', expect.stringContaining('calendar.google.com/calendar/render?action=TEMPLATE'));
-    expect(screen.getByRole('region', { name: 'Zone de danger' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Supprimer le compte' })).toBeInTheDocument();
   });
 
   it('se déconnecte et confirme avant de supprimer le compte', async () => {

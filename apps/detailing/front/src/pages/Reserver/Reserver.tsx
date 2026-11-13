@@ -9,6 +9,7 @@ import { PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
 import { defilerVers } from '../../app/defilement';
 import { memoriserReservation } from '../../app/agenda';
+import { Icone } from '../../components/Icone/Icone';
 import { SITE } from '../../data/site';
 import { ChoixProduits } from '../../components/ChoixProduits/ChoixProduits';
 import styles from './Reserver.module.css';
@@ -276,7 +277,7 @@ export function Reserver() {
                     setLocalisation((e as Error).message);
                   }
                 }}>
-                <span aria-hidden="true">📍</span> {localisation === 'en_cours' ? 'Recherche de votre position…' : 'Utiliser ma position'}
+                <Icone nom="position" taille={18} /> {localisation === 'en_cours' ? 'Recherche de votre position…' : 'Utiliser ma position'}
               </button>
               {localisation && localisation !== 'en_cours' && <p className={styles.hint} role="status">{localisation}</p>}
             </div>

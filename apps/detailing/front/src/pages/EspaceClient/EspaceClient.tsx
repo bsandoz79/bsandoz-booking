@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button, Field } from '@bsandoz/ui';
 import { CarteFidelite } from '../../components/CarteFidelite/CarteFidelite';
@@ -12,6 +12,7 @@ import {
   annulerMonRendezVous, deplacerMonRendezVous, payerMonRendezVous, exporterMesDonnees, mesRendezVous, modifierMonCompte, monCompte, reprendreSession,
   rolesSession, seConnecter, seDeconnecter, supprimerMonCompte, type Compte, type RendezVous,
 } from '../../services/compte';
+import { Icone, type NomIcone } from '../../components/Icone/Icone';
 import styles from '../Compte/Compte.module.css';
 
 /** Espace client : connexion, rendez-vous à venir et passés (déplacer, annuler), compte (export, suppression, déconnexion). */
@@ -129,125 +130,166 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
     }
   };
 
+  const nomComplet = compte ? `${compte.firstname} ${compte.lastname}`.trim() : '';
+  const enregistrerChamp = async (donnees: Partial<Pick<Compte, 'firstname' | 'lastname' | 'phone' | 'email'>>) => {
+    if (!compte) return;
+    setCompte(await modifierMonCompte({ firstname: compte.firstname, lastname: compte.lastname, phone: compte.phone, email: compte.email, ...donnees }));
+  };
+
   return (
-    <main className={`container ${styles.page}`}>
-      <h1 className={styles.srOnly}>Mon espace</h1>
-      {compte && (
-        <Profil compte={compte} onModifie={setCompte}
-          onDeconnecter={async () => { await seDeconnecter(); onDeconnecte('Vous êtes déconnecté.'); }} />
-      )}
+    <main className={`container ${styles.page} ${styles.espace}`}>
+      <header className={styles.entete}>
+        <span className={styles.avatar} aria-hidden="true">{initiales(nomComplet || compte?.email || '?')}</span>
+        <div className={styles.enteteTexte}>
+          <h1>Mon espace</h1>
+          {compte && <p className={styles.aide}>Bonjour {compte.firstname || nomComplet}, retrouvez ici vos rendez-vous et vos informations.</p>}
+        </div>
+        <button type="button" className={styles.boutonContour} onClick={async () => { await seDeconnecter(); onDeconnecte('Vous êtes déconnecté.'); }}>
+          <Icone nom="sortie" taille={18} /> Se déconnecter
+        </button>
+      </header>
       {(compte?.roles.includes('ROLE_PRO') || rolesSession().includes('ROLE_PRO')) && (
         <p className={styles.accesPro}>Vous êtes connecté avec un compte professionnel. <Link to="/pro" className="btn">Accéder à l’espace pro</Link></p>
       )}
       {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
 
-      <ul className={styles.tuiles} aria-label="En bref">
-        <li className={styles.tuile}>
-          <span className={styles.tuileIcone} aria-hidden="true">📅</span>
-          <span className={styles.tuileLibelle}>Prochain rendez-vous</span>
-          <strong className={styles.tuileValeur}>{aVenir[0] ? jourCourt(aVenir[0].start) : 'Aucun'}</strong>
-        </li>
-        <li className={styles.tuile}>
-          <span className={styles.tuileIcone} aria-hidden="true">✨</span>
-          <span className={styles.tuileLibelle}>Prestations réalisées</span>
-          <strong className={styles.tuileValeur}>{rendezVous.filter((r) => r.status === 'done').length}</strong>
-        </li>
-        {fidelite?.actif && (
-          <li className={styles.tuile}>
-            <span className={styles.tuileIcone} aria-hidden="true">🎟️</span>
-            <span className={styles.tuileLibelle}>Carte de fidélité</span>
-            <strong className={styles.tuileValeur}>{fidelite.remiseDisponible ? `−${fidelite.remisePercent} % prêt` : `${fidelite.tampons} / ${fidelite.tamponsRequis}`}</strong>
-          </li>
-        )}
-        {(compte?.avoirCents ?? 0) > 0 && (
-          <li className={`${styles.tuile} ${styles.tuileAvoir}`}>
-            <span className={styles.tuileIcone} aria-hidden="true">💶</span>
-            <span className={styles.tuileLibelle}>Avoir, déduit au prochain rendez-vous</span>
-            <strong className={styles.tuileValeur}>{formatEuros(compte!.avoirCents!)}</strong>
-          </li>
-        )}
-      </ul>
-      <Link to="/reserver" className={`btn ${styles.reserver}`}>Réserver un nouveau rendez-vous</Link>
-      {(compte?.avoirCents ?? 0) > 0 && (
-        <p className={styles.srOnly}>Vous avez un avoir de {formatEuros(compte!.avoirCents!)} : il sera déduit automatiquement de votre prochain rendez-vous.</p>
-      )}
-      {fidelite?.actif && <CarteFidelite carte={fidelite} />}
+      <Rubrique id="a-venir" titre="Mes rendez-vous" description="Vos prochains rendez-vous : déplacez-les, annulez-les ou ajoutez-les à votre agenda."
+        action={<Link to="/reserver" className="btn">Réserver</Link>}>
+        {aVenir.length === 0
+          ? <div className={styles.panneau}><Ligne icone="calendrier" titre="Aucun rendez-vous à venir" texte="Réservez un créneau en ligne en quelques clics." /></div>
+          : <div className={styles.liste}>{aVenir.map(carte)}</div>}
+      </Rubrique>
 
-      <section className={styles.section} aria-labelledby="titre-a-venir">
-        <h2 id="titre-a-venir"><span aria-hidden="true">🗓️ </span>Mes rendez-vous à venir</h2>
-        {aVenir.length === 0 ? (
-          <p>Aucun rendez-vous à venir. <Link to="/reserver">Réserver un créneau</Link></p>
-        ) : (
-          <div className={styles.liste}>{aVenir.map(carte)}</div>
+      <Rubrique id="en-bref" titre="En bref">
+        <ul className={styles.panneau} aria-label="En bref">
+          <Ligne element="li" icone="calendrier" titre="Prochain rendez-vous" valeur={aVenir[0] ? jourCourt(aVenir[0].start) : 'Aucun'} />
+          <Ligne element="li" icone="etoile" titre="Prestations réalisées" valeur={String(rendezVous.filter((r) => r.status === 'done').length)} />
+          {fidelite?.actif && (
+            <Ligne element="li" icone="ticket" titre="Carte de fidélité"
+              valeur={fidelite.remiseDisponible ? `Remise de ${fidelite.remisePercent} % prête` : `${fidelite.tampons} / ${fidelite.tamponsRequis} tampons`} />
+          )}
+          {(compte?.avoirCents ?? 0) > 0 && (
+            <Ligne element="li" icone="euro" titre="Avoir" texte="Déduit automatiquement de votre prochain rendez-vous."
+              valeur={formatEuros(compte!.avoirCents!)} accent />
+          )}
+        </ul>
+        {(compte?.avoirCents ?? 0) > 0 && (
+          <p className={styles.srOnly}>Vous avez un avoir de {formatEuros(compte!.avoirCents!)} : il sera déduit automatiquement de votre prochain rendez-vous.</p>
         )}
-      </section>
+        {fidelite?.actif && <CarteFidelite carte={fidelite} />}
+      </Rubrique>
+
+      {compte && (
+        <Rubrique id="profil" titre="Mon profil" description="Ces informations servent à vous joindre et à vous envoyer la confirmation de vos rendez-vous.">
+          <div className={styles.panneau}>
+            <LigneModifiable icone="carteIdentite" titre="Nom et prénom" valeur={nomComplet} autoComplete="name"
+              valider={(v) => (v.trim() ? '' : 'Le nom est obligatoire.')} onEnregistrer={(v) => enregistrerChamp({ firstname: v.trim(), lastname: '' })} />
+            <LigneModifiable icone="mail" titre="E-mail" valeur={compte.email} type="email" autoComplete="email" aide="Sert aussi à vous connecter."
+              valider={(v) => (/\S+@\S+\.\S+/.test(v) ? '' : 'Adresse e-mail invalide.')} onEnregistrer={(v) => enregistrerChamp({ email: v.trim() })} />
+            <LigneModifiable icone="telephone" titre="Téléphone" valeur={compte.phone} type="tel" autoComplete="tel"
+              valider={(v) => (v.trim() ? '' : 'Le téléphone est obligatoire.')} onEnregistrer={(v) => enregistrerChamp({ phone: v.trim() })} />
+          </div>
+        </Rubrique>
+      )}
+
+      <Rubrique id="securite" titre="Sécurité et données" description="Choisissez un mot de passe que vous n’utilisez nulle part ailleurs.">
+        <div className={styles.panneau}>
+          <Ligne icone="cle" titre="Mot de passe" valeur="••••••••" action={<Link to="/compte/mot-de-passe" className={styles.boutonContour}>Modifier</Link>} />
+          <Ligne icone="telecharger" titre="Mes données" texte="Une copie de tout ce que nous gardons sur vous (fichier JSON)."
+            action={<button type="button" className={styles.boutonContour} onClick={telecharger}>Télécharger</button>} />
+        </div>
+      </Rubrique>
 
       {passes.length > 0 && (
-        <section className={styles.section} aria-labelledby="titre-historique">
-          <h2 id="titre-historique"><span aria-hidden="true">🕘 </span>Historique</h2>
+        <Rubrique id="historique" titre="Historique" description="Vos rendez-vous passés ou annulés.">
           <div className={styles.liste}>{passes.map(carte)}</div>
-        </section>
+        </Rubrique>
       )}
 
       {factures.length > 0 && (
-        <section className={styles.section} aria-labelledby="titre-factures">
-          <h2 id="titre-factures"><span aria-hidden="true">🧾 </span>Mes factures</h2>
-          <ul className={styles.liste}>
+        <Rubrique id="factures" titre="Mes factures" description="Une facture par prestation réalisée, imprimable en PDF.">
+          <ul className={styles.panneau}>
             {factures.map((f) => (
-              <li key={f.id}><Link to={`/facture/${f.id}`}>Facture {f.numero}</Link> · {new Date(f.prestationLe).toLocaleDateString('fr-FR')} · {formatEuros(f.totalCents)}</li>
+              <Ligne key={f.id} element="li" icone="facture" titre={`Facture ${f.numero}`} texte={new Date(f.prestationLe).toLocaleDateString('fr-FR')}
+                valeur={formatEuros(f.totalCents)} action={<Link to={`/facture/${f.id}`} className={styles.boutonContour} aria-label={`Voir la facture ${f.numero}`}>Voir</Link>} />
             ))}
           </ul>
-        </section>
+        </Rubrique>
       )}
 
-      <section className={styles.section} aria-labelledby="titre-compte">
-        <h2 id="titre-compte"><span aria-hidden="true">🔒 </span>Sécurité et données</h2>
-        <div className={styles.actions}>
-          <Link to="/compte/mot-de-passe" className="btn btn--ghost">Changer de mot de passe</Link>
-          <Button variant="ghost" onClick={telecharger}>Télécharger mes données</Button>
-        </div>
-      </section>
-
-      <section className={styles.danger} aria-labelledby="titre-danger">
-        <h2 id="titre-danger"><span aria-hidden="true">⚠️ </span>Zone de danger</h2>
-        <div className={styles.dangerContenu}>
+      <Rubrique id="danger" titre="Supprimer le compte" description="Vos données personnelles seront définitivement anonymisées. Impossible s’il vous reste un rendez-vous à venir : annulez-le d’abord.">
+        <div className={styles.danger}>
           {suppression ? (
             <>
-              <p><strong>Supprimer définitivement votre compte ?</strong> Vos données personnelles seront anonymisées. Impossible s'il vous reste un rendez-vous à venir : annulez-le d'abord.</p>
+              <p><strong>Supprimer définitivement votre compte ?</strong> Cette action est irréversible.</p>
               <div className={styles.actions}>
-                <Button onClick={supprimer}>Oui, supprimer mon compte</Button>
+                <button type="button" className={styles.boutonDanger} onClick={supprimer}><Icone nom="poubelle" taille={18} /> Oui, supprimer mon compte</button>
                 <Button variant="ghost" onClick={() => setSuppression(false)}>Non, garder mon compte</Button>
               </div>
             </>
           ) : (
-            <Button variant="ghost" onClick={() => setSuppression(true)}>Supprimer mon compte</Button>
+            <div><button type="button" className={styles.boutonDanger} onClick={() => setSuppression(true)}><Icone nom="poubelle" taille={18} /> Supprimer mon compte</button></div>
           )}
         </div>
-      </section>
+      </Rubrique>
     </main>
   );
 }
 
-/** En-tête de « Mon espace » : nom, e-mail et téléphone, modifiables ; déconnexion bien visible. */
-function Profil({ compte, onModifie, onDeconnecter }: { compte: Compte; onModifie: (c: Compte) => void; onDeconnecter: () => void }) {
-  const [edition, setEdition] = useState(false);
-  const [valeurs, setValeurs] = useState({ nom: '', email: '', phone: '' });
-  const [message, setMessage] = useState('');
-  const [erreur, setErreur] = useState('');
-  const [enCours, setEnCours] = useState(false);
-  const nomComplet = `${compte.firstname} ${compte.lastname}`.trim();
-  const valide = valeurs.nom.trim() !== '' && /\S+@\S+\.\S+/.test(valeurs.email) && valeurs.phone.trim() !== '';
+/** Rubrique façon « réglages » : titre, phrase d'explication, puis son contenu (panneau de lignes). */
+function Rubrique({ id, titre, description, action, children }: { id: string; titre: string; description?: string; action?: ReactNode; children: ReactNode }) {
+  return (
+    <section className={styles.rubrique} aria-labelledby={`titre-${id}`}>
+      <div className={styles.rubriqueEntete}>
+        <div>
+          <h2 id={`titre-${id}`}>{titre}</h2>
+          {description && <p className={styles.aide}>{description}</p>}
+        </div>
+        {action}
+      </div>
+      {children}
+    </section>
+  );
+}
 
-  const ouvrir = () => { setValeurs({ nom: nomComplet, email: compte.email, phone: compte.phone }); setMessage(''); setErreur(''); setEdition(true); };
+/** Une ligne d'un panneau : icône, intitulé (et précision), valeur, action à droite. */
+function Ligne({ icone, titre, texte, valeur, action, accent = false, element = 'div' }: {
+  icone: NomIcone; titre: string; texte?: string; valeur?: string; action?: ReactNode; accent?: boolean; element?: 'div' | 'li';
+}) {
+  const Balise = element;
+  return (
+    <Balise className={styles.ligne}>
+      <Icone nom={icone} className={styles.ligneIcone} />
+      <div className={styles.ligneTexte}>
+        <span className={styles.ligneTitre}>{titre}</span>
+        {texte && <span className={styles.aide}>{texte}</span>}
+      </div>
+      {valeur !== undefined && <span className={`${styles.ligneValeur} ${accent ? styles.ligneAccent : ''}`}>{valeur}</span>}
+      {action && <span className={styles.ligneAction}>{action}</span>}
+    </Balise>
+  );
+}
+
+/** Ligne modifiable sur place : « Modifier » ouvre le champ dans la ligne, « Enregistrer » ou « Annuler ». */
+function LigneModifiable({ icone, titre, valeur, type = 'text', autoComplete, aide, valider, onEnregistrer }: {
+  icone: NomIcone; titre: string; valeur: string; type?: string; autoComplete?: string; aide?: string;
+  valider: (v: string) => string; onEnregistrer: (v: string) => Promise<void>;
+}) {
+  const [edition, setEdition] = useState(false);
+  const [saisie, setSaisie] = useState(valeur);
+  const [erreur, setErreur] = useState('');
+  const [message, setMessage] = useState('');
+  const [enCours, setEnCours] = useState(false);
+
   const enregistrer = async (e: FormEvent) => {
     e.preventDefault();
-    if (!valide) return;
+    const probleme = valider(saisie);
+    if (probleme) { setErreur(probleme); return; }
     setErreur(''); setEnCours(true);
     try {
-      // « Nom et prénom » en un seul champ, comme à la réservation.
-      onModifie(await modifierMonCompte({ firstname: valeurs.nom.trim(), lastname: '', email: valeurs.email.trim(), phone: valeurs.phone.trim() }));
+      await onEnregistrer(saisie);
       setEdition(false);
-      setMessage('Vos informations sont enregistrées.');
+      setMessage(`${titre} enregistré.`);
     } catch (err) {
       setErreur((err as Error).message);
     } finally {
@@ -255,37 +297,33 @@ function Profil({ compte, onModifie, onDeconnecter }: { compte: Compte; onModifi
     }
   };
 
-  return (
-    <section className={styles.profil} aria-labelledby="titre-profil">
-      <div className={styles.profilBandeau}>
-        <span className={styles.avatar} aria-hidden="true">{initiales(nomComplet || compte.email)}</span>
-        <div className={styles.profilIdentite}>
-          <p className={styles.bonjour}>Bonjour</p>
-          <h2 id="titre-profil" className={styles.profilNom}>{nomComplet || compte.email}</h2>
+  if (!edition) {
+    return (
+      <div className={styles.ligne}>
+        <Icone nom={icone} className={styles.ligneIcone} />
+        <div className={styles.ligneTexte}>
+          <span className={styles.ligneTitre}>{titre}</span>
+          {message && <span className={styles.ok} role="status">{message}</span>}
         </div>
-        <button type="button" className={styles.deconnexion} onClick={onDeconnecter}>Se déconnecter</button>
+        <span className={styles.ligneValeur}>{valeur || '—'}</span>
+        <span className={styles.ligneAction}>
+          <button type="button" className={styles.boutonContour} aria-label={`Modifier : ${titre}`}
+            onClick={() => { setSaisie(valeur); setErreur(''); setMessage(''); setEdition(true); }}>Modifier</button>
+        </span>
       </div>
-      {edition ? (
-        <form className={styles.profilFormulaire} onSubmit={enregistrer} noValidate>
-          <Field label="Nom et prénom" value={valeurs.nom} autoComplete="name" onChange={(e) => setValeurs({ ...valeurs, nom: e.target.value })} />
-          <Field label="E-mail" type="email" value={valeurs.email} autoComplete="email" hint="Sert aussi à vous connecter." onChange={(e) => setValeurs({ ...valeurs, email: e.target.value })} />
-          <Field label="Téléphone" type="tel" value={valeurs.phone} autoComplete="tel" placeholder="01 02 03 04 05" onChange={(e) => setValeurs({ ...valeurs, phone: e.target.value })} />
-          {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
-          <div className={styles.actions}>
-            <Button type="submit" loading={enCours} disabled={!valide}>Enregistrer</Button>
-            <Button variant="ghost" onClick={() => setEdition(false)}>Annuler</Button>
-          </div>
-        </form>
-      ) : (
-        <>
-          <dl className={styles.coordonnees}>
-            <div><dt><span aria-hidden="true">✉️</span> E-mail</dt><dd>{compte.email}</dd></div>
-            <div><dt><span aria-hidden="true">📱</span> Téléphone</dt><dd>{compte.phone || '—'}</dd></div>
-          </dl>
-          <div className={styles.profilActions}><Button variant="ghost" onClick={ouvrir}>Modifier mes informations</Button></div>
-        </>
-      )}
-      {message && <p className={styles.ok} role="status">{message}</p>}
-    </section>
+    );
+  }
+  return (
+    <form className={`${styles.ligne} ${styles.ligneEdition}`} onSubmit={enregistrer} noValidate>
+      <Icone nom={icone} className={styles.ligneIcone} />
+      <div className={styles.ligneChamp}>
+        <Field label={titre} type={type} value={saisie} autoComplete={autoComplete} hint={aide} error={erreur || undefined} autoFocus
+          onChange={(e) => setSaisie(e.target.value)} />
+        <div className={styles.actions}>
+          <Button type="submit" loading={enCours}>Enregistrer</Button>
+          <Button variant="ghost" onClick={() => setEdition(false)}>Annuler</Button>
+        </div>
+      </div>
+    </form>
   );
 }

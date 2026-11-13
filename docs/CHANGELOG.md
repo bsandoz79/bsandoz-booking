@@ -165,6 +165,7 @@
 - Planning : vue semaine au texte resserré (2 lignes au plus, coupé proprement, texte complet au survol, bloc `PlanningView`) ; un clic sur un rendez-vous en semaine ou en mois amène à son détail.
 - Espace pro : rubriques dans une colonne fixe à gauche avec icônes (ordinateur), grille de boutons sans défilement (téléphone) ; page plus large.
 - Mon espace plus visuel : bandeau de profil sombre aux initiales, coordonnées avec icônes, tuiles « En bref » (prochain rendez-vous, prestations réalisées, fidélité, avoir), bouton « Réserver un nouveau rendez-vous », sections avec icônes. Test.
+- Mon espace façon page de réglages : rubriques (titre et explication) et panneaux de lignes avec icône, valeur et « Modifier » à droite ; nom, e-mail et téléphone modifiables ligne par ligne ; « Supprimer le compte » en bas avec un bouton rouge bordé. Icônes au trait (composant `Icone`) à la place des emojis dans tout le site. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
