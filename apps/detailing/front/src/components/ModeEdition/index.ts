@@ -1,1 +1,2 @@
-export { BoutonModifier, Crayon } from './BoutonModifier';
+export { Crayon } from './BoutonModifier';
+export { ModifierAvec, ModifierRubrique } from './ModifierRubrique';

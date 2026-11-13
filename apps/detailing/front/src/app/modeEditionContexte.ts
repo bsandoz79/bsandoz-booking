@@ -3,7 +3,7 @@ import { createContext, useContext } from 'react';
 export interface ModeEdition {
   /** Le visiteur est le pro connecté : il peut passer en mode modification. */
   peutModifier: boolean;
-  /** Mode modification en cours : les crayons ✏️ sont affichés sur le site. */
+  /** Pro connecté : les crayons ✏️ sont affichés sur le site. */
   actif: boolean;
   basculer: () => void;
 }

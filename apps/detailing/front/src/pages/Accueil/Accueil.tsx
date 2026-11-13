@@ -2,7 +2,9 @@ import { useEffect, useState, type CSSProperties, type KeyboardEvent } from 'rea
 import { Link } from 'react-router-dom';
 import { Button, Dialog, formatEuros } from '@bsandoz/ui';
 import { useModeEdition } from '../../app/modeEditionContexte';
-import { Crayon } from '../../components/ModeEdition';
+import { Crayon, ModifierAvec, ModifierRubrique } from '../../components/ModeEdition';
+import { HorairesOnglet } from '../EspacePro/Horaires';
+import { FormulaireFidelite, ReglageZone } from '../EspacePro/Reglages';
 import { FormulaireOption, FormulairePrestation } from '../EspacePro/Catalogue';
 import { nouvellePrestation } from '../EspacePro/nouvellePrestation';
 import { catalogue as cataloguePro, enregistrerPrestation, type OptionPro, type PrestationPro } from '../../services/pro';
@@ -11,9 +13,9 @@ import { CarteFidelite } from '../../components/CarteFidelite/CarteFidelite';
 import { CarteZone } from '../../components/CarteZone/CarteZone';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel, useTelephone } from '../../components/Telephone/numeroTelephone';
-import { CATEGORIES, FORMULES, OPTIONS, prixMin, type Category, type Formule, type OptionItem } from '../../data/demo';
+import { CATEGORIES, FORMULES, OPTIONS, type Category, type Formule, type OptionItem } from '../../data/demo';
 import { SITE } from '../../data/site';
-import { detailPrestation, jourIso, semaine, tranches, type Plage } from '../../data/vitrine';
+import { jourIso, semaine, tranches, type Plage } from '../../data/vitrine';
 import { couleurTranche, type Estimation, type ZonePublique } from '../../data/zone';
 import { estimerDeplacement, getCatalog, getHoraires, getZone, searchAddress } from '../../services/api';
 import { estConnecte, reprendreSession } from '../../services/compte';
@@ -21,6 +23,7 @@ import { maCarteFidelite, messageCarte, regleFidelite, type CarteFidelite as Car
 import { A_COMPLETER } from '../../services/contenu';
 import { COMMUNES, ENTREPRISE, PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
+import { CarteFormule } from './CarteFormule';
 import styles from './Accueil.module.css';
 
 /** Accueil : textes, étapes, réalisations, avis, FAQ et communes modifiables dans l'espace pro (« Mon site »). */
@@ -91,6 +94,7 @@ export function Accueil() {
       <section className={styles.hero}>
         {/* Grand écran : texte à gauche, photo du camion à droite ; téléphone et tablette : photo sous le titre. */}
         <div className={`container ${styles.heroGrille}`}>
+          <div className={styles.crayonsHero}><ModifierRubrique rubrique="accueil" libelle="Titre, présentation et points forts" /><ModifierRubrique rubrique="coordonnees" libelle="Téléphone et coordonnées" /></div>
           <p className={styles.eyebrow}>{accueil.surtitre}</p>
           <h1 className={styles.title}>{accueil.titre}</h1>
           <picture className={styles.heroPhoto}>
@@ -133,34 +137,10 @@ export function Accueil() {
           <div id="panneau-prestations" role="tabpanel" aria-labelledby={`onglet-${categorie.value}`} className={styles.panneau}>
             <p className={styles.intro}>{categorie.description}</p>
             <div className={styles.cartes}>
-              {formulesOnglet.map((f) => {
-                const detail = detailPrestation(f.description);
-                return (
-                  <article key={f.id} className={`${styles.formule} ${f.badge ? styles.vedette : ''}`}>
-                    {f.badge && <span className={styles.badge}>{f.badge}</span>}
-                    {prestationPro(f.id) && <div className={styles.crayonCarte}><Crayon libelle={`Modifier ${f.name}`} onClick={() => setEnEdition({ prestation: prestationPro(f.id)! })} /></div>}
-                    <h3>{f.name}</h3>
-                    <p className={styles.prix}>{formatEuros(prixMin(f))}</p>
-                    {detail.duree && <p className={styles.duree}><span aria-hidden="true">⏱</span> {detail.duree}</p>}
-                    {detail.inclus.length > 0 ? (
-                      <>
-                        <p className={styles.compris}>Ce qui est compris</p>
-                        <ul className={styles.inclus}>
-                          {detail.elements.map((e) => (
-                            <li key={e.texte} className={e.formule ? styles.formuleIncluse : undefined}>
-                              {e.texte}
-                              {e.etiquette && <span className={`${styles.etiquette} ${/offert/i.test(e.etiquette) ? styles.etiquetteOfferte : ''}`}>{e.etiquette}</span>}
-                            </li>
-                          ))}
-                        </ul>
-                      </>
-                    ) : <p>{detail.texte}</p>}
-                    <Link to={`/reserver?formule=${encodeURIComponent(f.id)}`} className={`btn ${f.badge ? '' : 'btn--ghost'} ${styles.choisir}`} aria-label={`Choisir ${f.name}`}>
-                      Choisir
-                    </Link>
-                  </article>
-                );
-              })}
+              {formulesOnglet.map((f) => (
+                <CarteFormule key={f.id} formule={f} enEdition={edition}
+                  crayon={prestationPro(f.id) && <Crayon libelle={`Modifier ${f.name}`} onClick={() => setEnEdition({ prestation: prestationPro(f.id)! })} />} />
+              ))}
             </div>
             {edition && pro && categorie && (
               <div className={styles.edition}>
@@ -191,7 +171,7 @@ export function Accueil() {
               <Dialog open title={'prestation' in enEdition ? (enEdition.prestation.id ? `Modifier « ${enEdition.prestation.name} »` : 'Nouvelle formule') : `Modifier l’option « ${enEdition.option.name} »`}
                 description="Les changements sont visibles tout de suite sur le site." onClose={() => setEnEdition(undefined)}>
                 {'prestation' in enEdition ? (
-                  <FormulairePrestation initiale={enEdition.prestation} options={pro.options} onAnnuler={() => setEnEdition(undefined)}
+                  <FormulairePrestation apercu={false} initiale={enEdition.prestation} options={pro.options} onAnnuler={() => setEnEdition(undefined)}
                     onEnregistree={(p) => enregistree(p.active ? `« ${p.name} » enregistrée.` : `« ${p.name} » n’est plus proposée aux clients.`)} />
                 ) : (
                   <FormulaireOption initiale={enEdition.option} onAnnuler={() => setEnEdition(undefined)} onEnregistree={(o) => enregistree(`Option « ${o.name} » enregistrée.`)} />
@@ -205,7 +185,7 @@ export function Accueil() {
       {etapes.length > 0 && (
         <section className={styles.band} aria-labelledby="titre-etapes">
           <div className={`container ${styles.section}`}>
-            <h2 id="titre-etapes">Comment ça marche</h2>
+            <div className={styles.titreSection}><h2 id="titre-etapes">Comment ça marche</h2><ModifierRubrique rubrique="etapes" /></div>
             <ol className={styles.steps}>
               {etapes.map((e, i) => (
                 <li key={`${i}-${e.titre}`} className={styles.step}>
@@ -219,7 +199,7 @@ export function Accueil() {
       )}
 
       <section id="realisations" className={`container ${styles.section}`} aria-labelledby="titre-realisations">
-        <h2 id="titre-realisations">Réalisations</h2>
+        <div className={styles.titreSection}><h2 id="titre-realisations">Réalisations</h2><ModifierRubrique rubrique="realisations" /></div>
         <div className={styles.grid}>
           {realisations.map((r, i) => (
             <figure key={`${i}-${r.titre}`} className={styles.realisation}>
@@ -238,7 +218,7 @@ export function Accueil() {
 
       <section id="zone" className={styles.band} aria-labelledby="titre-zone">
         <div className={`container ${styles.section}`}>
-          <h2 id="titre-zone">Zone d’intervention</h2>
+          <div className={styles.titreSection}><h2 id="titre-zone">Zone d’intervention</h2><ModifierAvec titre="Zone et frais de déplacement" apresFermeture={() => getZone().then(setZone).catch(() => undefined)}><ReglageZone /></ModifierAvec><ModifierRubrique rubrique="communes" /></div>
           {zone?.surPlace ? (
             <p>Les prestations se font sur place, à <strong>{SITE.city}</strong>.</p>
           ) : (
@@ -279,7 +259,7 @@ export function Accueil() {
 
       {horaires && horaires.length > 0 && (
         <section id="horaires" className={`container ${styles.section}`} aria-labelledby="titre-horaires">
-          <h2 id="titre-horaires">Horaires</h2>
+          <div className={styles.titreSection}><h2 id="titre-horaires">Horaires</h2><ModifierAvec titre="Horaires et congés" apresFermeture={() => getHoraires().then(setHoraires).catch(() => undefined)}><HorairesOnglet /></ModifierAvec></div>
           <ul className={styles.horaires}>
             {semaine(horaires).map((j) => (
               <li key={j.weekday} className={`${j.weekday === aujourdhui ? styles.aujourdhui : ''} ${j.plages.length === 0 ? styles.ferme : ''}`}
@@ -293,11 +273,19 @@ export function Accueil() {
         </section>
       )}
 
+      {edition && !fidelite?.actif && (
+        <div className={`container ${styles.section}`}>
+          <ModifierAvec titre="Carte de fidélité (désactivée)" apresFermeture={() => regleFidelite().then(setFidelite).catch(() => undefined)}><FormulaireFidelite /></ModifierAvec>
+        </div>
+      )}
       {fidelite?.actif && (
         <section id="fidelite" className={styles.band} aria-labelledby="titre-fidelite">
           <div className={`container ${styles.section} ${styles.fidelite}`}>
             <div className={styles.fideliteTexte}>
-              <h2 id="titre-fidelite">{maCarte ? 'Votre carte de fidélité' : 'Carte de fidélité'}</h2>
+              <div className={styles.titreSection}>
+                <h2 id="titre-fidelite">{maCarte ? 'Votre carte de fidélité' : 'Carte de fidélité'}</h2>
+                <ModifierAvec titre="Carte de fidélité" apresFermeture={() => regleFidelite().then(setFidelite).catch(() => undefined)}><FormulaireFidelite /></ModifierAvec>
+              </div>
               <p>
                 Au bout de {fidelite.tamponsRequis} prestations, la suivante bénéficie de <strong>{fidelite.remisePercent} % de remise</strong>. Chaque
                 prestation terminée ajoute un tampon sur votre carte, et la remise s’applique d’elle-même à la réservation.
@@ -314,7 +302,7 @@ export function Accueil() {
       )}
 
       <section id="avis" className={`container ${styles.section}`} aria-labelledby="titre-avis">
-        <h2 id="titre-avis">Avis clients</h2>
+        <div className={styles.titreSection}><h2 id="titre-avis">Avis clients</h2><ModifierRubrique rubrique="avis" /></div>
         {avisPublies.length === 0 ? (
           <>
             <p>{A_COMPLETER}</p>
@@ -336,7 +324,7 @@ export function Accueil() {
       {faq.length > 0 && (
         <section id="faq" className={styles.band} aria-labelledby="titre-faq">
           <div className={`container ${styles.section}`}>
-            <h2 id="titre-faq">Questions fréquentes</h2>
+            <div className={styles.titreSection}><h2 id="titre-faq">Questions fréquentes</h2><ModifierRubrique rubrique="faq" /></div>
             <div className={styles.faq}>
               {faq.map((item, i) => (
                 <details key={`${i}-${item.question}`} className={styles.question}>

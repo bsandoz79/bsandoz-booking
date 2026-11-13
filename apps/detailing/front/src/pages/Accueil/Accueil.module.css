@@ -137,8 +137,14 @@ blockquote.card { margin: 0; }
 .inclus li:has(.etiquetteOfferte) { font-weight: 700; }
 
 /* Mode modification (pro connecté). */
-.crayonCarte { display: flex; justify-content: flex-end; }
+.crayonCarte { display: flex; justify-content: flex-end; position: relative; z-index: 2; }
+/* En mode modification, la carte n'est plus un grand lien : le crayon et les boutons restent cliquables. */
+.enEdition { cursor: default; }
+.enEdition .choisir::after { display: none; }
 .edition { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; margin-top: 1rem; padding: 1rem; border: 1px dashed var(--bs-color-primary); border-radius: var(--bs-radius-md); }
 .retiree { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .75rem; color: var(--bs-color-text-muted); }
 .messageEdition { margin: 0; font-weight: 600; color: var(--bs-color-success); }
 .optionPrix { display: inline-flex; align-items: center; gap: .5rem; }
+.titreSection { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
+.crayonsHero { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: .5rem; }
+.crayonsHero:empty { display: none; }

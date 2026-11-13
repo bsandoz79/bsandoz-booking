@@ -66,3 +66,9 @@
 
 /* Comptabilité : montant négatif. */
 .negatif { color: var(--bs-color-danger); }
+
+/* Catalogue : formulaire à gauche, aperçu de la carte à droite (en dessous sur téléphone), qui reste visible. */
+.avecApercu { display: grid; gap: 1.25rem; align-items: start; }
+@media (min-width: 900px) { .avecApercu { grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); } }
+.apercu { display: flex; flex-direction: column; gap: .5rem; }
+@media (min-width: 900px) { .apercu { position: sticky; top: 1rem; } }
