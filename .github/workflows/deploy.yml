@@ -86,7 +86,7 @@ jobs:
           lftp -u "$FTP_USERNAME,$FTP_PASSWORD" "$FTP_SERVER" -e "
             set ssl:ca-file $RUNNER_TEMP/chaine-ftps.pem; set ssl:priority NORMAL:-VERS-TLS1.3; set ftp:ssl-force true; set ftp:ssl-protect-data true;
             set net:max-retries 3; set net:reconnect-interval-base 5; set net:timeout 30;
-            mirror --reverse --no-perms --parallel=4 --verbose=1 apps/detailing/front/dist/ \"$FTP_DIR\";
+            mirror --reverse --no-perms --parallel=4 --verbose=1 apps/detailing/front/dist/ $FTP_DIR;
             bye"
 
   api:
@@ -155,7 +155,7 @@ jobs:
           lftp -u "$FTP_USERNAME,$FTP_PASSWORD" "$FTP_SERVER" -e "
             set ssl:ca-file $RUNNER_TEMP/chaine-ftps.pem; set ssl:priority NORMAL:-VERS-TLS1.3; set ftp:ssl-force true; set ftp:ssl-protect-data true;
             set net:max-retries 3; set net:reconnect-interval-base 5; set net:timeout 30;
-            mirror --reverse --no-perms --parallel=4 --verbose=1 envoi-api/ \"$FTP_DIR\";
+            mirror --reverse --no-perms --parallel=4 --verbose=1 envoi-api/ $FTP_DIR;
             bye"
       - name: Rappel
         if: steps.config.outputs.pret == 'true'
