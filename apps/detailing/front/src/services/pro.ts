@@ -14,7 +14,7 @@ export interface TableauDeBord {
   monthBookings: number;
   pendingPayments: number;
   monthCancellationRate: number;
-  next: { id: string; start: string; address: string; client?: string; phone?: string }[];
+  next: { id: string; start: string; address: string; client?: string; phone?: string; lat?: number; lng?: number; prestation?: string; quantite?: number; produits?: { nom: string; quantite: number }[]; notes?: string }[];
   /** Rendez-vous du jour, dans l'ordre. */
   journee?: RendezVousDuJour[];
   /** Produits à emporter pour la journée, additionnés. */
@@ -172,7 +172,7 @@ export async function tableauDeBord(): Promise<TableauDeBord> {
       today: actifs.filter((r) => new Date(r.start).toDateString() === new Date().toDateString()).length, week: actifs.length,
       monthRevenueCents: actifs.reduce((s, r) => s + r.totalCents, 0), monthBookings: actifs.length,
       pendingPayments: demo.rdv.filter((r) => r.status === 'pending_payment').length, monthCancellationRate: 0,
-      next: actifs.map((r) => ({ id: r.id, start: r.start, address: r.address, client: r.client.name, phone: r.client.phone })),
+      next: actifs.filter((r) => new Date(r.start) > new Date()).map((r) => ({ id: r.id, start: r.start, address: r.address, client: r.client.name, phone: r.client.phone, lat: 50.1054, lng: 1.8332, prestation: r.prestation, quantite: r.quantite ?? 1, produits: (r.produits ?? []).map((p) => ({ nom: p.nom, quantite: p.quantite })), notes: r.notes })),
       journee: demo.rdv.filter((r) => r.status !== 'cancelled' && new Date(r.start).toDateString() === new Date().toDateString()).map((r) => ({
         id: r.id, start: r.start, end: r.end, status: r.status, address: r.address, lat: 50.1054, lng: 1.8332, prestation: r.prestation,
         quantite: r.quantite ?? 1, produits: (r.produits ?? []).map((p) => ({ nom: p.nom, quantite: p.quantite })), resteSurPlaceCents: r.totalCents + (r.produitsCents ?? 0),

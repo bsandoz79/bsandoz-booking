@@ -73,6 +73,14 @@ describe('emploi du temps', () => {
     // 08h30 – 12h00 : 3 h 30 à 64 px l'heure.
     expect(screen.getByText('Rendez-vous A').parentElement).toHaveStyle({ height: '224px', top: '32px' });
   });
+
+  it('tient dans la hauteur de l’écran (fitHeight) : positions en pourcentage de la journée', () => {
+    afficher({ hourStart: 8, hourEnd: 20, fitHeight: true });
+    // 08h30 sur une plage 08h–20h (12 h) : 0,5 / 12 = 4,1666… %.
+    const caseA = screen.getByText('Rendez-vous A').parentElement!;
+    expect(caseA.style.top).toMatch(/^4\.16/);
+    expect(caseA.style.height).toContain('%');
+  });
 });
 
 describe('PlanningView', () => {

@@ -102,7 +102,7 @@ export function PlanningOnglet() {
       </ul>
       <div className={mode === 'day' ? styles.vueJour : undefined}>
         <PlanningView mode={mode} date={jour} today={aujourdhui} events={evenements} labels={LIBELLES}
-          hourStart={plage[0]} hourEnd={plage[1]} now={maintenant} showTime={false}
+          hourStart={plage[0]} hourEnd={plage[1]} now={maintenant} showTime={false} fitHeight
           onModeChange={setMode} onDateChange={setJour}
           onEventClick={(e) => {
             if (e.id.startsWith('conge-')) return;

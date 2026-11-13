@@ -62,6 +62,7 @@ export function TableauDeBordOnglet() {
     <section className={styles.section} aria-labelledby="titre-tdb">
       <h2 id="titre-tdb">Tableau de bord</h2>
 
+      <div className={styles.journeeEtProchain}>
       <section className={styles.panneau} aria-labelledby="titre-journee">
         <div className={styles.entetePanneau}>
           <h3 id="titre-journee">Ma journée</h3>
@@ -95,6 +96,8 @@ export function TableauDeBordOnglet() {
           </div>
         )}
       </section>
+      <ProchainRdv rdv={tdb.next[0]} />
+      </div>
 
       <section className={styles.panneau} aria-labelledby="titre-afaire">
         <h3 id="titre-afaire">Choses à faire{aFaire.length > 0 ? ` (${aFaire.length})` : ''}</h3>
@@ -151,6 +154,28 @@ export function TableauDeBordOnglet() {
             </li>
           ))}
         </ul>
+      )}
+    </section>
+  );
+}
+
+/** Prochain rendez-vous à venir, à côté de « Ma journée » : quand, qui, quoi, où, avec GPS et appel. */
+function ProchainRdv({ rdv }: { rdv?: TableauDeBord['next'][number] }) {
+  return (
+    <section className={`${styles.panneau} ${styles.prochainRdv}`} aria-labelledby="titre-prochain">
+      <h3 id="titre-prochain">Mon prochain rendez-vous</h3>
+      {!rdv ? <p>Aucun rendez-vous à venir.</p> : (
+        <>
+          <p className={styles.prochainQuand}>{dateHeure(rdv.start)}</p>
+          <p><strong>{rdv.client || 'Client'}</strong>{rdv.prestation ? ` · ${rdv.prestation}` : ''}{(rdv.quantite ?? 1) > 1 ? ` × ${rdv.quantite} véhicules` : ''}</p>
+          {rdv.address && <p>{rdv.address}</p>}
+          {rdv.produits && rdv.produits.length > 0 && <p className={styles.produitsJour}>À apporter : {rdv.produits.map((p) => `${p.quantite} × ${p.nom}`).join(', ')}</p>}
+          {rdv.notes && <p className={styles.aide}>Note : {rdv.notes}</p>}
+          <div className={styles.actions}>
+            {rdv.address && <a className="btn btn--ghost" href={lienGps({ address: rdv.address, lat: rdv.lat ?? 0, lng: rdv.lng ?? 0 })} target="_blank" rel="noreferrer">Itinéraire</a>}
+            {rdv.phone && <a className={styles.appelClient} href={lienTel(rdv.phone)}><IconeTelephone /> Appeler {rdv.phone}</a>}
+          </div>
+        </>
       )}
     </section>
   );

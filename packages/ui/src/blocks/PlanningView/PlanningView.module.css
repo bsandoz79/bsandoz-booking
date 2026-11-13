@@ -28,7 +28,7 @@
 .heures span:first-child { transform: none; }
 .lignes { position: absolute; inset: 0 0 0 56px; pointer-events: none; }
 .lignes span { position: absolute; left: 0; right: 0; border-top: 1px solid var(--bs-color-border); }
-.lignes span::after { content: ''; position: absolute; left: 0; right: 0; top: 32px; border-top: 1px dashed color-mix(in srgb, var(--bs-color-border) 60%, transparent); }
+.lignes span::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed color-mix(in srgb, var(--bs-color-border) 60%, transparent); }
 .colonne { position: relative; border-left: 1px solid var(--bs-color-border); }
 .colonne.isToday { background: color-mix(in srgb, var(--couleur-defaut) 5%, transparent); }
 .cases { list-style: none; margin: 0; padding: 0; }
@@ -67,3 +67,5 @@ button.event:hover { filter: brightness(1.08); }
   .cell { min-height: 64px; }
   .puce .eventTitle { display: none; }
 }
+/* fitHeight : toute la journée tient dans la hauteur de l'écran, pas de défilement vertical. */
+.agendaEntier { max-height: none; overflow-y: visible; }

@@ -12,8 +12,10 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 
 ### Espace pro
 - ✅ Tableau de bord : Ma journée (tournée, GPS, appel, produits à charger, à encaisser), Choses à faire, Chiffres, Clients.
-- ⏳ Tableau de bord : afficher le prochain rendez-vous à côté de « Ma journée ».
-- ⏳ Planning : la journée entière visible sans faire défiler.
+- ✅ Tableau de bord : « Mon prochain rendez-vous » à côté de « Ma journée » (quand, qui, quoi, où, itinéraire, appel).
+- ⏳ Prochain rendez-vous : itinéraire au choix Google Maps ou Waze.
+- ✅ Planning : la journée entière visible sans faire défiler (hauteur de l'écran).
+- ⏳ Agenda du pro : chaque rendez-vous ajouté automatiquement dans Google Agenda (ou autre).
 - ✅ Onglet Clients (fiche, historique, avoir, à relancer).
 - ✅ Onglet Comptabilité (dépenses ponctuelles ou mensuelles, chiffre d'affaires, résultat par mois).
 - ✅ Créneaux groupés (« Conseillé » à côté d'un rendez-vous déjà prévu, écart réglable).
@@ -25,8 +27,10 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Bug : le crayon « Modifier » d'une carte de prestation ouvrait la réservation au lieu de la modification.
 - ✅ Tout le site modifiable sur place : titre et présentation, coordonnées, étapes, réalisations (photos), zone et frais de déplacement, communes, horaires et congés, carte de fidélité, avis, FAQ, pages légales.
 - ✅ Plus de bouton « Modifier le site » : connecté avec le compte pro, les crayons sont affichés directement partout.
-- ⏳ Réservation : chaque choix amène exactement à l'endroit logique suivant.
-- ⏳ Adresse : bouton « Utiliser ma position ».
+- ✅ Réservation : chaque choix amène à l'endroit logique suivant (formules, options, étape suivante, calendrier, heures, coordonnées).
+- ✅ Adresse : bouton « Utiliser ma position » (GPS du téléphone, avec accord).
+- ⏳ Après la réservation : proposer d'ajouter le rendez-vous à Google Agenda, Apple ou Outlook.
+- ⏳ « Mon espace » plus structuré : nom, puis e-mail et téléphone modifiables, déconnexion bien visible, zone de danger (suppression du compte) en pointillés rouges tout en bas.
 
 ### Bugs et mise en ligne
 - ✅ « « lastname » est obligatoire » au paiement (champ « Nom et prénom » unique).

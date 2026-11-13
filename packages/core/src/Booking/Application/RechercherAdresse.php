@@ -18,4 +18,10 @@ final class RechercherAdresse
     {
         return $this->geocoder->suggest($query, $limit);
     }
+
+    /** @return array{label: string, lat: float, lng: float}|null adresse la plus proche d'une position */
+    public function aPosition(float $lat, float $lng): ?array
+    {
+        return $this->geocoder->reverse($lat, $lng);
+    }
 }

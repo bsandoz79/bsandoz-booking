@@ -161,6 +161,29 @@ export async function searchAddress(q: string): Promise<Address[]> {
   }));
 }
 
+/** Adresse la plus proche d'une position (bouton « Utiliser ma position »). */
+export async function adresseDePosition(lat: number, lng: number): Promise<Address> {
+  if (!isDemo()) return http(`/geo/reverse?${query({ lat, lng })}`);
+  const res = await fetch(`https://api-adresse.data.gouv.fr/reverse/?${query({ lat, lon: lng, limit: 1 })}`);
+  const f = (await res.json()).features?.[0];
+  if (!f) throw new Error('Aucune adresse trouvée à cette position.');
+  return { label: f.properties.label, lng: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] };
+}
+
+/** Position du visiteur (GPS du téléphone ou position du navigateur), avec son accord. */
+export function maPosition(): Promise<{ lat: number; lng: number }> {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) { reject(new Error('Votre navigateur ne permet pas de trouver votre position : saisissez l’adresse.')); return; }
+    navigator.geolocation.getCurrentPosition(
+      (p) => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
+      (e) => reject(new Error(e.code === e.PERMISSION_DENIED
+        ? 'Position refusée : autorisez la localisation pour ce site, ou saisissez l’adresse.'
+        : 'Position introuvable pour le moment : saisissez l’adresse.')),
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
+    );
+  });
+}
+
 /** Démo : du mardi au samedi, à partir de demain. */
 export async function getAvailableDays(month: string, durationMin: number, address: Address, prestationId?: string): Promise<string[]> {
   if (!isDemo()) return http(`/booking/days?${query({ month, duration: durationMin, lat: address.lat, lng: address.lng, prestation: prestationId })}`);

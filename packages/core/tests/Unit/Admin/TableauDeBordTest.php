@@ -87,6 +87,8 @@ final class TableauDeBordTest extends TestCase
         self::assertSame(5500, $t['journee'][1]['resteSurPlaceCents']);
         // Ce qui reste à faire aujourd'hui : 1 + 2 microfibres (celle du rendez-vous déjà fait est livrée).
         self::assertSame([['nom' => 'Microfibre', 'quantite' => 3]], $t['aCharger']);
+        // Prochain rendez-vous (à venir) : prestation et coordonnées pour le GPS.
+        self::assertSame(['Bruno Petit', 'Nettoyage', 50.1], [$t['next'][0]['client'], $t['next'][0]['prestation'], $t['next'][0]['lat']]);
     }
 
     public function testChosesAFaire(): void

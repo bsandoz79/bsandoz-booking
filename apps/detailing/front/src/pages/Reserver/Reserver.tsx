@@ -4,7 +4,7 @@ import { AddressInput, Button, Calendar, ChoiceChips, Dialog, PriceSummary, Slot
 import type { Category, Formule, OptionItem, ProduitItem } from '../../data/demo';
 import { CATEGORIES, tarifDe } from '../../data/demo';
 import type { Address, Quote, Selection, Slot } from '../../services/api';
-import { getAvailableDays, getCatalog, getQuote, getSlots, reserve, searchAddress, type ModePaiement } from '../../services/api';
+import { adresseDePosition, getAvailableDays, getCatalog, getQuote, getSlots, maPosition, reserve, searchAddress, type ModePaiement } from '../../services/api';
 import { PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
 import { defilerVers } from '../../app/defilement';
@@ -44,6 +44,7 @@ export function Reserver() {
   const [nbVehicules, setNbVehicules] = useState(1);
   const [optionsParVehicule, setOptionsParVehicule] = useState<string[][]>([[]]);
   const [address, setAddress] = useState<Address>();
+  const [localisation, setLocalisation] = useState<'' | 'en_cours' | string>('');
   const [month, setMonth] = useState(currentMonth());
   const [days, setDays] = useState<string[]>([]);
   const [day, setDay] = useState<string>();
@@ -112,7 +113,7 @@ export function Reserver() {
   const defilementEnCours = useRef<() => void>(undefined);
   useEffect(() => () => defilementEnCours.current?.(), []);
   const allerA = (id: string) => { defilementEnCours.current?.(); defilementEnCours.current = defilerVers(id); };
-  const etapeSuivante = (i: number) => { setError(''); setStep(i); };
+  const etapeSuivante = (i: number) => { setError(''); setStep(i); allerA(`resa-etape-${i}`); };
 
   /** Un changement de prestation peut changer la durée : l'heure choisie est à revoir. */
   const changerPrestation = (maj: () => void) => { maj(); setStart(undefined); };
@@ -125,7 +126,7 @@ export function Reserver() {
 
   const next = async () => {
     setError('');
-    if (step < ETAPES.length - 1) { setStep(step + 1); return; }
+    if (step < ETAPES.length - 1) { etapeSuivante(step + 1); return; }
     if (produits.length > 0 && proposition !== 'vue') { setProposition('ouverte'); return; }
     await payer(quantites);
   };
@@ -187,7 +188,8 @@ export function Reserver() {
 
       <div className={styles.layout}>
         <div className={styles.etapes}>
-          <StepCard number={1} title={ETAPES[0]} status={statut(0)} summary={resumePrestation} onEdit={() => setStep(0)}>
+          <div id="resa-etape-0" className={styles.ancre}>
+          <StepCard number={1} title={ETAPES[0]} status={statut(0)} summary={resumePrestation} onEdit={() => etapeSuivante(0)}>
             <ChoiceChips label="Prestation" value={category} onChange={(v) => { changerPrestation(() => { setCategory(v as Category); setFormuleId(undefined); viderOptions(); }); allerA('resa-formules'); }}
               choices={CATEGORIES.map((c) => ({ value: c.value, label: c.label }))} />
             <div className={styles.compteur}>
@@ -246,10 +248,30 @@ export function Reserver() {
             )}
           </StepCard>
 
-          <StepCard number={2} title={ETAPES[1]} status={statut(1)} summary={resumeCreneau} onEdit={() => setStep(1)}>
+          </div>
+
+          <div id="resa-etape-1" className={styles.ancre}>
+          <StepCard number={2} title={ETAPES[1]} status={statut(1)} summary={resumeCreneau} onEdit={() => etapeSuivante(1)}>
             <AddressInput label="Adresse de l'intervention" placeholder="N°, rue, ville" search={searchAddress}
               value={address} onSelect={(a: Address) => { setAddress(a); setDay(undefined); setStart(undefined); allerA('resa-calendrier'); }}
               hint="Choisissez votre adresse dans la liste pour calculer le déplacement." />
+            <div className={styles.position}>
+              <button type="button" className="btn btn--ghost" disabled={localisation === 'en_cours'} aria-busy={localisation === 'en_cours'}
+                onClick={async () => {
+                  setLocalisation('en_cours');
+                  try {
+                    const { lat, lng } = await maPosition();
+                    const a = await adresseDePosition(lat, lng);
+                    setAddress(a); setDay(undefined); setStart(undefined); setLocalisation('');
+                    allerA('resa-calendrier');
+                  } catch (e) {
+                    setLocalisation((e as Error).message);
+                  }
+                }}>
+                <span aria-hidden="true">📍</span> {localisation === 'en_cours' ? 'Recherche de votre position…' : 'Utiliser ma position'}
+              </button>
+              {localisation && localisation !== 'en_cours' && <p className={styles.hint} role="status">{localisation}</p>}
+            </div>
             {address && quote && (quote.inZone
               ? <p className={styles.ok}>✓ Je me déplace chez vous{quote.travelFeeCents > 0 ? ` (frais de déplacement : ${formatEuros(quote.travelFeeCents)})` : ', déplacement offert'}.</p>
               : (
@@ -274,6 +296,9 @@ export function Reserver() {
             )}
           </StepCard>
 
+          </div>
+
+          <div id="resa-etape-2" className={styles.ancre}>
           <StepCard number={3} title={ETAPES[2]} status={statut(2)}>
             <p className={styles.hint}>Pour confirmer le rendez-vous et vous prévenir le jour J.</p>
             <label className={styles.field}>Nom et prénom<input value={contact.nom} onChange={(e) => setContact({ ...contact, nom: e.target.value })} autoComplete="name" /></label>
@@ -311,6 +336,7 @@ export function Reserver() {
             <p className={styles.hint}><strong>Un empêchement ?</strong> Vous pourrez décaler ou annuler depuis le lien reçu par e-mail ou dans « Mon espace ». Carte de fidélité pleine ? La remise est déduite automatiquement.</p>
             <label className={styles.check}><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> J'accepte les <a href="/cgv" target="_blank" rel="noreferrer">conditions générales de vente</a>.</label>
           </StepCard>
+          </div>
 
           {error && <p className={styles.error} role="alert">{error}</p>}
 

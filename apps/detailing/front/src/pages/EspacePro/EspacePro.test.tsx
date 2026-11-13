@@ -31,6 +31,7 @@ describe('Espace pro', () => {
     expect(within(journee).getByText('Client démo A')).toBeInTheDocument();
     expect(within(journee).getByRole('link', { name: 'Itinéraire vers Client démo A' })).toHaveAttribute('href', expect.stringContaining('google.com/maps/dir'));
     expect(within(journee).getByRole('link', { name: /Appeler 01 02 03 04 05/ })).toHaveAttribute('href', 'tel:0102030405');
+    expect(screen.getByRole('region', { name: 'Mon prochain rendez-vous' })).toHaveTextContent(/Client démo [AB]/);
     const aFaire = screen.getByRole('region', { name: /Choses à faire/ });
     expect(within(aFaire).getByText(/Paiement en ligne attendu : Client démo C/)).toBeInTheDocument();
     expect(within(aFaire).getByText(/Informations de facturation à compléter/)).toBeInTheDocument();

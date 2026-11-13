@@ -17,6 +17,7 @@
 | GET/POST/PATCH | /admin/reservations | ROLE_PRO | planning, ajout manuel, statut, remboursement |
 | GET | /ical/{secret}.ics | jeton | flux agenda |
 | GET | /geo/search?q= | public | autocomplétion d'adresse |
+| GET | /geo/reverse?lat=&lng= | public | RechercherAdresse::aPosition (adresse la plus proche ; 404 si aucune, 400 si position invalide) |
 
 Erreurs en `application/problem+json`, montants en centimes, dates ISO 8601 UTC.
 
