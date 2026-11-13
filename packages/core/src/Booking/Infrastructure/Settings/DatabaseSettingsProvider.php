@@ -37,6 +37,9 @@ final class DatabaseSettingsProvider implements SettingsProvider
             return $this->defaut->zone();
         }
 
+        // Zone enregistrée avant le réglage du rayon de la ville : celui de la configuration s'applique.
+        $zone += ['rayonVilleKm' => $this->defaut->zone()->rayonVilleKm ?? 0.0];
+
         return ($zone['surPlace'] ?? false) === true ? null : Reglages::zone($zone);
     }
 

@@ -1,4 +1,4 @@
-import { fraisDeplacement, lignesTarifDeplacement, type ZonePublique } from './zone';
+import { cerclesZone, fraisDeplacement, lignesTarifDeplacement, type ZonePublique } from './zone';
 
 const abbeville: ZonePublique = {
   surPlace: false, freeRadiusKm: 5, maxDistanceKm: 50, pricePerKmCents: 0,
@@ -24,5 +24,13 @@ describe('frais de déplacement', () => {
       'Au-delà de 50 km : sur devis',
     ]);
     expect(lignesTarifDeplacement({ ...abbeville, surPlace: true })).toEqual([]);
+  });
+});
+
+describe('ville de départ', () => {
+  it('trace les cercles depuis la limite de la ville', () => {
+    const zone = { surPlace: false, freeRadiusKm: 5, maxDistanceKm: 50, pricePerKmCents: 0, paliers: [], roadFactor: 1.3, rayonVilleKm: 4 };
+    // 5 km de route après la sortie d'une ville de 4 km de rayon : 4 + 5 / 1,3 ≈ 7,85 km à vol d'oiseau.
+    expect(cerclesZone(zone)[0].rayonM).toBe(7846);
   });
 });

@@ -172,7 +172,7 @@ export function Accueil() {
                     <li key={t.de} aria-current={estimation && estimation.distanceKm > t.de && estimation.distanceKm <= (t.jusqua ?? Infinity) ? 'true' : undefined}
                       className={`${styles.tranche} ${t.jusqua === undefined ? styles.devis : ''}`}
                       style={t.jusqua === undefined ? undefined : { '--teinte': couleurTranche(i, toutes.length - 1) } as CSSProperties}>
-                      <span className={styles.km}>{t.jusqua === undefined ? `Au-delà de ${t.de} km` : `${t.de} à ${t.jusqua} km`}</span>
+                      <span className={styles.km}>{t.jusqua === undefined ? `Au-delà de ${t.de} km` : t.de === 0 && zone.rayonVilleKm ? `${SITE.city} + ${t.jusqua} km` : `${t.de} à ${t.jusqua} km`}</span>
                       <strong>{t.prix}</strong>
                     </li>
                   ))}
@@ -184,6 +184,7 @@ export function Accueil() {
             <CarteZone zone={zone} centre={{ lat: ENTREPRISE.geo.latitude, lng: ENTREPRISE.geo.longitude }} ville={SITE.city}
               estimer={estimerDeplacement} rechercherAdresse={searchAddress} onEstimation={setEstimation} />
           )}
+          {zone?.rayonVilleKm ? <p className={styles.note}>Tout {SITE.city} est compris dans le déplacement offert : les distances se comptent à partir de la sortie de la ville.</p> : null}
           <p className={styles.note}>Cercles indicatifs (distance par la route). Le prix exact du déplacement est recalculé à partir de votre adresse lors de la réservation.</p>
           {/* Repliées par défaut (discret), mais présentes dans la page : chaque commune qui a sa page est un lien, utile à Google. */}
           <details className={styles.communes}>

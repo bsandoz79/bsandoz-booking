@@ -103,6 +103,7 @@ final class BsandozCoreBundle extends AbstractBundle
                         ->floatNode('max_distance_km')->isRequired()->min(0)->end()
                         ->floatNode('road_factor')->defaultValue(1.3)->min(1)->end()
                         ->floatNode('average_speed_kmh')->defaultValue(50.0)->min(1)->end()
+                        ->floatNode('rayon_ville_km')->defaultValue(0.0)->min(0)->max(30)->info('Rayon de la ville de départ : toute la ville compte pour 0 km, les distances partent de sa limite.')->end()
                         ->arrayNode('paliers')
                             ->performNoDeepMerging()
                             ->info('Frais de déplacement par tranches au-delà du rayon offert (remplacent le prix au km jusqu\'à la dernière tranche).')

@@ -17,7 +17,8 @@ use Symfony\Component\Routing\Attribute\Route;
  * Informations publiques à afficher sur le site :
  *   GET /api/v1/booking/zone : {"surPlace": false, "freeRadiusKm", "maxDistanceKm", "pricePerKmCents", "roadFactor", "paliers": [{"jusquaKm", "prixCents"}]}
  *       ou {"surPlace": true}. Le point de départ n'est jamais publié (ce peut être l'adresse personnelle du pro).
- *       roadFactor : distance routière ÷ distance à vol d'oiseau, pour tracer les cercles de la carte.
+ *       roadFactor : distance routière ÷ distance à vol d'oiseau, pour tracer les cercles de la carte ;
+ *       rayonVilleKm : rayon de la ville de départ (distances comptées depuis sa limite).
  *   GET /api/v1/booking/zone/estimation?lat=&lng= : {"distanceKm", "dansZone", "fraisCents"} (même calcul que le devis),
  *       ou {"surPlace": true}. Position du visiteur utilisée pour le calcul seulement, jamais enregistrée.
  *   GET /api/v1/booking/hours : horaires d'ouverture [{"weekday" (1 = lundi … 7 = dimanche), "startsAt", "endsAt"}].
@@ -43,6 +44,7 @@ final class ZoneController
             'maxDistanceKm' => $zone->maxDistanceKm,
             'pricePerKmCents' => $zone->pricePerKm->cents,
             'roadFactor' => $zone->roadFactor,
+            'rayonVilleKm' => $zone->rayonVilleKm,
             'paliers' => array_map(static fn (PalierDeplacement $p): array => ['jusquaKm' => $p->jusquaKm, 'prixCents' => $p->prix->cents], $zone->paliers),
         ]);
     }

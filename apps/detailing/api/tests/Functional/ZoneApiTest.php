@@ -32,7 +32,7 @@ final class ZoneApiTest extends WebTestCase
         $client->request('GET', '/api/v1/booking/zone');
         self::assertResponseIsSuccessful();
         $zone = (array) json_decode((string) $client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        self::assertSame(['surPlace' => false, 'freeRadiusKm' => 5, 'maxDistanceKm' => 50, 'pricePerKmCents' => 0, 'roadFactor' => 1.3,
+        self::assertSame(['surPlace' => false, 'freeRadiusKm' => 5, 'maxDistanceKm' => 50, 'pricePerKmCents' => 0, 'roadFactor' => 1.3, 'rayonVilleKm' => 0,
             'paliers' => [['jusquaKm' => 15, 'prixCents' => 500], ['jusquaKm' => 30, 'prixCents' => 1000]]], $zone);
         self::assertArrayNotHasKey('originLat', $zone, 'le point de départ n\'est pas publié');
 

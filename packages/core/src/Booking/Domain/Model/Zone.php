@@ -23,9 +23,17 @@ final class Zone
         public readonly float $averageSpeedKmh = 50.0,
         /** @var list<PalierDeplacement> tranches triées par distance croissante (vide : prix au km) */
         public readonly array $paliers = [],
+        /**
+         * Rayon (à vol d'oiseau) de la ville de départ autour de son centre : toute la ville compte pour 0 km, et le
+         * rayon offert, les tranches et la distance maximale se comptent à partir de sa limite.
+         */
+        public readonly float $rayonVilleKm = 0.0,
     ) {
         if (abs($originLat) > 90 || abs($originLng) > 180) {
             throw new DomainError('Le point de départ a des coordonnées invalides.');
+        }
+        if ($rayonVilleKm < 0 || $rayonVilleKm > 30) {
+            throw new DomainError('Le rayon de la ville de départ doit être compris entre 0 et 30 km.');
         }
         if ($freeRadiusKm < 0 || $maxDistanceKm < 0) {
             throw new DomainError('Le rayon gratuit et la distance maximale ne peuvent pas être négatifs.');

@@ -44,7 +44,7 @@ describe('Accueil', () => {
     render(<MemoryRouter><Accueil /></MemoryRouter>);
     const tranches = await screen.findByRole('list', { name: 'Frais de déplacement par distance' });
     expect(within(tranches).getAllByRole('listitem').map((l) => l.textContent)).toEqual(
-      ['0 à 5 kmOffert', '5 à 15 km5 €', '15 à 30 km10 €', '30 à 50 km20 €', 'Au-delà de 50 kmSur devis'],
+      ['Abbeville + 5 kmOffert', '5 à 15 km5 €', '15 à 30 km10 €', '30 à 50 km20 €', 'Au-delà de 50 kmSur devis'],
     );
 
     const horaires = screen.getByRole('region', { name: 'Horaires' });

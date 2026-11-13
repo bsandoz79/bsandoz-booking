@@ -4,6 +4,8 @@ export interface ZonePublique {
   surPlace: boolean; freeRadiusKm: number; maxDistanceKm: number; pricePerKmCents: number; paliers: Palier[];
   /** Distance routière ÷ distance à vol d'oiseau (1,3 par défaut) : sert à tracer les cercles de la carte. */
   roadFactor?: number;
+  /** Rayon de la ville de départ (km, à vol d'oiseau) : toute la ville compte pour 0 km, les distances partent de sa limite. */
+  rayonVilleKm?: number;
 }
 
 /** Estimation des frais pour une position (`GET /booking/zone/estimation`). */
@@ -13,7 +15,8 @@ export interface Cercle { km: number; rayonM: number; fraisCents: number }
 
 /**
  * Cercles de la carte : un par limite de tranche (rayon offert, chaque tranche, distance maximale), du plus petit au
- * plus grand. Les distances étant routières, le rayon tracé est divisé par le facteur route / vol d'oiseau.
+ * plus grand. Les distances étant routières et comptées depuis la limite de la ville de départ, le rayon tracé vaut
+ * rayon de la ville + distance ÷ facteur route / vol d'oiseau.
  */
 /** Couleurs des tranches, de la plus proche à la plus éloignée : vert, jaune, orange, rouge. */
 export const COULEURS_TRANCHES = ['#2e9e5b', '#e2b007', '#ef7d1a', '#d93025'];
@@ -30,7 +33,8 @@ export function cerclesZone(zone: ZonePublique): Cercle[] {
   const limites = [zone.freeRadiusKm, ...zone.paliers.map((p) => p.jusquaKm), zone.maxDistanceKm]
     .filter((km, i, t) => km > 0 && km <= zone.maxDistanceKm && t.indexOf(km) === i)
     .sort((a, b) => a - b);
-  return limites.map((km) => ({ km, rayonM: Math.round((km / facteur) * 1000), fraisCents: fraisDeplacement(zone, km) }));
+  const ville = zone.rayonVilleKm ?? 0;
+  return limites.map((km) => ({ km, rayonM: Math.round((ville + km / facteur) * 1000), fraisCents: fraisDeplacement(zone, km) }));
 }
 
 /** Frais de déplacement pour une distance routière (même règle que le kit back : rayon offert, tranches, puis prix au km). */

@@ -1375,6 +1375,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         max_distance_km?: float|Param,
  *         road_factor?: float|Param, // Default: 1.3
  *         average_speed_kmh?: float|Param, // Default: 50.0
+ *         rayon_ville_km?: float|Param, // Rayon de la ville de départ : toute la ville compte pour 0 km, les distances partent de sa limite. // Default: 0.0
  *         paliers?: list<array{ // Default: []
  *             jusqua_km?: float|Param,
  *             prix_cents?: int|Param,

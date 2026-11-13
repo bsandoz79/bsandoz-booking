@@ -88,6 +88,6 @@ export const prixMin = (formule: Formule) => Math.min(formule.basePriceCents, ..
 
 /** Règles de démonstration : départ d'Abbeville, 5 km offerts, puis 5 € jusqu'à 15 km, 10 € jusqu'à 30 km, 20 € jusqu'à 50 km. */
 export const DEMO_RULES = {
-  depositPercent: 0, freeRadiusKm: 5, pricePerKmCents: 0, maxDistanceKm: 50, origin: { lat: 50.1054, lng: 1.8357 },
+  depositPercent: 0, rayonVilleKm: 4, freeRadiusKm: 5, pricePerKmCents: 0, maxDistanceKm: 50, origin: { lat: 50.1054, lng: 1.8357 },
   paliers: [{ jusquaKm: 15, prixCents: 500 }, { jusquaKm: 30, prixCents: 1000 }, { jusquaKm: 50, prixCents: 2000 }],
 };

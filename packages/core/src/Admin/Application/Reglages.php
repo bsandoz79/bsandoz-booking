@@ -64,6 +64,7 @@ final class Reglages
             roadFactor: self::float($z, 'roadFactor', 1.3),
             averageSpeedKmh: self::float($z, 'averageSpeedKmh', 50.0),
             paliers: self::paliers($z['paliers'] ?? []),
+            rayonVilleKm: self::float($z, 'rayonVilleKm', 0.0),
         );
     }
 
@@ -101,6 +102,7 @@ final class Reglages
             'maxDistanceKm' => $z->maxDistanceKm,
             'roadFactor' => $z->roadFactor,
             'averageSpeedKmh' => $z->averageSpeedKmh,
+            'rayonVilleKm' => $z->rayonVilleKm,
             'paliers' => array_map(static fn (PalierDeplacement $p): array => ['jusquaKm' => $p->jusquaKm, 'prixCents' => $p->prix->cents], $z->paliers),
         ];
     }
