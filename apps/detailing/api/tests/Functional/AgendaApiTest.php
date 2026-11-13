@@ -27,6 +27,14 @@ final class AgendaApiTest extends WebTestCase
         self::assertStringContainsString('X-WR-CALNAME:Perfect Clean', (string) $client->getResponse()->getContent());
     }
 
+    public function testAdresseDuFluxReserveeAuPro(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/v1/admin/agenda');
+
+        self::assertResponseStatusCodeSame(401);
+    }
+
     public function testMauvaisSecretEn404(): void
     {
         $client = static::createClient();

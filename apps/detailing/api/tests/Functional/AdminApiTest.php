@@ -104,6 +104,13 @@ final class AdminApiTest extends WebTestCase
         self::assertSame([], $this->json()['depenses']);
     }
 
+    public function testAdresseDuFluxDAgendaPourLePro(): void
+    {
+        $this->request('GET', '/api/v1/admin/agenda', token: $this->login('pro@example.test', 'artisan2026'));
+        self::assertResponseIsSuccessful();
+        self::assertStringEndsWith('/api/v1/ical/secret-agenda-de-test-0123456789abcdef.ics', (string) $this->json()['url']);
+    }
+
     public function testFichesClientsReserveesAuPro(): void
     {
         $this->request('GET', '/api/v1/admin/clients', token: $this->login('client@example.test', 'bonjour2026'));

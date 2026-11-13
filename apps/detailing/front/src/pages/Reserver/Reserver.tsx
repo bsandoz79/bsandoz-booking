@@ -8,6 +8,8 @@ import { adresseDePosition, getAvailableDays, getCatalog, getQuote, getSlots, ma
 import { PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
 import { defilerVers } from '../../app/defilement';
+import { memoriserReservation } from '../../app/agenda';
+import { SITE } from '../../data/site';
 import { ChoixProduits } from '../../components/ChoixProduits/ChoixProduits';
 import styles from './Reserver.module.css';
 
@@ -141,6 +143,12 @@ export function Reserver() {
       if (entreprise.active) Object.assign(details, { entreprise: entreprise.nom.trim(), siret: entreprise.siret.replace(/[\s.]/g, ''), adresseFacturation: entreprise.adresse.trim() || address.label });
       const resultat = await reserve({ ...selection, metierData: details }, start, address,
         { firstname: contact.nom.trim(), lastname: '', email: contact.email, phone: contact.phone, notes: contact.notes }, terms, choisis, paiement);
+      // Pour proposer l'ajout à l'agenda sur la page de confirmation (aussi au retour du paiement en ligne).
+      const fin = new Date(new Date(start).getTime() + (dureeMin ?? 60) * 60000).toISOString();
+      memoriserReservation(resultat.reservationId, {
+        titre: `${SITE.brand} : ${formule?.name ?? 'rendez-vous'}`, debut: new Date(start).toISOString(), fin, lieu: address.label,
+        details: `Nettoyage à domicile. Pour déplacer ou annuler : lien de l'e-mail de confirmation ou « Mon espace ».`,
+      });
       if (resultat.paymentUrl?.startsWith('/')) {
         navigate(resultat.paymentUrl);
       } else if (resultat.paymentUrl) {

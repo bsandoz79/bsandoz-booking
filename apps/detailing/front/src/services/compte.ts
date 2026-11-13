@@ -98,9 +98,21 @@ export async function authHttp<T>(path: string, init: RequestInit = {}): Promise
   }
 }
 
+let demoCompte: Compte = { id: 'demo', email: 'camille@example.org', firstname: 'Camille', lastname: 'Martin', phone: '01 02 03 04 05', roles: ['ROLE_CLIENT'], avoirCents: 3000 }; // démo : avoir d'exemple
+
 export async function monCompte(): Promise<Compte> {
-  if (isDemo()) return { id: 'demo', email: 'camille@example.org', firstname: 'Camille', lastname: 'Martin', phone: '01 02 03 04 05', roles: ['ROLE_CLIENT'], avoirCents: 3000 }; // démo : avoir d'exemple
+  if (isDemo()) return demoCompte;
   return authHttp('/me');
+}
+
+/** Coordonnées modifiées par le client (nom et prénom, téléphone, e-mail de connexion). */
+export async function modifierMonCompte(donnees: Pick<Compte, 'firstname' | 'lastname' | 'phone' | 'email'>): Promise<Compte> {
+  if (isDemo()) {
+    if (!/\S+@\S+\.\S+/.test(donnees.email)) throw new Error('Adresse e-mail invalide.');
+    demoCompte = { ...demoCompte, ...donnees, email: donnees.email.trim().toLowerCase() };
+    return demoCompte;
+  }
+  return authHttp('/me', { method: 'PATCH', body: JSON.stringify(donnees) });
 }
 
 export async function mesRendezVous(): Promise<RendezVous[]> {

@@ -39,6 +39,7 @@ final class MeController
         private SettingsProvider $settings,
         private ReprendrePaiement $reprendrePaiement,
         private ?\Bsandoz\Core\Payment\Application\GererAvoirs $avoirs = null,
+        private ?\Bsandoz\Core\Auth\Application\ModifierMonCompte $modifier = null,
     ) {
     }
 
@@ -57,6 +58,18 @@ final class MeController
             // Avoir (somme déjà payée, déduite automatiquement de la prochaine réservation)
             'avoirCents' => $this->avoirs?->solde($compte->id())->cents ?? 0,
         ]);
+    }
+
+    /** PATCH /me {firstname?, lastname?, phone?, email?} : coordonnées modifiées, renvoie le compte. */
+    #[Route('', name: 'bsandoz_me_update', methods: ['PATCH'])]
+    public function update(#[CurrentUser] SecurityUser $user, \Symfony\Component\HttpFoundation\Request $request): JsonResponse
+    {
+        if ($this->modifier === null) {
+            throw new \Bsandoz\Core\Shared\Domain\DomainError('Modification indisponible.');
+        }
+        ($this->modifier)($user->id(), \Bsandoz\Core\Shared\Infrastructure\Http\Json::corps($request));
+
+        return $this->me($user);
     }
 
     #[Route('', name: 'bsandoz_me_delete', methods: ['DELETE'])]

@@ -12,7 +12,7 @@ async function seConnecterDemo() {
   await userEvent.type(await screen.findByLabelText(/E-mail/), 'camille@example.org');
   await userEvent.type(screen.getByLabelText(/^Mot de passe/), 'motdepasse1');
   await userEvent.click(screen.getByRole('button', { name: 'Se connecter' }));
-  await screen.findByRole('heading', { name: 'Bonjour Camille' });
+  await screen.findByRole('heading', { name: 'Camille Martin' });
 }
 
 describe('Espace client', () => {
@@ -68,6 +68,25 @@ describe('Espace client', () => {
     await userEvent.click(within(carte).getByRole('button', { name: '13:30' }));
     await userEvent.click(within(carte).getByRole('button', { name: 'Confirmer le nouveau créneau' }));
     expect(await screen.findByRole('status')).toHaveTextContent('Rendez-vous déplacé au vendredi 20 novembre 2026');
+  });
+
+  it('montre le nom, l’e-mail et le téléphone, modifiables, et propose d’ajouter le rendez-vous à l’agenda', async () => {
+    await seConnecterDemo();
+    const profil = screen.getByRole('region', { name: 'Camille Martin' });
+    expect(profil).toHaveTextContent('camille@example.org');
+    expect(within(profil).getByRole('button', { name: 'Se déconnecter' })).toBeInTheDocument();
+
+    await userEvent.click(within(profil).getByRole('button', { name: 'Modifier mes informations' }));
+    const telephone = within(profil).getByLabelText(/Téléphone/);
+    await userEvent.clear(telephone);
+    await userEvent.type(telephone, '06 99 88 77 66');
+    await userEvent.click(within(profil).getByRole('button', { name: 'Enregistrer' }));
+    expect(await within(profil).findByText('06 99 88 77 66')).toBeInTheDocument();
+    expect(within(profil).getByText('Vos informations sont enregistrées.')).toBeInTheDocument();
+
+    const carte = screen.getByRole('article', { name: 'Intérieur Signature' });
+    expect(within(carte).getByRole('link', { name: 'Google Agenda' })).toHaveAttribute('href', expect.stringContaining('calendar.google.com/calendar/render?action=TEMPLATE'));
+    expect(screen.getByRole('region', { name: 'Zone de danger' })).toBeInTheDocument();
   });
 
   it('se déconnecte et confirme avant de supprimer le compte', async () => {

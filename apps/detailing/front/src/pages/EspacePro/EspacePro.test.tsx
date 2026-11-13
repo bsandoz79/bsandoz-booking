@@ -29,7 +29,11 @@ describe('Espace pro', () => {
     await ouvrirConnecte();
     const journee = await screen.findByRole('region', { name: 'Ma journée' });
     expect(within(journee).getByText('Client démo A')).toBeInTheDocument();
-    expect(within(journee).getByRole('link', { name: 'Itinéraire vers Client démo A' })).toHaveAttribute('href', expect.stringContaining('google.com/maps/dir'));
+    await userEvent.click(within(journee).getByRole('button', { name: 'Itinéraire vers Client démo A' }));
+    const choix = screen.getByRole('dialog', { name: 'Ouvrir l’itinéraire avec…' });
+    expect(within(choix).getByRole('link', { name: 'Google Maps' })).toHaveAttribute('href', expect.stringContaining('google.com/maps/dir'));
+    expect(within(choix).getByRole('link', { name: 'Waze' })).toHaveAttribute('href', expect.stringContaining('waze.com/ul?ll=50.1054,1.8332'));
+    await userEvent.keyboard('{Escape}');
     expect(within(journee).getByRole('link', { name: /Appeler 01 02 03 04 05/ })).toHaveAttribute('href', 'tel:0102030405');
     expect(screen.getByRole('region', { name: 'Mon prochain rendez-vous' })).toHaveTextContent(/Client démo [AB]/);
     const aFaire = screen.getByRole('region', { name: /Choses à faire/ });

@@ -159,6 +159,8 @@
 - Espace pro : catalogue avec aperçu en direct de la carte de la formule à droite pendant la modification (composant `CarteFormule` partagé avec l'accueil). Suivi des demandes : `docs/demandes.md`. Test.
 - Espace pro : planning jour et semaine à la hauteur de l'écran, sans défilement (bloc `PlanningView`, prop `fitHeight`) ; « Mon prochain rendez-vous » à côté de « Ma journée » (prestation, adresse, produits, itinéraire, appel). Tests.
 - Réservation : bouton « Utiliser ma position » (GPS, adresse la plus proche via la Base Adresse Nationale, route `GET /geo/reverse`, position jamais mise en cache) ; chaque étape suivante, et chaque retour sur une étape, amène le visiteur au bon endroit. Tests.
+- Site et kit : « Ajouter à mon agenda » (Google Agenda, fichier .ics Apple / Outlook) sur la page de confirmation et sur chaque rendez-vous à venir de « Mon espace » ; pro : Réglages > « Mon agenda » (abonnement au flux iCal dans Google Agenda, Apple ou Outlook, route `GET /admin/agenda`). Tests.
+- Mon espace restructuré : nom en titre, e-mail et téléphone dessous, modifiables (route `PATCH /me`, cas d'usage `ModifierMonCompte`), « Se déconnecter » bien visible, « Zone de danger » (suppression du compte) en pointillés rouges tout en bas. Itinéraire : fenêtre au choix Google Maps ou Waze. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

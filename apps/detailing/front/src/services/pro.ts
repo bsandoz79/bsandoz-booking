@@ -338,3 +338,10 @@ export async function enregistrerSeuilCreneauxGroupes(seuilMin: number): Promise
   if (isDemo()) { demoSeuilGroupes = seuilMin; return seuilMin; }
   return (await authHttp<{ seuilMin: number }>('/admin/settings/creneaux-groupes', { method: 'PUT', ...json({ seuilMin }) })).seuilMin;
 }
+
+// ——— Agenda du pro (flux iCal) ———
+/** Adresse du flux d'agenda à ajouter dans Google Agenda, Apple Calendrier ou Outlook ; null si non configuré sur le serveur. */
+export async function adresseAgendaPro(): Promise<string | null> {
+  if (isDemo()) return 'https://api.demo.bsandoz.fr/api/v1/ical/exemple-de-demonstration.ics';
+  return (await authHttp<{ url: string | null }>('/admin/agenda')).url;
+}
