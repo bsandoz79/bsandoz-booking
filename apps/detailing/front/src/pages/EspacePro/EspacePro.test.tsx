@@ -199,6 +199,27 @@ describe('Espace pro', () => {
     expect(options[0]).toHaveTextContent(/Véhicule très sale.*Extérieur Éclat/);
   });
 
+  it('formule : options cochées en haut, réordonnables, nouvelle option cochée ajoutée à la fin', async () => {
+    await ouvrirConnecte();
+    await rubrique('Catalogue');
+    await userEvent.click(await screen.findByRole('button', { name: 'Modifier Intérieur Éclat' }));
+    const cochees = () => within(screen.getByRole('list', { name: 'Ordre des options de cette formule' })).getAllByRole('listitem').map((li) => li.querySelector('strong')?.textContent);
+    expect(cochees()).toEqual(['Poils d’animaux', 'Véhicule très sale', 'Désodorisant Perfect Clean']);
+
+    screen.getByRole('button', { name: 'Déplacer Désodorisant Perfect Clean' }).focus();
+    await userEvent.keyboard('{ArrowUp}{ArrowUp}');
+    expect(cochees()).toEqual(['Désodorisant Perfect Clean', 'Poils d’animaux', 'Véhicule très sale']);
+
+    // Décochée : elle quitte le haut ; recochée : elle revient à la fin.
+    await userEvent.click(screen.getByRole('checkbox', { name: /Poils d’animaux/ }));
+    expect(cochees()).toEqual(['Désodorisant Perfect Clean', 'Véhicule très sale']);
+    await userEvent.click(screen.getByRole('checkbox', { name: /Poils d’animaux/ }));
+    expect(cochees()).toEqual(['Désodorisant Perfect Clean', 'Véhicule très sale', 'Poils d’animaux']);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    expect(await screen.findByRole('status')).toHaveTextContent('« Intérieur Éclat » enregistrée.');
+  });
+
   it('réordonne les options : le désodorisant remonte en première position', async () => {
     await ouvrirConnecte();
     await rubrique('Catalogue');
