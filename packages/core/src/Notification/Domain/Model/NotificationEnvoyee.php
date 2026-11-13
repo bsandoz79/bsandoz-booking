@@ -8,6 +8,8 @@ namespace Bsandoz\Core\Notification\Domain\Model;
 class NotificationEnvoyee
 {
     public const RAPPEL = 'reminder';
+    /** Relance d'un client absent, rattachée à sa dernière prestation faite. */
+    public const RELANCE = 'customer_reminder';
 
     public function __construct(
         private string $id,

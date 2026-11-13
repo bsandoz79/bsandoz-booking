@@ -187,3 +187,8 @@ Compte pro créé à l'installation : `php bin/console bsandoz:pro:creer contact
 - `GET /catalog` renvoie les produits actifs, épuisés compris (`stock` réel ; 0 : épuisé, non commandable ; 10 au plus par réservation).
 - `DELETE /admin/catalog/produits/{id}/definitif` → 204 : suppression définitive (les réservations gardent nom et prix). `DELETE /admin/catalog/produits/{id}` seul retire de la vente.
 - `PUT /admin/catalog/ordre` `{"prestations"?: [ids], "options"?: [ids], "produits"?: [ids]}` → 204 : nouvel ordre d'affichage (positions 0, 1, 2…), appliqué au site et à la réservation. Options : colonne `catalog_option.position` (migration).
+
+## Relance des clients absents
+- `GET` / `PUT /admin/settings/relance` `{"actif", "jours": 30–730}` (pro) → `{actif, jours, desinscrits}` ; désactivée par défaut, 90 jours.
+- Cron `bsandoz:notifications:send` (toutes les 15 min) : en journée (10 h – 18 h, heure locale), e-mail `customer_reminder` aux clients dont la dernière prestation faite date de plus de `jours` jours et sans rendez-vous à venir ; une seule fois par dernière prestation (journal des notifications) ; 30 au plus par passage.
+- `POST /relance/desinscription` `{"u", "s"}` (lien signé de l'e-mail, page `/desinscription` du site) → 204 ; lien invalide : 404. Le client désinscrit n'est plus relancé.

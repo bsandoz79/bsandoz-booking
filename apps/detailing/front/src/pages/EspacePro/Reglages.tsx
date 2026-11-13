@@ -4,6 +4,7 @@ import { searchAddress, type Address } from '../../services/api';
 import { modifierRegleFidelite, regleFidelite, type RegleFidelite } from '../../services/fidelite';
 import { adresseAgendaPro, enregistrerRegles, enregistrerSeuilCreneauxGroupes, enregistrerZone, reglages, seuilCreneauxGroupes, type Regles, type Zone } from '../../services/pro';
 import { enregistrerAvis, reglageAvis, type ReglageAvis } from '../../services/avis';
+import { enregistrerRelance, reglageRelance, type ReglageRelance } from '../../services/relance';
 import { NotificationsPro } from './Notifications';
 import styles from './Pro.module.css';
 
@@ -42,6 +43,7 @@ export function ReglagesOnglet() {
       <FormulaireZone initiale={zone} />
       <FormulaireFidelite />
       <FormulaireAvis />
+      <FormulaireRelance />
     </>
   );
 }
@@ -307,5 +309,44 @@ function SynchroAgenda() {
         )}
       </div>
     </section>
+  );
+}
+
+/** Relance automatique par e-mail des clients qui ne sont pas revenus. */
+function FormulaireRelance() {
+  const [r, setR] = useState<ReglageRelance>();
+  const [jours, setJours] = useState('');
+  const [message, setMessage] = useState('');
+  const [erreur, setErreur] = useState('');
+  useEffect(() => { reglageRelance().then((x) => { setR(x); setJours(String(x.jours)); }).catch((e: Error) => setErreur(e.message)); }, []);
+  if (!r) return erreur ? <p className={styles.erreur} role="alert">{erreur}</p> : null;
+  const valide = /^\d+$/.test(jours) && Number(jours) >= 30 && Number(jours) <= 730;
+
+  const enregistrer = async (e: FormEvent) => {
+    e.preventDefault();
+    setMessage(''); setErreur('');
+    try {
+      const x = await enregistrerRelance({ actif: r.actif, jours: Number(jours) });
+      setR(x);
+      setMessage(x.actif ? `Relance activée : les clients absents depuis ${x.jours} jours recevront un e-mail.` : 'Relance désactivée.');
+    } catch (err) {
+      setErreur((err as Error).message);
+    }
+  };
+
+  return (
+    <form className={styles.section} onSubmit={enregistrer} noValidate aria-labelledby="titre-relance">
+      <h2 id="titre-relance">Relance des clients</h2>
+      <div className={styles.panneau}>
+        <p className={styles.aide}>Un client dont la dernière prestation remonte à plus de … jours, et qui n’a rien de prévu, reçoit un seul e-mail « Votre véhicule a besoin d’un coup de propre ? » avec un bouton pour reprendre rendez-vous. Il n’est plus relancé tant qu’il n’est pas revenu, et peut se désinscrire en un clic. Envoi en journée uniquement.</p>
+        <Toggle label="Relancer automatiquement les clients absents" checked={r.actif} onChange={(actif) => setR({ ...r, actif })} />
+        <Field label="Après combien de jours sans visite ?" inputMode="numeric" value={jours} onChange={(e) => setJours(e.target.value)}
+          hint="Entre 30 et 730 jours. 90 jours (3 mois) est un bon début." error={valide || jours === '' ? undefined : 'Entre 30 et 730 jours.'} />
+        {r.desinscrits > 0 && <p className={styles.aide}>{r.desinscrits} client{r.desinscrits > 1 ? 's se sont désinscrits' : ' s’est désinscrit'} des relances.</p>}
+        {message && <p className={styles.ok} role="status">{message}</p>}
+        {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
+        <div><Button type="submit" disabled={!valide}>Enregistrer la relance</Button></div>
+      </div>
+    </form>
   );
 }

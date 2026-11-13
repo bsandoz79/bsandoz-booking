@@ -17,6 +17,7 @@ import { Reserver } from '../pages/Reserver/Reserver';
 import { FactureVue } from '../pages/Facture/Facture';
 import { Professionnels } from '../pages/Professionnels/Professionnels';
 import { Devis } from '../pages/Professionnels/Devis';
+import { Desinscription } from '../pages/Desinscription/Desinscription';
 
 export function AppRoutes() {
   return (
@@ -36,6 +37,7 @@ export function AppRoutes() {
         <Route path="/compte/activer" element={<ActiverCompte />} />
         <Route path="/compte/mot-de-passe" element={<MotDePasse />} />
         <Route path="/rendez-vous" element={<RendezVous />} />
+        <Route path="/desinscription" element={<Desinscription />} />
         <Route path="/pro" element={<EspacePro />} />
         <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/cgv" element={<Cgv />} />
