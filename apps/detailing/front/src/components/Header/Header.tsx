@@ -46,10 +46,23 @@ export function Header() {
           {/* Section fidélité de l'accueil : la carte du client connecté, sinon un exemple. */}
           {fidelite && <Link to="/#fidelite">Fidélité</Link>}
           <NavLink to="/professionnels">Pro</NavLink>
-          <NavLink to="/mon-espace">Mon espace</NavLink>
-          {pro && <NavLink to="/pro" className={styles.espacePro}><Icone nom="tableau" taille={17} /> Espace pro</NavLink>}
         </nav>
+        {/* Ordre : liens, bouton principal, puis le compte et le thème à droite. */}
+        <Link to="/reserver" className={`btn ${styles.reserver}`}>Réserver</Link>
         <div className={styles.actions}>
+          {telephone && (
+            <a href={lienTel(telephone)} className={styles.appel} aria-label={`Appeler le ${telephone}`}>
+              <IconeTelephone /><span className={styles.appelNumero}>{telephone}</span>
+            </a>
+          )}
+          {pro && (
+            <NavLink to="/pro" className={styles.espacePro} aria-label="Espace pro">
+              <Icone nom="tableau" taille={18} /><span className={styles.libelleCompte}>Espace pro</span>
+            </NavLink>
+          )}
+          <NavLink to="/mon-espace" className={styles.compte} aria-label="Mon espace">
+            <Icone nom="utilisateur" taille={18} /><span className={styles.libelleCompte}>Mon espace</span>
+          </NavLink>
           <button type="button" className={styles.astre} onClick={basculer} aria-pressed={theme === 'nuit'} title={theme === 'nuit' ? 'Passer en version claire' : 'Passer en version nuit'}>
             {/* Une roue porte le soleil (en haut) et la lune (en bas) : elle tourne d'un demi-tour, le soleil se couche et
                 la lune se lève pendant que le ciel s'assombrit. */}
@@ -62,12 +75,6 @@ export function Header() {
             </span>
             <span className={styles.srOnly}>Version nuit</span>
           </button>
-          {telephone && (
-            <a href={lienTel(telephone)} className={styles.appel} aria-label={`Appeler le ${telephone}`}>
-              <IconeTelephone /><span className={styles.appelNumero}>{telephone}</span>
-            </a>
-          )}
-          <Link to="/reserver" className={`btn ${styles.reserver}`}>Réserver</Link>
           <button type="button" className={`${styles.rond} ${styles.menu}`} aria-expanded={ouvert} aria-controls="menu-principal" onClick={() => setOuvert(!ouvert)}>
             <span aria-hidden="true">{ouvert ? '✕' : '☰'}</span>
             <span className={styles.srOnly}>Menu</span>

@@ -1,0 +1,37 @@
+/* Mise en page « réglages » partagée (catalogue, détail d'un rendez-vous) : rubriques et panneaux de lignes. */
+.rubrique { display: flex; flex-direction: column; gap: .8rem; }
+.rubriqueEntete { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: .5rem 1rem; }
+.rubriqueEntete h2, .rubriqueEntete h3 { margin: 0; font-size: 1.1rem; }
+.rubriqueEntete p { margin: .25rem 0 0; }
+.aide { font-size: .88rem; color: var(--bs-color-text-muted); }
+
+.panneau { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--bs-color-border); border-radius: 16px;
+  background: var(--bs-color-surface); overflow: hidden; }
+.ligne { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: center; gap: .35rem 1rem; min-height: 60px; padding: .8rem 1.1rem; }
+.ligne + .ligne { border-top: 1px solid var(--bs-color-border); }
+.ligneIcone { color: var(--bs-color-text-muted); }
+.ligneTexte { display: flex; flex-direction: column; gap: .2rem; min-width: 0; }
+.ligneTitre { font-weight: 700; overflow-wrap: anywhere; }
+.ligneSous { font-size: .86rem; color: var(--bs-color-text-muted); overflow-wrap: anywhere; }
+.ligneValeur { font-weight: 600; text-align: end; white-space: nowrap; }
+.ligneActions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .4rem; }
+.estompee { opacity: .6; }
+.accent { color: var(--bs-color-success); font-weight: 800; }
+.attention { color: #a34e00; font-weight: 700; }
+:global(:root[data-theme='nuit']) .attention { color: #fdba74; }
+@media (max-width: 640px) {
+  .ligne { grid-template-columns: 22px minmax(0, 1fr); }
+  .ligneValeur, .ligneActions { grid-column: 2; justify-content: flex-start; text-align: start; }
+}
+
+.etiquettes { display: flex; flex-wrap: wrap; gap: .3rem; }
+.etiquette { padding: 1px 8px; border-radius: 999px; font-size: .74rem; font-weight: 700; background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); }
+.etiquetteNeutre { background: color-mix(in srgb, var(--bs-color-text) 8%, transparent); color: var(--bs-color-text-muted); }
+
+.boutonContour { display: inline-flex; align-items: center; gap: .4rem; min-height: 38px; padding: 0 .9rem; border: 1px solid var(--bs-color-border); border-radius: 10px;
+  background: transparent; color: var(--bs-color-text); font: inherit; font-size: .92rem; font-weight: 600; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.boutonContour:hover { border-color: var(--bs-color-text-muted); background: color-mix(in srgb, var(--bs-color-text) 5%, transparent); }
+.boutonContour:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
+.boutonContour:disabled { opacity: .5; cursor: not-allowed; }
+.boutonDanger { composes: boutonContour; border-color: var(--bs-color-danger); color: var(--bs-color-danger); }
+.boutonDanger:hover { background: color-mix(in srgb, var(--bs-color-danger) 8%, transparent); border-color: var(--bs-color-danger); }

@@ -168,6 +168,8 @@
 - Mon espace façon page de réglages : rubriques (titre et explication) et panneaux de lignes avec icône, valeur et « Modifier » à droite ; nom, e-mail et téléphone modifiables ligne par ligne ; « Supprimer le compte » en bas avec un bouton rouge bordé. Icônes au trait (composant `Icone`) à la place des emojis dans tout le site. Tests.
 - Site : chaque zone modifiable (haut de page, photo, sections, cartes, pied de page, pages légales) est entourée de pointillés pour le pro, avec son crayon dans le coin en haut à droite (composant `Zone`) ; photo de l'accueil modifiable (rubrique « Photo de l'accueil », champ `accueil.photo`). Test.
 - En-tête : lien « Espace pro » pour un compte pro connecté (pastille ambre, distincte des autres liens), mis à jour dès la connexion ou la déconnexion ; retiré de Mon espace. Mon espace moins large, valeurs alignées après l'intitulé. Test.
+- Espace pro : catalogue rangé par catégorie, une ligne par formule (prix, durée, options, étiquettes) avec « Modifier » et « Retirer » ; détail d'un rendez-vous en blocs Client, Prestation et Paiement (à encaisser sur place mis en avant), actions en bas. Styles « réglages » partagés (`components/Reglages`). Tests.
+- En-tête réordonné : logo, liens, « Réserver », puis téléphone, « Espace pro » (pro), « Mon espace » en pastille avec icône et thème tout à droite ; libellés remplacés par les icônes sur écran moyen et téléphone. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

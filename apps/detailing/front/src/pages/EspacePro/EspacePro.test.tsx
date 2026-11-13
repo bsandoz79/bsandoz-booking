@@ -115,6 +115,10 @@ describe('Espace pro', () => {
     await userEvent.click(await screen.findByRole('button', { name: /Client démo A · Intérieur Éclat/ }));
     const detail = screen.getByRole('region', { name: /Rendez-vous du/ });
     expect(within(detail).getByRole('link', { name: /Appeler 01 02 03 04 05/ })).toHaveAttribute('href', 'tel:0102030405');
+    // Détail structuré : client, prestation, paiement.
+    expect(within(detail).getByRole('region', { name: 'Client' })).toHaveTextContent('Client démo A');
+    expect(within(detail).getByRole('region', { name: 'Prestation' })).toHaveTextContent('Intérieur Éclat');
+    expect(within(detail).getByRole('region', { name: 'Paiement' })).toHaveTextContent('À encaisser sur place');
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler le rendez-vous' }));
     await userEvent.click(within(detail).getByRole('button', { name: 'Annuler et rembourser l’acompte' }));
     expect(await within(detail).findByRole('status')).toHaveTextContent('Rendez-vous annulé, 8,70');
@@ -128,6 +132,17 @@ describe('Espace pro', () => {
     await userEvent.type(remise, '15');
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer la carte de fidélité' }));
     expect(await screen.findByText('Carte de fidélité enregistrée.')).toBeInTheDocument();
+  });
+
+  it('catalogue rangé par catégorie : prix, durée, étiquettes, modifier et retirer', async () => {
+    await ouvrirConnecte();
+    await rubrique('Catalogue');
+    const interieur = await screen.findByRole('region', { name: 'Nettoyage intérieur' });
+    expect(interieur).toHaveTextContent(/Intérieur Signature.*À partir de 69,00\s€.*demi-journée/);
+    expect(interieur).toHaveTextContent('Le plus choisi');
+    await userEvent.click(within(interieur).getByRole('button', { name: 'Retirer Intérieur Éclat' }));
+    expect(await screen.findByRole('status')).toHaveTextContent('« Intérieur Éclat » n’est plus proposée.');
+    expect(within(screen.getByRole('region', { name: 'Nettoyage intérieur' })).getByText('Retirée du site')).toBeInTheDocument();
   });
 
   it('modifie le tarif d’une prestation du catalogue', async () => {

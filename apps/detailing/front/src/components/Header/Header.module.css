@@ -52,11 +52,32 @@
 }
 
 /* Lien « Espace pro » (compte pro connecté) : pastille ambre, distincte des liens et du bouton « Réserver ». */
-.nav .espacePro { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .85rem; border-radius: 999px;
+.espacePro { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .85rem; border-radius: 999px;
   background: #f5b833; color: #2a1d00; font-weight: 800; text-decoration: none; box-shadow: 0 0 0 2px rgb(245 184 51 / .25); }
-.nav .espacePro:hover { background: #ffc94d; color: #2a1d00; }
-.nav .espacePro:focus-visible { outline: 3px solid #f5b833; outline-offset: 3px; }
-.nav .espacePro[aria-current='page'] { box-shadow: 0 0 0 3px rgb(245 184 51 / .45); }
+.espacePro:hover { background: #ffc94d; color: #2a1d00; }
+.espacePro:focus-visible { outline: 3px solid #f5b833; outline-offset: 3px; }
+.espacePro[aria-current='page'] { box-shadow: 0 0 0 3px rgb(245 184 51 / .45); }
 @media (max-width: 760px) {
-  .nav .espacePro { align-self: flex-start; min-height: 44px; margin-block: .5rem .25rem; padding-inline: 1rem; border-top: none; }
+  .espacePro { align-self: flex-start; min-height: 44px; margin-block: .5rem .25rem; padding-inline: 1rem; border-top: none; }
+}
+
+/* Bouton principal juste après les liens ; compte et thème regroupés à droite. */
+.nav { margin-left: auto; }
+.brand { margin-right: 0; }
+.inner { gap: 1rem 1.25rem; }
+.reserver { flex: none; }
+.compte, .espacePro { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: 0 1rem; border-radius: 999px; text-decoration: none; font-weight: 700; white-space: nowrap; }
+.compte { border: 1.5px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); }
+.compte:hover { border-color: var(--bs-color-text-muted); }
+.compte[aria-current='page'] { border-color: var(--bs-color-primary); color: var(--bs-color-primary-dark); }
+.compte:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
+.espacePro { padding: 0 1rem; }
+/* Écrans moyens et téléphone : icônes seules (le libellé reste lu par les lecteurs d'écran). */
+@media (max-width: 1099px) {
+  .compte, .espacePro { width: 44px; padding: 0; justify-content: center; }
+  .libelleCompte { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+@media (max-width: 760px) {
+  .nav { margin-left: 0; }
+  .brand { margin-right: auto; }
 }
