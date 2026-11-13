@@ -63,3 +63,6 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/historique` : historique des rendez-vous (date de réservation, tri, filtres, fiche au clic)
 - [x] `feature/clients-filtres` : clients triables et filtrables
 - [x] `feature/ordre-glisser` : ordre des formules, options et produits par glisser-déposer (bloc `SortableList`), barre du haut sur une ligne sur téléphone
+
+## À faire
+- [ ] `feature/facturation-electronique` : envoi automatique des factures (clients pro) et des données de vente (particuliers) à la plateforme agréée choisie, via son API (voir `docs/demandes.md`, « À faire »)
