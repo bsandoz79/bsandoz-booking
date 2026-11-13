@@ -55,7 +55,7 @@ final class ReservationRequest
             $lng,
             self::string($body, 'email'),
             self::string($body, 'firstname'),
-            self::string($body, 'lastname'),
+            self::string($body, 'lastname', required: false), // formulaire « Nom et prénom » en un seul champ
             self::string($body, 'phone'),
             self::string($body, 'notes', required: false),
             ($body['acceptedTerms'] ?? false) === true,

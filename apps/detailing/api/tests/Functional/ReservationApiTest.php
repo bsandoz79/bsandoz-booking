@@ -154,6 +154,14 @@ final class ReservationApiTest extends WebTestCase
         self::assertSame(1, $em->find(Produit::class, 'micro')?->stock());
     }
 
+    public function testNomEtPrenomEnUnSeulChampAvecUnProduit(): void
+    {
+        // Le site envoie « Nom et prénom » dans firstname et un lastname vide.
+        $this->reserve(['firstname' => 'Camille Martin', 'lastname' => '', 'produits' => [['id' => 'micro', 'quantite' => 1]]]);
+
+        self::assertResponseStatusCodeSame(201);
+    }
+
     public function testStockInsuffisantEn422(): void
     {
         $this->reserve(['produits' => [['id' => 'micro', 'quantite' => 5]]]);
