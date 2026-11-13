@@ -45,3 +45,4 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 - [x] `feature/page-professionnels` : page Pro sur devis et formulaire de contact
 - [x] `feature/upsell-fenetre` : produits proposés dans une fenêtre au paiement (bloc `Dialog`)
 - [x] `feature/devis-hors-zone` : page `/devis` et lien depuis une adresse hors zone
+- [x] `feature/facturation` : factures numérotées émises à la prestation faite, envoyées au client, imprimables en PDF
