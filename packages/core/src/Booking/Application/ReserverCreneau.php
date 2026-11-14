@@ -47,6 +47,7 @@ final class ReserverCreneau
         private ?GererFidelite $fidelite = null,
         private ?StockProduits $stock = null,
         private ?\Bsandoz\Core\Payment\Application\GererAvoirs $avoirs = null,
+        private ?\Bsandoz\Core\Abonnement\Application\UtiliserAbonnement $abonnements = null,
     ) {
     }
 
@@ -77,11 +78,20 @@ final class ReserverCreneau
             $userId = ($this->creerCompte)($c->email, $c->firstname, $c->lastname, $c->phone);
             $now = $this->clock->now();
 
-            $remise = $this->fidelite?->utiliserRemise($userId, $devis->total->subtract($devis->travelFee)) ?? Money::zero();
+            // Abonnement : la prestation comprise est déduite (options et déplacement restent dus), sans remise de fidélité.
+            $remiseAbonnement = Money::zero();
+            if ($c->abonnementId !== null) {
+                if ($this->abonnements === null) {
+                    throw new DomainError('Les abonnements ne sont pas disponibles.');
+                }
+                $remiseAbonnement = $this->abonnements->remise($c->abonnementId, $userId, $c->prestationId, $devis->variante, $c->quantite, $c->composantes, $slot->start)->min($devis->total);
+            }
+            $base = $devis->total->subtract($remiseAbonnement);
+            $remise = $c->abonnementId !== null ? Money::zero() : ($this->fidelite?->utiliserRemise($userId, $devis->total->subtract($devis->travelFee)) ?? Money::zero());
             // Avoir du client (somme déjà payée, ex. annulation tardive) : déduit après la remise de fidélité.
-            $avoir = $this->avoirs?->utiliser($userId, $devis->total->subtract($remise)) ?? Money::zero();
-            $total = $devis->total->subtract($remise)->subtract($avoir);
-            $acompte = $remise->cents === 0 && $avoir->cents === 0 ? $devis->deposit : $this->acompte($total);
+            $avoir = $this->avoirs?->utiliser($userId, $base->subtract($remise)) ?? Money::zero();
+            $total = $base->subtract($remise)->subtract($avoir);
+            $acompte = $remise->cents === 0 && $avoir->cents === 0 && $remiseAbonnement->cents === 0 ? $devis->deposit : $this->acompte($total);
             $produits = $c->produits === [] || $this->stock === null ? [] : $this->stock->retirer($c->produits);
 
             $reservation = new Reservation(
@@ -105,6 +115,8 @@ final class ReserverCreneau
                 $c->paiementEnLigne,
                 $avoir->cents > 0 ? $avoir : null,
                 $c->composantes === [] ? null : $c->composantes,
+                $c->abonnementId,
+                $remiseAbonnement->cents > 0 ? $remiseAbonnement : null,
             );
             $reservation->marquerCreeLe($now);
 

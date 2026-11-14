@@ -195,6 +195,7 @@
 - Accueil : vidéo de présentation sous « Comment ça marche » (aperçu, chargement au clic) ; déploiement : vidéos envoyées à part, seulement si leur taille change.
 - Vidéo de l'accueil : lecture automatique sans son et en boucle à l'écran, pause hors de l'écran (composant VideoAuto).
 - Formule complète (formule combinée) : une formule intérieur + une extérieur au choix, remise de 15 €, options des deux et de la formule (rénovation des phares) ; catalogue, devis, réservation, facture, planning et espace pro (migration Version20261114100000).
+- Abonnements : offres du pro (prestation comprise, rythme, prix), souscription et résiliation dans Mon espace, prélèvement Stripe à chaque période, une prestation par période déduite à la réservation, onglet pro « Abonnements », prélèvements en comptabilité (migration Version20261114120000).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

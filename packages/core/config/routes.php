@@ -19,4 +19,5 @@ return static function (RoutingConfigurator $routes): void {
     $routes->import('../src/Fidelite/Infrastructure/Http/', 'attribute');
     $routes->import('../src/Facturation/Infrastructure/Http/', 'attribute');
     $routes->import('../src/Comptabilite/Infrastructure/Http/', 'attribute');
+    $routes->import('../src/Abonnement/Infrastructure/Http/', 'attribute');
 };

@@ -34,6 +34,8 @@ export interface Selection {
   metierData: Record<string, unknown>;
   /** Formule combinée : la formule choisie dans chaque catégorie. */
   composantes?: Formule[];
+  /** Abonnement utilisé : la prestation comprise est déduite. */
+  abonnementId?: string;
 }
 
 export interface Contact { firstname: string; lastname: string; email: string; phone: string; notes: string }
@@ -239,6 +241,7 @@ export async function reserve(selection: Selection, start: string, address: Addr
       quantite: selection.quantite ?? 1,
       metierData: selection.metierData,
       ...(selection.composantes?.length ? { composantes: selection.composantes.map((c) => c.id) } : {}),
+      ...(selection.abonnementId ? { abonnementId: selection.abonnementId } : {}),
       start,
       address,
       ...contact,

@@ -125,6 +125,9 @@ final class EmettreFacture
         if ($r->remiseFidelite()->cents > 0) {
             $lignes[] = ['libelle' => 'Remise carte de fidélité', 'montantCents' => -$r->remiseFidelite()->cents];
         }
+        if ($r->remiseAbonnement()->cents > 0) {
+            $lignes[] = ['libelle' => 'Compris dans l\'abonnement', 'montantCents' => -$r->remiseAbonnement()->cents];
+        }
         if ($r->avoirUtilise()->cents > 0) {
             $lignes[] = ['libelle' => 'Avoir déduit (déjà réglé)', 'montantCents' => -$r->avoirUtilise()->cents];
         }

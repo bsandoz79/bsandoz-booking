@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { AppRoutes } from '../../app/App';
 import { Reserver } from './Reserver';
 import { seConnecter, seDeconnecter } from '../../services/compte';
+import { souscrire } from '../../services/abonnements';
 
 const bouton = (nom: string | RegExp) => screen.getByRole('button', { name: nom });
 
@@ -54,6 +55,15 @@ describe('Parcours de réservation', () => {
     expect(screen.getByRole('checkbox', { name: /Poils d’animaux/ })).toBeInTheDocument();
     expect((await screen.findAllByText(/124,00/)).length).toBeGreaterThan(0);
     expect(bouton('Choisir le créneau')).toBeEnabled();
+  });
+
+  it('abonnement : la formule comprise est déduite, les options restent dues', async () => {
+    await souscrire('abo-mois');
+    render(<MemoryRouter initialEntries={['/reserver?formule=ext-eclat&abonnement=abonnement-demo']}><Reserver /></MemoryRouter>);
+    expect(await screen.findByText(/Compris dans votre abonnement « Lavage chaque mois »/)).toBeInTheDocument();
+    expect(await screen.findByText('Compris dans votre abonnement')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('checkbox', { name: /Véhicule très sale/ }));
+    expect((await screen.findAllByText(/10,00/)).length).toBeGreaterThan(0);
   });
 
   it('passe tout seul à « Où et quand ? » quand la formule n’a pas d’option à proposer', async () => {

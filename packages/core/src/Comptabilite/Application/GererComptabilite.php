@@ -30,6 +30,7 @@ final class GererComptabilite
         private SettingsProvider $settings,
         private IdGenerator $ids,
         private Clock $clock,
+        private ?\Bsandoz\Core\Abonnement\Domain\Port\PaiementsAbonnement $paiementsAbonnement = null,
     ) {
     }
 
@@ -46,7 +47,15 @@ final class GererComptabilite
         $debut = new \DateTimeImmutable(sprintf('%d-01-01', $annee), $tz);
         $ca = array_fill_keys(array_map(static fn (int $m): string => sprintf('%d-%02d', $annee, $m), range(1, 12)), 0);
         // Recettes de l'année par moyen de paiement (en ligne, puis chaque moyen sur place ; « nonPrecise » : marqué fait sans moyen).
-        $parMoyen = ['enLigne' => 0, 'carte' => 0, 'qr' => 0, 'especes' => 0, 'virement' => 0, 'cheque' => 0, 'nonPrecise' => 0];
+        $parMoyen = ['enLigne' => 0, 'carte' => 0, 'qr' => 0, 'especes' => 0, 'virement' => 0, 'cheque' => 0, 'nonPrecise' => 0, 'abonnement' => 0];
+        // Abonnements : chaque prélèvement compte le mois où il est reçu.
+        foreach ($this->paiementsAbonnement?->entre($debut, $debut->modify('+1 year')) ?? [] as $p) {
+            $mois = $p->payeLe()->setTimezone($tz)->format('Y-m');
+            if (isset($ca[$mois])) {
+                $ca[$mois] += $p->montant()->cents;
+                $parMoyen['abonnement'] += $p->montant()->cents;
+            }
+        }
         foreach ($this->reservations->between($debut, $debut->modify('+1 year')) as $r) {
             if ($r->status() !== ReservationStatus::Done) {
                 continue;

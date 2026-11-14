@@ -86,6 +86,7 @@ const MOYENS: { cle: keyof NonNullable<Bilan['parMoyenCents']>; libelle: string 
   { cle: 'virement', libelle: 'Virement' },
   { cle: 'cheque', libelle: 'Chèque' },
   { cle: 'nonPrecise', libelle: 'Sur place, moyen non noté' },
+  { cle: 'abonnement', libelle: 'Abonnements (prélèvements)' },
 ];
 
 /** Recettes de l'année par moyen de paiement (registre des recettes) : seulement les moyens utilisés. */

@@ -13,6 +13,7 @@ import { estConnecte, monCompte, reprendreSession } from '../../services/compte'
 import { Icone } from '../../components/Icone/Icone';
 import { SITE } from '../../data/site';
 import { ChoixProduits } from '../../components/ChoixProduits/ChoixProduits';
+import { mesAbonnements, noterPrestationDemo, type MonAbonnement } from '../../services/abonnements';
 import styles from './Reserver.module.css';
 
 const currentMonth = () => new Date().toISOString().slice(0, 7);
@@ -46,6 +47,8 @@ export function Reserver() {
   const [formuleId, setFormuleId] = useState<string>();
   // Formule combinée (ex. formule complète) : la formule choisie dans chaque catégorie (catégorie → formule).
   const [choixComposantes, setChoixComposantes] = useState<Record<string, string>>({});
+  // Prestation de l'abonnement (« Réserver » dans Mon espace : /reserver?formule=…&abonnement=…).
+  const [abonnement, setAbonnement] = useState<MonAbonnement>();
   // Plusieurs véhicules : même formule pour tous, options choisies véhicule par véhicule.
   const [nbVehicules, setNbVehicules] = useState(1);
   const [optionsParVehicule, setOptionsParVehicule] = useState<string[][]>([[]]);
@@ -103,9 +106,13 @@ export function Reserver() {
     const nom = (id: string) => options.find((o) => o.id === id)?.name ?? id;
     return { category, vehicules: optionsParVehicule.map((ids, i) => `Véhicule ${i + 1} : ${ids.length ? ids.map(nom).join(', ') : 'sans option'}`) };
   }, [category, nbVehicules, optionsParVehicule, options]);
+  // Abonnement utilisé : la formule comprise, pour un seul véhicule.
+  const avecAbonnement = !!abonnement && !!formule && formule.id === abonnement.offre.prestationId && nbVehicules === 1 && !combinee;
   const selection = useMemo<Selection | undefined>(
-    () => (formule && composantesCompletes ? { formule, variante, optionIds, metierData, quantite: nbVehicules, composantes } : undefined),
-    [formule, variante, optionIds, metierData, nbVehicules, composantesCompletes, composantes],
+    () => (formule && composantesCompletes
+      ? { formule, variante, optionIds, metierData, quantite: nbVehicules, composantes, ...(avecAbonnement && abonnement ? { abonnementId: abonnement.id } : {}) }
+      : undefined),
+    [formule, variante, optionIds, metierData, nbVehicules, composantesCompletes, composantes, avecAbonnement, abonnement],
   );
   const choisirComposante = (cat: string, id: string) => {
     const choix = { ...choixComposantes, [cat]: id };
@@ -139,7 +146,18 @@ export function Reserver() {
     }).catch((e: Error) => setError(e.message));
   }, [params]);
   useEffect(() => {
-    if (selection) getQuote(selection, address).then(setQuote).catch((e: Error) => setError(e.message));
+    const id = params.get('abonnement');
+    if (!id) return;
+    mesAbonnements().then((liste) => setAbonnement(liste.find((a) => a.id === id && a.utilisable && !a.prestationPrevueLe))).catch(() => undefined);
+  }, [params]);
+  useEffect(() => {
+    if (!selection) return;
+    getQuote(selection, address).then((q) => {
+      if (!selection.abonnementId) { setQuote(q); return; }
+      // Prestation comprise dans l'abonnement : déduite du total (options et déplacement restent dus), comme le fera l'API.
+      const comprise = Math.min(tarifDe(selection.formule, selection.variante).priceCents, q.totalCents);
+      setQuote({ ...q, lines: [...q.lines, { label: 'Compris dans votre abonnement', amountCents: -comprise }], totalCents: q.totalCents - comprise, depositCents: 0 });
+    }).catch((e: Error) => setError(e.message));
   }, [selection, address]);
   useEffect(() => {
     if (step === 1 && address && dureeMin) getAvailableDays(month, dureeMin, address, formule?.id).then(setDays).catch((e: Error) => setError(e.message));
@@ -187,6 +205,7 @@ export function Reserver() {
         titre: `${SITE.brand} : ${formule?.name ?? 'rendez-vous'}${composantes.length ? ` (${composantes.map((c) => c.name).join(' + ')})` : ''}`, debut: new Date(start).toISOString(), fin, lieu: address.label,
         details: `Nettoyage à domicile. Pour déplacer ou annuler : lien de l'e-mail de confirmation ou « Mon espace ».`,
       });
+      if (selection.abonnementId) noterPrestationDemo(start);
       if (resultat.paymentUrl?.startsWith('/')) {
         navigate(resultat.paymentUrl);
       } else if (resultat.paymentUrl) {
@@ -236,6 +255,13 @@ export function Reserver() {
         <div className={styles.etapes}>
           <div id="resa-etape-0" className={styles.ancre}>
           <StepCard number={1} title={ETAPES[0]} status={statut(0)} summary={resumePrestation} onEdit={() => etapeSuivante(0)}>
+            {abonnement && (
+              <p className={avecAbonnement ? styles.abonnement : styles.info} role="status">
+                {avecAbonnement
+                  ? `Compris dans votre abonnement « ${abonnement.offre.nom} » : ${abonnement.offre.prestation} est déduit du total. Les options et le déplacement éventuels restent à régler.`
+                  : `Votre abonnement comprend « ${abonnement.offre.prestation} » pour un véhicule : choisissez cette formule pour l’utiliser.`}
+              </p>
+            )}
             <ChoiceChips label="Prestation" value={category} onChange={(v) => {
                 // Une seule formule combinée dans la catégorie (ex. formule complète) : déjà choisie, place au choix des formules.
                 const seules = formules.filter((x) => x.category === v);

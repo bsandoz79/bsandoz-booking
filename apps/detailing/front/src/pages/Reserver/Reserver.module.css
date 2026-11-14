@@ -74,3 +74,6 @@
 /* Formule combinée : rappel de la remise une fois les formules choisies. */
 .remiseCombinee { margin: .5rem 0 0; color: #13794a; font-weight: 700; }
 
+/* Prestation de l'abonnement : rappel en tête de la première étape. */
+.abonnement { margin: 0 0 1rem; padding: .75rem 1rem; border-radius: var(--bs-radius-md); background: #e3f4ea; color: #0f5132; font-weight: 600; }
+

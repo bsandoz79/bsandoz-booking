@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button, Field } from '@bsandoz/ui';
+import { mesAbonnements, offresAbonnement, parPeriode, resilier, souscrire, type MonAbonnement, type OffreAbonnement } from '../../services/abonnements';
 import { CarteFidelite } from '../../components/CarteFidelite/CarteFidelite';
 import { CarteRendezVous } from '../../components/CarteRendezVous/CarteRendezVous';
 import type { Formule } from '../../data/demo';
@@ -163,6 +164,8 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
           : <div className={styles.liste}>{aVenir.map(carte)}</div>}
       </Rubrique>
 
+      <RubriqueAbonnement />
+
       <Rubrique id="en-bref" titre="En bref">
         <ul className={styles.panneau} aria-label="En bref">
           <Ligne element="li" icone="calendrier" titre="Prochain rendez-vous" valeur={aVenir[0] ? jourCourt(aVenir[0].start) : 'Aucun'} />
@@ -239,6 +242,110 @@ function Tableau({ onDeconnecte }: { onDeconnecte: (message: string) => void }) 
         </div>
       </Rubrique>
     </main>
+  );
+}
+
+const dateCourte = (iso: string) => new Date(iso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+/**
+ * « Mon abonnement » : l'abonnement en cours (prestation de la période réservée ou à réserver, prochain prélèvement,
+ * résiliation), sinon les offres proposées. Une prestation par période : non réservée à temps, elle est perdue.
+ * Masquée s'il n'y a ni abonnement ni offre.
+ */
+function RubriqueAbonnement() {
+  const [params] = useSearchParams();
+  const retour = params.get('abonnement');
+  const [offres, setOffres] = useState<OffreAbonnement[]>([]);
+  const [abonnements, setAbonnements] = useState<MonAbonnement[]>([]);
+  const [resiliation, setResiliation] = useState(false);
+  const [erreur, setErreur] = useState('');
+  const [message, setMessage] = useState('');
+  const [envoi, setEnvoi] = useState<string>();
+
+  const charger = useCallback(() => {
+    offresAbonnement().then(setOffres).catch(() => setOffres([]));
+    mesAbonnements().then(setAbonnements).catch(() => setAbonnements([]));
+  }, []);
+  useEffect(() => { charger(); }, [charger]);
+
+  const enCours = abonnements.find((a) => a.statut !== 'termine');
+  if (!enCours && offres.length === 0) return null;
+
+  const sAbonner = async (o: OffreAbonnement) => {
+    setErreur('');
+    setEnvoi(o.id);
+    try {
+      const url = await souscrire(o.id);
+      if (url.startsWith('/')) { window.history.replaceState(null, '', url); setMessage('Votre abonnement est actif.'); charger(); } else window.location.assign(url);
+    } catch (e) {
+      setErreur((e as Error).message);
+    } finally {
+      setEnvoi(undefined);
+    }
+  };
+  const confirmerResiliation = async () => {
+    if (!enCours) return;
+    setErreur('');
+    try {
+      await resilier(enCours.id);
+      setResiliation(false);
+      setMessage(`Abonnement résilié : il reste actif jusqu’au ${enCours.finPeriode ? dateCourte(enCours.finPeriode) : 'terme de la période payée'}.`);
+      charger();
+    } catch (e) {
+      setErreur((e as Error).message);
+    }
+  };
+
+  return (
+    <Rubrique id="abonnement" titre="Mon abonnement"
+      description={enCours ? 'Une prestation comprise par période, prélevée automatiquement. Sans engagement.'
+        : 'Une prestation comprise à chaque période, prélevée automatiquement. Non réservée dans sa période, elle est perdue. Sans engagement, résiliable à tout moment.'}>
+      {retour === 'ok' && !message && <p className={styles.ok} role="status">Merci ! Votre abonnement est en cours d’activation : il apparaît ici dès le paiement confirmé.</p>}
+      {retour === 'annule' && !message && !enCours && <p className={styles.aide} role="status">Abonnement non souscrit : rien n’a été prélevé.</p>}
+      {message && <p className={styles.ok} role="status">{message}</p>}
+      {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
+      {enCours ? (
+        <div className={styles.panneau}>
+          <Ligne icone="historique" titre={enCours.offre.nom} texte={`${enCours.offre.prestation}, ${enCours.offre.periodiciteLibelle}`}
+            valeur={`${formatEuros(enCours.offre.prixCents)} ${parPeriode(enCours.offre.periodicite)}`} />
+          {enCours.statut === 'impaye' ? (
+            <Ligne icone="carteBancaire" titre="Prélèvement refusé" texte="Le paiement est retenté automatiquement. En attendant, la prestation comprise n’est plus réservable : contactez-nous si besoin." accent />
+          ) : enCours.prestationPrevueLe ? (
+            <Ligne icone="calendrier" titre="Prestation de cette période" texte="Déjà réservée." valeur={dateCourte(enCours.prestationPrevueLe)} />
+          ) : (
+            <Ligne icone="calendrier" titre="Prestation de cette période"
+              texte={enCours.periodeFin ? `À réserver avant le ${dateCourte(enCours.periodeFin)}, sinon elle est perdue.` : 'À réserver.'}
+              action={enCours.utilisable ? <Link to={`/reserver?formule=${encodeURIComponent(enCours.offre.prestationId)}&abonnement=${encodeURIComponent(enCours.id)}`} className="btn">Réserver</Link> : undefined} />
+          )}
+          {enCours.finPeriode && (
+            <Ligne icone="euro" titre={enCours.resiliationDemandee ? 'Fin de l’abonnement' : 'Prochain prélèvement'} valeur={dateCourte(enCours.finPeriode)} />
+          )}
+          {!enCours.resiliationDemandee && (
+            resiliation ? (
+              <div className={styles.ligne}>
+                <p><strong>Résilier votre abonnement ?</strong> Il reste actif jusqu’au {enCours.finPeriode ? dateCourte(enCours.finPeriode) : 'terme de la période payée'}, puis plus rien n’est prélevé.</p>
+                <div className={styles.actions}>
+                  <button type="button" className={styles.boutonDanger} onClick={confirmerResiliation}>Oui, résilier</button>
+                  <Button variant="ghost" onClick={() => setResiliation(false)}>Non, garder</Button>
+                </div>
+              </div>
+            ) : (
+              <Ligne icone="sortie" titre="Résilier" texte="Sans frais, effet à la fin de la période payée."
+                action={<button type="button" className={styles.boutonContour} onClick={() => setResiliation(true)}>Résilier</button>} />
+            )
+          )}
+        </div>
+      ) : (
+        <ul className={styles.panneau} aria-label="Abonnements proposés">
+          {offres.map((o) => (
+            <Ligne key={o.id} element="li" icone="historique" titre={o.nom}
+              texte={`${o.prestation}, ${o.periodiciteLibelle}.${o.description ? ` ${o.description}` : ''}`}
+              valeur={`${formatEuros(o.prixCents)} ${parPeriode(o.periodicite)}`}
+              action={<Button onClick={() => { void sAbonner(o); }} loading={envoi === o.id} aria-label={`S’abonner : ${o.nom}`}>S’abonner</Button>} />
+          ))}
+        </ul>
+      )}
+    </Rubrique>
   );
 }
 

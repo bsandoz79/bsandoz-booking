@@ -210,6 +210,8 @@ final class GererRendezVousPro
             'enLigneCents' => $r->aPayerEnLigne()->cents,
             'surPlaceCents' => $r->resteSurPlace()->cents,
             'moyenSurPlace' => $r->moyenSurPlace()?->value,
+            'abonnement' => $r->abonnementId() !== null,
+            'remiseAbonnementCents' => $r->remiseAbonnement()->cents,
             'encaisseLe' => $r->encaisseLe()?->setTimezone($utc)->format(DATE_ATOM),
             'travelFeeCents' => $r->travelFee()->cents,
             'notes' => $r->notes(),
