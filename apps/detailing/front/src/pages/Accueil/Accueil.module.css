@@ -205,3 +205,9 @@ blockquote.card { margin: 0; }
 @media (prefers-reduced-motion: reduce) {
   .mot, .heroPhoto img, .args li, .impulsion { animation: none; }
 }
+
+/* Vidéo de présentation, sous « Comment ça marche » : 16:9, coins arrondis, légende discrète. */
+.video { margin: 2.5rem auto 0; max-width: 960px; }
+.video video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: var(--bs-radius-md); background: var(--brand-navy); box-shadow: 0 14px 34px rgb(0 0 0 / .14); }
+.video figcaption { margin-top: .75rem; text-align: center; color: var(--bs-color-text-muted); font-size: .95rem; }
+

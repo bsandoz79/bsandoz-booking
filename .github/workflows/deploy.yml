@@ -83,12 +83,14 @@ jobs:
           # Intermédiaires Let's Encrypt absents côté serveur : chaîne reconstituée, certificat toujours vérifié.
           # TLS 1.2 : en TLS 1.3, lftp (gnutls) échoue sur le canal de données (« gnutls_record_recv: Error in parsing »).
           # Tout sauf les pages HTML d'abord, puis le reste (les pages) : une page ne pointe jamais vers un CSS/JS pas encore envoyé.
+          # Vidéos à part, comparées sur la taille seule : la date change à chaque build, elles ne sont renvoyées que si elles changent.
           sh .github/chaine-ftps.sh "$FTP_SERVER" "$RUNNER_TEMP/chaine-ftps.pem"
           lftp -u "$FTP_USERNAME,$FTP_PASSWORD" "$FTP_SERVER" -e "
             set ssl:ca-file $RUNNER_TEMP/chaine-ftps.pem; set ssl:priority NORMAL:-VERS-TLS1.3; set ftp:ssl-force true; set ftp:ssl-protect-data true;
             set net:max-retries 3; set net:reconnect-interval-base 5; set net:timeout 30;
-            mirror --reverse --no-perms --parallel=4 --verbose=1 --exclude-glob *.html apps/detailing/front/dist/ $FTP_DIR;
-            mirror --reverse --no-perms --parallel=4 --verbose=1 apps/detailing/front/dist/ $FTP_DIR;
+            mirror --reverse --no-perms --ignore-time --verbose=1 apps/detailing/front/dist/videos/ $FTP_DIR/videos;
+            mirror --reverse --no-perms --parallel=4 --verbose=1 --exclude ^videos/ --exclude-glob *.html apps/detailing/front/dist/ $FTP_DIR;
+            mirror --reverse --no-perms --parallel=4 --verbose=1 --exclude ^videos/ apps/detailing/front/dist/ $FTP_DIR;
             bye"
 
   api:

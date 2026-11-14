@@ -210,6 +210,14 @@ export function Accueil() {
                 </li>
               ))}
             </ol>
+            {/* La réservation en vidéo (30 s, sans son) : rien n'est téléchargé avant le clic sur « lecture ». */}
+            <figure className={styles.video} data-apparition>
+              <video controls preload="none" playsInline muted width={1920} height={1080} poster="/videos/perfect-clean-affiche.jpg"
+                aria-label="Vidéo : réserver un nettoyage Perfect Clean en quelques étapes">
+                <source src="/videos/perfect-clean.mp4" type="video/mp4" />
+              </video>
+              <figcaption>En vidéo : choisissez votre formule, votre créneau, et c’est réservé (30 secondes, sans son).</figcaption>
+            </figure>
           </div>
         </section>
         </Zone>
