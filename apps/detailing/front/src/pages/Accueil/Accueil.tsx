@@ -154,7 +154,7 @@ export function Accueil() {
             <p className={styles.intro}>{categorie.description}</p>
             <div className={styles.cartes}>
               {formulesOnglet.map((f, i) => (
-                <CarteFormule key={f.id} formule={f} enEdition={edition} rang={i}
+                <CarteFormule key={f.id} formule={f} formules={formules} enEdition={edition} rang={i}
                   crayon={prestationPro(f.id) && <Crayon libelle={`Modifier ${f.name}`} onClick={() => setEnEdition({ prestation: prestationPro(f.id)! })} />} />
               ))}
             </div>
@@ -381,5 +381,6 @@ function versFormule(p: PrestationPro): Formule {
   return {
     id: p.id!, category: p.categoryId ?? '', name: p.name, description: p.description, basePriceCents: p.basePriceCents, baseDurationMin: p.baseDurationMin,
     tarifs: p.tarifs, optionIds: p.optionIds, occupePlage: p.occupePlage, badge: p.badge ?? null, remiseUniteCents: p.remiseUniteCents ?? 0,
+    composition: p.composition ?? [], remiseCompositionCents: p.remiseCompositionCents ?? 0,
   };
 }

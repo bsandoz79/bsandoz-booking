@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { formatEuros } from '@bsandoz/ui';
-import { prixMin, type Formule } from '../../data/demo';
+import { CATEGORIES, estCombinee, prixMin, type Formule } from '../../data/demo';
 import { detailPrestation } from '../../data/vitrine';
 import { Icone } from '../../components/Icone/Icone';
 import styles from './Accueil.module.css';
@@ -10,19 +10,28 @@ import styles from './Accueil.module.css';
  * Carte d'une formule telle qu'affichée sur l'accueil : badge, prix « à partir de », durée, ce qui est compris (avec
  * étiquettes) et bouton « Choisir ». Sert aussi d'aperçu en direct dans le catalogue de l'espace pro (`apercu`).
  */
-export function CarteFormule({ formule: f, enEdition = false, crayon, apercu = false, rang = 0 }: {
+export function CarteFormule({ formule: f, enEdition = false, crayon, apercu = false, rang = 0, formules = [] }: {
   formule: Formule; enEdition?: boolean; crayon?: ReactNode; apercu?: boolean;
+  /** Toutes les formules : prix « à partir de » d'une formule combinée (la moins chère de chaque catégorie). */
+  formules?: Formule[];
   /** Place dans la liste : décale l'apparition (cascade). */
   rang?: number;
 }) {
   const detail = detailPrestation(f.description);
+  const combinee = estCombinee(f);
+  const nomsCategories = (f.composition ?? []).map((c) => CATEGORIES.find((x) => x.value === c)?.label.replace(/^Nettoyage /, '') ?? c);
   return (
     <article className={`${styles.formule} ${f.badge ? styles.vedette : ''} ${enEdition || apercu ? styles.enEdition : ''}`}
       {...(apercu ? {} : { 'data-apparition': true, style: { '--delai': `${rang * 90}ms` } as CSSProperties })}>
       {f.badge && <span className={styles.badge}>{f.badge}</span>}
       {crayon && <div className={styles.crayonCarte}>{crayon}</div>}
       <h3>{f.name || 'Nom de la formule'}</h3>
-      <p className={styles.prix}>{formatEuros(prixMin(f))}</p>
+      <p className={styles.prix}>{combinee && <span className={styles.aPartirDe}>à partir de </span>}{formatEuros(prixMin(f, formules))}</p>
+      {combinee && (
+        <p className={styles.combinaison}>
+          {`${nomsCategories.join(' + ')} au choix`.replace(/^./, (c) => c.toUpperCase())}{f.remiseCompositionCents ? <strong> · {formatEuros(f.remiseCompositionCents)} de moins</strong> : null}
+        </p>
+      )}
       {detail.duree && <p className={styles.duree}><Icone nom="horloge" taille={16} /> {detail.duree}</p>}
       {detail.inclus.length > 0 ? (
         <>

@@ -32,6 +32,8 @@ export interface Selection {
   /** Nombre de véhicules (même formule pour tous) ; 1 par défaut. */
   quantite?: number;
   metierData: Record<string, unknown>;
+  /** Formule combinée : la formule choisie dans chaque catégorie. */
+  composantes?: Formule[];
 }
 
 export interface Contact { firstname: string; lastname: string; email: string; phone: string; notes: string }
@@ -120,19 +122,31 @@ export async function estimerDeplacement(lat: number, lng: number): Promise<Esti
 }
 
 export async function getQuote(selection: Selection, address?: Address): Promise<Quote> {
-  const { formule, variante, optionIds, metierData, quantite = 1 } = selection;
+  const { formule, variante, optionIds, metierData, quantite = 1, composantes = [] } = selection;
   if (!isDemo()) {
     return http('/booking/quote', {
       method: 'POST',
-      body: JSON.stringify({ prestationId: formule.id, variante, optionIds, metierData, lat: address?.lat, lng: address?.lng, quantite }),
+      body: JSON.stringify({ prestationId: formule.id, variante, optionIds, metierData, lat: address?.lat, lng: address?.lng, quantite, composantes: composantes.map((c) => c.id) }),
     });
   }
-  // Démo : même calcul que l'API (formule × véhicules, chaque option comptée autant de fois qu'elle est choisie).
-  const tarif = tarifDe(formule, variante);
+  // Démo : même calcul que l'API (formule × véhicules, chaque option comptée autant de fois qu'elle est choisie ;
+  // formule combinée : une ligne par formule choisie, puis la remise).
   const fois = (label: string, n: number) => (n > 1 ? `${label} × ${n}` : label);
   const opts = OPTIONS.map((o) => ({ o, n: optionIds.filter((id) => id === o.id).length })).filter((x) => x.n > 0);
+  let tarif = tarifDe(formule, variante);
+  let lignesFormule = [{ label: fois(formule.name, quantite), amountCents: tarif.priceCents * quantite - Math.min(formule.remiseUniteCents ?? 0, tarif.priceCents) * (quantite - 1) }];
+  if (composantes.length > 0) {
+    const tarifs = composantes.map((c) => tarifDe(c, variante));
+    const somme = tarifs.reduce((s, t) => s + t.priceCents, 0);
+    const remise = Math.min(formule.remiseCompositionCents ?? 0, somme);
+    tarif = { priceCents: somme - remise, durationMin: tarifs.reduce((s, t) => s + t.durationMin, 0) };
+    lignesFormule = [
+      ...composantes.map((c, i) => ({ label: fois(c.name, quantite), amountCents: tarifs[i].priceCents * quantite })),
+      ...(remise > 0 ? [{ label: fois(`Remise ${formule.name}`, quantite), amountCents: -remise * quantite }] : []),
+    ];
+  }
   const lines = [
-    { label: fois(formule.name, quantite), amountCents: tarif.priceCents * quantite - Math.min(formule.remiseUniteCents ?? 0, tarif.priceCents) * (quantite - 1) },
+    ...lignesFormule,
     ...opts.map(({ o, n }) => ({ label: fois(o.name, n), amountCents: o.priceCents * n })),
   ];
   let travelFeeCents = 0;
@@ -224,6 +238,7 @@ export async function reserve(selection: Selection, start: string, address: Addr
       optionIds: selection.optionIds,
       quantite: selection.quantite ?? 1,
       metierData: selection.metierData,
+      ...(selection.composantes?.length ? { composantes: selection.composantes.map((c) => c.id) } : {}),
       start,
       address,
       ...contact,

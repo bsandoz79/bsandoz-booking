@@ -39,7 +39,7 @@ describe('client API', () => {
     const [url, init] = appel();
     expect(url).toBe('https://api.exemple.test/api/v1/booking/quote');
     expect(init.method).toBe('POST');
-    expect(JSON.parse(String(init.body))).toEqual({ prestationId: 'p1', variante: 'suv', optionIds: ['o1'], metierData: { category: 'auto', vehicleType: 'suv' }, lat: 49.89, lng: 2.29, quantite: 1 });
+    expect(JSON.parse(String(init.body))).toEqual({ prestationId: 'p1', variante: 'suv', optionIds: ['o1'], metierData: { category: 'auto', vehicleType: 'suv' }, lat: 49.89, lng: 2.29, quantite: 1, composantes: [] });
   });
 
   it('transmet la prestation pour les jours et les créneaux (durée incertaine)', async () => {

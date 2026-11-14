@@ -70,3 +70,7 @@
 }
 .position { display: flex; flex-direction: column; align-items: flex-start; gap: .35rem; }
 .position p { margin: 0; }
+
+/* Formule combinée : rappel de la remise une fois les formules choisies. */
+.remiseCombinee { margin: .5rem 0 0; color: #13794a; font-weight: 700; }
+

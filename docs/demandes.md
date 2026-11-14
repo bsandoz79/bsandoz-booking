@@ -51,6 +51,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Mouvement dès l'arrivée sur l'accueil, sobre : titre révélé mot par mot, photo en lent zoom arrière puis respiration très lente, points forts un à un, une seule impulsion sur « Réserver un créneau » ; tout reste immobile si « moins d'animations » est demandé.
 - ✅ Site installable sur le téléphone comme une application : « Installer l'application » dans le menu ☰, visible seulement avec le compte pro. L'application installée s'ouvre directement sur l'Espace pro (connexion si besoin). Sur Android, la fenêtre d'installation du navigateur s'ouvre ; sur iPhone, une fenêtre explique les deux gestes (Partager, puis « Sur l'écran d'accueil »). Le bouton disparaît une fois le site installé. Raccourcis sur l'icône (appui long) : Espace pro, Site public, Réserver.
 - ✅ Deux vidéos de présentation pour le site, sans jargon ni son, en 1080p horizontal : clients de Perfect Clean (31 s : formules, réservation, créneaux, fidélité) et artisans (43 s : journée, itinéraire, planning, encaissement et QR code, factures, site modifiable). Fichiers remis à part, non versionnés (14 et 19 Mo).
+- ✅ Formule complète : nouvelle catégorie où le client choisit sa formule intérieur et sa formule extérieur (n'importe lesquelles), 15 € de moins sur le total, la rénovation des phares (et le désodorisant) en option, en plus des options des formules choisies. Durée : les deux formules ; facture et planning détaillent les formules choisies et la remise. Réglable dans l'espace pro (« Formule combinée » : catégories et remise).
 - ✅ Vidéo de l'accueil lancée toute seule (sans son, en boucle) quand elle arrive à l'écran, en pause quand on la quitte ; pas de lancement automatique si « moins d'animations » est demandé.
 - ✅ Vidéo de l'accueil affichée à 6 min 55 au lieu de 30 s (dernière image répétée par erreur au montage) : corrigée, 30 s et 3 Mo au lieu de 14 Mo (vidéo artisans : 43 s, 4 Mo).
 - ✅ Vidéo clients sur l'accueil, sous « Comment ça marche » : image d'aperçu, rien n'est téléchargé avant « lecture ». Envoyée à part au déploiement (seulement si elle change).
@@ -114,7 +115,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ⏳ Photos des réalisations (avant / après), vrais produits (photos, prix, stock).
 
 ### Serveur
-- ⏳ Lancer `sh deploy/apres-envoi.sh` après chaque déploiement de l'API (migrations en attente : catégorie des produits, date de réservation, ordre des options, encaissement sur place).
+- ⏳ Lancer `sh deploy/apres-envoi.sh` après chaque déploiement de l'API (migrations en attente : catégorie des produits, date de réservation, ordre des options, encaissement sur place, formules combinées) ; puis `php bin/console detailing:demo:charger --mettre-a-jour` pour créer la formule complète.
 - ⏳ `.env.local` de l'API : clés Stripe (paiement en ligne réel et QR code d'encaissement sur place), `PRO_EMAIL`, `BSANDOZ_ICAL_SECRET` (agenda du pro, 32 caractères au moins).
 - ⏳ Supprimer les dossiers « "demo.bsandoz.fr » et « "api.demo.bsandoz.fr » (créés par erreur).
 

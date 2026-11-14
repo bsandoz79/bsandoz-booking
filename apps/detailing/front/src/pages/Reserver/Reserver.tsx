@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { AddressInput, Button, Calendar, ChoiceChips, Dialog, PriceSummary, SlotPicker, StepCard, type StepCardStatus, formatEuros } from '@bsandoz/ui';
 import type { Category, Formule, OptionItem, ProduitItem } from '../../data/demo';
-import { CATEGORIES, tarifDe } from '../../data/demo';
+import { CATEGORIES, estCombinee, optionsProposees, prixMin, tarifDe } from '../../data/demo';
 import type { Address, Quote, Selection, Slot } from '../../services/api';
 import { adresseDePosition, getAvailableDays, getCatalog, getQuote, getSlots, maPosition, reserve, searchAddress, type ModePaiement } from '../../services/api';
 import { PAGES_SEO } from '../../seo/donnees';
@@ -44,6 +44,8 @@ export function Reserver() {
   const [proposition, setProposition] = useState<'jamais' | 'ouverte' | 'vue'>('jamais');
   const [category, setCategory] = useState<Category>();
   const [formuleId, setFormuleId] = useState<string>();
+  // Formule combinée (ex. formule complète) : la formule choisie dans chaque catégorie (catégorie → formule).
+  const [choixComposantes, setChoixComposantes] = useState<Record<string, string>>({});
   // Plusieurs véhicules : même formule pour tous, options choisies véhicule par véhicule.
   const [nbVehicules, setNbVehicules] = useState(1);
   const [optionsParVehicule, setOptionsParVehicule] = useState<string[][]>([[]]);
@@ -87,8 +89,13 @@ export function Reserver() {
   const variante = '';
   const formule = useMemo(() => formules.find((f) => f.id === formuleId), [formules, formuleId]);
   const formulesVisibles = useMemo(() => formules.filter((f) => f.category === category), [formules, category]);
-  // Dans l'ordre choisi pour cette formule (espace pro, formulaire de la formule).
-  const optionsVisibles = (formule?.optionIds ?? []).map((id) => options.find((o) => o.id === id)).filter((o): o is OptionItem => !!o);
+  const combinee = !!formule && estCombinee(formule);
+  const composantes = useMemo(() => (formule?.composition ?? [])
+    .map((cat) => formules.find((f) => f.id === choixComposantes[cat])).filter((f): f is Formule => !!f), [formule, formules, choixComposantes]);
+  // Formule combinée : prête quand une formule est choisie dans chaque catégorie.
+  const composantesCompletes = !combinee || composantes.length === (formule?.composition?.length ?? 0);
+  // Dans l'ordre choisi pour cette formule (espace pro), puis celles des formules choisies d'une formule combinée.
+  const optionsVisibles = (formule ? optionsProposees(formule, composantes) : []).map((id) => options.find((o) => o.id === id)).filter((o): o is OptionItem => !!o);
   const optionIds = useMemo(() => optionsParVehicule.flat(), [optionsParVehicule]);
   const metierData = useMemo<Record<string, unknown>>(() => {
     if (nbVehicules === 1) return { category };
@@ -97,9 +104,18 @@ export function Reserver() {
     return { category, vehicules: optionsParVehicule.map((ids, i) => `Véhicule ${i + 1} : ${ids.length ? ids.map(nom).join(', ') : 'sans option'}`) };
   }, [category, nbVehicules, optionsParVehicule, options]);
   const selection = useMemo<Selection | undefined>(
-    () => (formule ? { formule, variante, optionIds, metierData, quantite: nbVehicules } : undefined),
-    [formule, variante, optionIds, metierData, nbVehicules],
+    () => (formule && composantesCompletes ? { formule, variante, optionIds, metierData, quantite: nbVehicules, composantes } : undefined),
+    [formule, variante, optionIds, metierData, nbVehicules, composantesCompletes, composantes],
   );
+  const choisirComposante = (cat: string, id: string) => {
+    const choix = { ...choixComposantes, [cat]: id };
+    changerPrestation(() => { setChoixComposantes(choix); viderOptions(); });
+    // Toutes les formules choisies : les options, s'il y en a ; sinon, direction le créneau.
+    if ((formule?.composition ?? []).every((c) => choix[c])) {
+      const avecOptions = formule ? optionsProposees(formule, (formule.composition ?? []).map((c) => formules.find((x) => x.id === choix[c])).filter((x): x is Formule => !!x)) : [];
+      if (options.some((o) => avecOptions.includes(o.id))) allerA('resa-options'); else etapeSuivante(1);
+    }
+  };
   const viderOptions = (n = nbVehicules) => setOptionsParVehicule(Array.from({ length: n }, () => []));
   const changerNbVehicules = (n: number) => {
     setNbVehicules(n);
@@ -119,7 +135,7 @@ export function Reserver() {
       setOptions(c.options);
       setProduits(c.produits);
       const f = c.formules.find((x) => x.id === choisie);
-      if (f) { setCategory(f.category as Category); setFormuleId(f.id); }
+      if (f) { setCategory(f.category as Category); setFormuleId(f.id); setChoixComposantes({}); }
     }).catch((e: Error) => setError(e.message));
   }, [params]);
   useEffect(() => {
@@ -146,7 +162,7 @@ export function Reserver() {
   const siretOk = /^(\d{14}|\d{10})$/.test(entreprise.siret.replace(/[\s.]/g, ''));
   const entrepriseOk = !entreprise.active || (entreprise.nom.trim() !== '' && siretOk);
   const contactOk = !!(contact.nom.trim() && /\S+@\S+\.\S+/.test(contact.email) && contact.phone.trim() && modele.trim()) && entrepriseOk;
-  const canNext = [!!(category && formule), dansZone && !!start, contactOk && terms][step];
+  const canNext = [!!(category && formule && composantesCompletes), dansZone && !!start, contactOk && terms][step];
 
   const next = async () => {
     setError('');
@@ -168,7 +184,7 @@ export function Reserver() {
       // Pour proposer l'ajout à l'agenda sur la page de confirmation (aussi au retour du paiement en ligne).
       const fin = new Date(new Date(start).getTime() + (dureeMin ?? 60) * 60000).toISOString();
       memoriserReservation(resultat.reservationId, {
-        titre: `${SITE.brand} : ${formule?.name ?? 'rendez-vous'}`, debut: new Date(start).toISOString(), fin, lieu: address.label,
+        titre: `${SITE.brand} : ${formule?.name ?? 'rendez-vous'}${composantes.length ? ` (${composantes.map((c) => c.name).join(' + ')})` : ''}`, debut: new Date(start).toISOString(), fin, lieu: address.label,
         details: `Nettoyage à domicile. Pour déplacer ou annuler : lien de l'e-mail de confirmation ou « Mon espace ».`,
       });
       if (resultat.paymentUrl?.startsWith('/')) {
@@ -190,7 +206,7 @@ export function Reserver() {
 
   const statut = (i: number): StepCardStatus => (i < step ? 'done' : i === step ? 'active' : 'upcoming');
   const resumePrestation = [
-    formule && (nbVehicules > 1 ? `${formule.name} × ${nbVehicules} véhicules` : formule.name),
+    formule && `${formule.name}${composantes.length ? ` (${composantes.map((c) => c.name).join(' + ')})` : ''}${nbVehicules > 1 ? ` × ${nbVehicules} véhicules` : ''}`,
     ...options.map((o) => ({ o, n: optionIds.filter((id) => id === o.id).length })).filter((x) => x.n > 0)
       .map(({ o, n }) => (n > 1 ? `${o.name.toLowerCase()} × ${n}` : o.name.toLowerCase())),
   ].filter(Boolean).join(', ');
@@ -220,7 +236,13 @@ export function Reserver() {
         <div className={styles.etapes}>
           <div id="resa-etape-0" className={styles.ancre}>
           <StepCard number={1} title={ETAPES[0]} status={statut(0)} summary={resumePrestation} onEdit={() => etapeSuivante(0)}>
-            <ChoiceChips label="Prestation" value={category} onChange={(v) => { changerPrestation(() => { setCategory(v as Category); setFormuleId(undefined); viderOptions(); }); allerA('resa-formules'); }}
+            <ChoiceChips label="Prestation" value={category} onChange={(v) => {
+                // Une seule formule combinée dans la catégorie (ex. formule complète) : déjà choisie, place au choix des formules.
+                const seules = formules.filter((x) => x.category === v);
+                const unique = seules.length === 1 && estCombinee(seules[0]) ? seules[0].id : undefined;
+                changerPrestation(() => { setCategory(v as Category); setFormuleId(unique); setChoixComposantes({}); viderOptions(); });
+                allerA(unique ? 'resa-composition' : 'resa-formules');
+              }}
               choices={CATEGORIES.map((c) => ({ value: c.value, label: c.label }))} />
             <div className={styles.compteur}>
               <span id="label-vehicules" className={styles.compteurLibelle}>Nombre de véhicules</span>
@@ -240,19 +262,47 @@ export function Reserver() {
                   {formulesVisibles.map((f) => {
                     const tarif = tarifDe(f, variante);
                     const choisie = f.id === formuleId;
+                    const fCombinee = estCombinee(f);
                     return (
                       <div key={f.id} className={styles.formule}>
                         <label className={`${styles.formuleLigne} ${choisie ? styles.formuleChoisie : ''}`}>
                           <input type="radio" name="formule" checked={choisie} onChange={() => {
-                            changerPrestation(() => { setFormuleId(f.id); viderOptions(); });
-                            // Des options à proposer : on les montre ; sinon, direction le créneau.
-                            if (options.some((o) => f.optionIds.includes(o.id))) allerA('resa-options'); else etapeSuivante(1);
+                            changerPrestation(() => { setFormuleId(f.id); setChoixComposantes({}); viderOptions(); });
+                            // Formule combinée : le choix des formules ; des options à proposer : on les montre ; sinon, le créneau.
+                            if (fCombinee) allerA('resa-composition');
+                            else if (options.some((o) => f.optionIds.includes(o.id))) allerA('resa-options'); else etapeSuivante(1);
                           }} />
                           <span className={styles.formuleNom}>{f.name}{f.badge && <span className={styles.formuleBadge}>{f.badge}</span>}</span>
-                          <span className={styles.formulePrix}>{formatEuros(tarif.priceCents)}</span>
-                          <span className={styles.formuleDuree}>Environ {duree(tarif.durationMin)} sur place</span>
+                          <span className={styles.formulePrix}>{fCombinee ? `dès ${formatEuros(prixMin(f, formules))}` : formatEuros(tarif.priceCents)}</span>
+                          <span className={styles.formuleDuree}>
+                            {fCombinee
+                              ? `Une formule au choix par catégorie${f.remiseCompositionCents ? `, ${formatEuros(f.remiseCompositionCents)} de moins` : ''}`
+                              : `Environ ${duree(tarif.durationMin)} sur place`}
+                          </span>
                         </label>
-                        {choisie && optionsVisibles.length > 0 && (
+                        {choisie && fCombinee && (
+                          <div id="resa-composition" className={`${styles.options} ${styles.ancre}`}>
+                            {(f.composition ?? []).map((cat) => {
+                              const nomCategorie = CATEGORIES.find((c) => c.value === cat)?.label.replace(/^Nettoyage /, '') ?? cat;
+                              return (
+                                <fieldset key={cat} className={styles.vehicule}>
+                                  <legend className={styles.optionsTitre}>Votre formule {nomCategorie}</legend>
+                                  {formules.filter((x) => x.category === cat && !estCombinee(x)).map((x) => (
+                                    <label key={x.id} className={styles.optionLigne}>
+                                      <input type="radio" name={`composante-${cat}`} checked={choixComposantes[cat] === x.id} onChange={() => choisirComposante(cat, x.id)} />
+                                      <span>{x.name}</span>
+                                      <span className={styles.optionPrix}>{formatEuros(tarifDe(x, variante).priceCents)}</span>
+                                    </label>
+                                  ))}
+                                </fieldset>
+                              );
+                            })}
+                            {composantesCompletes && f.remiseCompositionCents ? (
+                              <p className={styles.remiseCombinee}>Formule complète : {formatEuros(f.remiseCompositionCents)} de moins sur le total.</p>
+                            ) : null}
+                          </div>
+                        )}
+                        {choisie && composantesCompletes && optionsVisibles.length > 0 && (
                           <div id="resa-options" className={`${styles.options} ${styles.ancre}`}>
                             <p className={styles.optionsTitre}>En plus, si besoin</p>
                             {optionsParVehicule.map((choix, v) => (

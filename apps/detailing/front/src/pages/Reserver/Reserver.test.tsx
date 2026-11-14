@@ -37,6 +37,25 @@ describe('Parcours de réservation', () => {
     expect(bouton('Choisir le créneau')).toBeEnabled();
   });
 
+  it('formule complète : une formule intérieur et une extérieur au choix, 15 € de moins, phares en option', async () => {
+    render(<MemoryRouter><Reserver /></MemoryRouter>);
+    await userEvent.click(screen.getByRole('radio', { name: 'Formule complète' }));
+    // Seule formule de la catégorie : déjà choisie, il reste à composer.
+    expect(bouton('Choisir le créneau')).toBeDisabled();
+    const interieur = screen.getByRole('group', { name: 'Votre formule intérieur' });
+    await userEvent.click(within(interieur).getByRole('radio', { name: /Intérieur Signature/ }));
+    expect(bouton('Choisir le créneau')).toBeDisabled();
+    await userEvent.click(within(screen.getByRole('group', { name: 'Votre formule extérieur' })).getByRole('radio', { name: /Extérieur Éclat/ }));
+
+    // 69 € + 25 € − 15 € ; options de la formule complète et des formules choisies.
+    expect(await screen.findByText('Remise Formule complète')).toBeInTheDocument();
+    expect(screen.getAllByText(/79,00/).length).toBeGreaterThan(0);
+    await userEvent.click(screen.getByRole('checkbox', { name: /Rénovation des phares/ }));
+    expect(screen.getByRole('checkbox', { name: /Poils d’animaux/ })).toBeInTheDocument();
+    expect((await screen.findAllByText(/124,00/)).length).toBeGreaterThan(0);
+    expect(bouton('Choisir le créneau')).toBeEnabled();
+  });
+
   it('passe tout seul à « Où et quand ? » quand la formule n’a pas d’option à proposer', async () => {
     render(<MemoryRouter><Reserver /></MemoryRouter>);
     await userEvent.click(screen.getByRole('radio', { name: 'Soins à la carte' }));

@@ -71,8 +71,13 @@ export function CatalogueOnglet() {
                         <div className={r.ligneTexte}>
                           <span className={r.ligneTitre}>{p.name}</span>
                           <span className={r.ligneSous}>
-                            À partir de <strong>{formatEuros(Math.min(p.basePriceCents, ...Object.values(p.tarifs).map((t) => t.priceCents)))}</strong>
-                            {' · '}{p.occupePlage ? 'demi-journée' : duree(p.baseDurationMin)}
+                            {(p.composition?.length ?? 0) > 0 ? (
+                              <>{p.composition!.map((c) => CATEGORIES.find((x) => x.value === c)?.label.replace(/^Nettoyage /, '') ?? c).join(' + ')} au choix
+                                {(p.remiseCompositionCents ?? 0) > 0 && <>, <strong>−{formatEuros(p.remiseCompositionCents!)}</strong></>}</>
+                            ) : (
+                              <>À partir de <strong>{formatEuros(Math.min(p.basePriceCents, ...Object.values(p.tarifs).map((t) => t.priceCents)))}</strong>
+                                {' · '}{p.occupePlage ? 'demi-journée' : duree(p.baseDurationMin)}</>
+                            )}
                             {p.optionIds.length > 0 ? ` · ${p.optionIds.length} option${p.optionIds.length > 1 ? 's' : ''}` : ''}
                           </span>
                           {(p.badge || !p.active || (p.remiseUniteCents ?? 0) > 0 || Object.keys(p.tarifs).length > 0) && (
@@ -197,6 +202,11 @@ export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistr
   const [prix, setPrix] = useState(initiale.id ? euros(initiale.basePriceCents) : '');
   const [duree, setDuree] = useState(String(initiale.baseDurationMin));
   const [remise, setRemise] = useState(initiale.remiseUniteCents ? euros(initiale.remiseUniteCents) : '');
+  // Formule combinée (ex. formule complète) : catégories où le client choisit une formule, et remise sur le total.
+  const [combinee, setCombinee] = useState((initiale.composition?.length ?? 0) > 0);
+  const [remiseCombinee, setRemiseCombinee] = useState(initiale.remiseCompositionCents ? euros(initiale.remiseCompositionCents) : '');
+  const composition = p.composition ?? [];
+  const basculerCategorie = (c: string) => setP({ ...p, composition: composition.includes(c) ? composition.filter((x) => x !== c) : [...composition, c] });
   const [parVehicule, setParVehicule] = useState(Object.keys(initiale.tarifs).length > 0);
   const [tarifs, setTarifs] = useState<Record<string, { prix: string; duree: string }>>(() =>
     Object.fromEntries(Object.entries(initiale.tarifs).map(([v, t]) => [v, { prix: euros(t.priceCents), duree: String(t.durationMin) }])));
@@ -218,7 +228,10 @@ export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistr
     </label>
   );
   const tarifsValides = !parVehicule || Object.values(tarifs).filter((t) => t.prix || t.duree).every((t) => prixValide(t.prix) && dureeValide(t.duree));
-  const valide = p.name.trim() !== '' && prixValide(prix) && dureeValide(duree) && tarifsValides && (remise.trim() === '' || prixValide(remise));
+  const combinaisonValide = !combinee || (composition.length >= 2 && (remiseCombinee.trim() === '' || prixValide(remiseCombinee)));
+  // Formule combinée : prix et durée viennent des formules choisies par le client.
+  const valide = p.name.trim() !== '' && (combinee || (prixValide(prix) && dureeValide(duree))) && tarifsValides
+    && (remise.trim() === '' || prixValide(remise)) && combinaisonValide;
 
   const soumettre = async (e: FormEvent) => {
     e.preventDefault();
@@ -233,7 +246,12 @@ export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistr
     setErreur('');
     setEnCours(true);
     try {
-      onEnregistree(await enregistrerPrestation({ ...p, name: p.name.trim(), tarifs: liste, basePriceCents: centimes(prix), baseDurationMin: Number(duree), remiseUniteCents: remise.trim() === '' ? 0 : centimes(remise) }));
+      onEnregistree(await enregistrerPrestation({
+        ...p, name: p.name.trim(), tarifs: combinee ? {} : liste,
+        basePriceCents: combinee ? 0 : centimes(prix), baseDurationMin: combinee ? 1 : Number(duree),
+        remiseUniteCents: remise.trim() === '' ? 0 : centimes(remise),
+        composition: combinee ? composition : [], remiseCompositionCents: combinee && remiseCombinee.trim() !== '' ? centimes(remiseCombinee) : 0,
+      }));
     } catch (err) {
       setErreur((err as Error).message);
     } finally {
@@ -246,6 +264,7 @@ export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistr
     id: initiale.id ?? 'apercu', category: p.categoryId ?? '', name: p.name, description: p.description,
     basePriceCents: prixValide(prix) ? centimes(prix) : 0, baseDurationMin: Number(duree) || 0, tarifs: {}, optionIds: p.optionIds,
     occupePlage: p.occupePlage, badge: p.badge?.trim() ? p.badge : null,
+    composition: combinee ? composition : [], remiseCompositionCents: combinee && prixValide(remiseCombinee) ? centimes(remiseCombinee) : 0,
   };
 
   const formulaire = (
@@ -258,17 +277,38 @@ export function FormulairePrestation({ initiale, options, onAnnuler, onEnregistr
             {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
         </label>
-        <Field label="Prix (€)" inputMode="decimal" required value={prix} onChange={(e) => setPrix(e.target.value)}
-          error={prix && !prixValide(prix) ? 'Montant invalide, ex. 69 ou 69,90.' : undefined} />
-        <Field label="Durée (min)" inputMode="numeric" required value={duree} onChange={(e) => setDuree(e.target.value)}
-          error={duree && !dureeValide(duree) ? 'Nombre de minutes attendu.' : undefined} />
+        {!combinee && (
+          <>
+            <Field label="Prix (€)" inputMode="decimal" required value={prix} onChange={(e) => setPrix(e.target.value)}
+              error={prix && !prixValide(prix) ? 'Montant invalide, ex. 69 ou 69,90.' : undefined} />
+            <Field label="Durée (min)" inputMode="numeric" required value={duree} onChange={(e) => setDuree(e.target.value)}
+              error={duree && !dureeValide(duree) ? 'Nombre de minutes attendu.' : undefined} />
+          </>
+        )}
       </div>
+      <Toggle label="Formule combinée (le client compose sa formule)" checked={combinee} onChange={setCombinee}
+        hint="Ex. formule complète : le client choisit une formule intérieur et une formule extérieur ; prix et durée s’additionnent, moins la remise." />
+      {combinee && (
+        <fieldset className={styles.liste} style={{ border: 0, padding: 0 }}>
+          <legend className={styles.choix}>Une formule au choix dans chacune de ces catégories</legend>
+          {CATEGORIES.filter((c) => c.value !== p.categoryId).map((c) => (
+            <label key={c.value} className={styles.caseOption}>
+              <input type="checkbox" checked={composition.includes(c.value)} onChange={() => basculerCategorie(c.value)} />
+              <span>{c.label}</span>
+            </label>
+          ))}
+          {composition.length < 2 && <p className={styles.aide}>Cochez au moins deux catégories.</p>}
+          <Field label="Remise sur le total, en € (facultatif)" value={remiseCombinee} inputMode="decimal" placeholder="Ex. 15"
+            error={remiseCombinee && !prixValide(remiseCombinee) ? 'Montant invalide, ex. 15 ou 15,50.' : undefined}
+            hint="Retirée de la somme des formules choisies, quelles qu’elles soient." onChange={(e) => setRemiseCombinee(e.target.value)} />
+        </fieldset>
+      )}
       <Field label="Description" multiline rows={2} value={p.description}
         hint="Éléments séparés par des virgules, « Durée : … » à la fin. Étiquette entre crochets après un élément : « anti-buée [Nouveau] », « désodorisant [Offert · durée limitée] »." onChange={(e) => setP({ ...p, description: e.target.value })} />
 
-      <Toggle label="Prix différent selon le véhicule" checked={parVehicule} onChange={setParVehicule}
-        hint="Facultatif : un type laissé vide garde le prix et la durée ci-dessus." />
-      {parVehicule && (
+      {!combinee && <Toggle label="Prix différent selon le véhicule" checked={parVehicule} onChange={setParVehicule}
+        hint="Facultatif : un type laissé vide garde le prix et la durée ci-dessus." />}
+      {!combinee && parVehicule && (
         <fieldset className={styles.liste} style={{ border: 0, padding: 0 }}>
           <legend className={styles.choix}>Prix par type de véhicule</legend>
           {VEHICLE_TYPES.map((v) => (

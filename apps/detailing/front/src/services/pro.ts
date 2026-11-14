@@ -89,6 +89,10 @@ export interface PrestationPro {
   occupePlage: boolean;
   tarifs: Record<string, Tarif>;
   optionIds: string[];
+  /** Formule combinée : le client choisit une formule dans chacune de ces catégories (vide : formule simple). */
+  composition?: string[];
+  /** Remise de la formule combinée, en centimes. */
+  remiseCompositionCents?: number;
 }
 
 /** Produit vendu avec les réservations ; stock à 0 : affiché « épuisé » sur le site ; inactif : plus proposé. */
@@ -152,7 +156,7 @@ const demo = {
     demoRdv('d3', 3, 8, 120, 'ext-signature', 'Client démo C', 'pending_payment'),
   ],
   prestations: FORMULES.map((f, i): PrestationPro => {
-    return { id: f.id, name: f.name, description: f.description, basePriceCents: f.basePriceCents, baseDurationMin: f.baseDurationMin, active: true, categoryId: f.category, position: i, occupePlage: !!f.occupePlage, tarifs: f.tarifs, optionIds: f.optionIds, badge: f.badge ?? null, remiseUniteCents: f.remiseUniteCents ?? 0 };
+    return { id: f.id, name: f.name, description: f.description, basePriceCents: f.basePriceCents, baseDurationMin: f.baseDurationMin, active: true, categoryId: f.category, position: i, occupePlage: !!f.occupePlage, tarifs: f.tarifs, optionIds: f.optionIds, badge: f.badge ?? null, remiseUniteCents: f.remiseUniteCents ?? 0, composition: f.composition ?? [], remiseCompositionCents: f.remiseCompositionCents ?? 0 };
   }),
   options: OPTIONS.map((o): OptionPro => ({ ...o, active: true })),
   produits: PRODUITS.map(({ photo, ...p }, i): ProduitPro => ({ ...p, photo, active: true, position: i })),
