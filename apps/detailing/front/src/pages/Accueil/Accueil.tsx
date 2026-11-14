@@ -25,6 +25,7 @@ import { COMMUNES, ENTREPRISE, PAGES_SEO } from '../../seo/donnees';
 import { useSeo } from '../../seo/useSeo';
 import { CarteFormule } from './CarteFormule';
 import { AvantApres } from '../../components/AvantApres/AvantApres';
+import { VideoAuto } from '../../components/VideoAuto/VideoAuto';
 import styles from './Accueil.module.css';
 
 /** Accueil : textes, étapes, réalisations, avis, FAQ et communes modifiables dans l'espace pro (« Mon site »). */
@@ -210,12 +211,10 @@ export function Accueil() {
                 </li>
               ))}
             </ol>
-            {/* La réservation en vidéo (30 s, sans son) : rien n'est téléchargé avant le clic sur « lecture ». */}
+            {/* La réservation en vidéo (30 s, sans son) : se lance toute seule à l'écran, rien n'est téléchargé avant. */}
             <figure className={styles.video} data-apparition>
-              <video controls preload="none" playsInline muted width={1920} height={1080} poster="/videos/perfect-clean-affiche.jpg"
-                aria-label="Vidéo : réserver un nettoyage Perfect Clean en quelques étapes">
-                <source src="/videos/perfect-clean-2.mp4" type="video/mp4" />
-              </video>
+              <VideoAuto src="/videos/perfect-clean-2.mp4" affiche="/videos/perfect-clean-affiche.jpg" largeur={1920} hauteur={1080}
+                libelle="Vidéo : réserver un nettoyage Perfect Clean en quelques étapes" />
               <figcaption>En vidéo : choisissez votre formule, votre créneau, et c’est réservé (30 secondes, sans son).</figcaption>
             </figure>
           </div>
