@@ -17,6 +17,7 @@ class Reservation
     /**
      * @param list<string> $optionIds
      * @param array<string, mixed> $metierData
+     * @param list<string>|null $composantes
      */
     public function __construct(
         private string $id,
@@ -50,6 +51,8 @@ class Reservation
         private ?bool $paiementEnLigne = null,
         /** Avoir du client déjà déduit du total (null : aucun). */
         private ?Money $avoirUtilise = null,
+        /** Formule combinée : la prestation choisie dans chaque catégorie (null : formule simple). */
+        private ?array $composantes = null,
     ) {
     }
 
@@ -116,6 +119,8 @@ class Reservation
     public function remiseFidelite(): Money { return $this->remiseFidelite ?? Money::zero(); }
     public function quantite(): int { return $this->quantite ?? 1; }
     public function avoirUtilise(): Money { return $this->avoirUtilise ?? Money::zero(); }
+    /** @return list<string> prestations choisies d'une formule combinée (vide : formule simple) */
+    public function composantes(): array { return $this->composantes ?? []; }
     /** @return list<array{id: string, nom: string, prixCents: int, quantite: int}> */
     public function produits(): array { return $this->produits ?? []; }
 

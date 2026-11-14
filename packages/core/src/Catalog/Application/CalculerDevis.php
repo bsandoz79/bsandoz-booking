@@ -40,7 +40,8 @@ final class CalculerDevis
      * @param array<string, mixed> $metierData
      * @throws NotFound prestation ou option inconnue
      * @param int $quantite nombre d'unités (ex. véhicules) : prestation multipliée, déplacement compté une fois
-     * @throws DomainError prestation inactive, option non autorisée, quantité invalide
+     * @param list<string> $composanteIds formule combinée : la prestation choisie dans chaque catégorie
+     * @throws DomainError prestation inactive, option non autorisée, quantité invalide, choix incomplet (formule combinée)
      */
     public function __invoke(
         string $prestationId,
@@ -50,8 +51,10 @@ final class CalculerDevis
         ?float $lng,
         ?string $variante = null,
         int $quantite = 1,
+        array $composanteIds = [],
     ): Devis {
         $prestation = $this->prestations->get($prestationId);
+        $composantes = array_map(fn (string $id) => $this->prestations->get($id), $composanteIds);
         $variante = $this->varianteResolver->resolve($metierData) ?? ($variante !== '' ? $variante : null);
         // Une entrée par unité concernée : la même option peut revenir (ex. poils d'animaux sur 2 véhicules sur 3).
         $parId = [];
@@ -72,6 +75,7 @@ final class CalculerDevis
             $rules->depositPercent,
             $rules->depositFixedCents !== null ? Money::cents($rules->depositFixedCents) : null,
             $quantite,
+            $composantes,
         );
 
         return $zoneQuote === null ? $devis : $devis->withZone($zoneQuote->inZone, $zoneQuote->distanceKm, $zoneQuote->travelMinutes);

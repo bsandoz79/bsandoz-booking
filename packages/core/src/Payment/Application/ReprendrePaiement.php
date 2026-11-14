@@ -75,7 +75,7 @@ final class ReprendrePaiement
         $aDomicile = $this->settings->zone() !== null;
         $lat = $aDomicile ? $r->lat() : null;
         $lng = $aDomicile ? $r->lng() : null;
-        $duree = ($this->calculerDevis)($r->prestationId(), $r->optionIds(), $r->metierData(), $lat, $lng, $r->variante(), $r->quantite())->durationMin;
+        $duree = ($this->calculerDevis)($r->prestationId(), $r->optionIds(), $r->metierData(), $lat, $lng, $r->variante(), $r->quantite(), $r->composantes())->durationMin;
         $date = $r->period()->start->setTimezone($this->settings->timezone())->format('Y-m-d');
         foreach (($this->creneaux)($date, $duree, $lat, $lng, $r->prestationId(), $r->id()) as $slot) {
             if ($slot->start->getTimestamp() === $r->period()->start->getTimestamp()) {

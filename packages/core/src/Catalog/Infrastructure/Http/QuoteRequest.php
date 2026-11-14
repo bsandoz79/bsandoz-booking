@@ -9,7 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Corps de POST /api/v1/booking/quote :
- * {"prestationId": "…", "optionIds": ["…"], "metierData": {…}, "variante": "…", "lat": 49.89, "lng": 2.29, "quantite": 1}
+ * {"prestationId": "…", "optionIds": ["…"], "metierData": {…}, "variante": "…", "lat": 49.89, "lng": 2.29, "quantite": 1,
+ *  "composantes": ["…"]} (formule combinée : la prestation choisie dans chaque catégorie)
  * Seul prestationId est obligatoire ; lat et lng vont ensemble.
  */
 final class QuoteRequest
@@ -26,6 +27,8 @@ final class QuoteRequest
         public readonly ?float $lat,
         public readonly ?float $lng,
         public readonly int $quantite = 1,
+        /** @var list<string> */
+        public readonly array $composantes = [],
     ) {
     }
 
@@ -68,7 +71,22 @@ final class QuoteRequest
 
         /** @var list<string> $optionIds */
         /** @var array<string, mixed> $metierData */
-        return new self($prestationId, $optionIds, $metierData, $variante, $lat, $lng, self::quantite($body));
+        return new self($prestationId, $optionIds, $metierData, $variante, $lat, $lng, self::quantite($body), self::composantes($body));
+    }
+
+    /**
+     * @param array<mixed> $body
+     * @return list<string>
+     */
+    public static function composantes(array $body): array
+    {
+        $ids = $body['composantes'] ?? [];
+        if (!is_array($ids) || !array_is_list($ids) || array_filter($ids, static fn (mixed $id): bool => !is_string($id)) !== []) {
+            throw new InvalidRequest('« composantes » doit être une liste d\'identifiants de prestations.');
+        }
+
+        /** @var list<string> $ids */
+        return $ids;
     }
 
     /** @param array<mixed> $body */

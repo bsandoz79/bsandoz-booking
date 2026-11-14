@@ -180,7 +180,7 @@ final class GererRendezVousPro
             $client = ['name' => '', 'email' => '', 'phone' => ''];
         }
         try {
-            $prestation = $this->prestations->get($r->prestationId())->name();
+            $prestation = \Bsandoz\Core\Catalog\Application\NomPrestation::de($this->prestations, $r->prestationId(), $r->composantes());
         } catch (NotFound) {
             $prestation = '';
         }

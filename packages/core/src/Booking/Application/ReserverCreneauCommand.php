@@ -35,6 +35,8 @@ final class ReserverCreneauCommand
         public readonly array $produits = [],
         public readonly int $quantite = 1,
         public readonly ?bool $paiementEnLigne = null,
+        /** @var list<string> formule combinée : la prestation choisie dans chaque catégorie */
+        public readonly array $composantes = [],
     ) {
     }
 
@@ -43,7 +45,7 @@ final class ReserverCreneauCommand
     {
         return new self(
             $this->prestationId, $this->optionIds, $this->metierData, $this->start, $this->address, $this->lat, $this->lng,
-            $this->email, $this->firstname, $this->lastname, $this->phone, $this->notes, true, $this->variante, $this->produits, $this->quantite, $this->paiementEnLigne,
+            $this->email, $this->firstname, $this->lastname, $this->phone, $this->notes, true, $this->variante, $this->produits, $this->quantite, $this->paiementEnLigne, $this->composantes,
         );
     }
 }

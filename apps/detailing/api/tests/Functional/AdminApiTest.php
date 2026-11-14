@@ -227,6 +227,54 @@ final class AdminApiTest extends WebTestCase
         self::assertSame('F-2026-0001', $this->json()['numero']);
     }
 
+    public function testFormuleCombineeReserveeEtFacturee(): void
+    {
+        $this->client->disableReboot();
+        $token = $this->login('pro@example.test', 'artisan2026');
+        $this->request('PUT', '/api/v1/admin/settings/rules', [
+            'minNoticeHours' => 0, 'horizonDays' => 60, 'bufferMin' => 0, 'slotStepMin' => 60,
+            'freeCancelHours' => 48, 'depositPercent' => 0, 'depositFixedCents' => null, 'holdMinutes' => 10,
+        ], $token);
+        $this->request('PUT', '/api/v1/admin/availability/hours', ['hours' => [['weekday' => 2, 'startsAt' => '08:00', 'endsAt' => '12:00']]], $token);
+        $this->request('POST', '/api/v1/admin/catalog/prestations', ['name' => 'Intérieur', 'basePriceCents' => 6900, 'baseDurationMin' => 60, 'categoryId' => 'interieur'], $token);
+        $interieur = $this->json()['id'];
+        $this->request('POST', '/api/v1/admin/catalog/prestations', ['name' => 'Extérieur', 'basePriceCents' => 2500, 'baseDurationMin' => 60, 'categoryId' => 'exterieur'], $token);
+        $exterieur = $this->json()['id'];
+        $this->request('POST', '/api/v1/admin/catalog/prestations', [
+            'name' => 'Formule complète', 'basePriceCents' => 0, 'baseDurationMin' => 1, 'categoryId' => 'complete',
+            'composition' => ['interieur', 'exterieur'], 'remiseCompositionCents' => 1500,
+        ], $token);
+        $complete = $this->json()['id'];
+        self::assertSame(['interieur', 'exterieur'], $this->json()['composition']);
+
+        $this->request('POST', '/api/v1/admin/reservations', [
+            'prestationId' => $complete, 'composantes' => [$interieur, $exterieur], 'start' => '2026-11-10T08:00:00+00:00',
+            'address' => ['label' => '1 rue de l\'Exemple, Amiens', 'lat' => 49.8941, 'lng' => 2.2958],
+            'firstname' => 'Dominique', 'lastname' => 'Petit', 'email' => 'dominique@example.test', 'phone' => '0611111111',
+        ], $token);
+        self::assertResponseStatusCodeSame(201);
+        $reservationId = $this->json()['reservationId'];
+        self::assertIsString($reservationId);
+
+        $this->request('GET', '/api/v1/admin/reservations/' . $reservationId, token: $token);
+        $rdv = $this->json();
+        self::assertSame('Formule complète (Intérieur + Extérieur)', $rdv['prestation']);
+        self::assertSame(6900 + 2500 - 1500, $rdv['totalCents']);
+        self::assertSame(120, (strtotime($rdv['end']) - strtotime($rdv['start'])) / 60, 'durée : les deux formules');
+
+        $horloge = static::getContainer()->get(\Bsandoz\Core\Shared\Infrastructure\FrozenClock::class);
+        self::assertInstanceOf(\Bsandoz\Core\Shared\Infrastructure\FrozenClock::class, $horloge);
+        $horloge->set('2026-11-10 10:30');
+        $this->request('POST', '/api/v1/admin/reservations/' . $reservationId . '/encaisser', ['moyen' => 'especes'], $token);
+        $this->request('GET', '/api/v1/admin/factures', token: $token);
+        $this->request('GET', '/api/v1/admin/factures/' . $this->json()[0]['id'], token: $token);
+        self::assertSame([
+            ['libelle' => 'Intérieur', 'montantCents' => 6900],
+            ['libelle' => 'Extérieur', 'montantCents' => 2500],
+            ['libelle' => 'Remise Formule complète', 'montantCents' => -1500],
+        ], $this->json()['lignes']);
+    }
+
     public function testEncaisserSurPlaceIndiqueLeMoyenSurLaFacture(): void
     {
         $this->client->disableReboot();

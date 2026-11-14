@@ -20,6 +20,7 @@ final class DonneesDemo
             'tres-sale-int' => ['name' => 'Véhicule très sale', 'description' => 'Supplément pour un intérieur demandant plus de temps.', 'priceCents' => 1000, 'durationMin' => 30],
             'desodorisant' => ['name' => 'Désodorisant Perfect Clean', 'description' => 'Désodorisant Perfect Clean laissé dans le véhicule.', 'priceCents' => 400, 'durationMin' => 0],
             'tres-sale-ext' => ['name' => 'Véhicule très sale', 'description' => 'Supplément pour une carrosserie très encrassée.', 'priceCents' => 1000, 'durationMin' => 20],
+            'phares' => ['name' => 'Rénovation des phares', 'description' => 'Les deux phares retrouvent leur transparence, le même jour.', 'priceCents' => 4500, 'durationMin' => 90],
             'deuxieme-vehicule' => ['name' => 'Deuxième véhicule', 'description' => 'Rénovation des phares d\'un deuxième véhicule, le même jour.', 'priceCents' => 4000, 'durationMin' => 90],
         ];
     }
@@ -28,7 +29,9 @@ final class DonneesDemo
      * Prestations par catégorie (interieur, exterieur, optique, carte) ; `occupePlage` = durée incertaine (3 h 30 ou plus
      * selon l'état du véhicule) : la prestation bloque la demi-journée et n'est proposée qu'en début de demi-journée libre.
      *
-     * @return list<array{name: string, description: string, category: string, occupePlage: bool, priceCents: int, durationMin: int, options: list<string>, badge?: string, remiseUniteCents?: int}>
+     * Formule complète : une formule intérieur et une formule extérieur au choix du client, 15 € de moins sur le total.
+     *
+     * @return list<array{name: string, description: string, category: string, occupePlage: bool, priceCents: int, durationMin: int, options: list<string>, badge?: string, remiseUniteCents?: int, composition?: list<string>, remiseCompositionCents?: int}>
      */
     public static function prestations(): array
     {
@@ -41,6 +44,7 @@ final class DonneesDemo
             ['name' => 'Extérieur Éclat', 'description' => 'Prélavage à la mousse active, lavage à la main, séchage microfibre, vitres. Durée : 1 h à 1 h 30.', 'category' => 'exterieur', 'occupePlage' => false, 'priceCents' => 2500, 'durationMin' => 90, 'options' => ['tres-sale-ext']],
             ['name' => 'Extérieur Signature', 'description' => 'Éclat, plus jantes nettoyées en profondeur, passages de roues, séchage complet, pneus lustrés. Durée : 1 h 30 à 2 h.', 'category' => 'exterieur', 'occupePlage' => false, 'priceCents' => 4500, 'durationMin' => 120, 'options' => ['tres-sale-ext']],
             ['name' => 'Extérieur Excellence', 'description' => 'Signature, plus prélavage renforcé, joints de portes, démoustiquage, plastiques et joints extérieurs rénovés, dégoudronnage. Durée : 2 h 30 à 3 h 30.', 'category' => 'exterieur', 'occupePlage' => true, 'priceCents' => 7000, 'durationMin' => 210, 'options' => ['tres-sale-ext']],
+            ['name' => 'Formule complète', 'description' => 'Votre formule intérieur et votre formule extérieur, au choix, le même jour : 15 € de moins sur le total. Rénovation des phares en option.', 'category' => 'complete', 'occupePlage' => true, 'priceCents' => 0, 'durationMin' => 1, 'options' => ['phares', 'desodorisant'], 'composition' => ['interieur', 'exterieur'], 'remiseCompositionCents' => 1500],
             ['name' => 'Rénovation des phares', 'description' => 'Les deux phares retrouvent leur transparence, sans remplacement : meilleure visibilité et contrôle technique serein. Prix pour la paire, 5 € de moins par véhicule supplémentaire. Durée : environ 1 h 30.', 'category' => 'optique', 'occupePlage' => false, 'priceCents' => 4500, 'durationMin' => 90, 'options' => [], 'remiseUniteCents' => 500],
             ['name' => 'Shampoing des sièges', 'description' => 'Sièges en tissu nettoyés à l\'injecteur-extracteur.', 'category' => 'carte', 'occupePlage' => false, 'priceCents' => 3900, 'durationMin' => 60, 'options' => []],
             ['name' => 'Nettoyage des cuirs', 'description' => 'Cuirs nettoyés et entretenus à la main.', 'category' => 'carte', 'occupePlage' => false, 'priceCents' => 3500, 'durationMin' => 60, 'options' => []],

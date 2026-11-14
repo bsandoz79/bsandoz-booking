@@ -32,14 +32,14 @@ final class CatalogController
     {
         $q = QuoteRequest::fromRequest($request);
 
-        return new JsonResponse(self::devis(($this->calculer)($q->prestationId, $q->optionIds, $q->metierData, $q->lat, $q->lng, $q->variante, $q->quantite)));
+        return new JsonResponse(self::devis(($this->calculer)($q->prestationId, $q->optionIds, $q->metierData, $q->lat, $q->lng, $q->variante, $q->quantite, $q->composantes)));
     }
 
     /** @return array<string, mixed> montants en centimes, comme attendu par le front */
     private static function devis(Devis $devis): array
     {
         return [
-            'lines' => array_map(static fn (array $line): array => ['label' => $line['label'], 'amountCents' => $line['price']->cents], $devis->lines),
+            'lines' => array_map(static fn (array $line): array => ['label' => $line['label'], 'amountCents' => ($line['deduction'] ?? false) ? -$line['price']->cents : $line['price']->cents], $devis->lines),
             'totalCents' => $devis->total->cents,
             'depositCents' => $devis->deposit->cents,
             'durationMin' => $devis->durationMin,

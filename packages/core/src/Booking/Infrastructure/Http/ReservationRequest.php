@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Corps de POST /api/v1/booking/reservations :
  * {"prestationId", "optionIds": [], "metierData": {}, "variante"?, "start": "2026-11-10T08:00:00+00:00",
  *  "address": {"label", "lat", "lng"} | null, "firstname", "lastname", "email", "phone", "notes"?, "acceptedTerms": true,
- *  "produits"?: [{"id", "quantite"}], "quantite"?: 1, "paiement"?: "en_ligne" | "sur_place"}
+ *  "produits"?: [{"id", "quantite"}], "quantite"?: 1, "paiement"?: "en_ligne" | "sur_place", "composantes"?: ["…"]}
  */
 final class ReservationRequest
 {
@@ -68,6 +68,7 @@ final class ReservationRequest
                 null => null,
                 default => throw new InvalidRequest('« paiement » vaut « en_ligne » ou « sur_place ».'),
             },
+            \Bsandoz\Core\Catalog\Infrastructure\Http\QuoteRequest::composantes($body),
         );
     }
 

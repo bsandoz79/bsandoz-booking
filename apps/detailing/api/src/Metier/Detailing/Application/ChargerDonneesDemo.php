@@ -67,6 +67,8 @@ final class ChargerDonneesDemo
                 'remiseUniteCents' => $p['remiseUniteCents'] ?? 0,
                 'tarifs' => [],
                 'optionIds' => array_map(static fn (string $cle): string => $ids[$cle], $p['options']),
+                'composition' => $p['composition'] ?? [],
+                'remiseCompositionCents' => $p['remiseCompositionCents'] ?? 0,
             ]);
         }
 
@@ -105,7 +107,8 @@ final class ChargerDonneesDemo
         }
 
         $alignees = 0;
-        foreach (DonneesDemo::prestations() as $p) {
+        foreach (DonneesDemo::prestations() as $position => $p) {
+            $trouvee = false;
             foreach ($catalogue['prestations'] as $existante) {
                 if (($existante['name'] ?? null) !== $p['name'] || !is_string($existante['id'] ?? null)) {
                     continue;
@@ -123,9 +126,23 @@ final class ChargerDonneesDemo
                     'remiseUniteCents' => $p['remiseUniteCents'] ?? 0,
                     'tarifs' => $existante['tarifs'] ?? [],
                     'optionIds' => array_map(static fn (string $cle): string => $ids[$cle], $p['options']),
+                    'composition' => $p['composition'] ?? [],
+                    'remiseCompositionCents' => $p['remiseCompositionCents'] ?? 0,
                 ], $existante['id']);
                 ++$alignees;
+                $trouvee = true;
                 break;
+            }
+            // Nouvelle prestation de la démo (ex. formule complète) : créée, à la suite des autres.
+            if (!$trouvee) {
+                $this->catalogue->enregistrerPrestation([
+                    'name' => $p['name'], 'description' => $p['description'], 'basePriceCents' => $p['priceCents'], 'baseDurationMin' => $p['durationMin'],
+                    'active' => true, 'categoryId' => $p['category'], 'position' => count($catalogue['prestations']) + $position, 'occupePlage' => $p['occupePlage'],
+                    'badge' => $p['badge'] ?? null, 'remiseUniteCents' => $p['remiseUniteCents'] ?? 0, 'tarifs' => [],
+                    'optionIds' => array_map(static fn (string $cle): string => $ids[$cle], $p['options']),
+                    'composition' => $p['composition'] ?? [], 'remiseCompositionCents' => $p['remiseCompositionCents'] ?? 0,
+                ]);
+                ++$alignees;
             }
         }
 

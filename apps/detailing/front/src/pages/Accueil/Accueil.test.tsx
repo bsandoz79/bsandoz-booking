@@ -73,7 +73,7 @@ describe('Accueil', () => {
   it('affiche les prestations par catégorie, avec ce qui est compris et un lien de réservation', async () => {
     render(<MemoryRouter><Accueil /></MemoryRouter>);
     const onglets = screen.getAllByRole('tab');
-    expect(onglets.map((o) => o.textContent)).toEqual(['Nettoyage intérieur', 'Nettoyage extérieur', 'Rénovation des phares', 'Soins à la carte']);
+    expect(onglets.map((o) => o.textContent)).toEqual(['Nettoyage intérieur', 'Nettoyage extérieur', 'Formule complète', 'Rénovation des phares', 'Soins à la carte']);
     expect(onglets[0]).toHaveAttribute('aria-selected', 'true');
 
     const panneau = screen.getByRole('tabpanel');
@@ -87,6 +87,12 @@ describe('Accueil', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'Nettoyage extérieur' }));
     expect(screen.getByRole('tab', { name: 'Nettoyage extérieur' })).toHaveAttribute('aria-selected', 'true');
     expect(within(screen.getByRole('tabpanel')).getByRole('heading', { level: 3, name: 'Extérieur Éclat' })).toBeInTheDocument();
+
+    // Formule complète : à partir de la formule la moins chère de chaque côté (29 € + 25 €), moins 15 €.
+    await userEvent.click(screen.getByRole('tab', { name: 'Formule complète' }));
+    const complete = within(screen.getByRole('tabpanel')).getByRole('heading', { level: 3, name: 'Formule complète' }).closest('article')!;
+    expect(complete).toHaveTextContent(/à partir de\s*39,00/);
+    expect(complete).toHaveTextContent('Intérieur + extérieur au choix · 15,00 € de moins');
     expect(within(screen.getByRole('tabpanel')).queryByRole('heading', { name: 'Intérieur Signature' })).not.toBeInTheDocument();
 
     // Navigation au clavier entre les onglets.

@@ -3,7 +3,7 @@
  * Identiques à `php bin/console detailing:demo:charger` côté API. Un seul prix par formule, quel que soit le véhicule.
  * Les durées des soins à la carte et des options sont des estimations [à confirmer] par l'artisan.
  */
-export type Category = 'interieur' | 'exterieur' | 'optique' | 'carte';
+export type Category = 'interieur' | 'exterieur' | 'complete' | 'optique' | 'carte';
 
 export interface Formule {
   id: string;
@@ -22,6 +22,10 @@ export interface Formule {
   badge?: string | null;
   /** Remise par véhicule au-delà du premier, en centimes (ex. 500 : 5 € de moins dès le 2e). */
   remiseUniteCents?: number;
+  /** Formule combinée : le client choisit une formule dans chacune de ces catégories (ex. intérieur et extérieur). */
+  composition?: string[];
+  /** Remise de la formule combinée sur la somme des formules choisies, en centimes. */
+  remiseCompositionCents?: number;
 }
 
 export interface OptionItem { id: string; name: string; description: string; priceCents: number; durationMin: number }
@@ -38,6 +42,7 @@ export const PRODUITS: ProduitItem[] = [
 export const CATEGORIES: { value: Category; label: string; description: string }[] = [
   { value: 'interieur', label: 'Nettoyage intérieur', description: 'Sièges, moquettes, plastiques, vitres : un habitacle comme neuf.' },
   { value: 'exterieur', label: 'Nettoyage extérieur', description: 'Lavage à la main, jantes, vitres et finitions.' },
+  { value: 'complete', label: 'Formule complète', description: 'Intérieur et extérieur, au choix, le même jour : 15 € de moins sur le total.' },
   { value: 'optique', label: 'Rénovation des phares', description: 'Des phares clairs, sans les remplacer.' },
   { value: 'carte', label: 'Soins à la carte', description: 'Un besoin précis : sièges, cuirs, ciel de toit, céramique, jantes.' },
 ];
@@ -62,6 +67,7 @@ export const FORMULES: Formule[] = [
   f('ext-eclat', 'exterieur', 'Extérieur Éclat', 'Prélavage à la mousse active, lavage à la main, séchage microfibre, vitres. Durée : 1 h à 1 h 30.', 2500, 90, ['tres-sale-ext']),
   f('ext-signature', 'exterieur', 'Extérieur Signature', 'Éclat, plus jantes nettoyées en profondeur, passages de roues, séchage complet, pneus lustrés. Durée : 1 h 30 à 2 h.', 4500, 120, ['tres-sale-ext'], { badge: 'Le plus choisi' }),
   f('ext-excellence', 'exterieur', 'Extérieur Excellence', 'Signature, plus prélavage renforcé, joints de portes, démoustiquage, plastiques et joints extérieurs rénovés, dégoudronnage. Durée : 2 h 30 à 3 h 30.', 7000, 210, ['tres-sale-ext'], { occupePlage: true }),
+  f('complete', 'complete', 'Formule complète', 'Votre formule intérieur et votre formule extérieur, au choix, le même jour : 15 € de moins sur le total. Rénovation des phares en option.', 0, 1, ['phares-option', 'desodorisant'], { occupePlage: true, composition: ['interieur', 'exterieur'], remiseCompositionCents: 1500 }),
   f('phares', 'optique', 'Rénovation des phares', 'Les deux phares retrouvent leur transparence, sans remplacement : meilleure visibilité et contrôle technique serein. Prix pour la paire, 5 € de moins par véhicule supplémentaire. Durée : environ 1 h 30.', 4500, 90, [], { remiseUniteCents: 500 }),
   f('carte-sieges', 'carte', 'Shampoing des sièges', 'Sièges en tissu nettoyés à l’injecteur-extracteur.', 3900, 60),
   f('carte-cuirs', 'carte', 'Nettoyage des cuirs', 'Cuirs nettoyés et entretenus à la main.', 3500, 60),
@@ -78,14 +84,35 @@ export const OPTIONS: OptionItem[] = [
   { id: 'tres-sale-int', name: 'Véhicule très sale', description: 'Supplément pour un intérieur demandant plus de temps.', priceCents: 1000, durationMin: 30 },
   { id: 'desodorisant', name: 'Désodorisant Perfect Clean', description: 'Désodorisant Perfect Clean laissé dans le véhicule.', priceCents: 400, durationMin: 0 },
   { id: 'tres-sale-ext', name: 'Véhicule très sale', description: 'Supplément pour une carrosserie très encrassée.', priceCents: 1000, durationMin: 20 },
+  { id: 'phares-option', name: 'Rénovation des phares', description: 'Les deux phares retrouvent leur transparence, le même jour.', priceCents: 4500, durationMin: 90 },
 ]
 
 /** Prix et durée d'une formule pour une variante (prix unique si l'artisan n'a pas défini de prix par véhicule). */
 export const tarifDe = (formule: Formule, variante?: string) =>
   (variante ? formule.tarifs[variante] : undefined) ?? { priceCents: formule.basePriceCents, durationMin: formule.baseDurationMin };
 
-/** Prix le plus bas d'une formule (« à partir de »). */
-export const prixMin = (formule: Formule) => Math.min(formule.basePriceCents, ...Object.values(formule.tarifs).map((t) => t.priceCents));
+/** Formule combinée (ex. formule complète) : une formule à choisir dans chaque catégorie de sa composition. */
+export const estCombinee = (formule: Formule) => (formule.composition?.length ?? 0) > 0;
+
+/** Prix le plus bas d'une formule simple. */
+const prixMinSimple = (formule: Formule) => Math.min(formule.basePriceCents, ...Object.values(formule.tarifs).map((t) => t.priceCents));
+
+/**
+ * Prix le plus bas d'une formule (« à partir de »). Formule combinée : la formule la moins chère de chaque catégorie,
+ * moins la remise (il faut alors la liste des formules).
+ */
+export const prixMin = (formule: Formule, toutes: Formule[] = []) => {
+  if (!estCombinee(formule)) return prixMinSimple(formule);
+  const somme = (formule.composition ?? []).reduce((s, cat) => {
+    const prix = toutes.filter((x) => x.category === cat && !estCombinee(x)).map(prixMinSimple);
+    return s + (prix.length > 0 ? Math.min(...prix) : 0);
+  }, 0);
+  return Math.max(0, somme - (formule.remiseCompositionCents ?? 0));
+};
+
+/** Options proposées : celles de la formule et, pour une formule combinée, celles des formules choisies (sans doublon). */
+export const optionsProposees = (formule: Formule, composantes: Formule[] = []) =>
+  [...new Set([...formule.optionIds, ...composantes.flatMap((c) => c.optionIds)])];
 
 /** Règles de démonstration : départ d'Abbeville, 5 km offerts, puis 5 € jusqu'à 15 km, 10 € jusqu'à 30 km, 20 € jusqu'à 50 km. */
 export const DEMO_RULES = {
