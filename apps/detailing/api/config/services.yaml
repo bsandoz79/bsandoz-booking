@@ -37,5 +37,6 @@ when@test:
         Bsandoz\Core\Shared\Domain\Clock: '@Bsandoz\Core\Shared\Infrastructure\FrozenClock'
         App\Tests\Double\FauxPrestatairePaiement: ~
         Bsandoz\Core\Payment\Domain\Port\PaymentGateway: '@App\Tests\Double\FauxPrestatairePaiement'
+        Bsandoz\Core\Abonnement\Domain\Port\PrestataireAbonnement: '@App\Tests\Double\FauxPrestatairePaiement'
         App\Tests\Double\FauxEnvoiPush: ~
         Bsandoz\Core\Notification\Domain\Port\EnvoiPush: '@App\Tests\Double\FauxEnvoiPush'

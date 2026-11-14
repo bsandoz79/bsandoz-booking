@@ -42,6 +42,7 @@ final class ConfirmerPaiement
         private ?StockProduits $stock = null,
         private ?GererAvoirs $avoirs = null,
         private ?\Bsandoz\Core\Booking\Application\GererRendezVousPro $rendezVousPro = null,
+        private ?\Bsandoz\Core\Abonnement\Application\TraiterEvenementAbonnement $abonnements = null,
     ) {
     }
 
@@ -49,6 +50,12 @@ final class ConfirmerPaiement
     public function __invoke(string $payload, string $signature): void
     {
         $evenement = $this->gateway->parseWebhook($payload, $signature);
+        // Abonnements : souscription, prélèvements et fin, traités à part.
+        if ($evenement->concerneUnAbonnement()) {
+            ($this->abonnements)?->__invoke($evenement);
+
+            return;
+        }
         if (!$evenement->confirmeUnPaiement() || $evenement->sessionId === null) {
             return;
         }

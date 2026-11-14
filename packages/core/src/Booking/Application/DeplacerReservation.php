@@ -26,6 +26,7 @@ final class DeplacerReservation
         private SettingsProvider $settings,
         private NotificationsReservation $notifications,
         private Clock $clock,
+        private ?\Bsandoz\Core\Abonnement\Application\UtiliserAbonnement $abonnements = null,
     ) {
     }
 
@@ -46,6 +47,11 @@ final class DeplacerReservation
         $duration = ($this->calculerDevis)(
             $reservation->prestationId(), $reservation->optionIds(), $reservation->metierData(), $lat, $lng, $reservation->variante(), $reservation->quantite(), $reservation->composantes(),
         )->durationMin;
+
+        $abonnementId = $reservation->abonnementId();
+        if ($abonnementId !== null && $this->abonnements !== null) {
+            $this->abonnements->remise($abonnementId, $reservation->userId(), $reservation->prestationId(), $reservation->variante(), $reservation->quantite(), $reservation->composantes(), $newStart, $reservation->id());
+        }
 
         $this->reservations->dansVerrouAgenda(function () use ($reservation, $newStart, $lat, $lng, $duration): void {
             $date = $newStart->setTimezone($this->settings->timezone())->format('Y-m-d');

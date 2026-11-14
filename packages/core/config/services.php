@@ -348,6 +348,19 @@ return static function (ContainerConfigurator $container): void {
         ]);
 
     // Comptabilité simple (chiffre d'affaires, dépenses, résultat par mois)
+    // Abonnements : offres du pro, souscriptions des clients (prélèvement Stripe à chaque période), prestation comprise
+    $services->set(\Bsandoz\Core\Abonnement\Infrastructure\Persistence\DoctrineFormulesAbonnement::class);
+    $services->alias(\Bsandoz\Core\Abonnement\Domain\Port\FormulesAbonnement::class, \Bsandoz\Core\Abonnement\Infrastructure\Persistence\DoctrineFormulesAbonnement::class);
+    $services->set(\Bsandoz\Core\Abonnement\Infrastructure\Persistence\DoctrineAbonnements::class);
+    $services->alias(\Bsandoz\Core\Abonnement\Domain\Port\Abonnements::class, \Bsandoz\Core\Abonnement\Infrastructure\Persistence\DoctrineAbonnements::class);
+    $services->set(\Bsandoz\Core\Abonnement\Infrastructure\Persistence\DoctrinePaiementsAbonnement::class);
+    $services->alias(\Bsandoz\Core\Abonnement\Domain\Port\PaiementsAbonnement::class, \Bsandoz\Core\Abonnement\Infrastructure\Persistence\DoctrinePaiementsAbonnement::class);
+    $services->alias(\Bsandoz\Core\Abonnement\Domain\Port\PrestataireAbonnement::class, StripeGateway::class);
+    $services->set(\Bsandoz\Core\Abonnement\Application\UtiliserAbonnement::class);
+    $services->set(\Bsandoz\Core\Abonnement\Application\AbonnementsClient::class)->arg('$frontUrl', param('bsandoz_core.mail.front_url'));
+    $services->set(\Bsandoz\Core\Abonnement\Application\GererAbonnementsPro::class);
+    $services->set(\Bsandoz\Core\Abonnement\Application\TraiterEvenementAbonnement::class);
+    $services->set(\Bsandoz\Core\Abonnement\Infrastructure\Http\AbonnementController::class)->public()->tag('controller.service_arguments');
     $services->set(\Bsandoz\Core\Comptabilite\Infrastructure\Persistence\DoctrineDepenses::class);
     $services->alias(\Bsandoz\Core\Comptabilite\Domain\Port\Depenses::class, \Bsandoz\Core\Comptabilite\Infrastructure\Persistence\DoctrineDepenses::class);
     $services->set(\Bsandoz\Core\Comptabilite\Application\GererComptabilite::class);

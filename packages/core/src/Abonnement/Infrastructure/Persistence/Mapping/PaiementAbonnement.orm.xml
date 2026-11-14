@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Bsandoz\Core\Abonnement\Domain\Model\PaiementAbonnement" table="subscription_payment">
+        <unique-constraints>
+            <unique-constraint name="uniq_subscription_payment_invoice" columns="provider_invoice_id"/>
+        </unique-constraints>
+        <indexes>
+            <index name="idx_subscription_payment_paid" columns="paid_at"/>
+        </indexes>
+        <id name="id" type="string" length="36"/>
+        <field name="abonnementId" column="subscription_id" type="string" length="36"/>
+        <field name="factureFournisseurId" column="provider_invoice_id" type="string" length="255"/>
+        <field name="montant" column="amount_cents" type="bsandoz_money"/>
+        <field name="payeLe" column="paid_at" type="datetime_utc_immutable"/>
+    </entity>
+</doctrine-mapping>

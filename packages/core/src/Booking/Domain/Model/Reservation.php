@@ -53,6 +53,10 @@ class Reservation
         private ?Money $avoirUtilise = null,
         /** Formule combinée : la prestation choisie dans chaque catégorie (null : formule simple). */
         private ?array $composantes = null,
+        /** Abonnement utilisé pour cette prestation (null : réservation classique). */
+        private ?string $abonnementId = null,
+        /** Prix de la prestation comprise dans l'abonnement, déjà déduit du total. */
+        private ?Money $remiseAbonnement = null,
     ) {
     }
 
@@ -121,6 +125,8 @@ class Reservation
     public function avoirUtilise(): Money { return $this->avoirUtilise ?? Money::zero(); }
     /** @return list<string> prestations choisies d'une formule combinée (vide : formule simple) */
     public function composantes(): array { return $this->composantes ?? []; }
+    public function abonnementId(): ?string { return $this->abonnementId; }
+    public function remiseAbonnement(): Money { return $this->remiseAbonnement ?? Money::zero(); }
     /** @return list<array{id: string, nom: string, prixCents: int, quantite: int}> */
     public function produits(): array { return $this->produits ?? []; }
 

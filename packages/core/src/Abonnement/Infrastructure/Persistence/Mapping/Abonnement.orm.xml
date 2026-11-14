@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <!-- Aucune donnée de carte : seulement les identifiants du prestataire (souscription, session). -->
+    <entity name="Bsandoz\Core\Abonnement\Domain\Model\Abonnement" table="subscription">
+        <indexes>
+            <index name="idx_subscription_user" columns="user_id"/>
+            <index name="idx_subscription_session" columns="session_id"/>
+            <index name="idx_subscription_provider" columns="provider_id"/>
+        </indexes>
+        <id name="id" type="string" length="36"/>
+        <field name="userId" column="user_id" type="string" length="36"/>
+        <field name="formuleId" column="plan_id" type="string" length="36"/>
+        <field name="periodicite" column="frequency" type="string" length="20" enum-type="Bsandoz\Core\Abonnement\Domain\Model\Periodicite"/>
+        <field name="creeLe" column="created_at" type="datetime_utc_immutable"/>
+        <field name="statut" column="status" type="string" length="20" enum-type="Bsandoz\Core\Abonnement\Domain\Model\StatutAbonnement"/>
+        <field name="debut" column="started_at" type="datetime_utc_immutable" nullable="true"/>
+        <field name="finPeriode" column="period_end" type="datetime_utc_immutable" nullable="true"/>
+        <field name="fournisseurId" column="provider_id" type="string" length="255" nullable="true"/>
+        <field name="sessionId" column="session_id" type="string" length="255" nullable="true"/>
+        <field name="resiliationDemandee" column="cancel_requested" type="boolean"/>
+        <field name="termineLe" column="ended_at" type="datetime_utc_immutable" nullable="true"/>
+    </entity>
+</doctrine-mapping>

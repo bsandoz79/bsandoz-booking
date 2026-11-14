@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Bsandoz\Core\Abonnement\Domain\Model\FormuleAbonnement" table="subscription_plan">
+        <id name="id" type="string" length="36"/>
+        <field name="nom" column="name" type="string" length="120"/>
+        <field name="prestationId" column="prestation_id" type="string" length="36"/>
+        <field name="periodicite" column="frequency" type="string" length="20" enum-type="Bsandoz\Core\Abonnement\Domain\Model\Periodicite"/>
+        <field name="prix" column="price_cents" type="bsandoz_money"/>
+        <field name="description" type="text"/>
+        <field name="active" type="boolean"/>
+        <field name="position" type="integer"/>
+    </entity>
+</doctrine-mapping>

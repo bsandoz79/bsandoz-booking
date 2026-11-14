@@ -28,6 +28,8 @@
         <field name="paiementEnLigne" column="online_payment" type="boolean" nullable="true"/>
         <field name="avoirUtilise" column="credit_used_cents" type="bsandoz_money" nullable="true"/>
         <field name="composantes" column="components" type="json" nullable="true"/>
+        <field name="abonnementId" column="subscription_id" type="string" length="36" nullable="true"/>
+        <field name="remiseAbonnement" column="subscription_discount_cents" type="bsandoz_money" nullable="true"/>
         <field name="creeLe" column="created_at" type="datetime_utc_immutable" nullable="true"/>
         <field name="moyenSurPlace" column="on_site_payment_method" type="string" length="20" nullable="true" enum-type="Bsandoz\Core\Booking\Domain\Model\MoyenPaiement"/>
         <field name="encaisseLe" column="on_site_paid_at" type="datetime_utc_immutable" nullable="true"/>

@@ -27,6 +27,7 @@ final class DoctrineMappings
             'BsandozBooking' => ['dir' => $src . '/Booking/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Booking\Domain\Model'],
             'BsandozFidelite' => ['dir' => $src . '/Fidelite/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Fidelite\Domain\Model'],
             'BsandozComptabilite' => ['dir' => $src . '/Comptabilite/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Comptabilite\Domain\Model'],
+            'BsandozAbonnement' => ['dir' => $src . '/Abonnement/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Abonnement\Domain\Model'],
             'BsandozFacturation' => ['dir' => $src . '/Facturation/Infrastructure/Persistence/Mapping', 'prefix' => 'Bsandoz\Core\Facturation\Domain\Model'],
         ];
     }
