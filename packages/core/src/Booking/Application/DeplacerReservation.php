@@ -44,7 +44,7 @@ final class DeplacerReservation
         $lat = $aDomicile ? $reservation->lat() : null;
         $lng = $aDomicile ? $reservation->lng() : null;
         $duration = ($this->calculerDevis)(
-            $reservation->prestationId(), $reservation->optionIds(), $reservation->metierData(), $lat, $lng, $reservation->variante(), $reservation->quantite(),
+            $reservation->prestationId(), $reservation->optionIds(), $reservation->metierData(), $lat, $lng, $reservation->variante(), $reservation->quantite(), $reservation->composantes(),
         )->durationMin;
 
         $this->reservations->dansVerrouAgenda(function () use ($reservation, $newStart, $lat, $lng, $duration): void {

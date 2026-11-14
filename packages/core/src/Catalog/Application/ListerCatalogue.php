@@ -17,7 +17,7 @@ use Bsandoz\Core\Catalog\Domain\Port\ProduitRepository;
  * affichés « épuisé », non commandables ;
  * `stock` sert de quantité maximale à proposer).
  *
- * @phpstan-type Formule array{id: string, category: string|null, name: string, description: string, basePriceCents: int, baseDurationMin: int, occupePlage: bool, badge: string|null, remiseUniteCents: int, tarifs: array<string, array{priceCents: int, durationMin: int}>, optionIds: list<string>}
+ * @phpstan-type Formule array{id: string, category: string|null, name: string, description: string, basePriceCents: int, baseDurationMin: int, occupePlage: bool, badge: string|null, remiseUniteCents: int, tarifs: array<string, array{priceCents: int, durationMin: int}>, optionIds: list<string>, composition: list<string>, remiseCompositionCents: int}
  * @phpstan-type OptionItem array{id: string, name: string, description: string, priceCents: int, durationMin: int}
  * @phpstan-type ProduitItem array{id: string, name: string, description: string, priceCents: int, stock: int, photo: string|null, category: string|null}
  */
@@ -91,6 +91,9 @@ final class ListerCatalogue
             'remiseUniteCents' => $prestation->remiseUniteSupplementaire()->cents,
             'tarifs' => $tarifs,
             'optionIds' => $optionIds,
+            // Formule combinée : une prestation à choisir dans chacune de ces catégories (vide : formule simple).
+            'composition' => $prestation->composition(),
+            'remiseCompositionCents' => $prestation->remiseComposition()->cents,
         ];
     }
 

@@ -23,6 +23,7 @@ final class VueReservation
             'id' => $r->id(),
             'status' => $r->status()->value,
             'prestationId' => $r->prestationId(),
+            'composantes' => $r->composantes(),
             'optionIds' => $r->optionIds(),
             'quantite' => $r->quantite(),
             'start' => $start->setTimezone($utc)->format(DATE_ATOM),

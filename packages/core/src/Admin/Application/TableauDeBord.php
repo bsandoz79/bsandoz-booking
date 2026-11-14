@@ -84,7 +84,7 @@ final class TableauDeBord
                 'address' => $r->address(),
                 'lat' => $r->lat(),
                 'lng' => $r->lng(),
-                'prestation' => $this->nomPrestation($r->prestationId()),
+                'prestation' => $this->nomPrestation($r->prestationId(), $r->composantes()),
                 'quantite' => $r->quantite(),
                 'produits' => array_map(static fn (array $p): array => ['nom' => $p['nom'], 'quantite' => $p['quantite']], $r->produits()),
                 'notes' => $r->notes(),
@@ -114,7 +114,7 @@ final class TableauDeBord
             'address' => $r->address(),
             'lat' => $r->lat(),
             'lng' => $r->lng(),
-            'prestation' => $this->nomPrestation($r->prestationId()),
+            'prestation' => $this->nomPrestation($r->prestationId(), $r->composantes()),
             'quantite' => $r->quantite(),
             'produits' => array_map(static fn (array $p): array => ['nom' => $p['nom'], 'quantite' => $p['quantite']], $r->produits()),
             'resteSurPlaceCents' => $r->resteSurPlace()->cents,
@@ -225,10 +225,14 @@ final class TableauDeBord
         return array_sum(array_map(static fn (Reservation $r): int => $r->total()->cents, $liste));
     }
 
-    private function nomPrestation(string $id): string
+    /** @param list<string> $composantes */
+    private function nomPrestation(string $id, array $composantes = []): string
     {
+        if ($this->prestations === null) {
+            return '';
+        }
         try {
-            return $this->prestations?->get($id)->name() ?? '';
+            return \Bsandoz\Core\Catalog\Application\NomPrestation::de($this->prestations, $id, $composantes);
         } catch (NotFound) {
             return '';
         }

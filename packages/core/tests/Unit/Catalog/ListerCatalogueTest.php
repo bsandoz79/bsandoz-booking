@@ -49,6 +49,8 @@ final class ListerCatalogueTest extends TestCase
                 'remiseUniteCents' => 0,
                 'tarifs' => ['v-1' => ['priceCents' => 7900, 'durationMin' => 105]],
                 'optionIds' => ['o-1'],
+                'composition' => [],
+                'remiseCompositionCents' => 0,
             ],
             [
                 'id' => 'p-2',
@@ -62,6 +64,8 @@ final class ListerCatalogueTest extends TestCase
                 'remiseUniteCents' => 0,
                 'tarifs' => [],
                 'optionIds' => ['o-2'],
+                'composition' => [],
+                'remiseCompositionCents' => 0,
             ],
         ], $catalogue['formules']);
 

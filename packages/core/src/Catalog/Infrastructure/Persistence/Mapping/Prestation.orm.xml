@@ -20,5 +20,7 @@
         <field name="remiseUniteSupplementaire" column="remise_unite_cents" type="integer"/>
         <field name="tarifs" type="bsandoz_tarifs"/>
         <field name="optionIds" column="option_ids" type="json"/>
+        <field name="composition" type="json" nullable="true"/>
+        <field name="remiseComposition" column="composition_discount_cents" type="integer"><options><option name="default">0</option></options></field>
     </entity>
 </doctrine-mapping>

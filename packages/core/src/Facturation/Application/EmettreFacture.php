@@ -104,16 +104,16 @@ final class EmettreFacture
         $lignes = [];
         $aDomicile = $this->settings->zone() !== null;
         try {
-            $devis = ($this->calculerDevis)($r->prestationId(), $r->optionIds(), $r->metierData(), $aDomicile ? $r->lat() : null, $aDomicile ? $r->lng() : null, $r->variante(), $r->quantite());
+            $devis = ($this->calculerDevis)($r->prestationId(), $r->optionIds(), $r->metierData(), $aDomicile ? $r->lat() : null, $aDomicile ? $r->lng() : null, $r->variante(), $r->quantite(), $r->composantes());
             foreach ($devis->lines as $ligne) {
                 if ($ligne['label'] !== 'Frais de déplacement') {
-                    $lignes[] = ['libelle' => $ligne['label'], 'montantCents' => $ligne['price']->cents];
+                    $lignes[] = ['libelle' => $ligne['label'], 'montantCents' => ($ligne['deduction'] ?? false) ? -$ligne['price']->cents : $ligne['price']->cents];
                 }
             }
         } catch (DomainError|NotFound) {
             // Prestation retirée du catalogue depuis : une seule ligne au montant réservé.
             try {
-                $nom = $this->prestations->get($r->prestationId())->name();
+                $nom = \Bsandoz\Core\Catalog\Application\NomPrestation::de($this->prestations, $r->prestationId(), $r->composantes());
             } catch (NotFound) {
                 $nom = 'Prestation';
             }

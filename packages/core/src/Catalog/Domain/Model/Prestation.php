@@ -11,6 +11,9 @@ use Bsandoz\Core\Shared\Domain\Money;
  * Une prestation vendue (ex. « Nettoyage intérieur »), avec ses tarifs par variante métier
  * et la liste des options autorisées (par identifiant, les options vivant à part).
  * Durée incertaine ($occupePlage) : la prestation occupe toute la plage d'ouverture (demi-journée) où elle commence.
+ * Formule combinée ($composition) : le client choisit une prestation dans chacune des catégories listées (ex. une
+ * formule intérieur et une formule extérieur) ; prix et durée sont la somme des prestations choisies, moins la remise
+ * de la formule ($remiseComposition). Ses options s'ajoutent à celles des prestations choisies.
  */
 class Prestation
 {
@@ -35,6 +38,39 @@ class Prestation
         /** Remise par unité au-delà de la première (ex. 5 € de moins par véhicule supplémentaire), en centimes. */
         private int $remiseUniteSupplementaire = 0,
     ) {
+    }
+
+    /** @var list<string>|null catégories combinées (une prestation choisie dans chacune) ; null : formule simple */
+    private ?array $composition = null;
+    /** Remise de la formule combinée, en centimes, déduite de la somme des prestations choisies. */
+    private int $remiseComposition = 0;
+
+    public function estCombinee(): bool { return $this->composition !== null && $this->composition !== []; }
+    /** @return list<string> */
+    public function composition(): array { return $this->composition ?? []; }
+    public function remiseComposition(): Money { return Money::cents($this->remiseComposition); }
+
+    /**
+     * Formule combinée : catégories dont le client choisit une prestation (au moins deux), et remise.
+     * Liste vide : la prestation redevient une formule simple.
+     *
+     * @param list<string> $categories
+     * @throws DomainError une seule catégorie, catégorie en double ou remise négative
+     */
+    public function changerComposition(array $categories, int $remiseCents): void
+    {
+        $categories = array_values(array_filter(array_map('trim', $categories), static fn (string $c): bool => $c !== ''));
+        if ($categories !== [] && count($categories) < 2) {
+            throw new DomainError('Une formule combinée réunit au moins deux catégories.');
+        }
+        if (count(array_unique($categories)) !== count($categories)) {
+            throw new DomainError('Une catégorie ne peut figurer qu\'une fois dans la formule combinée.');
+        }
+        if ($remiseCents < 0) {
+            throw new DomainError('La remise de la formule combinée ne peut pas être négative.');
+        }
+        $this->composition = $categories === [] ? null : $categories;
+        $this->remiseComposition = $categories === [] ? 0 : $remiseCents;
     }
 
     public function id(): string { return $this->id; }

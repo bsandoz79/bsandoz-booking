@@ -88,4 +88,57 @@ final class PrixCalculatorTest extends TestCase
         $this->expectException(DomainError::class);
         (new PrixCalculator())->calculer(new Prestation('int', 'Éclat', Money::cents(2900), 90), null, [], Money::zero(), 30, null, 6);
     }
+
+    /** @return array{Prestation, Prestation, Prestation, Option} formule complète (intérieur + extérieur, 15 € de remise), deux formules et une option */
+    private static function formuleComplete(): array
+    {
+        $phares = new Option('phares', 'Rénovation des phares', Money::cents(3900), 45);
+        $complete = new Prestation('complete', 'Formule complète', Money::zero(), 1, categoryId: 'complete');
+        $complete->changerComposition(['interieur', 'exterieur'], 1500);
+        $complete->addOption($phares);
+        $poils = new Option('poils', 'Poils d\'animaux', Money::cents(1000), 30);
+        $interieur = new Prestation('int-sig', 'Intérieur Signature', Money::cents(6900), 150, categoryId: 'interieur');
+        $interieur->addOption($poils);
+        $exterieur = new Prestation('ext-ecl', 'Extérieur Éclat', Money::cents(2500), 90, categoryId: 'exterieur');
+
+        return [$complete, $interieur, $exterieur, $phares];
+    }
+
+    public function testFormuleCombineeSommeMoinsLaRemiseEtOptionsDeChaqueCote(): void
+    {
+        [$complete, $interieur, $exterieur, $phares] = self::formuleComplete();
+        $poils = new Option('poils', 'Poils d\'animaux', Money::cents(1000), 30);
+
+        // Ordre de choix indifférent : les lignes suivent l'ordre de la formule.
+        $devis = (new PrixCalculator())->calculer($complete, null, [$phares, $poils], Money::zero(), null, null, 1, [$exterieur, $interieur]);
+
+        self::assertSame(6900 + 2500 - 1500 + 3900 + 1000, $devis->total->cents);
+        self::assertSame(150 + 90 + 45 + 30, $devis->durationMin);
+        self::assertSame(['Intérieur Signature', 'Extérieur Éclat', 'Remise Formule complète', 'Rénovation des phares', 'Poils d\'animaux'], array_column($devis->lines, 'label'));
+        self::assertTrue($devis->lines[2]['deduction'] ?? false);
+        self::assertSame(1500, $devis->lines[2]['price']->cents);
+    }
+
+    public function testFormuleCombineeExigeUnChoixParCategorie(): void
+    {
+        [$complete, $interieur, $exterieur] = self::formuleComplete();
+        $calcul = new PrixCalculator();
+        foreach ([[], [$interieur], [$interieur, $interieur], [$interieur, $exterieur, $complete]] as $choix) {
+            try {
+                $calcul->calculer($complete, null, [], Money::zero(), null, null, 1, $choix);
+                self::fail('choix incomplet accepté : ' . count($choix));
+            } catch (DomainError) {
+            }
+        }
+        $this->expectException(DomainError::class);
+        $calcul->calculer($interieur, null, [], Money::zero(), null, null, 1, [$exterieur]);
+    }
+
+    public function testRemiseDeLaFormuleJamaisPlusQueLaSomme(): void
+    {
+        [$complete, $interieur, $exterieur] = self::formuleComplete();
+        $complete->changerComposition(['interieur', 'exterieur'], 50000);
+
+        self::assertSame(0, (new PrixCalculator())->calculer($complete, null, [], Money::zero(), null, null, 1, [$interieur, $exterieur])->total->cents);
+    }
 }

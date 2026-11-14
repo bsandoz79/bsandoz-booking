@@ -22,7 +22,8 @@ use Bsandoz\Core\Shared\Domain\NotFound;
  *
  * Prestation : {"name", "description", "basePriceCents", "baseDurationMin", "active", "categoryId", "position",
  *               "occupePlage", "badge" (mise en avant, ex. « Le plus choisi »),
- *               "remiseUniteCents" (remise par unité au-delà de la première, défaut 0), "tarifs": {"<variante>": {"priceCents", "durationMin"}}, "optionIds": []}
+ *               "remiseUniteCents" (remise par unité au-delà de la première, défaut 0), "tarifs": {"<variante>": {"priceCents", "durationMin"}}, "optionIds": [],
+ *               "composition"?: ["<catégorie>", …] (formule combinée : une prestation choisie dans chaque catégorie), "remiseCompositionCents"?}
  * Option     : {"name", "description", "priceCents", "durationMin", "active"}
  * Produit    : {"name", "description", "priceCents", "stock", "active", "position", "photo", "category"} (vendu avec une réservation)
  */
@@ -156,6 +157,13 @@ final class GererCatalogue
             throw new DomainError('« remiseUniteCents » doit être un nombre entier de centimes.');
         }
         $prestation->changerRemiseUniteSupplementaire($remise);
+        $composition = $data['composition'] ?? [];
+        $remiseComposition = $data['remiseCompositionCents'] ?? 0;
+        if (!is_array($composition) || array_filter($composition, static fn (mixed $c): bool => !is_string($c)) !== [] || !is_int($remiseComposition)) {
+            throw new DomainError('« composition » : liste de catégories ; « remiseCompositionCents » : nombre entier de centimes.');
+        }
+        /** @var list<string> $composition */
+        $prestation->changerComposition($composition, $remiseComposition);
 
         $optionIds = $data['optionIds'] ?? [];
         if (!is_array($optionIds) || array_filter($optionIds, static fn (mixed $o): bool => !is_string($o)) !== []) {
@@ -255,7 +263,7 @@ final class GererCatalogue
             'id' => $p->id(), 'name' => $p->name(), 'description' => $p->description(),
             'basePriceCents' => $p->basePrice()->cents, 'baseDurationMin' => $p->baseDurationMin(),
             'active' => $p->isActive(), 'categoryId' => $p->categoryId(), 'position' => $p->position(),
-            'occupePlage' => $p->occupePlage(), 'badge' => $p->badge(), 'remiseUniteCents' => $p->remiseUniteSupplementaire()->cents, 'tarifs' => $tarifs, 'optionIds' => $p->optionIds(),
+            'occupePlage' => $p->occupePlage(), 'badge' => $p->badge(), 'remiseUniteCents' => $p->remiseUniteSupplementaire()->cents, 'tarifs' => $tarifs, 'optionIds' => $p->optionIds(), 'composition' => $p->composition(), 'remiseCompositionCents' => $p->remiseComposition()->cents,
         ];
     }
 

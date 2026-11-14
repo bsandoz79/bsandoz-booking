@@ -10,7 +10,7 @@ use Bsandoz\Core\Shared\Domain\Money;
 final class Devis
 {
     /**
-     * @param list<array{label: string, price: Money}> $lines
+     * @param list<array{label: string, price: Money, deduction?: bool}> $lines lignes ; « deduction » : montant à retrancher (remise)
      * @param bool $inZone faux si l'adresse est hors de la zone d'intervention (aucuns frais de déplacement comptés)
      * @param float|null $distanceKm distance routière estimée, si une adresse a été donnée
      * @param int $travelMinutes temps de trajet estimé depuis le point de départ du pro

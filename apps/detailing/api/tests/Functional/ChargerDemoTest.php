@@ -45,15 +45,15 @@ final class ChargerDemoTest extends WebTestCase
         $tester = $this->commande();
         $tester->execute([]);
         $tester->assertCommandIsSuccessful();
-        self::assertStringContainsString('15 prestations, 5 options et 7 plages', $tester->getDisplay());
+        self::assertStringContainsString('16 prestations, 6 options et 7 plages', $tester->getDisplay());
 
         $this->client->request('GET', '/api/v1/catalog');
         self::assertResponseIsSuccessful();
         $catalogue = $this->json();
         $noms = array_column($catalogue['formules'], 'name');
-        self::assertCount(15, $noms);
+        self::assertCount(16, $noms);
         self::assertSame(['Intérieur Éclat', 'Intérieur Signature', 'Intérieur Excellence', 'Extérieur Éclat'], array_slice($noms, 0, 4));
-        self::assertCount(4, $catalogue['options']);
+        self::assertCount(5, $catalogue['options']);
         $phares = array_values(array_filter($catalogue['formules'], static fn (array $f): bool => $f['name'] === 'Rénovation des phares'))[0];
         self::assertSame(500, $phares['remiseUniteCents']);
 
@@ -62,7 +62,24 @@ final class ChargerDemoTest extends WebTestCase
         self::assertSame(8900, $excellence['basePriceCents'], 'un seul prix quel que soit le véhicule');
         self::assertSame([], $excellence['tarifs']);
         self::assertCount(2, $excellence['optionIds']);
-        self::assertSame(['interieur', 'interieur', 'interieur', 'exterieur', 'exterieur', 'exterieur', 'optique'], array_slice(array_column($catalogue['formules'], 'category'), 0, 7));
+        self::assertSame(['interieur', 'interieur', 'interieur', 'exterieur', 'exterieur', 'exterieur', 'complete', 'optique'], array_slice(array_column($catalogue['formules'], 'category'), 0, 8));
+
+        // Formule complète : Intérieur Signature (69 €) + Extérieur Éclat (25 €) − 15 €, rénovation des phares en option (45 €).
+        $complete = $catalogue['formules'][6];
+        self::assertSame(['interieur', 'exterieur'], $complete['composition']);
+        self::assertSame(1500, $complete['remiseCompositionCents']);
+        $optionPhares = array_values(array_filter($catalogue['options'], static fn (array $o): bool => $o['name'] === 'Rénovation des phares'))[0];
+        $this->client->request('POST', '/api/v1/booking/quote', server: ['CONTENT_TYPE' => 'application/json'], content: json_encode([
+            'prestationId' => $complete['id'], 'composantes' => [$catalogue['formules'][1]['id'], $catalogue['formules'][3]['id']], 'optionIds' => [$optionPhares['id']],
+        ], JSON_THROW_ON_ERROR));
+        self::assertResponseIsSuccessful();
+        $devis = $this->json();
+        self::assertSame(6900 + 2500 - 1500 + 4500, $devis['totalCents']);
+        self::assertSame(['Intérieur Signature', 'Extérieur Éclat', 'Remise Formule complète', 'Rénovation des phares'], array_column($devis['lines'], 'label'));
+        self::assertSame(-1500, $devis['lines'][2]['amountCents']);
+        // Une seule formule choisie : refusé.
+        $this->client->request('POST', '/api/v1/booking/quote', server: ['CONTENT_TYPE' => 'application/json'], content: json_encode(['prestationId' => $complete['id'], 'composantes' => [$catalogue['formules'][1]['id']]], JSON_THROW_ON_ERROR));
+        self::assertResponseStatusCodeSame(422);
 
         // Devis : le prix ne dépend pas du type de véhicule.
         $this->client->request('POST', '/api/v1/booking/quote', server: ['CONTENT_TYPE' => 'application/json'], content: json_encode(['prestationId' => $excellence['id'], 'metierData' => ['vehicleType' => 'suv']], JSON_THROW_ON_ERROR));
@@ -83,7 +100,7 @@ final class ChargerDemoTest extends WebTestCase
         self::assertStringContainsString('rien n\'a été chargé', $tester->getDisplay());
 
         $this->client->request('GET', '/api/v1/catalog');
-        self::assertCount(15, $this->json()['formules']);
+        self::assertCount(16, $this->json()['formules']);
     }
 
     public function testMetAJourUnCatalogueDejaCharge(): void
@@ -99,7 +116,7 @@ final class ChargerDemoTest extends WebTestCase
         $tester = $this->commande();
         $tester->execute(['--mettre-a-jour' => true]);
         $tester->assertCommandIsSuccessful();
-        self::assertStringContainsString('15 prestations mises à jour, 0 options créées', $tester->getDisplay());
+        self::assertStringContainsString('16 prestations mises à jour, 0 options créées', $tester->getDisplay());
 
         $this->client->request('GET', '/api/v1/catalog');
         $formules = array_column($this->json()['formules'], null, 'name');
