@@ -25,6 +25,24 @@ describe('Espace client', () => {
     vi.useRealTimers();
   });
 
+  it('abonnement : offres proposées, souscription, prestation de la période à réserver, résiliation en fin de période', async () => {
+    await seConnecterDemo();
+    const rubrique = (await screen.findByRole('heading', { name: 'Mon abonnement' })).closest('section')!;
+    const offres = within(rubrique).getByRole('list', { name: 'Abonnements proposés' });
+    expect(within(offres).getAllByRole('listitem')).toHaveLength(4);
+    await userEvent.click(within(rubrique).getByRole('button', { name: 'S’abonner : Lavage chaque mois' }));
+
+    expect(await within(rubrique).findByText('Votre abonnement est actif.')).toBeInTheDocument();
+    expect(within(rubrique).getByText('Prestation de cette période')).toBeInTheDocument();
+    expect(within(rubrique).getByText(/sinon elle est perdue/)).toBeInTheDocument();
+    expect(within(rubrique).getByRole('link', { name: 'Réserver' })).toHaveAttribute('href', '/reserver?formule=ext-eclat&abonnement=abonnement-demo');
+
+    await userEvent.click(within(rubrique).getByRole('button', { name: 'Résilier' }));
+    await userEvent.click(within(rubrique).getByRole('button', { name: 'Oui, résilier' }));
+    expect(await within(rubrique).findByText(/Abonnement résilié : il reste actif jusqu’au/)).toBeInTheDocument();
+    expect(within(rubrique).getByText('Fin de l’abonnement')).toBeInTheDocument();
+  });
+
   it('demande de se connecter, avec le lien « mot de passe oublié »', async () => {
     ouvrir('/mon-espace');
     expect(await screen.findByRole('heading', { name: 'Connexion' })).toBeInTheDocument();

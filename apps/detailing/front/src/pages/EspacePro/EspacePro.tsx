@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Button, Field } from '@bsandoz/ui';
 import { reprendreSession, rolesSession, seConnecter, seDeconnecter } from '../../services/compte';
+import { AbonnementsOnglet } from './Abonnements';
 import { CatalogueOnglet } from './Catalogue';
 import { ClientsOnglet } from './Clients';
 import { HistoriqueOnglet } from './Historique';
@@ -24,6 +25,7 @@ const ONGLETS = [
   { id: 'telephone', icone: 'telephone', label: 'Rendez-vous par téléphone' },
   { id: 'catalogue', icone: 'catalogue', label: 'Catalogue' },
   { id: 'produits', icone: 'produit', label: 'Produits' },
+  { id: 'abonnements', icone: 'historique', label: 'Abonnements' },
   { id: 'factures', icone: 'facture', label: 'Factures' },
   { id: 'comptabilite', icone: 'euro', label: 'Comptabilité' },
   { id: 'horaires', icone: 'horloge', label: 'Horaires et congés' },
@@ -70,6 +72,7 @@ export function EspacePro() {
       {onglet === 'telephone' && <RdvTelephoneOnglet />}
       {onglet === 'catalogue' && <CatalogueOnglet />}
       {onglet === 'produits' && <ProduitsOnglet />}
+      {onglet === 'abonnements' && <AbonnementsOnglet />}
       {onglet === 'factures' && <FacturesOnglet />}
       {onglet === 'comptabilite' && <ComptabiliteOnglet />}
       {onglet === 'horaires' && <HorairesOnglet />}
