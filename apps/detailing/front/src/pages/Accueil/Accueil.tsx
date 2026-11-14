@@ -214,7 +214,7 @@ export function Accueil() {
             <figure className={styles.video} data-apparition>
               <video controls preload="none" playsInline muted width={1920} height={1080} poster="/videos/perfect-clean-affiche.jpg"
                 aria-label="Vidéo : réserver un nettoyage Perfect Clean en quelques étapes">
-                <source src="/videos/perfect-clean.mp4" type="video/mp4" />
+                <source src="/videos/perfect-clean-2.mp4" type="video/mp4" />
               </video>
               <figcaption>En vidéo : choisissez votre formule, votre créneau, et c’est réservé (30 secondes, sans son).</figcaption>
             </figure>

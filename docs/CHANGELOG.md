@@ -224,3 +224,4 @@
 - En-tête sur téléphone : la barre passait sur deux lignes ; « Mon espace » et « Espace pro » rejoignent le menu.
 - Téléphone : plus de jeu horizontal (champs 16 px sur écran tactile contre le zoom de l'iPhone, overflow-x: clip, filtres contenus à 375 px, en-tête resserré à 320 px).
 - Accueil : cartes de formules invisibles quand le mode édition s'active après le chargement (marque d'apparition en attribut data-vu au lieu d'une classe).
+- Vidéo de l'accueil : durée corrigée (30 s au lieu de 6 min 55), fichier allégé (3 Mo) et renommé pour ne pas resservir l'ancien.
