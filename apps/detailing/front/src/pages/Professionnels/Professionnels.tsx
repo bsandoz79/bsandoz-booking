@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ContactDirect } from '../../components/FormulaireDevis/ContactDirect';
 import { FormulaireDevis } from '../../components/FormulaireDevis/FormulaireDevis';
+import { Icone } from '../../components/Icone/Icone';
 import { SITE } from '../../data/site';
 import { getZone } from '../../services/api';
 import { PAGES_SEO } from '../../seo/donnees';
@@ -12,6 +13,7 @@ const PAGE = PAGES_SEO.find((p) => p.chemin === '/professionnels');
 /**
  * Page « Professionnels » (flottes, utilitaires, poids lourds, garages) : uniquement sur devis. Formulaire de demande
  * transmis au pro par mail (POST /contact), coordonnées modifiables dans l'espace pro (« Mon site »).
+ * Environnement rouge (comme l'encart « Professionnels » de l'accueil) : les couleurs du thème sont surchargées dans la page.
  */
 export function Professionnels() {
   useSeo(PAGE?.titre ?? 'Professionnels | Perfect Clean', PAGE?.description);
@@ -20,11 +22,17 @@ export function Professionnels() {
 
   return (
     <main className={`container ${styles.page}`}>
-      <p className={styles.surtitre}>{SITE.brand} · Professionnels</p>
-      <h1>{PAGE?.h1 ?? 'Espace professionnels'}</h1>
-      <p className={styles.intro}>
-        Flottes, utilitaires, poids lourds, garages : j’interviens sur site à {SITE.city}{rayon ? ` et dans un rayon de ${rayon} km` : ' et alentours'}. Uniquement sur devis.
-      </p>
+      <header className={styles.entete}>
+        <span className={styles.icone}><Icone nom="camion" taille={30} /></span>
+        <div className={styles.enteteTexte}>
+          <p className={styles.surtitre}>{SITE.brand} · Professionnels</p>
+          <h1>{PAGE?.h1 ?? 'Espace professionnels'}</h1>
+          <p className={styles.intro}>
+            Flottes, utilitaires, poids lourds, garages : j’interviens sur site à {SITE.city}{rayon ? ` et dans un rayon de ${rayon} km` : ' et alentours'}. Uniquement sur devis.
+          </p>
+          <a href="#titre-devis" className="btn">Demander un devis</a>
+        </div>
+      </header>
 
       <ul className={styles.atouts}>
         <li><strong>Sur site</strong><span>Je viens à votre dépôt ou sur votre parking.</span></li>
