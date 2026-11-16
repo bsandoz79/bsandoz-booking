@@ -94,6 +94,10 @@
 .formule:hover { border-color: #8cc2f2; background: rgb(140 194 242 / .14); }
 .prix { color: #8cc2f2; font-weight: 800; white-space: nowrap; }
 .panneauAide { margin: 0; font-size: .75rem; color: #b9c7d8; }
+.panneauPro { display: block; padding-top: .6rem; border-top: 1px solid rgb(255 255 255 / .14); font-size: .8rem; color: #dbe5f0; text-decoration: none; }
+.panneauPro strong { color: #8cc2f2; white-space: nowrap; }
+.panneauPro:hover strong { text-decoration: underline; }
+.panneauPro:focus-visible { outline: 3px solid #8cc2f2; outline-offset: 2px; }
 .simple .panneau { opacity: 1; transform: none; pointer-events: auto; transition: none; }
 
 /* Téléphone (écran vertical) : les images sont en paysage ; plutôt que d'en garder une tranche, la voiture entière est

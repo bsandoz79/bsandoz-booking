@@ -69,6 +69,13 @@ describe('Accueil', () => {
     expect(await screen.findByRole('heading', { level: 2, name: 'Horaires' })).toBeInTheDocument();
   });
 
+  it('propose aux professionnels (flottes) une demande de devis', () => {
+    render(<MemoryRouter><Accueil /></MemoryRouter>);
+    const encart = screen.getByRole('region', { name: 'Une flotte de véhicules à nettoyer ?' });
+    expect(within(encart).getByRole('link', { name: 'Demander un devis' })).toHaveAttribute('href', '/professionnels#titre-devis');
+    expect(within(encart).getByRole('link', { name: 'En savoir plus' })).toHaveAttribute('href', '/professionnels');
+  });
+
   it('affiche les prestations par catégorie, avec ce qui est compris et un lien de réservation', async () => {
     render(<MemoryRouter><Accueil /></MemoryRouter>);
     const onglets = screen.getAllByRole('tab');

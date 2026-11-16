@@ -232,6 +232,7 @@
   - Kit : réglages `--bs-button-radius` et `--bs-button-border` du bloc `Button`, en pilule par défaut ; la démo les règle à 8 px et 1 px.
   - Logique pure testée : `etatScene`, `trajetVitre`, `pointDuTrajet`, `cadrageCouvrant`.
 - Scène de l'intérieur : consigne du chiffon plus discrète (texte court, bouton « Passer » bordé, barre sur une ligne).
+- Accueil : encart « Professionnels » (flottes, utilitaires) menant au formulaire de devis, et lien depuis le panneau « Réserver votre lavage ».
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
