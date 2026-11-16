@@ -1,9 +1,7 @@
 import { Fragment, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
-import { formatEuros } from '@bsandoz/ui';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
-import { CATEGORIES, estCombinee, prixMin, type Formule } from '../../data/demo';
 import { HERO_SCENES } from '../../data/heroScenes';
 import styles from './HeroScenes.module.css';
 
@@ -13,13 +11,13 @@ const moinsDAnimations = () => typeof window !== 'undefined' && window.matchMedi
 /**
  * Haut de l'accueil façon « reel », piloté par le défilement : la scène reste à l'écran pendant qu'on fait défiler.
  * Voiture boueuse → la mousse coule de haut en bas → une barre de lumière rince de gauche à droite → on se rapproche →
- * porte du garage et lumière dorée ; de grands titres s'enchaînent ; à la fin, le texte de l'accueil arrive à gauche et
- * le panneau « Réserver votre lavage » à droite (sous le texte sur téléphone).
+ * porte du garage et lumière dorée ; de grands titres s'enchaînent ; à la fin, le texte de l'accueil et les boutons
+ * arrivent en haut à gauche, pour laisser la voiture visible.
  * Réglages (images, moments, titres) : data/heroScenes.ts. « Moins d'animations » ou mode modification : directement la
  * fin, sans section épinglée.
  */
-export function HeroScenes({ surtitre, titre, introduction, points, telephone, formules, statique = false }: {
-  surtitre: string; titre: string; introduction: string; points: string[]; telephone?: string; formules: Formule[]; statique?: boolean;
+export function HeroScenes({ surtitre, titre, introduction, points, telephone, statique = false }: {
+  surtitre: string; titre: string; introduction: string; points: string[]; telephone?: string; statique?: boolean;
 }) {
   const section = useRef<HTMLElement>(null);
   const [fixe] = useState(moinsDAnimations);
@@ -77,16 +75,18 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
     let depart = 0;
     let arrete = false;
     const adoucir = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
-    // Avancement voulu à un instant donné (en secondes), entre les points de passage, adouci.
-    const avancement = (s: number) => {
+    const duree = lecture[lecture.length - 1][0];
+    // Avancement voulu à un instant donné (en secondes) : un seul mouvement, adouci au départ et à l'arrivée, qui passe
+    // par les points de passage sans s'arrêter.
+    const avancement = (secondes: number) => {
+      const s = adoucir(secondes / duree) * duree;
       for (let i = 1; i < lecture.length; i++) {
         const [t0, p0] = lecture[i - 1];
         const [t1, p1] = lecture[i];
-        if (s <= t1) return p0 + (p1 - p0) * adoucir((s - t0) / (t1 - t0));
+        if (s <= t1) return p0 + (p1 - p0) * ((s - t0) / (t1 - t0));
       }
       return lecture[lecture.length - 1][1];
     };
-    const duree = lecture[lecture.length - 1][0];
     const arreter = () => {
       arrete = true;
       cancelAnimationFrame(image);
@@ -104,15 +104,6 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
     const attente = window.setTimeout(() => { image = requestAnimationFrame(pas); }, HERO_SCENES.attenteMs);
     return () => { window.clearTimeout(attente); arreter(); window.history.scrollRestoration = restauration; };
   }, [simple]);
-
-  // Panneau « Réserver » : les catégories proposées, avec leur prix « à partir de ».
-  const categories = CATEGORIES.map((c) => {
-    const liste = formules.filter((f) => f.category === c.value);
-    if (liste.length === 0) return null;
-    const premiere = liste[0];
-    const prix = Math.min(...liste.map((f) => prixMin(f, formules)));
-    return { ...c, prix, lien: liste.length === 1 || estCombinee(premiere) ? `/reserver?formule=${encodeURIComponent(premiere.id)}` : '/reserver' };
-  }).filter((c): c is NonNullable<typeof c> => c !== null);
 
   const { images } = HERO_SCENES;
   const fin = final || simple;
@@ -151,24 +142,12 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
               ))}
             </h1>
             <p className={styles.phrase}>{introduction}</p>
+            <div className={styles.boutons}>
+              <Link to="/reserver" className="btn">Réserver un créneau</Link>
+              {telephone && <a href={lienTel(telephone)} className={`btn ${styles.appeler}`} aria-label={`Appeler le ${telephone}`}><IconeTelephone /> {telephone}</a>}
+            </div>
             {points.length > 0 && <ul className={styles.points}>{points.map((a) => <li key={a}>{a}</li>)}</ul>}
           </div>
-
-          <aside className={styles.panneau} aria-label="Réserver votre lavage">
-            <p className={styles.panneauTitre}>Réserver votre lavage</p>
-            <ul className={styles.choix}>
-              {categories.map((c) => (
-                <li key={c.value}>
-                  <Link to={c.lien} className={styles.choixLien}>
-                    <span>{c.label}</span>
-                    <span className={styles.choixPrix}>dès {formatEuros(c.prix)}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <Link to="/reserver" className={`btn ${styles.reserver}`}>Choisir mon créneau</Link>
-            {telephone && <a href={lienTel(telephone)} className={styles.appel} aria-label={`Appeler le ${telephone}`}><IconeTelephone /> {telephone}</a>}
-          </aside>
         </div>
       </div>
     </section>

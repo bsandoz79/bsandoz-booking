@@ -31,12 +31,12 @@ export const HERO_SCENES = {
   final: 0.86,
   /**
    * Lecture automatique à l'arrivée : points de passage [seconde, avancement], la page défile toute seule entre eux.
-   * Les paliers laissent le temps de voir chaque image et de lire chaque titre (environ 15 s en tout).
+   * Environ 4 s en tout, d'un seul mouvement fluide.
    */
   lecture: [
-    // boue (pause), mousse qui coule (3 s), pause, rinçage (3 s), pause, rapprochement (2 s), pause, garage puis texte.
-    [0, 0], [1.8, 0.04], [2.2, 0.08], [5.2, 0.3], [6.4, 0.34], [6.8, 0.36], [9.8, 0.6], [11, 0.62], [13, 0.76], [13.8, 0.78], [15.3, 0.9],
+    // boue, mousse qui coule, rinçage, rapprochement, garage puis texte.
+    [0, 0], [0.4, 0.05], [1.3, 0.3], [2.4, 0.6], [3.1, 0.78], [3.9, 0.9],
   ] as ReadonlyArray<readonly [number, number]>,
   /** Attente avant le départ, le temps que la première image s'affiche (millisecondes). */
-  attenteMs: 600,
+  attenteMs: 300,
 } as const;
