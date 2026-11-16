@@ -2,7 +2,7 @@
  * Scène « l'intérieur, avant et après », juste après la vidéo de l'accueil (images créées par IA), pilotée par le défilement :
  * 1. approche : portière sale, la vue avance par l'ouverture jusqu'à l'habitacle sale ;
  * 2. arrêt : le défilement s'arrête, la souris devient un chiffon et nettoie l'habitacle là où elle passe ;
- * 3. là où le chiffon n'est pas passé, ça reste sale. Un coup de molette vers le bas (ou « Tout nettoyer et continuer ») :
+ * 3. là où le chiffon n'est pas passé, ça reste sale. Un coup de molette vers le bas (ou « Passer ») :
  *    le chiffon finit tout seul, en allers-retours de droite à gauche comme sur une vitre, puis la vue ressort par la portière,
  *    propre cette fois ;
  * 4. en remontant, le chemin se rejoue à l'envers et l'habitacle se resalit.
@@ -38,8 +38,8 @@ export const SCENE_INTERIEUR = {
   textes: {
     approche: 'Avant.',
     arret: 'À vous :\npassez le chiffon.',
-    aide: 'Passez la souris (ou le doigt) sur l’habitacle pour le nettoyer, puis faites défiler.',
-    continuer: 'Tout nettoyer et continuer',
+    aide: 'Frottez l’habitacle pour le nettoyer.',
+    continuer: 'Passer',
     sortie: 'Comme au\npremier jour.',
   },
   /** Taille du chiffon, en part du plus petit côté de l'image. */

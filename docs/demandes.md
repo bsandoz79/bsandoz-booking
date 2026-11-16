@@ -132,6 +132,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ « « lastname » est obligatoire » au paiement (champ « Nom et prénom » unique).
 - ✅ Minutes GitHub Actions épuisées : dépôt rendu public (minutes illimitées).
 - ✅ Déploiement : certificat FTPS (intermédiaires Let's Encrypt), TLS 1.2, dossiers « "demo.bsandoz.fr » créés par erreur (à supprimer dans cPanel), CSS/JS envoyés avant les pages.
+- ✅ Scène de l'intérieur : consigne « passez le chiffon » rendue discrète (petite barre sur une ligne, texte court, bouton « Passer » bordé au lieu du gros bouton bleu).
 
 ### Décisions en attente
 - ❓ Lien de la fiche Google (à créer), informations de facturation du vendeur (`[à compléter]`).

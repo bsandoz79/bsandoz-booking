@@ -26,12 +26,16 @@
   text-shadow: 0 4px 24px rgb(0 0 0 / .55); opacity: 0; transform: translateY(-16px); transition: opacity .15s ease, transform .15s ease; }
 .titreVisible { opacity: 1; transform: none; transition: opacity .4s ease .1s, transform .4s cubic-bezier(.2, .7, .2, 1) .1s; }
 
-/* Consigne pendant l'arrêt : en bas, lisible sur l'image, sans gêner le nettoyage. */
+/* Consigne pendant l'arrêt : petite barre discrète en bas, sur une ligne, sans gêner le nettoyage. */
 .consigne { position: absolute; z-index: 3; left: 50%; bottom: clamp(1rem, 4vh, 2rem); transform: translateX(-50%);
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem; width: min(42rem, calc(100% - 2rem));
-  padding: .8rem 1rem; border-radius: 16px; background: rgb(8 13 22 / .78); border: 1px solid rgb(255 255 255 / .14);
-  box-shadow: 0 18px 44px rgb(0 0 0 / .45); text-align: center; font-size: .95rem; }
+  display: flex; align-items: center; gap: .6rem; width: max-content; max-width: calc(100% - 2rem);
+  padding: .3rem .3rem .3rem .9rem; border-radius: 12px; background: rgb(8 13 22 / .62); border: 1px solid rgb(255 255 255 / .12);
+  font-size: .85rem; color: #e6edf5; }
 .consigne p { margin: 0; }
+.passer { flex: none; display: inline-flex; align-items: center; gap: .3rem; min-height: 36px; padding: 0 .75rem; border-radius: 9px;
+  border: 1px solid rgb(255 255 255 / .28); background: transparent; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.passer:hover { background: rgb(255 255 255 / .1); }
+.passer:focus-visible { outline: 3px solid #8cc2f2; outline-offset: 2px; }
 
 /* Fine barre d'avancement en bas de l'écran. */
 .progression { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 3px; background: rgb(255 255 255 / .12); }
