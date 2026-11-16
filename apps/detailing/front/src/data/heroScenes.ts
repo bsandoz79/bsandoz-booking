@@ -31,11 +31,11 @@ export const HERO_SCENES = {
   final: 0.86,
   /**
    * Lecture automatique à l'arrivée : points de passage [seconde, avancement], la page défile toute seule entre eux.
-   * Environ 4 s en tout, d'un seul mouvement fluide.
+   * Environ 6 s en tout, d'un seul mouvement fluide.
    */
   lecture: [
     // boue, mousse qui coule, rinçage, rapprochement, garage puis texte.
-    [0, 0], [0.4, 0.05], [1.3, 0.3], [2.4, 0.6], [3.1, 0.78], [3.9, 0.9],
+    [0, 0], [0.6, 0.05], [2, 0.3], [3.6, 0.6], [4.7, 0.78], [5.9, 0.9],
   ] as ReadonlyArray<readonly [number, number]>,
   /** Attente avant le départ, le temps que la première image s'affiche (millisecondes). */
   attenteMs: 300,
