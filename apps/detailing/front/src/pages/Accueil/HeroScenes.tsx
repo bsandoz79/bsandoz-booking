@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
@@ -15,6 +15,8 @@ const moinsDAnimations = () => typeof window !== 'undefined' && window.matchMedi
  * Voiture boueuse → la mousse coule de haut en bas → une barre de lumière rince de gauche à droite → on se rapproche →
  * porte du garage et lumière dorée ; de grands titres s'enchaînent ; à la fin, le texte de l'accueil et les boutons
  * arrivent en haut à gauche, pour laisser la voiture visible.
+ * La scène ne se joue qu'une fois par chargement de page : une fois terminée, la section se resserre sur l'image finale
+ * et remonter ne la rejoue plus (seul un rechargement la relance).
  * Réglages (images, moments, titres) : data/heroScenes.ts. « Moins d'animations » ou mode modification : directement la
  * fin, sans section épinglée.
  */
@@ -25,7 +27,21 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
   const [fixe] = useState(moinsDAnimations);
   const [etape, setEtape] = useState(-1);
   const [final, setFinal] = useState(false);
-  const simple = fixe || statique;
+  // Scène jouée jusqu'au bout : on passe à l'image finale fixe, sans retour en arrière possible.
+  const [termine, setTermine] = useState(false);
+  const simple = fixe || statique || termine;
+  // Hauteur retirée à la section quand elle se resserre : la page remonte d'autant, rien ne saute à l'écran.
+  const hauteurAvant = useRef(0);
+  const terminer = () => {
+    if (section.current) hauteurAvant.current = section.current.offsetHeight;
+    setTermine(true);
+  };
+  useLayoutEffect(() => {
+    const el = section.current;
+    if (!termine || !el || !hauteurAvant.current) return;
+    window.scrollTo(0, Math.max(0, window.scrollY - (hauteurAvant.current - el.offsetHeight)));
+    hauteurAvant.current = 0;
+  }, [termine]);
 
   useEffect(() => {
     const el = section.current;
@@ -46,6 +62,7 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
       for (const [cle, v] of Object.entries(valeurs)) el.style.setProperty(cle, String(Math.round(v * 1000) / 1000));
       setEtape(HERO_SCENES.etapes.findIndex((e) => p >= e.de && p < e.a));
       setFinal(p >= HERO_SCENES.final);
+      if (p >= HERO_SCENES.fin) terminer();
     };
     const auDefilement = () => { if (!attente) attente = requestAnimationFrame(calculer); };
     calculer();
@@ -58,8 +75,7 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
     };
   }, [simple]);
 
-  // Lecture automatique à l'arrivée : la page défile toute seule à travers la scène (le défilement pilote tout, donc
-  // remonter rejoue la scène à l'envers). Toujours depuis le haut de l'accueil, même après un rechargement (le
+  // Lecture automatique à l'arrivée : la page défile toute seule à travers la scène. Toujours depuis le haut de l'accueil, même après un rechargement (le
   // navigateur remettrait sinon la page là où on l'avait laissée) ; pas si on arrive par un lien vers une section (#…).
   // Le moindre geste du visiteur (doigt, molette, touche, clic) l'arrête et lui rend la main.
   useEffect(() => {
@@ -98,7 +114,7 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
       depart ||= maintenant;
       const s = (maintenant - depart) / 1000;
       window.scrollTo(0, debutScene + avancement(Math.min(s, duree)) * parcours);
-      if (s < duree) image = requestAnimationFrame(pas); else arreter();
+      if (s < duree) image = requestAnimationFrame(pas); else { arreter(); terminer(); }
     };
     for (const type of ['wheel', 'touchstart', 'keydown', 'mousedown'] as const) window.addEventListener(type, arreter, { passive: true });
     // Petite attente : laisser la première image s'afficher avant de démarrer.
