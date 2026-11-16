@@ -207,6 +207,7 @@
 - Accueil : scénario en 6 s, textes dans le coin en haut à gauche, plus compacts.
 - Accueil : voiture fixe (images recadrées au même endroit, sans zoom), surtitre sur une ligne, titres sans chevauchement, panneau Réserver à droite menant au planning avec la formule cochée (?formule=…&etape=creneau).
 - Accueil : recul progressif sur l'image du garage jusqu'à son cadrage d'origine.
+- Accueil : nouvelle image « voiture propre », identique à la voiture boueuse (même cadrage), alignée.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
