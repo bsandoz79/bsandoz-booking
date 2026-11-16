@@ -1,13 +1,26 @@
 /*
  * Haut de l'accueil piloté par le défilement : section haute de `--ecrans` écrans, scène collée sous l'en-tête.
- * La vidéo suit le défilement ; titres d'étape en grand, en bas à droite (comme le reel) ; à la fin, texte à gauche et
+ * Les images changent avec le défilement ; titres d'étape en grand, en bas à droite (comme le reel) ; à la fin, texte à gauche et
  * panneau « Réserver » qui glisse depuis la droite. --avance (0 → 1) vient du défilement.
  */
-.hero { position: relative; height: calc(var(--ecrans, 4) * 100svh); background: #05080d; color: #fff; }
+.hero { position: relative; height: calc(var(--ecrans, 5) * 100svh); background: #05080d; color: #fff; }
 .scene { position: sticky; top: 64px; height: calc(100svh - 64px); overflow: hidden; isolation: isolate; }
-.fond { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Images superposées : boue (fond), mousse (coule de haut en bas), propre (révélée par la barre), garage (fondu). */
+.images { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
+.image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 45% 50%; display: block; }
+.boue { transform: scale(var(--depart, 1.06)); }
+/* La mousse descend avec un bord doux (masque, invisible en soi), comme si elle coulait sur la voiture. */
+.mousse { --bas: calc(var(--mousse, 0) * 1.15% - 15%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 var(--bas), transparent calc(var(--bas) + 15%));
+  mask-image: linear-gradient(to bottom, #000 var(--bas), transparent calc(var(--bas) + 15%)); }
+.propre { position: absolute; inset: 0; overflow: hidden; clip-path: inset(0 calc(100% - var(--rincage, 0) * 1%) 0 0); }
+.propre .image { transform: scale(var(--zoom, 1)); transform-origin: 40% 55%; }
+.garage { opacity: var(--garage, 0); }
+/* Barre de lumière qui rince : trait blanc net, à peine diffus, visible seulement pendant le rinçage. */
+.barre { position: absolute; top: 0; bottom: 0; left: calc(var(--rincage, 0) * 1%); width: 4px; margin-left: -2px; background: #fff;
+  box-shadow: 0 0 18px 3px rgb(255 255 255 / .6); opacity: calc(min(var(--rincage, 0), 100 - var(--rincage, 0)) / 3); pointer-events: none; }
 
-/* Voile uni, seulement à la fin (pas pendant la vidéo). */
+/* Voile uni, seulement à la fin. */
 .voile { position: absolute; inset: 0; z-index: -1; background: rgb(5 8 13 / .58); opacity: 0; transition: opacity .6s ease; }
 .final .voile { opacity: 1; }
 
@@ -68,6 +81,7 @@
 .simple { height: auto; }
 .simple .scene { position: relative; top: 0; height: auto; min-height: calc(100svh - 64px); }
 .simple .fin { position: relative; min-height: calc(100svh - 64px); }
+.simple .garage { opacity: 1; }
 .simple .voile, .simple .texte > *, .simple .panneau, .simple .titre .mot { transition: none; }
 
 @media (prefers-reduced-motion: reduce) {
