@@ -87,6 +87,16 @@
 .panneauAide { margin: 0; font-size: .75rem; color: #b9c7d8; }
 .simple .panneau { opacity: 1; transform: none; pointer-events: auto; transition: none; }
 
+/* Téléphone (écran vertical) : les images sont en paysage ; plutôt que d'en garder une tranche, la voiture entière est
+   montrée dans un cadre paysage sur toute la largeur, sur le noir du studio ; les textes occupent l'espace au-dessus. */
+@media (orientation: portrait) and (max-width: 899px) {
+  .images { inset: auto 0; top: 57%; aspect-ratio: 1.6; transform: translateY(-50%); }
+  .image { object-position: 48% 50%; }
+  .surtitre { white-space: normal; font-size: .62rem; }
+  .titre { font-size: clamp(1.45rem, 6.6vw, 1.9rem); }
+  .etape { font-size: clamp(2rem, 10vw, 2.8rem); }
+}
+
 /* Version simple (« moins d'animations ») : une hauteur d'écran, dernière image, tout affiché. */
 .simple { height: auto; }
 .simple .scene { position: relative; top: 0; height: auto; min-height: calc(100svh - 64px); }
