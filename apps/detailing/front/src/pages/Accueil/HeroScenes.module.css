@@ -8,13 +8,11 @@
 /* Images superposées : boue (fond), mousse (coule de haut en bas), propre (révélée par la barre), garage (fondu). */
 .images { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
 .image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 45% 50%; display: block; }
-.boue { transform: scale(var(--depart, 1.06)); }
 /* La mousse descend avec un bord doux (masque, invisible en soi), comme si elle coulait sur la voiture. */
 .mousse { --bas: calc(var(--mousse, 0) * 1.15% - 15%);
   -webkit-mask-image: linear-gradient(to bottom, #000 var(--bas), transparent calc(var(--bas) + 15%));
   mask-image: linear-gradient(to bottom, #000 var(--bas), transparent calc(var(--bas) + 15%)); }
 .propre { position: absolute; inset: 0; overflow: hidden; clip-path: inset(0 calc(100% - var(--rincage, 0) * 1%) 0 0); }
-.propre .image { transform: scale(var(--zoom, 1)); transform-origin: 40% 55%; }
 .garage { opacity: var(--garage, 0); }
 /* Barre de lumière qui rince : trait blanc net, à peine diffus, visible seulement pendant le rinçage. */
 .barre { position: absolute; top: 0; bottom: 0; left: calc(var(--rincage, 0) * 1%); width: 4px; margin-left: -2px; background: #fff;
@@ -27,8 +25,9 @@
 /* Titres d'étape : très grands, capitales serrées, en haut à gauche. */
 .etape { position: absolute; left: clamp(.9rem, 2.2vw, 1.75rem); top: clamp(.9rem, 2.2vw, 1.75rem); margin: 0;
   font-size: clamp(1.7rem, 5.5vw, 3.4rem); font-weight: 900; font-style: italic; line-height: .92; letter-spacing: -.03em; text-transform: uppercase;
-  text-shadow: 0 4px 24px rgb(0 0 0 / .55); opacity: 0; transform: translateY(-16px); transition: opacity .45s ease, transform .45s cubic-bezier(.2, .7, .2, 1); }
-.etapeVisible { opacity: 1; transform: none; }
+  text-shadow: 0 4px 24px rgb(0 0 0 / .55); opacity: 0; transform: translateY(-16px); transition: opacity .15s ease, transform .15s ease; }
+/* Le titre suivant n'apparaît qu'une fois le précédent effacé : jamais deux titres l'un sur l'autre. */
+.etapeVisible { opacity: 1; transform: none; transition: opacity .4s ease .18s, transform .4s cubic-bezier(.2, .7, .2, 1) .18s; }
 
 /* Fine barre d'avancement en bas de l'écran. */
 .progression { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgb(255 255 255 / .12); }
@@ -47,7 +46,8 @@
 .final .texte > :nth-child(4) { transition-delay: .45s; }
 .final .texte > :nth-child(5) { transition-delay: .6s; }
 
-.surtitre { margin: 0; text-transform: uppercase; letter-spacing: .14em; font-size: .75rem; font-weight: 800; color: #8cc2f2; }
+/* Surtitre sur une seule ligne, même s'il dépasse la largeur du bloc (plus petit sur téléphone pour tenir à l'écran). */
+.surtitre { margin: 0; white-space: nowrap; text-transform: uppercase; letter-spacing: .1em; font-size: clamp(.56rem, 2.3vw, .75rem); font-weight: 800; color: #8cc2f2; }
 .titre { margin: .45rem 0 0; font-size: clamp(1.55rem, 3.4vw, 2.4rem); line-height: 1.05; letter-spacing: -.02em; }
 .final .texte > .titre { transition: none; }
 .titre .mot { display: inline-block; opacity: 0; transform: translateY(-.4em); transition: opacity .5s ease, transform .5s cubic-bezier(.2, .7, .2, 1); }
@@ -62,6 +62,28 @@
 /* Téléphone : sans les points forts, pour garder la voiture visible. */
 /* Points forts masqués ici (ils restent plus bas sur la page) : la voiture reste dégagée. */
 .points { display: none; }
+
+/* Panneau « Réserver » à droite (grand écran seulement) : catégories, puis formules qui mènent au planning. */
+.panneau { display: none; }
+@media (min-width: 900px) {
+  .panneau { position: absolute; top: clamp(.9rem, 2.2vw, 1.75rem); right: clamp(.9rem, 2.2vw, 1.75rem); width: 320px; display: grid; gap: .6rem;
+    padding: 1rem; border-radius: 16px; background: rgb(8 13 22 / .78); border: 1px solid rgb(255 255 255 / .14); box-shadow: 0 18px 44px rgb(0 0 0 / .45);
+    opacity: 0; transform: translateX(24px); pointer-events: none; transition: opacity .55s ease .35s, transform .55s cubic-bezier(.2, .7, .2, 1) .35s; }
+  .final .panneau { opacity: 1; transform: none; pointer-events: auto; }
+}
+.panneauTitre { margin: 0; font-weight: 900; font-size: .95rem; text-transform: uppercase; letter-spacing: .05em; }
+.categories { display: flex; flex-wrap: wrap; gap: .35rem; }
+.categorie { min-height: 34px; padding: 0 .75rem; border-radius: 999px; border: 1px solid rgb(255 255 255 / .22); background: transparent; color: #fff;
+  font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
+.categorie[aria-pressed='true'] { background: #fff; color: #0b1320; border-color: #fff; }
+.categorie:focus-visible, .formule:focus-visible { outline: 3px solid #8cc2f2; outline-offset: 2px; }
+.formules { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; }
+.formule { display: flex; justify-content: space-between; align-items: center; gap: .8rem; min-height: 44px; padding: 0 .8rem; border-radius: 10px;
+  color: #fff; text-decoration: none; font-weight: 600; font-size: .9rem; background: rgb(255 255 255 / .06); border: 1px solid rgb(255 255 255 / .12); }
+.formule:hover { border-color: #8cc2f2; background: rgb(140 194 242 / .14); }
+.prix { color: #8cc2f2; font-weight: 800; white-space: nowrap; }
+.panneauAide { margin: 0; font-size: .75rem; color: #b9c7d8; }
+.simple .panneau { opacity: 1; transform: none; pointer-events: auto; transition: none; }
 
 /* Version simple (« moins d'animations ») : une hauteur d'écran, dernière image, tout affiché. */
 .simple { height: auto; }

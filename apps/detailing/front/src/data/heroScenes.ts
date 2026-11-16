@@ -1,7 +1,7 @@
 /**
  * Haut de l'accueil piloté par le défilement, en images (créées par IA) : voiture boueuse → la mousse coule dessus →
- * une barre de lumière la rince de gauche à droite → on se rapproche de la voiture propre → porte du garage, lumière
- * dorée, puis le texte et le panneau « Réserver ».
+ * une barre de lumière la rince de gauche à droite → porte du garage, lumière dorée, puis le texte et le panneau
+ * « Réserver ». Les 4 images sont recadrées pour que la voiture soit au même endroit, à la même taille : elle ne bouge pas.
  *
  * Chaque moment est une part du défilement (de 0 à 1). Pour changer une image : remplacer le fichier (même nom).
  */
@@ -15,17 +15,15 @@ export const HERO_SCENES = {
   /** Hauteur de défilement de la scène, en hauteurs d'écran (plus grand : tout avance plus lentement). */
   ecrans: 5,
   moments: {
-    mousse: [0.08, 0.3],
-    rincage: [0.36, 0.6],
-    zoom: [0.6, 0.76],
-    garage: [0.76, 0.86],
+    mousse: [0.08, 0.35],
+    rincage: [0.42, 0.7],
+    garage: [0.74, 0.84],
   },
   /** Titres affichés en grand pendant certaines parties du défilement. */
   etapes: [
     { de: 0, a: 0.08, texte: 'Avant.' },
-    { de: 0.12, a: 0.32, texte: 'On applique\nla mousse.' },
-    { de: 0.38, a: 0.58, texte: 'On rince.' },
-    { de: 0.62, a: 0.76, texte: 'Regardez\nde plus près.' },
+    { de: 0.12, a: 0.37, texte: 'On applique\nla mousse.' },
+    { de: 0.42, a: 0.7, texte: 'On rince.' },
   ],
   /** Part du défilement à partir de laquelle le texte de l'accueil et le panneau « Réserver » arrivent. */
   final: 0.86,
@@ -34,8 +32,8 @@ export const HERO_SCENES = {
    * Environ 6 s en tout, d'un seul mouvement fluide.
    */
   lecture: [
-    // boue, mousse qui coule, rinçage, rapprochement, garage puis texte.
-    [0, 0], [0.6, 0.05], [2, 0.3], [3.6, 0.6], [4.7, 0.78], [5.9, 0.9],
+    // boue, mousse qui coule, rinçage, garage puis texte.
+    [0, 0], [0.6, 0.05], [2.3, 0.36], [4.1, 0.7], [5.9, 0.9],
   ] as ReadonlyArray<readonly [number, number]>,
   /** Attente avant le départ, le temps que la première image s'affiche (millisecondes). */
   attenteMs: 300,
