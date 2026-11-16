@@ -217,6 +217,14 @@
   - Chaque image a son grand titre (« Avant. », « Miettes, poussière, déchets. », « Après. », « Comme au premier jour. »), avec une fine barre d'avancement.
   - En mode « moins d'animations » ou en mode modification : une rangée d'images à faire glisser.
   - Texte de remplacement sur chaque image. Tests.
+- Accueil : la scène de l'intérieur devient interactive (remplace le défilement vers la gauche).
+  - Approche : la portière sale grossit vers son ouverture, jusqu'à l'habitacle sale.
+  - Arrêt : le défilement s'arrête. La souris devient un chiffon (`public/scenes/chiffon.png`), et seul ce qu'il touche devient propre (au doigt sur téléphone).
+  - Un nouveau coup de molette (ou le bouton « Tout nettoyer et continuer », ou la flèche vers le bas) : le chiffon finit tout seul, en allers-retours de gauche à droite du haut vers le bas, comme sur une vitre. La vue ressort ensuite par la portière, propre, toute seule.
+  - En remontant, le chemin se rejoue à l'envers et l'habitacle se resalit.
+  - L'élan de la molette ou du pavé tactile ne termine pas le nettoyage tout seul : il faut une courte pause, puis un nouveau geste.
+  - En mode « moins d'animations » ou en mode modification : le comparateur avant / après.
+  - Logique pure testée : `etatScene`, `trajetVitre`, `pointDuTrajet`, `cadrageCouvrant`.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
