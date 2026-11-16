@@ -202,6 +202,7 @@
 - Accueil : vidéo pilotée par le défilement (titres par étape, panneau « Réserver » à la fin), réglages dans data/heroVideo.ts ; consignes de génération par IA dans docs/video-ia.md ; version avant / après retirée.
 - docs/video-ia.md : consignes de génération en français.
 - Accueil : scénario en images IA piloté par le défilement (boue, mousse qui coule, rinçage par une barre de lumière, zoom, garage doré, puis panneau Réserver) ; réglages dans data/heroScenes.ts ; vidéo provisoire retirée.
+- Accueil : lecture automatique du scénario à l'arrivée (~15 s, pauses sur chaque image), arrêtée au moindre geste ; remonter le rejoue à l'envers.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

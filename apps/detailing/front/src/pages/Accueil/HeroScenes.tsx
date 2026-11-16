@@ -59,6 +59,48 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
     };
   }, [simple]);
 
+  // Lecture automatique à l'arrivée : la page défile toute seule à travers la scène (le défilement pilote tout, donc
+  // remonter rejoue la scène à l'envers). Seulement si on arrive en haut de page ; le moindre geste du visiteur (doigt,
+  // molette, touche, clic) l'arrête et lui rend la main.
+  useEffect(() => {
+    const el = section.current;
+    if (!el || simple || window.scrollY > 10) return;
+    const debutScene = el.getBoundingClientRect().top + window.scrollY;
+    const parcours = el.offsetHeight - window.innerHeight;
+    if (parcours <= 0) return;
+    const { lecture } = HERO_SCENES;
+    let image = 0;
+    let depart = 0;
+    let arrete = false;
+    const adoucir = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+    // Avancement voulu à un instant donné (en secondes), entre les points de passage, adouci.
+    const avancement = (s: number) => {
+      for (let i = 1; i < lecture.length; i++) {
+        const [t0, p0] = lecture[i - 1];
+        const [t1, p1] = lecture[i];
+        if (s <= t1) return p0 + (p1 - p0) * adoucir((s - t0) / (t1 - t0));
+      }
+      return lecture[lecture.length - 1][1];
+    };
+    const duree = lecture[lecture.length - 1][0];
+    const arreter = () => {
+      arrete = true;
+      cancelAnimationFrame(image);
+      for (const type of ['wheel', 'touchstart', 'keydown', 'mousedown'] as const) window.removeEventListener(type, arreter);
+    };
+    const pas = (maintenant: number) => {
+      if (arrete) return;
+      depart ||= maintenant;
+      const s = (maintenant - depart) / 1000;
+      window.scrollTo({ top: debutScene + avancement(Math.min(s, duree)) * parcours, behavior: 'instant' });
+      if (s < duree) image = requestAnimationFrame(pas); else arreter();
+    };
+    for (const type of ['wheel', 'touchstart', 'keydown', 'mousedown'] as const) window.addEventListener(type, arreter, { passive: true });
+    // Petite attente : laisser la première image s'afficher avant de démarrer.
+    const attente = window.setTimeout(() => { image = requestAnimationFrame(pas); }, HERO_SCENES.attenteMs);
+    return () => { window.clearTimeout(attente); arreter(); };
+  }, [simple]);
+
   // Panneau « Réserver » : les catégories proposées, avec leur prix « à partir de ».
   const categories = CATEGORIES.map((c) => {
     const liste = formules.filter((f) => f.category === c.value);
