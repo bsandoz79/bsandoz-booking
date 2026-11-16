@@ -60,11 +60,15 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
   }, [simple]);
 
   // Lecture automatique à l'arrivée : la page défile toute seule à travers la scène (le défilement pilote tout, donc
-  // remonter rejoue la scène à l'envers). Seulement si on arrive en haut de page ; le moindre geste du visiteur (doigt,
-  // molette, touche, clic) l'arrête et lui rend la main.
+  // remonter rejoue la scène à l'envers). Toujours depuis le haut de l'accueil, même après un rechargement (le
+  // navigateur remettrait sinon la page là où on l'avait laissée) ; pas si on arrive par un lien vers une section (#…).
+  // Le moindre geste du visiteur (doigt, molette, touche, clic) l'arrête et lui rend la main.
   useEffect(() => {
     const el = section.current;
-    if (!el || simple || window.scrollY > 10) return;
+    if (!el || simple || window.location.hash) return;
+    const restauration = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
     const debutScene = el.getBoundingClientRect().top + window.scrollY;
     const parcours = el.offsetHeight - window.innerHeight;
     if (parcours <= 0) return;
@@ -92,13 +96,13 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
       if (arrete) return;
       depart ||= maintenant;
       const s = (maintenant - depart) / 1000;
-      window.scrollTo({ top: debutScene + avancement(Math.min(s, duree)) * parcours, behavior: 'instant' });
+      window.scrollTo(0, debutScene + avancement(Math.min(s, duree)) * parcours);
       if (s < duree) image = requestAnimationFrame(pas); else arreter();
     };
     for (const type of ['wheel', 'touchstart', 'keydown', 'mousedown'] as const) window.addEventListener(type, arreter, { passive: true });
     // Petite attente : laisser la première image s'afficher avant de démarrer.
     const attente = window.setTimeout(() => { image = requestAnimationFrame(pas); }, HERO_SCENES.attenteMs);
-    return () => { window.clearTimeout(attente); arreter(); };
+    return () => { window.clearTimeout(attente); arreter(); window.history.scrollRestoration = restauration; };
   }, [simple]);
 
   // Panneau « Réserver » : les catégories proposées, avec leur prix « à partir de ».
