@@ -27,6 +27,8 @@ function SceneAnimee({ titre, textes, douce }: { titre: string; textes: typeof S
   const dernierPoint = useRef<{ x: number; y: number } | null>(null);
   // Dernière mesure de la part nettoyée à la main (ms) : mesurée au plus toutes les 200 ms.
   const derniereMesure = useRef(0);
+  // Geste du doigt en cours pendant l'arrêt : point de départ, défilement de départ, et ce qu'il fait (nettoyer ou remonter).
+  const geste = useRef<{ x: number; y: number; scroll: number; mode?: 'nettoyer' | 'remonter' } | null>(null);
   const derniereAvance = useRef(0);
   // Arrêt dans l'habitacle (nettoyage en cours) et habitacle déjà nettoyé : en références pour les écouteurs, en état pour l'affichage.
   const arretRef = useRef(false);
@@ -265,22 +267,50 @@ function SceneAnimee({ titre, textes, douce }: { titre: string; textes: typeof S
       if (['ArrowDown', 'PageDown', ' ', 'End'].includes(e.key)) { e.preventDefault(); finir(); }
       if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) { arretRef.current = false; setArret(false); }
     };
-    // Au doigt, la page ne défile pas pendant le nettoyage (le doigt nettoie) ; le bouton permet de continuer.
-    const surDoigt = (e: TouchEvent) => { if (arretRef.current) e.preventDefault(); else if (lectureRef.current) arreterLecture(); };
+    // Au doigt, pendant le nettoyage, le doigt nettoie : la page ne défile pas (le bouton « Passer » permet de continuer).
+    // Exception : un glissé franchement vers le bas (le geste habituel pour remonter) fait remonter la page, en suivant le
+    // doigt jusqu'à ce qu'il le lâche ; remonter un peu suffit à sortir de l'arrêt.
+    const debutDoigt = (e: TouchEvent) => {
+      const t = e.touches[0];
+      geste.current = arretRef.current && t ? { x: t.clientX, y: t.clientY, scroll: window.scrollY } : null;
+    };
+    const surDoigt = (e: TouchEvent) => {
+      const g = geste.current;
+      const t = e.touches[0];
+      if (g && t) {
+        const dx = t.clientX - g.x;
+        const dy = t.clientY - g.y;
+        if (!g.mode && Math.hypot(dx, dy) > 14) g.mode = dy > 0 && dy > 1.5 * Math.abs(dx) ? 'remonter' : 'nettoyer';
+        if (g.mode === 'remonter') {
+          e.preventDefault();
+          dernierPoint.current = null;
+          window.scrollTo(0, Math.max(0, g.scroll - dy));
+          return;
+        }
+      }
+      if (arretRef.current) e.preventDefault(); else if (lectureRef.current) arreterLecture();
+    };
+    const finDoigt = () => { geste.current = null; dernierPoint.current = null; };
     window.addEventListener('wheel', surMolette, { passive: false });
     window.addEventListener('keydown', surTouche);
+    window.addEventListener('touchstart', debutDoigt, { passive: true });
     window.addEventListener('touchmove', surDoigt, { passive: false });
+    window.addEventListener('touchend', finDoigt);
+    window.addEventListener('touchcancel', finDoigt);
     return () => {
       window.removeEventListener('wheel', surMolette);
       window.removeEventListener('keydown', surTouche);
+      window.removeEventListener('touchstart', debutDoigt);
       window.removeEventListener('touchmove', surDoigt);
+      window.removeEventListener('touchend', finDoigt);
+      window.removeEventListener('touchcancel', finDoigt);
       arreterLecture();
     };
   }, [finir]);
 
   /** Le chiffon passe sous la souris (ou le doigt) : seul ce qu'il touche devient propre. */
   const frotter = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!arretRef.current) return;
+    if (!arretRef.current || geste.current?.mode === 'remonter') return;
     const c = toile.current;
     const m = masque.current;
     if (!c || !m) return;

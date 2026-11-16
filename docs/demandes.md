@@ -137,6 +137,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Encart « Professionnels » mis en avant en rouge (fond rouge pâle, contour fin, icône et bouton « Demander un devis » rouges), sans le liseré bleu ; version nuit adaptée.
 - ✅ Chiffon de la scène de l'intérieur : plus grand (dessin vectoriel net), fin automatique en 3 passages rapides (gauche → droite, droite → gauche, gauche → droite, moins d'une seconde) ; tout nettoyé à la main (95 %) : la vue ressort toute seule.
 - ✅ Page Professionnels (flottes, utilitaires) en environnement rouge : en-tête rouge pâle avec icône camion et bouton « Demander un devis », atouts, boutons, liens et champs du formulaire en rouge (clair et nuit) ; la barre de navigation garde les couleurs du site.
+- ✅ Moment « chiffon » sur téléphone : un glissé du doigt franchement vers le bas fait remonter la page (on peut revenir un peu en arrière) ; les autres gestes nettoient.
 
 ### Décisions en attente
 - ❓ Lien de la fiche Google (à créer), informations de facturation du vendeur (`[à compléter]`).

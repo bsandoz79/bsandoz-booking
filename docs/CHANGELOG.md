@@ -273,3 +273,4 @@
 - Accueil : la lecture automatique repart du haut même après un rechargement (le navigateur remettait la page plus bas) ; défilement compatible Safari.
 - Accueil : le scénario se joue aussi pour le pro connecté (il passait directement à l'image finale en mode modification).
 - Accueil sur téléphone : voiture entière dans un cadre paysage au lieu d'une tranche recadrée ; surtitre qui reste à l'écran.
+- Scène de l'intérieur sur téléphone : impossible de remonter pendant le nettoyage ; un glissé vers le bas fait désormais remonter la page.
