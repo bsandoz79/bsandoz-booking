@@ -30,9 +30,9 @@ export const A_COMPLETER = '[à compléter]';
 export const CONTENU_PAR_DEFAUT: ContenuSite = {
   coordonnees: { telephone: '01 02 03 04 05', email: 'contact@bsandoz.fr', adresse: 'Abbeville', horaires: 'du lundi au samedi de 8 h à 19 h, le dimanche de 10 h à 18 h' },
   accueil: {
-    surtitre: 'Nettoyage intérieur · extérieur · rénovation optique à domicile',
-    titre: 'Un habitacle comme au premier jour',
-    introduction: 'On vient à vous, vous ne bougez pas.',
+    surtitre: 'Perfect Clean · lavage et detailing à domicile',
+    titre: 'Votre voiture brille, sans bouger de chez vous.',
+    introduction: 'Mousse active, rinçage, finitions à la main : Perfect Clean vient à vous, à Abbeville et alentours.',
     photo: '',
     arguments: ['Eau et électricité autonomes', 'Déplacement offert : Abbeville et 5 km autour', 'Désodorisant Perfect Clean offert', 'Intervention possible en moins de 24 h'],
   },
