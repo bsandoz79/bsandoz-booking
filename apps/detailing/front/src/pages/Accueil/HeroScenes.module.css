@@ -13,7 +13,9 @@
   -webkit-mask-image: linear-gradient(to bottom, #000 var(--bas), transparent calc(var(--bas) + 15%));
   mask-image: linear-gradient(to bottom, #000 var(--bas), transparent calc(var(--bas) + 15%)); }
 .propre { position: absolute; inset: 0; overflow: hidden; clip-path: inset(0 calc(100% - var(--rincage, 0) * 1%) 0 0); }
-.garage { opacity: var(--garage, 0); }
+/* Garage : image entière, d'abord agrandie pour que la voiture soit au même endroit que sur les autres images
+   (zone de 64 % de l'image, point fixe à 26 % / 59 %), puis qui recule jusqu'au cadrage d'origine. */
+.garage { opacity: var(--garage, 0); transform-origin: 26.2% 58.8%; transform: scale(calc(1 + .56 * (1 - var(--recul, 0)))); }
 /* Barre de lumière qui rince : trait blanc net, à peine diffus, visible seulement pendant le rinçage. */
 .barre { position: absolute; top: 0; bottom: 0; left: calc(var(--rincage, 0) * 1%); width: 4px; margin-left: -2px; background: #fff;
   box-shadow: 0 0 18px 3px rgb(255 255 255 / .6); opacity: calc(min(var(--rincage, 0), 100 - var(--rincage, 0)) / 3); pointer-events: none; }
@@ -89,7 +91,7 @@
 .simple { height: auto; }
 .simple .scene { position: relative; top: 0; height: auto; min-height: calc(100svh - 64px); }
 .simple .fin { position: relative; min-height: calc(100svh - 64px); }
-.simple .garage { opacity: 1; }
+.simple .garage { opacity: 1; transform: none; }
 .simple .voile, .simple .texte > *, .simple .titre .mot { transition: none; }
 
 @media (prefers-reduced-motion: reduce) {
