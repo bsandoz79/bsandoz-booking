@@ -181,7 +181,7 @@ export function Accueil() {
             <p className={styles.intro}>Utilitaires, voitures de service, poids lourds : intervention sur votre dépôt ou votre parking, ponctuelle ou régulière. Tarif sur devis.</p>
           </div>
           <div className={styles.proActions}>
-            <Link to="/professionnels#titre-devis" className="btn">Demander un devis</Link>
+            <Link to="/professionnels#titre-devis" className={`btn ${styles.proBouton}`}>Demander un devis</Link>
             <Link to="/professionnels" className="btn btn--ghost">En savoir plus</Link>
           </div>
         </div>

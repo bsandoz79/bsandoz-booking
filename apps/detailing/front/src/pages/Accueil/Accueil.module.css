@@ -219,14 +219,19 @@ blockquote.card { margin: 0; }
 .heroPhoto video, .heroPhoto > img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 22px; }
 
 
-/* Encart « Professionnels » : carte bordée, icône, texte, puis boutons (en ligne sur grand écran). */
-.pro { display: grid; gap: 1rem; margin-block: 0 3rem; padding: clamp(1.1rem, 3vw, 1.75rem); border-radius: var(--bs-radius-md);
-  background: var(--bs-color-surface); border: 1px solid var(--bs-color-border); border-left: 4px solid var(--bs-color-primary); }
-.proIcone { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); }
+/* Encart « Professionnels » : mis en avant en rouge (fond teinté, contour fin), pour se distinguer des particuliers. */
+.pro { --pro-rouge: #c0262d; --pro-rouge-texte: #a11f25; --pro-rouge-doux: #fdeeee;
+  display: grid; gap: 1rem; margin-block: 0 3rem; padding: clamp(1.1rem, 3vw, 1.75rem); border-radius: var(--bs-radius-md);
+  background: var(--pro-rouge-doux); border: 1px solid color-mix(in srgb, var(--pro-rouge) 30%, transparent); }
+:global(:root[data-theme='nuit']) .pro { --pro-rouge-texte: #ff8a8f; --pro-rouge-doux: rgb(192 38 45 / .14); }
+.proIcone { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; background: var(--pro-rouge); color: #fff; }
 .proTexte { display: grid; gap: .35rem; }
 .proTexte h2 { margin: 0; font-size: clamp(1.25rem, 3.5vw, 1.6rem); }
 .proTexte p { margin: 0; }
-.proSurtitre { font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--bs-color-primary-dark); }
+.proSurtitre { font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--pro-rouge-texte); }
+.pro a.proBouton { background: var(--pro-rouge); border-color: color-mix(in srgb, var(--pro-rouge) 70%, #000); }
+/* Plus précis que le survol commun des boutons (.btn:not(…):not(…):hover). */
+.pro .proActions a.proBouton:hover { background: color-mix(in srgb, var(--pro-rouge) 82%, #000); }
 .proActions { display: flex; flex-wrap: wrap; gap: .6rem; }
 @media (min-width: 900px) {
   .pro { grid-template-columns: auto 1fr auto; align-items: center; gap: 1.5rem; }

@@ -233,6 +233,7 @@
   - Logique pure testée : `etatScene`, `trajetVitre`, `pointDuTrajet`, `cadrageCouvrant`.
 - Scène de l'intérieur : consigne du chiffon plus discrète (texte court, bouton « Passer » bordé, barre sur une ligne).
 - Accueil : encart « Professionnels » (flottes, utilitaires) menant au formulaire de devis, et lien depuis le panneau « Réserver votre lavage ».
+- Encart « Professionnels » de l'accueil en rouge (fond pâle, icône et bouton rouges), sans liseré bleu.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
