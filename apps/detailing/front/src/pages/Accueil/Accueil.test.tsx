@@ -102,6 +102,9 @@ describe('Accueil', () => {
   });
 
   it('affiche les frais de déplacement par tranches et les horaires de la semaine', async () => {
+    // Jour fixe (jeudi 12 novembre 2026) : la ligne « aujourd’hui » ne tombe pas sur le lundi vérifié plus bas.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-12T09:00:00'));
     render(<MemoryRouter><Accueil /></MemoryRouter>);
     const tranches = await screen.findByRole('list', { name: 'Frais de déplacement par distance' });
     expect(within(tranches).getAllByRole('listitem').map((l) => l.textContent)).toEqual(
@@ -114,6 +117,7 @@ describe('Accueil', () => {
     expect(horaires).toHaveTextContent('Dimanche');
     expect(horaires).toHaveTextContent('10 h – 18 h');
     expect(within(horaires).getByText(/aujourd’hui/).closest('li')).toHaveAttribute('aria-current', 'date');
+    vi.useRealTimers();
   });
 
   it('présente la carte de fidélité avec un exemple tamponné', async () => {
