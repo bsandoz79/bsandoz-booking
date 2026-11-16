@@ -26,6 +26,7 @@ import { CarteFormule } from './CarteFormule';
 import { AvantApres } from '../../components/AvantApres/AvantApres';
 import { VideoAuto } from '../../components/VideoAuto/VideoAuto';
 import { HeroScenes } from './HeroScenes';
+import { SceneInterieur } from './SceneInterieur';
 import styles from './Accueil.module.css';
 
 /** Accueil : textes, étapes, réalisations, avis, FAQ et communes modifiables dans l'espace pro (« Mon site »). */
@@ -192,6 +193,9 @@ export function Accueil() {
         </section>
         </Zone>
       )}
+
+      {/* Juste après la vidéo : l'intérieur, avant et après ; les images glissent vers la gauche au défilement. */}
+      <SceneInterieur statique={edition} />
 
       <Zone crayons={<ModifierRubrique rubrique="realisations" />}>
       <section id="realisations" className={`container ${styles.section}`} aria-labelledby="titre-realisations">

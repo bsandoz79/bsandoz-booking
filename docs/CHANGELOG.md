@@ -212,6 +212,11 @@
 - Accueil : texte dans une carte sombre, nouveau texte par défaut centré sur le lavage Perfect Clean ; cadre de la voiture abaissé sur téléphone.
 - En-tête pleine largeur (logo et boutons dans les coins), boutons modernisés, slogan « L’éclat du neuf, livré chez vous. », surtitre dans la carte ; réservation depuis l'accueil : options proposées avant le créneau.
 - Accueil : scène jouée une seule fois par chargement, figée sur l'image finale ensuite (plus de retour en arrière au défilement).
+- Accueil : scène « L'intérieur, avant et après », juste après la vidéo (`SceneInterieur`, réglages dans `data/sceneInterieur.ts`, images `public/scenes/interieur-*.jpg`).
+  - La section reste à l'écran pendant qu'on fait défiler, et les quatre images (créées par IA) glissent vers la gauche : portière sale, habitacle sale, habitacle propre, portière propre.
+  - Chaque image a son grand titre (« Avant. », « Miettes, poussière, déchets. », « Après. », « Comme au premier jour. »), avec une fine barre d'avancement.
+  - En mode « moins d'animations » ou en mode modification : une rangée d'images à faire glisser.
+  - Texte de remplacement sur chaque image. Tests.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

@@ -3,6 +3,12 @@
 Toutes les demandes faites pendant le développement, avec leur état. Mis à jour au fil de l'eau.
 Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à faire · ❓ décision à prendre.
 
+## 16 novembre 2026
+
+### Accueil
+- ✅ Juste après la vidéo « Comment ça marche », une scène du même genre que le haut de l'accueil, avec les images 5 à 8 (intérieur, créées par IA). Elle reste à l'écran pendant qu'on fait défiler, et les images glissent vers la gauche : « Avant. » (portière sale), « Miettes, poussière, déchets. », « Après. », « Comme au premier jour. » (portière propre). Réglages dans `data/sceneInterieur.ts`, images dans `public/scenes/`.
+- ❓ L'image « habitacle sale » montre des gobelets et emballages McDonald's reconnaissables (logo). Pour un site commercial, il vaut mieux une version sans marque visible.
+
 ## 13 novembre 2026
 
 ### Réglages et règles
