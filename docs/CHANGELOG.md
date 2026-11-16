@@ -199,6 +199,7 @@
 - Accueil : clip de 3 s (nettoyage, libre de droits Coverr) à la place de la photo du camion, joué une fois puis arrêté sur la dernière image ; test des horaires à date fixe.
 - Accueil façon reel : clip plein écran (portrait / paysage), texte révélé par-dessus à la fin du clip (HeroAccueil.module.css).
 - Accueil piloté par le défilement (comme le reel) : habitacle nettoyé par une barre de lumière, phare rénové, puis texte ; photos avant / après réelles (HeroDefilement) ; clip vidéo retiré.
+- Accueil : vidéo pilotée par le défilement (titres par étape, panneau « Réserver » à la fin), réglages dans data/heroVideo.ts ; consignes de génération par IA dans docs/video-ia.md ; version avant / après retirée.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
