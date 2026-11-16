@@ -2,9 +2,9 @@
  * Scène « l'intérieur, avant et après », juste après la vidéo de l'accueil (images créées par IA), pilotée par le défilement :
  * 1. approche : portière sale, la vue avance par l'ouverture jusqu'à l'habitacle sale ;
  * 2. arrêt : le défilement s'arrête, la souris devient un chiffon et nettoie l'habitacle là où elle passe ;
- * 3. là où le chiffon n'est pas passé, ça reste sale. Un coup de molette vers le bas (ou « Passer ») :
- *    le chiffon finit tout seul, en allers-retours de droite à gauche comme sur une vitre, puis la vue ressort par la portière,
- *    propre cette fois ;
+ * 3. là où le chiffon n'est pas passé, ça reste sale. Tout nettoyé à la main : la vue ressort toute seule. Sinon, un coup de
+ *    molette vers le bas (ou « Passer ») : un grand chiffon finit en 3 passages rapides (gauche → droite, droite → gauche,
+ *    gauche → droite), puis la vue ressort par la portière, propre cette fois ;
  * 4. en remontant, le chemin se rejoue à l'envers et l'habitacle se resalit.
  * Chaque moment est une part du défilement de la section (de 0 à 1). Pour changer une image : remplacer le fichier (même nom).
  */
@@ -19,7 +19,9 @@ export const SCENE_INTERIEUR = {
     portePropre: { src: '/scenes/interieur-apres-porte.jpg', alt: 'Portière ouverte : sièges et plancher propres.' },
   },
   /** Curseur « chiffon » pendant le nettoyage (point actif au centre). */
-  chiffon: '/scenes/chiffon.png',
+  chiffon: '/scenes/chiffon.svg',
+  /** Curseur de secours (navigateurs sans curseur SVG). */
+  chiffonSecours: '/scenes/chiffon.png',
   /** Point de l'image de la portière vers lequel on avance (l'ouverture, au niveau du volant), et grossissement final. */
   origine: '54% 42%',
   zoom: 2.8,
@@ -43,9 +45,13 @@ export const SCENE_INTERIEUR = {
     sortie: 'Comme au\npremier jour.',
   },
   /** Taille du chiffon, en part du plus petit côté de l'image. */
-  rayonChiffon: 0.08,
-  /** Durée de la fin du nettoyage, puis de la sortie jouée toute seule (millisecondes). */
-  finNettoyageMs: 2200,
+  rayonChiffon: 0.1,
+  /** Fin du nettoyage toute seule : nombre de passages (gauche → droite, droite → gauche…) et durée totale (ms). */
+  passagesAuto: 3,
+  finNettoyageMs: 900,
+  /** Part de l'habitacle nettoyée à la main au-delà de laquelle il est considéré propre : la vue ressort toute seule. */
+  seuilPropre: 0.95,
+  /** Durée de la sortie jouée toute seule (millisecondes). */
   sortieMs: 1800,
   /** Pause minimale avant un nouveau coup de molette (ms) : l'élan du défilement ne finit pas le nettoyage tout seul. */
   pauseMoletteMs: 300,
@@ -90,23 +96,34 @@ export function cadrageCouvrant(iw: number, ih: number, w: number, h: number) {
 }
 
 /**
- * Trajet du chiffon pour finir le nettoyage, comme sur une vitre : de droite à gauche, puis de gauche à droite une rangée
- * plus bas, et ainsi de suite jusqu'en bas. Rangées espacées d'un peu moins d'un diamètre, pour ne rien oublier.
+ * Trajet du chiffon pour finir le nettoyage : `passages` bandes horizontales, du haut vers le bas, en commençant de gauche
+ * à droite puis en alternant (gauche → droite, droite → gauche, gauche → droite pour 3 passages).
  */
-export function trajetVitre(largeur: number, hauteur: number, rayon: number): { x: number; y: number }[] {
-  const pas = rayon * 1.5;
-  const rangees = Math.max(1, Math.ceil((hauteur - rayon) / pas) + 1);
+export function trajetVitre(largeur: number, hauteur: number, passages: number): { x: number; y: number }[] {
   const points: { x: number; y: number }[] = [];
-  for (let i = 0; i < rangees; i++) {
-    const y = Math.min(hauteur - rayon * 0.5, rayon * 0.5 + i * pas);
-    const [debut, fin] = i % 2 === 0 ? [largeur, 0] : [0, largeur];
+  for (let i = 0; i < passages; i++) {
+    const y = (hauteur * (i + 0.5)) / passages;
+    const [debut, fin] = i % 2 === 0 ? [0, largeur] : [largeur, 0];
     points.push({ x: debut, y }, { x: fin, y });
   }
   return points;
 }
 
+/** Rayon du chiffon des passages automatiques : assez grand pour couvrir sa bande (et un peu des voisines). */
+export const rayonPassage = (hauteur: number, passages: number) => (hauteur / passages) * 0.85;
+
+/** Part nettoyée d'un masque (pixels RGBA) : proportion de pixels dont l'opacité dépasse la moitié. */
+export function partPropre(pixels: ArrayLike<number>): number {
+  const total = Math.floor(pixels.length / 4);
+  if (!total) return 0;
+  let propres = 0;
+  for (let i = 3; i < pixels.length; i += 4) if (pixels[i] >= 128) propres++;
+  return propres / total;
+}
+
 /** Point du trajet à une part donnée de sa longueur (0 → 1). */
 export function pointDuTrajet(trajet: { x: number; y: number }[], k: number): { x: number; y: number } {
+  if (k >= 1) return trajet[trajet.length - 1]; // fin exacte, sans erreur d'arrondi
   const longueurs = trajet.slice(1).map((pt, i) => Math.hypot(pt.x - trajet[i].x, pt.y - trajet[i].y));
   let reste = Math.min(1, Math.max(0, k)) * longueurs.reduce((a, b) => a + b, 0);
   for (let i = 0; i < longueurs.length; i++) {

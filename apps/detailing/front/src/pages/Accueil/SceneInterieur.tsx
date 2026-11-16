@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
-import { SCENE_INTERIEUR, cadrageCouvrant, etatScene, pointDuTrajet, trajetVitre } from '../../data/sceneInterieur';
+import { SCENE_INTERIEUR, cadrageCouvrant, etatScene, partPropre, pointDuTrajet, rayonPassage, trajetVitre } from '../../data/sceneInterieur';
 import styles from './SceneInterieur.module.css';
 
 const moinsDAnimations = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
@@ -18,13 +18,15 @@ export function SceneInterieur() {
 }
 
 function SceneAnimee({ titre, textes, douce }: { titre: string; textes: typeof SCENE_INTERIEUR.textes; douce: boolean }) {
-  const { images, ecrans, origine, rayonChiffon, finNettoyageMs, sortieMs, chiffon, moments } = SCENE_INTERIEUR;
+  const { images, ecrans, origine, rayonChiffon, passagesAuto, finNettoyageMs, seuilPropre, sortieMs, chiffon, chiffonSecours, moments } = SCENE_INTERIEUR;
   const section = useRef<HTMLElement>(null);
   const cadre = useRef<HTMLDivElement>(null);
   const toile = useRef<HTMLCanvasElement>(null);
   const masque = useRef<HTMLCanvasElement | null>(null);
   const imagePropre = useRef<HTMLImageElement | null>(null);
   const dernierPoint = useRef<{ x: number; y: number } | null>(null);
+  // Dernière mesure de la part nettoyée à la main (ms) : mesurée au plus toutes les 200 ms.
+  const derniereMesure = useRef(0);
   const derniereAvance = useRef(0);
   // Arrêt dans l'habitacle (nettoyage en cours) et habitacle déjà nettoyé : en références pour les écouteurs, en état pour l'affichage.
   const arretRef = useRef(false);
@@ -99,11 +101,11 @@ function SceneAnimee({ titre, textes, douce }: { titre: string; textes: typeof S
   }, [dessiner, images.habitaclePropre.src]);
 
   /** Passe le chiffon d'un point à un autre sur le masque (cercles doux, sans trou entre deux positions). */
-  const passerChiffon = useCallback((depuis: { x: number; y: number }, vers: { x: number; y: number }) => {
+  const passerChiffon = useCallback((depuis: { x: number; y: number }, vers: { x: number; y: number }, rayon?: number) => {
     const m = masque.current;
     const ctx = m?.getContext?.('2d');
     if (!m || !ctx) return;
-    const r = Math.min(m.width, m.height) * rayonChiffon;
+    const r = rayon ?? Math.min(m.width, m.height) * rayonChiffon;
     const etapes = Math.max(1, Math.ceil(Math.hypot(vers.x - depuis.x, vers.y - depuis.y) / (r / 3)));
     for (let i = 1; i <= etapes; i++) {
       const px = depuis.x + ((vers.x - depuis.x) * i) / etapes;
@@ -140,41 +142,61 @@ function SceneAnimee({ titre, textes, douce }: { titre: string; textes: typeof S
     lectureRef.current = requestAnimationFrame(pas);
   }, [moments.sortie, sortieMs]);
 
+  /** Habitacle propre : on repart, sortie avec le véhicule propre. */
+  const conclure = useCallback(() => {
+    const m = masque.current;
+    const ctx = m?.getContext?.('2d');
+    if (m && ctx) {
+      // Derniers recoins (bords) : tout est propre.
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, m.width, m.height);
+      dessiner();
+    }
+    setChiffonAuto(null);
+    nettoyeRef.current = true;
+    setArret(false);
+    if (!douce) jouerSortie();
+  }, [dessiner, douce, jouerSortie]);
+
   /**
-   * Finit de nettoyer comme on lave une vitre : le chiffon fait des allers-retours de gauche à droite, du haut vers le bas,
-   * en ne touchant que ce qui reste sale (ce qui est déjà propre le reste). Puis on repart : sortie avec le véhicule propre.
+   * Finit de nettoyer : un grand chiffon fait 3 passages rapides (gauche → droite, droite → gauche, gauche → droite), du
+   * haut vers le bas, en ne touchant que ce qui reste sale. Puis on repart.
    */
   const finir = useCallback(() => {
     if (!arretRef.current) return;
     arretRef.current = false;
     const m = masque.current;
     const ctx = m?.getContext?.('2d');
-    const conclure = () => {
-      setChiffonAuto(null);
-      nettoyeRef.current = true;
-      setArret(false);
-      if (!douce) jouerSortie();
-    };
     if (!m || !ctx) { conclure(); return; }
-    const trajet = trajetVitre(m.width, m.height, Math.min(m.width, m.height) * rayonChiffon);
+    const trajet = trajetVitre(m.width, m.height, passagesAuto);
+    const rayon = rayonPassage(m.height, passagesAuto);
     let debut = 0;
     let precedent = trajet[0];
     const pas = (t: number) => {
       debut ||= t;
       const k = Math.min(1, (t - debut) / finNettoyageMs);
       const point = pointDuTrajet(trajet, k);
-      passerChiffon(precedent, point);
+      passerChiffon(precedent, point, rayon);
       precedent = point;
       setChiffonAuto({ x: (point.x / m.width) * 100, y: (point.y / m.height) * 100 });
       if (k < 1) { dessiner(); requestAnimationFrame(pas); return; }
-      // Derniers recoins (bords) : tout est propre.
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, m.width, m.height);
-      dessiner();
       conclure();
     };
     requestAnimationFrame(pas);
-  }, [dessiner, douce, finNettoyageMs, jouerSortie, passerChiffon, rayonChiffon]);
+  }, [conclure, dessiner, finNettoyageMs, passagesAuto, passerChiffon]);
+
+  /** Part de l'habitacle déjà nettoyée à la main (mesurée sur une version réduite du masque). */
+  const partNettoyee = () => {
+    const m = masque.current;
+    if (!m?.width) return 0;
+    const petit = document.createElement('canvas');
+    petit.width = 64;
+    petit.height = 36;
+    const ctx = petit.getContext?.('2d');
+    if (!ctx) return 0;
+    ctx.drawImage(m, 0, 0, petit.width, petit.height);
+    return partPropre(ctx.getImageData(0, 0, petit.width, petit.height).data);
+  };
 
   // Défilement : avancement de la scène, arrêt dans l'habitacle, et habitacle resali quand on remonte.
   useEffect(() => {
@@ -267,13 +289,22 @@ function SceneAnimee({ titre, textes, douce }: { titre: string; textes: typeof S
     passerChiffon(dernierPoint.current ?? point, point);
     dernierPoint.current = point;
     dessiner();
+    // Tout nettoyé à la main : on repart tout seul, sans attendre la molette ni « Passer ».
+    const maintenant = performance.now();
+    if (maintenant - derniereMesure.current < 200) return;
+    derniereMesure.current = maintenant;
+    if (partNettoyee() >= seuilPropre) {
+      arretRef.current = false;
+      dernierPoint.current = null;
+      conclure();
+    }
   };
 
   const habitacle = etat.propre ? images.habitaclePropre : images.habitacleSale;
   const porte = etat.propre ? images.portePropre : images.porteSale;
   const titreActif = arret ? 'arret' : etat.titre;
   const lignes = (texte: string) => texte.split('\n').map((ligne, j) => <Fragment key={j}>{j > 0 && <br />}{ligne}</Fragment>);
-  const style = { '--ecrans': ecrans, '--origine': origine, '--chiffon': `url("${chiffon}") 24 24` } as CSSProperties;
+  const style = { '--ecrans': ecrans, '--origine': origine, '--chiffon': `url("${chiffon}") 44 44, url("${chiffonSecours}") 24 24` } as CSSProperties;
 
   return (
     <section ref={section} className={styles.scene} style={style} aria-labelledby="titre-interieur">
