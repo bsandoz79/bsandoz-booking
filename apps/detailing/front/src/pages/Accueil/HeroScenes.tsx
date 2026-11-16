@@ -4,24 +4,24 @@ import { formatEuros } from '@bsandoz/ui';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
 import { CATEGORIES, estCombinee, prixMin, type Formule } from '../../data/demo';
-import { HERO_VIDEO } from '../../data/heroVideo';
-import styles from './HeroVideo.module.css';
+import { HERO_SCENES } from '../../data/heroScenes';
+import styles from './HeroScenes.module.css';
 
-const entre = (p: number, debut: number, fin: number) => Math.min(1, Math.max(0, (p - debut) / (fin - debut)));
+const entre = (p: number, [debut, fin]: readonly [number, number]) => Math.min(1, Math.max(0, (p - debut) / (fin - debut)));
 const moinsDAnimations = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 
 /**
- * Haut de l'accueil façon « reel », piloté par le défilement : la scène reste à l'écran pendant qu'on fait défiler, la
- * vidéo avance (et recule) avec le défilement, de grands titres s'enchaînent par étape ; à la fin, le texte de l'accueil
- * arrive à gauche et le panneau « Réserver votre lavage » glisse à droite (sous le texte sur téléphone).
- * Réglages (vidéo, étapes) : data/heroVideo.ts. « Moins d'animations » ou mode modification : directement la fin, sans
- * section épinglée.
+ * Haut de l'accueil façon « reel », piloté par le défilement : la scène reste à l'écran pendant qu'on fait défiler.
+ * Voiture boueuse → la mousse coule de haut en bas → une barre de lumière rince de gauche à droite → on se rapproche →
+ * porte du garage et lumière dorée ; de grands titres s'enchaînent ; à la fin, le texte de l'accueil arrive à gauche et
+ * le panneau « Réserver votre lavage » à droite (sous le texte sur téléphone).
+ * Réglages (images, moments, titres) : data/heroScenes.ts. « Moins d'animations » ou mode modification : directement la
+ * fin, sans section épinglée.
  */
-export function HeroVideo({ surtitre, titre, introduction, points, telephone, formules, statique = false }: {
+export function HeroScenes({ surtitre, titre, introduction, points, telephone, formules, statique = false }: {
   surtitre: string; titre: string; introduction: string; points: string[]; telephone?: string; formules: Formule[]; statique?: boolean;
 }) {
   const section = useRef<HTMLElement>(null);
-  const video = useRef<HTMLVideoElement>(null);
   const [fixe] = useState(moinsDAnimations);
   const [etape, setEtape] = useState(-1);
   const [final, setFinal] = useState(false);
@@ -29,35 +29,30 @@ export function HeroVideo({ surtitre, titre, introduction, points, telephone, fo
 
   useEffect(() => {
     const el = section.current;
-    const v = video.current;
     if (!el || simple) return;
     let attente = 0;
-    let cible = 0;
-    let affichee = 0;
-    // Le temps de la vidéo suit le défilement avec un léger amorti (pas d'à-coups sur les molettes crantées).
-    const avancer = () => {
+    const { moments } = HERO_SCENES;
+    const calculer = () => {
       attente = 0;
       const hauteur = el.offsetHeight - window.innerHeight;
-      const p = hauteur > 0 ? entre(-el.getBoundingClientRect().top, 0, hauteur) : 1;
-      setEtape(HERO_VIDEO.etapes.findIndex((e) => p >= e.de && p < e.a));
-      setFinal(p >= HERO_VIDEO.final);
-      el.style.setProperty('--avance', String(Math.round(p * 1000) / 1000));
-      if (v && Number.isFinite(v.duration) && v.duration > 0) {
-        cible = Math.min(p / HERO_VIDEO.final, 1) * (v.duration - 0.05);
-        affichee += (cible - affichee) * 0.35;
-        if (Math.abs(cible - affichee) < 0.01) affichee = cible;
-        if (Math.abs(v.currentTime - affichee) > 0.005) v.currentTime = affichee;
-        if (affichee !== cible) attente = requestAnimationFrame(avancer);
-      }
+      const p = hauteur > 0 ? Math.min(1, Math.max(0, -el.getBoundingClientRect().top / hauteur)) : 1;
+      const valeurs: Record<string, number> = {
+        '--avance': p,
+        '--depart': 1.06 - 0.06 * entre(p, [0, moments.mousse[1]]),
+        '--mousse': entre(p, moments.mousse) * 100,
+        '--rincage': entre(p, moments.rincage) * 100,
+        '--zoom': 1 + 0.14 * entre(p, moments.zoom),
+        '--garage': entre(p, moments.garage),
+      };
+      for (const [cle, v] of Object.entries(valeurs)) el.style.setProperty(cle, String(Math.round(v * 1000) / 1000));
+      setEtape(HERO_SCENES.etapes.findIndex((e) => p >= e.de && p < e.a));
+      setFinal(p >= HERO_SCENES.final);
     };
-    const auDefilement = () => { if (!attente) attente = requestAnimationFrame(avancer); };
-    v?.pause();
-    v?.addEventListener('loadedmetadata', auDefilement);
-    avancer();
+    const auDefilement = () => { if (!attente) attente = requestAnimationFrame(calculer); };
+    calculer();
     window.addEventListener('scroll', auDefilement, { passive: true });
     window.addEventListener('resize', auDefilement);
     return () => {
-      v?.removeEventListener('loadedmetadata', auDefilement);
       window.removeEventListener('scroll', auDefilement);
       window.removeEventListener('resize', auDefilement);
       if (attente) cancelAnimationFrame(attente);
@@ -73,17 +68,28 @@ export function HeroVideo({ surtitre, titre, introduction, points, telephone, fo
     return { ...c, prix, lien: liste.length === 1 || estCombinee(premiere) ? `/reserver?formule=${encodeURIComponent(premiere.id)}` : '/reserver' };
   }).filter((c): c is NonNullable<typeof c> => c !== null);
 
+  const { images } = HERO_SCENES;
   const fin = final || simple;
   return (
     <section ref={section} className={`${styles.hero} ${simple ? styles.simple : ''} ${fin ? styles.final : ''}`}
-      style={{ '--ecrans': HERO_VIDEO.ecrans } as CSSProperties} aria-labelledby="titre-accueil">
+      style={{ '--ecrans': HERO_SCENES.ecrans } as CSSProperties} aria-labelledby="titre-accueil">
       <div className={styles.scene}>
-        {simple
-          ? <img className={styles.fond} src={HERO_VIDEO.fin} alt="" fetchPriority="high" />
-          : <video ref={video} className={styles.fond} src={HERO_VIDEO.src} poster={HERO_VIDEO.debut} muted playsInline preload="auto" aria-hidden="true" tabIndex={-1} />}
+        <div className={styles.images} aria-hidden="true">
+          {!simple && (
+            <>
+              <img className={`${styles.image} ${styles.boue}`} src={images.boue} alt="" fetchPriority="high" />
+              <img className={`${styles.image} ${styles.mousse}`} src={images.mousse} alt="" />
+              <div className={styles.propre}>
+                <img className={styles.image} src={images.propre} alt="" />
+              </div>
+              <span className={styles.barre} />
+            </>
+          )}
+          <img className={`${styles.image} ${styles.garage}`} src={images.garage} alt="" loading={simple ? 'eager' : 'lazy'} />
+        </div>
         <div className={styles.voile} aria-hidden="true" />
 
-        {!simple && HERO_VIDEO.etapes.map((e, i) => (
+        {!simple && HERO_SCENES.etapes.map((e, i) => (
           <p key={e.texte} className={`${styles.etape} ${etape === i ? styles.etapeVisible : ''}`} aria-hidden="true">
             {e.texte.split('\n').map((ligne, j) => <Fragment key={j}>{j > 0 && <br />}{ligne}</Fragment>)}
           </p>

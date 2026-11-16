@@ -25,7 +25,7 @@ import { useSeo } from '../../seo/useSeo';
 import { CarteFormule } from './CarteFormule';
 import { AvantApres } from '../../components/AvantApres/AvantApres';
 import { VideoAuto } from '../../components/VideoAuto/VideoAuto';
-import { HeroVideo } from './HeroVideo';
+import { HeroScenes } from './HeroScenes';
 import styles from './Accueil.module.css';
 
 /** Accueil : textes, étapes, réalisations, avis, FAQ et communes modifiables dans l'espace pro (« Mon site »). */
@@ -97,9 +97,9 @@ export function Accueil() {
         <ModifierRubrique rubrique="accueil" libelle="Titre, présentation et points forts" />
         <ModifierRubrique rubrique="coordonnees" libelle="Téléphone et coordonnées" />
       </>}>
-      {/* Façon « reel », piloté par le défilement : la vidéo avance avec le défilement, titres par étape, puis le texte
+      {/* Façon « reel », piloté par le défilement : boue, mousse, rinçage, zoom, garage ; titres par étape, puis le texte
           et le panneau « Réserver ». En mode modification : directement la fin, pour modifier le texte. */}
-      <HeroVideo surtitre={accueil.surtitre} titre={accueil.titre} introduction={accueil.introduction}
+      <HeroScenes surtitre={accueil.surtitre} titre={accueil.titre} introduction={accueil.introduction}
         points={accueil.arguments} telephone={telephone || undefined} formules={formules} statique={edition} />
       </Zone>
 
