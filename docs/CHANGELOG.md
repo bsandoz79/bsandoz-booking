@@ -230,3 +230,4 @@
 - Accueil : cartes de formules invisibles quand le mode édition s'active après le chargement (marque d'apparition en attribut data-vu au lieu d'une classe).
 - Vidéo de l'accueil : durée corrigée (30 s au lieu de 6 min 55), fichier allégé (3 Mo) et renommé pour ne pas resservir l'ancien.
 - Accueil : le clip s'affiche même quand une photo a été choisie avec le crayon (elle sert d'image fixe si moins d'animations).
+- Accueil : lecture du clip demandée explicitement au chargement (autoplay pas toujours appliqué à une vidéo ajoutée après coup).
