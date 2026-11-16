@@ -211,6 +211,7 @@
 - Accueil : nouvelle image du garage (même voiture), point de recul recalé.
 - Accueil : texte dans une carte sombre, nouveau texte par défaut centré sur le lavage Perfect Clean ; cadre de la voiture abaissé sur téléphone.
 - En-tête pleine largeur (logo et boutons dans les coins), boutons modernisés, slogan « L’éclat du neuf, livré chez vous. », surtitre dans la carte ; réservation depuis l'accueil : options proposées avant le créneau.
+- Accueil : scène jouée une seule fois par chargement, figée sur l'image finale ensuite (plus de retour en arrière au défilement).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

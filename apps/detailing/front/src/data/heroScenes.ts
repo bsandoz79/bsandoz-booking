@@ -30,6 +30,8 @@ export const HERO_SCENES = {
   ],
   /** Part du défilement à partir de laquelle le texte de l'accueil et le panneau « Réserver » arrivent. */
   final: 0.86,
+  /** Part du défilement à laquelle la scène est terminée : elle se fige sur l'image finale (plus de retour en arrière). */
+  fin: 0.97,
   /**
    * Lecture automatique à l'arrivée : points de passage [seconde, avancement], la page défile toute seule entre eux.
    * Environ 6 s en tout, d'un seul mouvement fluide.
