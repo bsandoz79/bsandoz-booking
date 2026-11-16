@@ -179,7 +179,7 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
                 </li>
               ))}
             </ul>
-            <p className={styles.panneauAide}>Choisissez une formule : vous arrivez directement au choix du créneau.</p>
+            <p className={styles.panneauAide}>Choisissez une formule : ses options vous sont proposées, puis le créneau.</p>
           </aside>
         )}
       </div>

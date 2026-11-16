@@ -1,17 +1,19 @@
 /* En-tête minimal, sur une ligne : logo à gauche ; Réserver, téléphone, thème et menu à droite ; menu déroulant dessous. */
 .header { background: var(--bs-color-surface); border-bottom: 1px solid var(--bs-color-border); position: sticky; top: 0; z-index: 10; }
-.inner { position: relative; display: flex; align-items: center; gap: .75rem; padding-block: .5rem; }
+/* Pleine largeur : logo collé dans le coin gauche, boutons dans le coin droit. */
+.inner { position: relative; display: flex; align-items: center; gap: .75rem; padding: .5rem clamp(.75rem, 2vw, 1.5rem); }
 .brand { display: inline-flex; line-height: 0; margin-right: auto; }
 /* Logo sur pastille blanche : lisible aussi en version nuit. */
 .brand img { height: 48px; width: auto; background: #fff; border-radius: 10px; padding: 2px 4px; box-sizing: content-box; }
 .actions { display: flex; align-items: center; gap: .5rem; }
 .reserver { flex: none; }
-.rond { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); font-size: 1.2rem; cursor: pointer; }
-.rond:hover { border-color: var(--bs-color-primary); }
+/* Boutons carrés aux coins arrondis, nets : bordure fine, fond qui se teinte au survol. */
+.rond { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); font-size: 1.15rem; cursor: pointer; transition: background .15s ease, border-color .15s ease; }
+.rond:hover { border-color: var(--bs-color-primary); background: var(--bs-color-primary-soft); }
 .rond:focus-visible { outline: 2px solid var(--bs-color-primary); outline-offset: 2px; }
 
 /* Téléphone de l'entreprise : rond vert avec le combiné. */
-.appel { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #13794a; color: #fff; text-decoration: none; }
+.appel { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #13794a; color: #fff; text-decoration: none; transition: background .15s ease; }
 .appel:hover { background: #0f6640; }
 .appel:focus-visible { outline: 2px solid var(--bs-color-primary); outline-offset: 2px; }
 

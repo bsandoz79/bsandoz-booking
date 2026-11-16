@@ -66,11 +66,16 @@ describe('Parcours de réservation', () => {
     expect((await screen.findAllByText(/10,00/)).length).toBeGreaterThan(0);
   });
 
-  it('venue du panneau « Réserver » de l’accueil : formule cochée, directement au créneau', async () => {
-    render(<MemoryRouter initialEntries={['/reserver?formule=ext-signature&etape=creneau']}><Reserver /></MemoryRouter>);
+  it('venue du panneau « Réserver » de l’accueil : formule cochée ; options proposées s’il y en a, sinon directement au créneau', async () => {
+    const { unmount } = render(<MemoryRouter initialEntries={['/reserver?formule=ext-signature&etape=creneau']}><Reserver /></MemoryRouter>);
+    expect(await screen.findByRole('checkbox', { name: /Véhicule très sale/ })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /Extérieur Signature/ })).toBeChecked();
+    expect(screen.getByRole('heading', { name: 'Que faut-il nettoyer ?' }).closest('section')).toHaveAttribute('aria-current', 'step');
+    unmount();
+
+    render(<MemoryRouter initialEntries={['/reserver?formule=carte-ciel&etape=creneau']}><Reserver /></MemoryRouter>);
     expect(await screen.findByRole('button', { name: 'Modifier : Que faut-il nettoyer ?' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Où et quand ?' }).closest('section')).toHaveAttribute('aria-current', 'step');
-    expect(screen.getByText(/Extérieur Signature/)).toBeInTheDocument();
   });
 
   it('passe tout seul à « Où et quand ? » quand la formule n’a pas d’option à proposer', async () => {

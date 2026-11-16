@@ -43,7 +43,7 @@ export function Header() {
 
   return (
     <header className={styles.header}>
-      <div className={`container ${styles.inner}`}>
+      <div className={styles.inner}>
         <Link to="/" className={styles.brand}>
           <img src="/logo.png" alt="Perfect Clean" width="64" height="56" />
         </Link>
