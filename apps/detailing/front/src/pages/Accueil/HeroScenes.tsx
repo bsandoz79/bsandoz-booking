@@ -41,6 +41,7 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
         '--mousse': entre(p, moments.mousse) * 100,
         '--rincage': entre(p, moments.rincage) * 100,
         '--garage': entre(p, moments.garage),
+        '--recul': entre(p, moments.recul),
       };
       for (const [cle, v] of Object.entries(valeurs)) el.style.setProperty(cle, String(Math.round(v * 1000) / 1000));
       setEtape(HERO_SCENES.etapes.findIndex((e) => p >= e.de && p < e.a));
