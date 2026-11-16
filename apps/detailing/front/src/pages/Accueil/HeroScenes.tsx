@@ -133,7 +133,7 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, s
         ))}
         {!simple && <div className={styles.progression} aria-hidden="true"><span /></div>}
 
-        <div className={`container ${styles.fin}`}>
+        <div className={styles.fin}>
           <div className={styles.texte}>
             <p className={styles.surtitre}>{surtitre}</p>
             <h1 id="titre-accueil" className={styles.titre} aria-label={titre}>
