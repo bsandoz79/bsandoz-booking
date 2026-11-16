@@ -13,27 +13,29 @@ Outils de vidéo par IA : Runway, Kling, Google Veo, Luma, Pika. Avant de payer,
 
 Commencez par générer **une image fixe** de la voiture (consigne A), puis animez chaque plan **à partir de cette image** (fonction « image to video ») : la voiture reste la même.
 
-Réglages pour chaque plan : format **16:9**, **1080p**, durée **5 s**, **aucun texte**, **aucun logo**, aucune personne de face.
+Réglages pour chaque plan : format **16:9** (paysage), **1080p**, durée **5 s**, **aucun texte**, **aucun logo**, aucune personne de face.
 
-## 3. Les consignes, à copier telles quelles (en anglais, mieux compris par ces outils)
+## 3. Les consignes, à copier telles quelles
+
+Les outils comprennent le français. Si un résultat déçoit, la même consigne en anglais donne parfois mieux.
 
 **A. Image de départ**
-> Photorealistic dark matte studio, black floor with subtle reflections, long parallel white LED strip lights on the ceiling, a modern dark SUV parked in three-quarter front view, the car is completely covered in dried mud and dust, cinematic lighting, high detail, no logos, no license plate text, no people.
+> Studio sombre et mat, photoréaliste, sol noir avec de légers reflets, longues rangées de néons blancs parallèles au plafond. Un SUV moderne de couleur foncée, garé de trois quarts face, entièrement couvert de boue séchée et de poussière. Éclairage de cinéma, très détaillé, aucun logo, aucune plaque lisible, personne dans l'image.
 
 **Plan 1 — le lavage (« Faites défiler pour nettoyer »)**
-> Static camera. A thin vertical beam of bright white light sweeps slowly from left to right across the frame. Everything behind the beam is perfectly clean: the SUV becomes spotless glossy black with mirror reflections of the ceiling lights, the floor gleams. Smooth, realistic, cinematic.
+> Caméra fixe. Un fin faisceau vertical de lumière blanche très vive traverse lentement l'image de gauche à droite. Tout ce qui se trouve derrière le faisceau devient parfaitement propre : le SUV devient noir brillant impeccable, avec le reflet des néons du plafond comme dans un miroir, le sol brille. Mouvement fluide, réaliste, rendu cinéma.
 
 **Plan 2 — « Regardez de plus près »**
-> Slow camera glide low over the hood of the now spotless glossy black SUV, long reflections of the white LED strips sliding across the curved paint, shallow depth of field, cinematic, smooth.
+> La caméra glisse lentement, au ras du capot du SUV noir brillant désormais impeccable. De longs reflets des néons blancs glissent sur la carrosserie bombée. Faible profondeur de champ, rendu cinéma, mouvement fluide.
 
 **Plan 3 — les micro-rayures disparaissent**
-> Extreme macro of black car paint covered in circular swirl marks under a bright light. A dual-action polishing pad passes slowly across the surface; behind it the paint becomes a flawless deep mirror finish. Cinematic macro, smooth motion.
+> Très gros plan sur une peinture de voiture noire couverte de micro-rayures circulaires, sous une lumière vive. Un tampon de polissage passe lentement sur la surface ; derrière lui, la peinture devient un miroir profond et parfait. Gros plan cinéma, mouvement fluide.
 
 **Plan 4 — la goutte (protection céramique)**
-> Extreme macro of a perfect round water droplet beading and rolling on glossy black ceramic-coated car paint, reflections of soft white lights, slow motion, cinematic.
+> Très gros plan d'une goutte d'eau parfaitement ronde qui perle puis roule sur une peinture noire brillante traitée céramique, avec le reflet de lumières blanches douces. Ralenti, rendu cinéma.
 
-**Plan 5 — la sortie (fin, le texte et « Réserver » arrivent)**
-> The garage door rises slowly behind the spotless glossy black SUV, warm golden sunset light floods into the dark studio and reflects on the paint, slow push-in towards the front of the car, cinematic, smooth.
+**Plan 5 — la sortie (fin : le texte et « Réserver » arrivent)**
+> Derrière le SUV noir brillant impeccable, la porte du garage se lève lentement ; une lumière dorée de coucher de soleil envahit le studio sombre et se reflète sur la carrosserie. La caméra avance doucement vers l'avant de la voiture. Rendu cinéma, mouvement fluide.
 
 ## 4. Me les envoyer
 
