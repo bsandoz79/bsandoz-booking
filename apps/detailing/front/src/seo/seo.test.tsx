@@ -38,7 +38,7 @@ describe('référencement local', () => {
 
   it('relie l’accueil aux pages des communes', () => {
     render(<MemoryRouter><AppRoutes /></MemoryRouter>);
-    expect(screen.getByRole('heading', { level: 1, name: 'Votre voiture brille, sans bouger de chez vous.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'L’éclat du neuf, livré chez vous.' })).toBeInTheDocument();
     expect(screen.getByText('Voir les communes desservies').closest('details')).not.toHaveAttribute('open');
     for (const c of COMMUNES) expect(screen.getByRole('link', { name: c.nom })).toHaveAttribute('href', `/nettoyage-voiture/${c.slug}`);
     expect(screen.queryByText(/Nettoyage voiture Abbeville/)).not.toBeInTheDocument();

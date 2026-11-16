@@ -11,9 +11,10 @@ p { margin: 0; }
 a { color: var(--bs-color-primary-dark); }
 :focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
 .container { width: 100%; max-width: var(--brand-container); margin-inline: auto; padding-inline: 1.25rem; }
-.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 1.5rem; border-radius: var(--bs-radius-pill); border: 0; background: var(--bs-color-primary); color: #fff; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 48px; padding: 0 1.35rem; border-radius: 12px; border: 1px solid transparent; background: var(--bs-color-primary); color: #fff; font: inherit; font-weight: 700; letter-spacing: .01em; text-decoration: none; cursor: pointer; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn--ghost { background: transparent; color: var(--bs-color-text); border: 1.5px solid var(--bs-color-border); }
+.btn--ghost { background: transparent; color: var(--bs-color-text); border: 1px solid var(--bs-color-border); }
+.btn--ghost:hover { border-color: var(--bs-color-primary); background: var(--bs-color-primary-soft); }
 /* Sections atteintes par un lien (« /#fidelite ») : pas cachées sous l'en-tête collé en haut. */
 main section[id] { scroll-margin-top: 5rem; }
 
@@ -26,8 +27,9 @@ html.anim [data-apparition] { transition: opacity .7s ease var(--delai, 0ms), tr
 
 /* Boutons : léger relief au survol (désactivé si moins d'animations). */
 .btn { position: relative; overflow: hidden; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
-.btn:not(.btn--ghost):hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgb(0 0 0 / .15); }
+.btn:not(.btn--ghost):hover { background: color-mix(in srgb, var(--bs-color-primary) 82%, #000); }
+.btn:active { transform: scale(.98); }
 @media (prefers-reduced-motion: reduce) {
   .btn { transition: none; }
-  .btn:not(.btn--ghost):hover { transform: none; }
+  .btn:active { transform: none; }
 }
