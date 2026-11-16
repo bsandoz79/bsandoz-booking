@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const moinsDAnimations = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 
@@ -10,10 +10,21 @@ const moinsDAnimations = () => typeof window !== 'undefined' && window.matchMedi
  */
 export function ClipAccueil({ photo }: { photo?: string }) {
   const [fixe] = useState(moinsDAnimations);
+  const video = useRef<HTMLVideoElement>(null);
   const libelle = 'Nettoyage du pare-brise à la microfibre';
+
+  // Lecture demandée explicitement : la vidéo est ajoutée après le chargement de la page, et certains navigateurs
+  // n'appliquent alors pas « autoplay ». Sans son, la lecture automatique est toujours permise.
+  useEffect(() => {
+    const el = video.current;
+    if (!el) return;
+    el.muted = true;
+    el.play()?.catch(() => undefined);
+  }, []);
+
   if (fixe) return <img src={photo ?? '/videos/lavage-affiche.jpg'} width="900" height="900" alt={photo ? 'Photo de présentation' : libelle} fetchPriority="high" />;
   return (
-    <video src="/videos/lavage.mp4" poster="/videos/lavage-affiche.jpg" width={900} height={900}
+    <video ref={video} src="/videos/lavage.mp4" poster="/videos/lavage-affiche.jpg" width={900} height={900}
       autoPlay muted playsInline preload="auto" aria-label={libelle} />
   );
 }
