@@ -61,7 +61,7 @@ describe('SceneInterieur', () => {
     expect(container.querySelector(`img[src="${SCENE_INTERIEUR.images.habitacleSale.src}"]`)).not.toBeNull();
     expect((container.querySelector('section') as HTMLElement).style.getPropertyValue('--ecrans')).toBe(String(SCENE_INTERIEUR.ecrans));
     // Pas de consigne tant qu'on n'est pas arrivé dans l'habitacle.
-    expect(screen.queryByRole('button', { name: /Tout nettoyer/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Passer/ })).not.toBeInTheDocument();
   });
 
   it('se joue aussi avec « moins d’animations » : même scène, sans zoom', () => {

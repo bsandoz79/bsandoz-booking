@@ -231,6 +231,7 @@
   - Le téléphone garde son vert, en transparent avec contour et icône verts (`.btn--tel`, variable `--brand-tel`) : en-tête, haut de l'accueil, « Appeler » de l'espace pro.
   - Kit : réglages `--bs-button-radius` et `--bs-button-border` du bloc `Button`, en pilule par défaut ; la démo les règle à 8 px et 1 px.
   - Logique pure testée : `etatScene`, `trajetVitre`, `pointDuTrajet`, `cadrageCouvrant`.
+- Scène de l'intérieur : consigne du chiffon plus discrète (texte court, bouton « Passer » bordé, barre sur une ligne).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

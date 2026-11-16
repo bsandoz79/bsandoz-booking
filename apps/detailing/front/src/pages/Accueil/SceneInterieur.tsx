@@ -297,7 +297,7 @@ function SceneAnimee({ titre, textes, douce }: { titre: string; textes: typeof S
         {arret && !chiffonAuto && (
           <div className={styles.consigne}>
             <p role="status">{textes.aide}</p>
-            <button type="button" className="btn" onClick={finir}>{textes.continuer} ↓</button>
+            <button type="button" className={styles.passer} onClick={finir}>{textes.continuer} <span aria-hidden="true">↓</span></button>
           </div>
         )}
         <div className={styles.progression} aria-hidden="true"><span /></div>
