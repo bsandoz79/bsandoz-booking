@@ -134,6 +134,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Déploiement : certificat FTPS (intermédiaires Let's Encrypt), TLS 1.2, dossiers « "demo.bsandoz.fr » créés par erreur (à supprimer dans cPanel), CSS/JS envoyés avant les pages.
 - ✅ Scène de l'intérieur : consigne « passez le chiffon » rendue discrète (petite barre sur une ligne, texte court, bouton « Passer » bordé au lieu du gros bouton bleu).
 - ✅ Encart « Professionnels » sur l'accueil (après les prestations) : « Une flotte de véhicules à nettoyer ? », boutons « Demander un devis » (formulaire de la page Professionnels) et « En savoir plus » ; lien « Devis sur mesure » dans le panneau « Réserver votre lavage ».
+- ✅ Encart « Professionnels » mis en avant en rouge (fond rouge pâle, contour fin, icône et bouton « Demander un devis » rouges), sans le liseré bleu ; version nuit adaptée.
 
 ### Décisions en attente
 - ❓ Lien de la fiche Google (à créer), informations de facturation du vendeur (`[à compléter]`).
