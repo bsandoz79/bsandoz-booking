@@ -195,7 +195,7 @@ export function Accueil() {
       )}
 
       {/* Juste après la vidéo : l'intérieur, avant et après ; les images glissent vers la gauche au défilement. */}
-      <SceneInterieur statique={edition} />
+      <SceneInterieur />
 
       <Zone crayons={<ModifierRubrique rubrique="realisations" />}>
       <section id="realisations" className={`container ${styles.section}`} aria-labelledby="titre-realisations">

@@ -1,5 +1,4 @@
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
-import { AvantApres } from '../../components/AvantApres/AvantApres';
 import { SCENE_INTERIEUR, cadrageCouvrant, etatScene, pointDuTrajet, trajetVitre } from '../../data/sceneInterieur';
 import styles from './SceneInterieur.module.css';
 
@@ -8,25 +7,17 @@ const S = SCENE_INTERIEUR.moments.arret;
 
 /**
  * L'intérieur, avant et après, piloté par le défilement (voir data/sceneInterieur.ts) :
- * approche dans l'habitacle sale, arrêt et nettoyage au chiffon (souris ou doigt), puis sortie avec le véhicule propre.
- * Remonter rejoue le chemin à l'envers et resalit l'habitacle.
- * « Moins d'animations » ou mode modification (`statique`) : le comparateur avant / après, sans section épinglée.
+ * entrée dans l'habitacle sale, arrêt et nettoyage au chiffon (souris ou doigt), puis sortie avec le véhicule propre.
+ * Remonter rejoue le chemin à l'envers et resalit l'habitacle. Jouée pour tout le monde, pro connecté compris.
+ * « Moins d'animations » : même scène, mais sans zoom (fondu enchaîné) et sans défilement automatique à la sortie.
  */
-export function SceneInterieur({ statique = false }: { statique?: boolean }) {
-  const [fixe] = useState(moinsDAnimations);
-  const { images, titre, textes } = SCENE_INTERIEUR;
-  if (fixe || statique) {
-    return (
-      <section className={`container ${styles.simple}`} aria-labelledby="titre-interieur">
-        <h2 id="titre-interieur">{titre}</h2>
-        <AvantApres avant={images.habitacleSale.src} apres={images.habitaclePropre.src} titre="L’habitacle" />
-      </section>
-    );
-  }
-  return <SceneAnimee titre={titre} textes={textes} />;
+export function SceneInterieur() {
+  const [douce] = useState(moinsDAnimations);
+  const { titre, textes } = SCENE_INTERIEUR;
+  return <SceneAnimee titre={titre} textes={textes} douce={douce} />;
 }
 
-function SceneAnimee({ titre, textes }: { titre: string; textes: typeof SCENE_INTERIEUR.textes }) {
+function SceneAnimee({ titre, textes, douce }: { titre: string; textes: typeof SCENE_INTERIEUR.textes; douce: boolean }) {
   const { images, ecrans, origine, rayonChiffon, finNettoyageMs, sortieMs, chiffon, moments } = SCENE_INTERIEUR;
   const section = useRef<HTMLElement>(null);
   const cadre = useRef<HTMLDivElement>(null);
@@ -162,7 +153,7 @@ function SceneAnimee({ titre, textes }: { titre: string; textes: typeof SCENE_IN
       setChiffonAuto(null);
       nettoyeRef.current = true;
       setArret(false);
-      jouerSortie();
+      if (!douce) jouerSortie();
     };
     if (!m || !ctx) { conclure(); return; }
     const trajet = trajetVitre(m.width, m.height, Math.min(m.width, m.height) * rayonChiffon);
@@ -183,7 +174,7 @@ function SceneAnimee({ titre, textes }: { titre: string; textes: typeof SCENE_IN
       conclure();
     };
     requestAnimationFrame(pas);
-  }, [dessiner, finNettoyageMs, jouerSortie, passerChiffon, rayonChiffon]);
+  }, [dessiner, douce, finNettoyageMs, jouerSortie, passerChiffon, rayonChiffon]);
 
   // Défilement : avancement de la scène, arrêt dans l'habitacle, et habitacle resali quand on remonte.
   useEffect(() => {
@@ -289,12 +280,12 @@ function SceneAnimee({ titre, textes }: { titre: string; textes: typeof SCENE_IN
       <div ref={cadre} className={`${styles.cadre} ${arret ? styles.enArret : ''}`}>
         <h2 id="titre-interieur" className={styles.srOnly}>{titre}</h2>
         <img className={styles.image} src={habitacle.src} alt={habitacle.alt}
-          style={{ opacity: etat.habitacle.opacite, transform: `scale(${etat.habitacle.echelle})` }} />
+          style={{ opacity: etat.habitacle.opacite, transform: douce ? undefined : `scale(${etat.habitacle.echelle})` }} />
         <canvas ref={toile} className={styles.toile} aria-hidden="true" hidden={etat.propre}
-          style={{ opacity: etat.habitacle.opacite, transform: `scale(${etat.habitacle.echelle})`, pointerEvents: arret ? 'auto' : 'none' }}
+          style={{ opacity: etat.habitacle.opacite, transform: douce ? undefined : `scale(${etat.habitacle.echelle})`, pointerEvents: arret ? 'auto' : 'none' }}
           onPointerMove={frotter} onPointerLeave={() => { dernierPoint.current = null; }} />
         <img className={`${styles.image} ${styles.porte}`} src={porte.src} alt={etat.porte.opacite > 0.5 ? porte.alt : ''}
-          style={{ opacity: etat.porte.opacite, transform: `scale(${etat.porte.echelle})` }} />
+          style={{ opacity: etat.porte.opacite, transform: douce ? undefined : `scale(${etat.porte.echelle})` }} />
 
         {(['approche', 'arret', 'sortie'] as const).map((cle) => (
           <p key={cle} className={`${styles.titre} ${titreActif === cle ? styles.titreVisible : ''}`} aria-hidden="true">{lignes(textes[cle])}</p>

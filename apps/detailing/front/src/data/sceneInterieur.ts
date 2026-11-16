@@ -3,7 +3,7 @@
  * 1. approche : portière sale, la vue avance par l'ouverture jusqu'à l'habitacle sale ;
  * 2. arrêt : le défilement s'arrête, la souris devient un chiffon et nettoie l'habitacle là où elle passe ;
  * 3. là où le chiffon n'est pas passé, ça reste sale. Un coup de molette vers le bas (ou « Tout nettoyer et continuer ») :
- *    le chiffon finit tout seul, en allers-retours de gauche à droite comme sur une vitre, puis la vue ressort par la portière,
+ *    le chiffon finit tout seul, en allers-retours de droite à gauche comme sur une vitre, puis la vue ressort par la portière,
  *    propre cette fois ;
  * 4. en remontant, le chemin se rejoue à l'envers et l'habitacle se resalit.
  * Chaque moment est une part du défilement de la section (de 0 à 1). Pour changer une image : remplacer le fichier (même nom).
@@ -90,7 +90,7 @@ export function cadrageCouvrant(iw: number, ih: number, w: number, h: number) {
 }
 
 /**
- * Trajet du chiffon pour finir le nettoyage, comme sur une vitre : de gauche à droite, puis de droite à gauche une rangée
+ * Trajet du chiffon pour finir le nettoyage, comme sur une vitre : de droite à gauche, puis de gauche à droite une rangée
  * plus bas, et ainsi de suite jusqu'en bas. Rangées espacées d'un peu moins d'un diamètre, pour ne rien oublier.
  */
 export function trajetVitre(largeur: number, hauteur: number, rayon: number): { x: number; y: number }[] {
@@ -99,7 +99,7 @@ export function trajetVitre(largeur: number, hauteur: number, rayon: number): { 
   const points: { x: number; y: number }[] = [];
   for (let i = 0; i < rangees; i++) {
     const y = Math.min(hauteur - rayon * 0.5, rayon * 0.5 + i * pas);
-    const [debut, fin] = i % 2 === 0 ? [0, largeur] : [largeur, 0];
+    const [debut, fin] = i % 2 === 0 ? [largeur, 0] : [0, largeur];
     points.push({ x: debut, y }, { x: fin, y });
   }
   return points;
