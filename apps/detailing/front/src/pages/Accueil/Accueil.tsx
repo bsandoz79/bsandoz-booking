@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, type CSSProperties, type KeyboardEvent } from 'react';
+import { useEffect, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Dialog, formatEuros } from '@bsandoz/ui';
 import { useModeEdition } from '../../app/modeEditionContexte';
@@ -11,8 +11,7 @@ import { catalogue as cataloguePro, enregistrerPrestation, type OptionPro, type 
 import { useContenu } from '../../app/contenuContexte';
 import { CarteFidelite } from '../../components/CarteFidelite/CarteFidelite';
 import { CarteZone } from '../../components/CarteZone/CarteZone';
-import { IconeTelephone } from '../../components/Telephone/Telephone';
-import { lienTel, useTelephone } from '../../components/Telephone/numeroTelephone';
+import { useTelephone } from '../../components/Telephone/numeroTelephone';
 import { CATEGORIES, FORMULES, OPTIONS, type Category, type Formule, type OptionItem } from '../../data/demo';
 import { SITE } from '../../data/site';
 import { jourIso, semaine, tranches, type Plage } from '../../data/vitrine';
@@ -26,8 +25,7 @@ import { useSeo } from '../../seo/useSeo';
 import { CarteFormule } from './CarteFormule';
 import { AvantApres } from '../../components/AvantApres/AvantApres';
 import { VideoAuto } from '../../components/VideoAuto/VideoAuto';
-import { ClipAccueil } from './ClipAccueil';
-import hero from './HeroAccueil.module.css';
+import { HeroDefilement } from './HeroDefilement';
 import styles from './Accueil.module.css';
 
 /** Accueil : textes, étapes, réalisations, avis, FAQ et communes modifiables dans l'espace pro (« Mon site »). */
@@ -35,8 +33,6 @@ export function Accueil() {
   const telephone = useTelephone();
   const { contenu } = useContenu();
   useSeo(PAGES_SEO[0].titre, PAGES_SEO[0].description);
-  // Haut de page façon « reel » : le texte apparaît quand le clip se termine.
-  const [texteVisible, setTexteVisible] = useState(false);
   // Catalogue réel (API) dès qu'il est chargé ; données de démonstration en attendant ou si l'API ne répond pas.
   const [formules, setFormules] = useState<Formule[]>(FORMULES);
   const [options, setOptions] = useState<OptionItem[]>(OPTIONS);
@@ -100,36 +96,11 @@ export function Accueil() {
       <Zone crayons={<>
         <ModifierRubrique rubrique="accueil" libelle="Titre, présentation et points forts" />
         <ModifierRubrique rubrique="coordonnees" libelle="Téléphone et coordonnées" />
-        <ModifierRubrique rubrique="photo" libelle="Image fixe (si moins d’animations)" />
       </>}>
-      {/* Façon « reel » : clip plein écran, puis le texte arrive par-dessus quand il se termine (tout de suite en
-          mode modification). La page défile librement pendant le clip. */}
-      <section className={`${hero.hero} ${texteVisible || edition ? hero.revele : ''}`} aria-labelledby="titre-accueil">
-        <ClipAccueil photo={accueil.photo || undefined} onFin={() => setTexteVisible(true)} />
-        <div className={hero.voile} aria-hidden="true" />
-        <div className={`container ${hero.contenu}`}>
-          <p className={hero.surtitre} style={{ '--d': '0ms' } as CSSProperties}>{accueil.surtitre}</p>
-          {/* Titre révélé mot par mot (lu normalement par les lecteurs d'écran). */}
-          <h1 id="titre-accueil" className={hero.titre} aria-label={accueil.titre}>
-            {accueil.titre.split(' ').map((mot, i) => (
-              <Fragment key={`${i}-${mot}`}><span aria-hidden="true" className={hero.mot} style={{ '--i': i } as CSSProperties}>{mot}</span>{' '}</Fragment>
-            ))}
-          </h1>
-          <p className={hero.phrase} style={{ '--d': '550ms' } as CSSProperties}>{accueil.introduction}</p>
-          <div className={hero.boutons} style={{ '--d': '700ms' } as CSSProperties}>
-            <Link to="/reserver" className="btn">Réserver un créneau</Link>
-            {telephone && <a href={lienTel(telephone)} className={`btn ${hero.appeler}`} aria-label={`Appeler le ${telephone}`}><IconeTelephone /> {telephone}</a>}
-          </div>
-          {accueil.arguments.length > 0 && (
-            <ul className={hero.points} style={{ '--d': '850ms' } as CSSProperties}>
-              {accueil.arguments.map((a) => <li key={a}>{a}</li>)}
-            </ul>
-          )}
-        </div>
-        <a href="#prestations" className={hero.defiler} aria-label="Voir les prestations">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
-        </a>
-      </section>
+      {/* Façon « reel », piloté par le défilement : l'habitacle se nettoie, le phare se rénove, puis le texte arrive.
+          En mode modification : directement le texte, pour le modifier. */}
+      <HeroDefilement surtitre={accueil.surtitre} titre={accueil.titre} introduction={accueil.introduction}
+        points={accueil.arguments} telephone={telephone || undefined} statique={edition} />
       </Zone>
 
       <section id="prestations" className={`container ${styles.section}`} aria-labelledby="titre-prestations">
