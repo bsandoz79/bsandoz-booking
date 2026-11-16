@@ -142,7 +142,11 @@ export function Reserver() {
       setOptions(c.options);
       setProduits(c.produits);
       const f = c.formules.find((x) => x.id === choisie);
-      if (f) { setCategory(f.category as Category); setFormuleId(f.id); setChoixComposantes({}); }
+      if (f) {
+        setCategory(f.category as Category); setFormuleId(f.id); setChoixComposantes({});
+        // Venue du panneau « Réserver » de l'accueil : formule simple déjà choisie, on passe directement au créneau.
+        if (params.get('etape') === 'creneau' && !estCombinee(f)) setStep(1);
+      }
     }).catch((e: Error) => setError(e.message));
   }, [params]);
   useEffect(() => {

@@ -205,6 +205,7 @@
 - Accueil : lecture automatique du scénario à l'arrivée (~15 s, pauses sur chaque image), arrêtée au moindre geste ; remonter le rejoue à l'envers.
 - Accueil : scénario automatique en ~4 s d'un seul mouvement, textes en haut à gauche, voile léger, panneau Réserver retiré (boutons sous le texte).
 - Accueil : scénario en 6 s, textes dans le coin en haut à gauche, plus compacts.
+- Accueil : voiture fixe (images recadrées au même endroit, sans zoom), surtitre sur une ligne, titres sans chevauchement, panneau Réserver à droite menant au planning avec la formule cochée (?formule=…&etape=creneau).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

@@ -2,6 +2,8 @@ import { Fragment, useEffect, useRef, useState, type CSSProperties } from 'react
 import { Link } from 'react-router-dom';
 import { IconeTelephone } from '../../components/Telephone/Telephone';
 import { lienTel } from '../../components/Telephone/numeroTelephone';
+import { formatEuros } from '@bsandoz/ui';
+import { CATEGORIES, estCombinee, prixMin, type Formule } from '../../data/demo';
 import { HERO_SCENES } from '../../data/heroScenes';
 import styles from './HeroScenes.module.css';
 
@@ -16,8 +18,8 @@ const moinsDAnimations = () => typeof window !== 'undefined' && window.matchMedi
  * Réglages (images, moments, titres) : data/heroScenes.ts. « Moins d'animations » ou mode modification : directement la
  * fin, sans section épinglée.
  */
-export function HeroScenes({ surtitre, titre, introduction, points, telephone, statique = false }: {
-  surtitre: string; titre: string; introduction: string; points: string[]; telephone?: string; statique?: boolean;
+export function HeroScenes({ surtitre, titre, introduction, points, telephone, formules = [], statique = false }: {
+  surtitre: string; titre: string; introduction: string; points: string[]; telephone?: string; formules?: Formule[]; statique?: boolean;
 }) {
   const section = useRef<HTMLElement>(null);
   const [fixe] = useState(moinsDAnimations);
@@ -36,10 +38,8 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, s
       const p = hauteur > 0 ? Math.min(1, Math.max(0, -el.getBoundingClientRect().top / hauteur)) : 1;
       const valeurs: Record<string, number> = {
         '--avance': p,
-        '--depart': 1.06 - 0.06 * entre(p, [0, moments.mousse[1]]),
         '--mousse': entre(p, moments.mousse) * 100,
         '--rincage': entre(p, moments.rincage) * 100,
-        '--zoom': 1 + 0.14 * entre(p, moments.zoom),
         '--garage': entre(p, moments.garage),
       };
       for (const [cle, v] of Object.entries(valeurs)) el.style.setProperty(cle, String(Math.round(v * 1000) / 1000));
@@ -105,6 +105,14 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, s
     return () => { window.clearTimeout(attente); arreter(); window.history.scrollRestoration = restauration; };
   }, [simple]);
 
+  // Panneau « Réserver » (grand écran) : une catégorie choisie, ses formules ; chacune mène directement au planning de
+  // la réservation, formule déjà cochée.
+  const categories = CATEGORIES.filter((c) => formules.some((f) => f.category === c.value));
+  const [categorie, setCategorie] = useState<string>();
+  const categorieActive = categorie ?? categories[0]?.value;
+  const formulesCategorie = formules.filter((f) => f.category === categorieActive);
+  const lien = (f: Formule) => `/reserver?formule=${encodeURIComponent(f.id)}${estCombinee(f) ? '' : '&etape=creneau'}`;
+
   const { images } = HERO_SCENES;
   const fin = final || simple;
   return (
@@ -149,6 +157,30 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, s
             {points.length > 0 && <ul className={styles.points}>{points.map((a) => <li key={a}>{a}</li>)}</ul>}
           </div>
         </div>
+
+        {categories.length > 0 && (
+          <aside className={styles.panneau} aria-label="Réserver votre lavage">
+            <p className={styles.panneauTitre}>Réserver votre lavage</p>
+            <div className={styles.categories} role="group" aria-label="Catégorie">
+              {categories.map((c) => (
+                <button key={c.value} type="button" className={styles.categorie} aria-pressed={c.value === categorieActive} onClick={() => setCategorie(c.value)}>
+                  {c.label.replace(/^Nettoyage /, '').replace(/^./, (l) => l.toUpperCase())}
+                </button>
+              ))}
+            </div>
+            <ul className={styles.formules}>
+              {formulesCategorie.map((f) => (
+                <li key={f.id}>
+                  <Link to={lien(f)} className={styles.formule}>
+                    <span>{f.name}</span>
+                    <span className={styles.prix}>{estCombinee(f) ? 'dès ' : ''}{formatEuros(prixMin(f, formules))}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className={styles.panneauAide}>Choisissez une formule : vous arrivez directement au choix du créneau.</p>
+          </aside>
+        )}
       </div>
     </section>
   );
