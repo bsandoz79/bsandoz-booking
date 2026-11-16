@@ -106,17 +106,11 @@ export function Accueil() {
             ))}
           </h1>
           <Zone className={styles.zonePhoto} crayons={<ModifierRubrique rubrique="photo" />}>
-            {accueil.photo ? (
-              <picture className={styles.heroPhoto}>
-                <img src={accueil.photo} width="600" height="600" fetchPriority="high" alt={`${SITE.brand} : photo de présentation`} />
-              </picture>
-            ) : (
-              // Par défaut : court clip d'un lavage (3 s, sans son), joué une fois puis arrêté sur sa dernière image.
-              // « Moins d'animations » demandé : l'image fixe seule. Une photo choisie par le pro (crayon) le remplace.
-              <div className={styles.heroPhoto}>
-                <ClipAccueil />
-              </div>
-            )}
+            {/* Court clip d'un lavage (3 s, sans son), joué une fois puis arrêté sur sa dernière image. La photo choisie avec
+                le crayon sert d'image fixe quand « moins d'animations » est demandé. */}
+            <div className={styles.heroPhoto}>
+              <ClipAccueil photo={accueil.photo || undefined} />
+            </div>
           </Zone>
           <p className={styles.lead}>{accueil.introduction}</p>
           <div className={styles.ctas}>
