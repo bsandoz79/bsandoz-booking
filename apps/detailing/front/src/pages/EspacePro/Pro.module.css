@@ -26,8 +26,9 @@
 .detail dd { margin: 0; }
 
 /* Appeler le client d'un geste (planning, tableau de bord). */
-.appelClient { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: 0 1rem; border-radius: 999px; background: #13794a; color: #fff; font-weight: 700; text-decoration: none; }
-.appelClient:hover { background: #0f6640; }
+.appelClient { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: 0 1rem; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--brand-tel) 55%, transparent);
+  background: transparent; color: var(--brand-tel); font-weight: 600; text-decoration: none; }
+.appelClient:hover { background: color-mix(in srgb, var(--brand-tel) 12%, transparent); border-color: var(--brand-tel); }
 .prochain { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; padding: .5rem 0; border-bottom: 1px solid var(--bs-color-border); }
 
 /* Légende des couleurs du planning. */

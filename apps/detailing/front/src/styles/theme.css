@@ -18,6 +18,9 @@
   --brand-paper: #fbf6ea;       /* carte de fidélité en carton */
   --brand-paper-ink: #153468;
   --brand-container: 72rem;
+  --brand-tel: #13794a;         /* téléphone : vert, contour et icône */
+  --bs-button-radius: 8px;      /* boutons du kit : coins peu arrondis, comme ceux du site */
+  --bs-button-border: 1px;
 }
 
 :root[data-theme='nuit'] {
@@ -33,6 +36,7 @@
   --bs-color-border: #2a3a52;
   --bs-color-disabled: #4f5d73;
   --bs-color-success: #5fd39d;
+  --brand-tel: #5fd39d;
   --bs-color-danger: #ff8f9f;
   --brand-navy: #060d18;
   --brand-on-navy: #c9d4e5;

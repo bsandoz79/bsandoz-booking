@@ -1,4 +1,4 @@
-.button { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--bs-space-2); min-height: 44px; padding: 0 var(--bs-space-5); border-radius: var(--bs-radius-pill); border: 2px solid transparent; font: inherit; font-family: var(--bs-font); font-weight: 600; cursor: pointer; transition: background var(--bs-transition), border-color var(--bs-transition), color var(--bs-transition); }
+.button { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--bs-space-2); min-height: 44px; padding: 0 var(--bs-space-5); border-radius: var(--bs-button-radius, var(--bs-radius-pill)); border: var(--bs-button-border, 2px) solid transparent; font: inherit; font-family: var(--bs-font); font-weight: 600; cursor: pointer; transition: background var(--bs-transition), border-color var(--bs-transition), color var(--bs-transition); }
 .button:focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
 .button:disabled { cursor: not-allowed; opacity: 0.6; }
 .primary { background: var(--bs-color-primary); color: #fff; }

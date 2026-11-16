@@ -169,7 +169,7 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
             <p className={styles.phrase}>{introduction}</p>
             <div className={styles.boutons}>
               <Link to="/reserver" className="btn">Réserver un créneau</Link>
-              {telephone && <a href={lienTel(telephone)} className={`btn ${styles.appeler}`} aria-label={`Appeler le ${telephone}`}><IconeTelephone /> {telephone}</a>}
+              {telephone && <a href={lienTel(telephone)} className={`btn btn--tel ${styles.appeler}`} aria-label={`Appeler le ${telephone}`}><IconeTelephone /> {telephone}</a>}
             </div>
             {points.length > 0 && <ul className={styles.points}>{points.map((a) => <li key={a}>{a}</li>)}</ul>}
           </div>
