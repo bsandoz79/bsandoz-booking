@@ -209,6 +209,7 @@
 - Accueil : recul progressif sur l'image du garage jusqu'à son cadrage d'origine.
 - Accueil : nouvelle image « voiture propre », identique à la voiture boueuse (même cadrage), alignée.
 - Accueil : nouvelle image du garage (même voiture), point de recul recalé.
+- Accueil : texte dans une carte sombre, nouveau texte par défaut centré sur le lavage Perfect Clean ; cadre de la voiture abaissé sur téléphone.
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».
