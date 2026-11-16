@@ -245,3 +245,4 @@
 - Accueil : lecture du clip demandée explicitement au chargement (autoplay pas toujours appliqué à une vidéo ajoutée après coup).
 - Accueil : la lecture automatique repart du haut même après un rechargement (le navigateur remettait la page plus bas) ; défilement compatible Safari.
 - Accueil : le scénario se joue aussi pour le pro connecté (il passait directement à l'image finale en mode modification).
+- Accueil sur téléphone : voiture entière dans un cadre paysage au lieu d'une tranche recadrée ; surtitre qui reste à l'écran.
