@@ -135,6 +135,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Scène de l'intérieur : consigne « passez le chiffon » rendue discrète (petite barre sur une ligne, texte court, bouton « Passer » bordé au lieu du gros bouton bleu).
 - ✅ Encart « Professionnels » sur l'accueil (après les prestations) : « Une flotte de véhicules à nettoyer ? », boutons « Demander un devis » (formulaire de la page Professionnels) et « En savoir plus » ; lien « Devis sur mesure » dans le panneau « Réserver votre lavage ».
 - ✅ Encart « Professionnels » mis en avant en rouge (fond rouge pâle, contour fin, icône et bouton « Demander un devis » rouges), sans le liseré bleu ; version nuit adaptée.
+- ✅ Chiffon de la scène de l'intérieur : plus grand (dessin vectoriel net), fin automatique en 3 passages rapides (gauche → droite, droite → gauche, gauche → droite, moins d'une seconde) ; tout nettoyé à la main (95 %) : la vue ressort toute seule.
 
 ### Décisions en attente
 - ❓ Lien de la fiche Google (à créer), informations de facturation du vendeur (`[à compléter]`).

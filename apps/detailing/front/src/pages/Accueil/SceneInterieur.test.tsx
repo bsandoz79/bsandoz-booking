@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { SCENE_INTERIEUR, cadrageCouvrant, etatScene, pointDuTrajet, trajetVitre } from '../../data/sceneInterieur';
+import { SCENE_INTERIEUR, cadrageCouvrant, etatScene, partPropre, pointDuTrajet, rayonPassage, trajetVitre } from '../../data/sceneInterieur';
 import { SceneInterieur } from './SceneInterieur';
 
 const { moments, zoom } = SCENE_INTERIEUR;
@@ -30,16 +30,24 @@ describe('etatScene', () => {
 });
 
 describe('trajet du chiffon, comme sur une vitre', () => {
-  it('fait des allers-retours de droite à gauche, du haut vers le bas', () => {
-    const trajet = trajetVitre(1000, 400, 50);
-    expect(trajet.slice(0, 4)).toEqual([{ x: 1000, y: 25 }, { x: 0, y: 25 }, { x: 0, y: 100 }, { x: 1000, y: 100 }]);
-    expect(trajet[trajet.length - 1].y).toBe(375);
-    // Rangées assez serrées pour ne rien oublier : moins d'un diamètre entre deux rangées.
-    expect(trajet[2].y - trajet[0].y).toBeLessThan(100);
+  it('fait 3 passages : gauche → droite, droite → gauche, gauche → droite, du haut vers le bas', () => {
+    expect(trajetVitre(1000, 300, 3)).toEqual([
+      { x: 0, y: 50 }, { x: 1000, y: 50 },
+      { x: 1000, y: 150 }, { x: 0, y: 150 },
+      { x: 0, y: 250 }, { x: 1000, y: 250 },
+    ]);
+    // Le grand chiffon couvre sa bande entière.
+    expect(2 * rayonPassage(300, 3)).toBeGreaterThan(100);
+  });
+
+  it('mesure la part nettoyée du masque', () => {
+    const pixels = new Uint8ClampedArray([0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 200]);
+    expect(partPropre(pixels)).toBe(0.75);
+    expect(partPropre(new Uint8ClampedArray())).toBe(0);
   });
 
   it('avance le long du trajet', () => {
-    const trajet = trajetVitre(1000, 400, 50);
+    const trajet = trajetVitre(1000, 400, 3);
     expect(pointDuTrajet(trajet, 0)).toEqual(trajet[0]);
     expect(pointDuTrajet(trajet, 1)).toEqual(trajet[trajet.length - 1]);
     const milieuPremiere = pointDuTrajet([{ x: 0, y: 0 }, { x: 100, y: 0 }], 0.5);
