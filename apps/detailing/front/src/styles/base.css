@@ -11,10 +11,19 @@ p { margin: 0; }
 a { color: var(--bs-color-primary-dark); }
 :focus-visible { outline: 3px solid var(--bs-color-primary); outline-offset: 2px; }
 .container { width: 100%; max-width: var(--brand-container); margin-inline: auto; padding-inline: 1.25rem; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 48px; padding: 0 1.35rem; border-radius: 12px; border: 1px solid transparent; background: var(--bs-color-primary); color: #fff; font: inherit; font-weight: 700; letter-spacing: .01em; text-decoration: none; cursor: pointer; }
+/*
+ * Boutons sobres : coins peu arrondis, écriture moyenne, pas de lueur. Principal plein (bleu de la marque, liseré un peu
+ * plus sombre) ; secondaire transparent à contour fin, qui prend la couleur du texte autour (lisible sur fond clair ou sombre).
+ */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding: 0 1.1rem; border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--bs-color-primary) 75%, #000); background: var(--bs-color-primary); color: #fff;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .14); font: inherit; font-weight: 600; letter-spacing: 0; text-decoration: none; cursor: pointer; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn--ghost { background: transparent; color: var(--bs-color-text); border: 1px solid var(--bs-color-border); }
-.btn--ghost:hover { border-color: var(--bs-color-primary); background: var(--bs-color-primary-soft); }
+.btn--ghost { background: transparent; color: inherit; border-color: color-mix(in srgb, currentColor 32%, transparent); box-shadow: none; }
+.btn--ghost:hover { background: color-mix(in srgb, currentColor 8%, transparent); border-color: color-mix(in srgb, currentColor 60%, transparent); }
+/* Téléphone : transparent, contour et texte verts. */
+.btn--tel { background: transparent; color: var(--brand-tel); border-color: color-mix(in srgb, var(--brand-tel) 55%, transparent); box-shadow: none; }
+.btn--tel:hover { background: color-mix(in srgb, var(--brand-tel) 12%, transparent); border-color: var(--brand-tel); }
 /* Sections atteintes par un lien (« /#fidelite ») : pas cachées sous l'en-tête collé en haut. */
 main section[id] { scroll-margin-top: 5rem; }
 
@@ -26,10 +35,8 @@ html.anim [data-apparition] { transition: opacity .7s ease var(--delai, 0ms), tr
 }
 
 /* Boutons : léger relief au survol (désactivé si moins d'animations). */
-.btn { position: relative; overflow: hidden; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
-.btn:not(.btn--ghost):hover { background: color-mix(in srgb, var(--bs-color-primary) 82%, #000); }
-.btn:active { transform: scale(.98); }
+.btn { position: relative; overflow: hidden; transition: background .15s ease, border-color .15s ease; }
+.btn:not(.btn--ghost):not(.btn--tel):hover { background: color-mix(in srgb, var(--bs-color-primary) 85%, #000); }
 @media (prefers-reduced-motion: reduce) {
   .btn { transition: none; }
-  .btn:active { transform: none; }
 }

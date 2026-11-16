@@ -225,6 +225,11 @@
   - L'élan de la molette ou du pavé tactile ne termine pas le nettoyage tout seul : il faut une courte pause, puis un nouveau geste.
   - Jouée pour tout le monde, pro connecté compris. En mode « moins d'animations » : même scène, sans zoom (fondu enchaîné) et sans défilement automatique à la sortie. Le comparateur avant / après de secours est retiré : Baptiste ne voyait que lui (pro connecté ou animations coupées dans Windows).
   - Fin du nettoyage : premier passage du chiffon de droite à gauche.
+- Boutons plus sobres, couleurs gardées.
+  - Le bouton principal reste bleu plein : coins peu arrondis (8 px), écriture moyenne, liseré un peu plus sombre, plus d'enfoncement au clic.
+  - Les boutons secondaires (« Choisir », « Voir… ») sont transparents, à contour fin, et prennent la couleur du texte autour.
+  - Le téléphone garde son vert, en transparent avec contour et icône verts (`.btn--tel`, variable `--brand-tel`) : en-tête, haut de l'accueil, « Appeler » de l'espace pro.
+  - Kit : réglages `--bs-button-radius` et `--bs-button-border` du bloc `Button`, en pilule par défaut ; la démo les règle à 8 px et 1 px.
   - Logique pure testée : `etatScene`, `trajetVitre`, `pointDuTrajet`, `cadrageCouvrant`.
 
 ### Corrigé

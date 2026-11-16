@@ -67,8 +67,7 @@
 .phrase { margin: .65rem 0 0; font-size: .95rem; line-height: 1.5; color: #d6e1ee; }
 .boutons { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .85rem; text-shadow: none; }
 .boutons :global(.btn) { min-height: 44px; padding-inline: 1.1rem; font-size: .92rem; }
-.boutons .appeler { gap: .5rem; background: #13794a; }
-.boutons .appeler:hover { background: #0f6640; }
+.boutons .appeler { gap: .5rem; --brand-tel: #5fd39d; }
 .points { list-style: none; padding: 0; margin: .9rem 0 0; display: flex; flex-wrap: wrap; gap: .4rem; font-size: .82rem; text-shadow: none; }
 .points li { padding: .3rem .7rem; border-radius: 999px; background: rgb(5 8 13 / .45); border: 1px solid rgb(255 255 255 / .2); }
 /* Téléphone : sans les points forts, pour garder la voiture visible. */

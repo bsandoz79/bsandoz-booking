@@ -8,13 +8,14 @@
 .actions { display: flex; align-items: center; gap: .5rem; }
 .reserver { flex: none; }
 /* Boutons carrés aux coins arrondis, nets : bordure fine, fond qui se teinte au survol. */
-.rond { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); font-size: 1.15rem; cursor: pointer; transition: background .15s ease, border-color .15s ease; }
+.rond { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--bs-color-border); background: var(--bs-color-surface); color: var(--bs-color-text); font-size: 1.15rem; cursor: pointer; transition: background .15s ease, border-color .15s ease; }
 .rond:hover { border-color: var(--bs-color-primary); background: var(--bs-color-primary-soft); }
 .rond:focus-visible { outline: 2px solid var(--bs-color-primary); outline-offset: 2px; }
 
-/* Téléphone de l'entreprise : rond vert avec le combiné. */
-.appel { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #13794a; color: #fff; text-decoration: none; transition: background .15s ease; }
-.appel:hover { background: #0f6640; }
+/* Téléphone de l'entreprise : carré transparent, contour et combiné verts. */
+.appel { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--brand-tel) 55%, transparent);
+  background: transparent; color: var(--brand-tel); text-decoration: none; transition: background .15s ease, border-color .15s ease; }
+.appel:hover { background: color-mix(in srgb, var(--brand-tel) 12%, transparent); border-color: var(--brand-tel); }
 .appel:focus-visible { outline: 2px solid var(--bs-color-primary); outline-offset: 2px; }
 
 /* Bouton clair / nuit : un rond de ciel ; au changement, le soleil se couche et la lune se lève (roue d'un demi-tour). */

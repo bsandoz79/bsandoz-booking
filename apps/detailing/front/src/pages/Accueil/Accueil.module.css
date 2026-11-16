@@ -10,9 +10,8 @@
 .title { font-size: clamp(2rem, 5vw, 3.25rem); margin-top: .75rem; max-width: 18ch; }
 .lead { margin-top: 1rem; max-width: 52ch; color: var(--brand-on-navy); font-size: 1.1rem; }
 .ctas { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1.5rem; }
-.ctas :global(.btn--ghost) { color: #fff; border-color: rgba(255,255,255,.5); }
-.ctas .appeler { gap: .5rem; background: #13794a; }
-.ctas .appeler:hover { background: #0f6640; }
+.ctas :global(.btn--ghost) { color: #fff; }
+.ctas .appeler { gap: .5rem; --brand-tel: #5fd39d; }
 .args { list-style: none; padding: 0; margin: 1.75rem 0 0; display: flex; flex-wrap: wrap; gap: .5rem; font-size: .9rem; }
 /* Points forts en pastilles. */
 .args li { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .8rem; border-radius: 999px; background: rgb(255 255 255 / .08); border: 1px solid rgb(255 255 255 / .16); }
