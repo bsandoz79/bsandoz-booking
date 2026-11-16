@@ -238,3 +238,4 @@
 - Accueil : le clip s'affiche même quand une photo a été choisie avec le crayon (elle sert d'image fixe si moins d'animations).
 - Accueil : lecture du clip demandée explicitement au chargement (autoplay pas toujours appliqué à une vidéo ajoutée après coup).
 - Accueil : la lecture automatique repart du haut même après un rechargement (le navigateur remettait la page plus bas) ; défilement compatible Safari.
+- Accueil : le scénario se joue aussi pour le pro connecté (il passait directement à l'image finale en mode modification).
