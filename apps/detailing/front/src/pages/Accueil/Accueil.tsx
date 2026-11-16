@@ -26,6 +26,7 @@ import { useSeo } from '../../seo/useSeo';
 import { CarteFormule } from './CarteFormule';
 import { AvantApres } from '../../components/AvantApres/AvantApres';
 import { VideoAuto } from '../../components/VideoAuto/VideoAuto';
+import { ClipAccueil } from './ClipAccueil';
 import styles from './Accueil.module.css';
 
 /** Accueil : textes, étapes, réalisations, avis, FAQ et communes modifiables dans l'espace pro (« Mon site »). */
@@ -95,7 +96,7 @@ export function Accueil() {
     <main>
       <Zone crayons={<><ModifierRubrique rubrique="accueil" libelle="Titre, présentation et points forts" /><ModifierRubrique rubrique="coordonnees" libelle="Téléphone et coordonnées" /></>}>
       <section className={styles.hero}>
-        {/* Grand écran : texte à gauche, photo du camion à droite ; téléphone et tablette : photo sous le titre. */}
+        {/* Grand écran : texte à gauche, clip (ou photo) à droite ; téléphone et tablette : sous le titre. */}
         <div className={`container ${styles.heroGrille}`}>
           <p className={styles.eyebrow}>{accueil.surtitre}</p>
           {/* Titre révélé mot par mot (lu normalement par les lecteurs d'écran). */}
@@ -110,11 +111,11 @@ export function Accueil() {
                 <img src={accueil.photo} width="600" height="600" fetchPriority="high" alt={`${SITE.brand} : photo de présentation`} />
               </picture>
             ) : (
-              <picture className={styles.heroPhoto}>
-                <source srcSet="/camion.webp" type="image/webp" />
-                <img src="/camion.jpg" width="600" height="600" fetchPriority="high"
-                  alt={`Le camion-atelier ${SITE.brand}, portes ouvertes : produits, enrouleurs et matériel autonome en eau et en électricité.`} />
-              </picture>
+              // Par défaut : court clip d'un lavage (3 s, sans son), joué une fois puis arrêté sur sa dernière image.
+              // « Moins d'animations » demandé : l'image fixe seule. Une photo choisie par le pro (crayon) le remplace.
+              <div className={styles.heroPhoto}>
+                <ClipAccueil />
+              </div>
             )}
           </Zone>
           <p className={styles.lead}>{accueil.introduction}</p>

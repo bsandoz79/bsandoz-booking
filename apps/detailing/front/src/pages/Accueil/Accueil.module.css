@@ -216,3 +216,6 @@ blockquote.card { margin: 0; }
 .combinaison { margin: -.25rem 0 .5rem; font-size: .95rem; }
 .combinaison strong { color: #13794a; }
 
+/* Clip du haut de l'accueil : même cadre que la photo (carré, coins arrondis). */
+.heroPhoto video, .heroPhoto > img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 22px; }
+
