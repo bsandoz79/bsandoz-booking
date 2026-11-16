@@ -1,0 +1,75 @@
+/*
+ * Haut de l'accueil piloté par le défilement : section haute de `--ecrans` écrans, scène collée sous l'en-tête.
+ * La vidéo suit le défilement ; titres d'étape en grand, en bas à droite (comme le reel) ; à la fin, texte à gauche et
+ * panneau « Réserver » qui glisse depuis la droite. --avance (0 → 1) vient du défilement.
+ */
+.hero { position: relative; height: calc(var(--ecrans, 4) * 100svh); background: #05080d; color: #fff; }
+.scene { position: sticky; top: 64px; height: calc(100svh - 64px); overflow: hidden; isolation: isolate; }
+.fond { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Voile uni, seulement à la fin (pas pendant la vidéo). */
+.voile { position: absolute; inset: 0; z-index: -1; background: rgb(5 8 13 / .58); opacity: 0; transition: opacity .6s ease; }
+.final .voile { opacity: 1; }
+
+/* Titres d'étape : très grands, capitales serrées, en bas à droite. */
+.etape { position: absolute; right: clamp(1.25rem, 5vw, 4.5rem); bottom: clamp(2rem, 9vh, 5rem); margin: 0; text-align: right;
+  font-size: clamp(2.4rem, 9.5vw, 6rem); font-weight: 900; font-style: italic; line-height: .92; letter-spacing: -.03em; text-transform: uppercase;
+  text-shadow: 0 4px 24px rgb(0 0 0 / .5); opacity: 0; transform: translateY(24px); transition: opacity .45s ease, transform .45s cubic-bezier(.2, .7, .2, 1); }
+.etapeVisible { opacity: 1; transform: none; }
+
+/* Fine barre d'avancement en bas de l'écran. */
+.progression { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgb(255 255 255 / .12); }
+.progression span { display: block; height: 100%; width: calc(var(--avance, 0) * 100%); background: #fff; }
+.final .progression { opacity: 0; transition: opacity .4s ease; }
+
+/* Fin : texte à gauche, panneau à droite (empilés sur téléphone). */
+.fin { position: absolute; inset: 0; margin-inline: auto; display: grid; align-content: end; gap: 1.25rem; padding-block: 1.5rem;
+  pointer-events: none; overflow-y: auto; }
+.final .fin { pointer-events: auto; }
+.texte > *, .panneau { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s cubic-bezier(.2, .7, .2, 1); }
+.final .texte > * { opacity: 1; transform: none; }
+.final .texte > :nth-child(3) { transition-delay: .35s; }
+.final .texte > :nth-child(4) { transition-delay: .5s; }
+.final .panneau { opacity: 1; transform: none; transition-delay: .45s; }
+
+.surtitre { margin: 0; text-transform: uppercase; letter-spacing: .14em; font-size: .75rem; font-weight: 800; color: #8cc2f2; }
+.titre { margin: .6rem 0 0; font-size: clamp(2rem, 7.5vw, 4rem); line-height: 1.03; letter-spacing: -.02em; max-width: 15ch; }
+.final .texte > .titre { transition: none; }
+.titre .mot { display: inline-block; opacity: 0; transform: translateY(.5em); transition: opacity .5s ease, transform .5s cubic-bezier(.2, .7, .2, 1); }
+.final .titre .mot { opacity: 1; transform: none; transition-delay: calc(var(--i) * 60ms); }
+.phrase { margin: .8rem 0 0; max-width: 40ch; font-size: 1.05rem; color: #dbe6f3; }
+.points { list-style: none; padding: 0; margin: .9rem 0 0; display: flex; flex-wrap: wrap; gap: .4rem; font-size: .82rem; }
+.points li { padding: .3rem .7rem; border-radius: 999px; background: rgb(255 255 255 / .1); border: 1px solid rgb(255 255 255 / .18); }
+
+/* Panneau « Réserver votre lavage » : carte sombre translucide, nette. */
+.panneau { display: grid; gap: .6rem; padding: 1.1rem; border-radius: 18px; background: rgb(10 16 26 / .82); border: 1px solid rgb(255 255 255 / .14);
+  box-shadow: 0 20px 50px rgb(0 0 0 / .45); }
+.panneauTitre { margin: 0; font-weight: 900; font-size: 1.05rem; text-transform: uppercase; letter-spacing: .04em; }
+.choix { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
+.choixLien { display: flex; justify-content: space-between; align-items: center; gap: 1rem; min-height: 46px; padding: 0 .9rem; border-radius: 12px;
+  color: #fff; text-decoration: none; background: rgb(255 255 255 / .06); border: 1px solid rgb(255 255 255 / .12); font-weight: 600; }
+.choixLien:hover { border-color: #8cc2f2; background: rgb(140 194 242 / .12); }
+.choixLien:focus-visible { outline: 3px solid #8cc2f2; outline-offset: 2px; }
+.choixPrix { color: #8cc2f2; font-weight: 800; white-space: nowrap; }
+.reserver { width: 100%; min-height: 52px; }
+.appel { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; color: #fff; font-weight: 700; text-decoration: none; }
+
+/* Téléphone : le panneau n'affiche que le bouton et l'appel, le texte reste court. */
+@media (max-width: 899px) {
+  .points, .choix { display: none; }
+}
+@media (min-width: 900px) {
+  .fin { grid-template-columns: minmax(0, 1fr) 360px; align-items: end; column-gap: 3rem; padding-block: 3rem; }
+  .panneau { transform: translateX(40px); }
+  .final .panneau { transform: none; }
+}
+
+/* Version simple (« moins d'animations », mode modification) : une hauteur d'écran, dernière image, tout affiché. */
+.simple { height: auto; }
+.simple .scene { position: relative; top: 0; height: auto; min-height: calc(100svh - 64px); }
+.simple .fin { position: relative; min-height: calc(100svh - 64px); }
+.simple .voile, .simple .texte > *, .simple .panneau, .simple .titre .mot { transition: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .etape, .voile, .texte > *, .panneau, .titre .mot { transition: none; }
+}

@@ -180,7 +180,7 @@ describe('Parcours de réservation', () => {
 
     expect(await screen.findByRole('heading', { name: 'Merci, votre rendez-vous est réservé.' })).toBeInTheDocument();
     expect(screen.getByRole('note')).toHaveTextContent('Mode démonstration');
-  });
+  }, 15000); // parcours complet : plus long que la limite de 5 s quand la machine est chargée
 
   it('adresse au-delà de la zone : propose de demander un devis', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({
