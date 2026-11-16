@@ -196,6 +196,7 @@ export function HeroScenes({ surtitre, titre, introduction, points, telephone, f
               ))}
             </ul>
             <p className={styles.panneauAide}>Choisissez une formule : ses options vous sont proposées, puis le créneau.</p>
+            <Link to="/professionnels" className={styles.panneauPro}>Professionnel, une flotte à nettoyer ? <strong>Devis sur mesure</strong></Link>
           </aside>
         )}
       </div>

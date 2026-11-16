@@ -32,6 +32,7 @@ const TRACES = {
   cheque: <><rect x="2.5" y="6" width="19" height="12" rx="1.5" /><path d="M6 14.5c1.2-1.8 2.2-1.8 3 0s1.8 1.8 3 0M15 14.5h3M6 9.5h6" /></>,
   qrcode: <><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1" /><rect x="14" y="3.5" width="6.5" height="6.5" rx="1" /><rect x="3.5" y="14" width="6.5" height="6.5" rx="1" /><path d="M14 14h2.5v2.5H14zM18 18h2.5v2.5H18zM14 20.5h2M20.5 14v2" /></>,
   coche: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+  camion: <><path d="M2.5 6h11v10h-11zM13.5 9.5h4l3 3.5V16h-7" /><circle cx="6.5" cy="17.5" r="1.8" /><circle cx="16.5" cy="17.5" r="1.8" /></>,
   historique: <><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5M12 7v5l3 2" /></>,
 } as const;
 

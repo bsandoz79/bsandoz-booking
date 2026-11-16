@@ -218,3 +218,16 @@ blockquote.card { margin: 0; }
 /* Clip du haut de l'accueil : même cadre que la photo (carré, coins arrondis). */
 .heroPhoto video, .heroPhoto > img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 22px; }
 
+
+/* Encart « Professionnels » : carte bordée, icône, texte, puis boutons (en ligne sur grand écran). */
+.pro { display: grid; gap: 1rem; margin-block: 0 3rem; padding: clamp(1.1rem, 3vw, 1.75rem); border-radius: var(--bs-radius-md);
+  background: var(--bs-color-surface); border: 1px solid var(--bs-color-border); border-left: 4px solid var(--bs-color-primary); }
+.proIcone { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; background: var(--bs-color-primary-soft); color: var(--bs-color-primary-dark); }
+.proTexte { display: grid; gap: .35rem; }
+.proTexte h2 { margin: 0; font-size: clamp(1.25rem, 3.5vw, 1.6rem); }
+.proTexte p { margin: 0; }
+.proSurtitre { font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--bs-color-primary-dark); }
+.proActions { display: flex; flex-wrap: wrap; gap: .6rem; }
+@media (min-width: 900px) {
+  .pro { grid-template-columns: auto 1fr auto; align-items: center; gap: 1.5rem; }
+}

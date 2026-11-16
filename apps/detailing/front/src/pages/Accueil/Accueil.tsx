@@ -25,6 +25,7 @@ import { useSeo } from '../../seo/useSeo';
 import { CarteFormule } from './CarteFormule';
 import { AvantApres } from '../../components/AvantApres/AvantApres';
 import { VideoAuto } from '../../components/VideoAuto/VideoAuto';
+import { Icone } from '../../components/Icone/Icone';
 import { HeroScenes } from './HeroScenes';
 import { SceneInterieur } from './SceneInterieur';
 import styles from './Accueil.module.css';
@@ -168,6 +169,22 @@ export function Accueil() {
             )}
           </div>
         )}
+      </section>
+
+      {/* Encart « Professionnels » : flottes et utilitaires, sur devis (page /professionnels, formulaire de devis). */}
+      <section id="professionnels" className="container" aria-labelledby="titre-professionnels">
+        <div className={styles.pro}>
+          <span className={styles.proIcone}><Icone nom="camion" taille={28} /></span>
+          <div className={styles.proTexte}>
+            <p className={styles.proSurtitre}>Professionnels</p>
+            <h2 id="titre-professionnels">Une flotte de véhicules à nettoyer ?</h2>
+            <p className={styles.intro}>Utilitaires, voitures de service, poids lourds : intervention sur votre dépôt ou votre parking, ponctuelle ou régulière. Tarif sur devis.</p>
+          </div>
+          <div className={styles.proActions}>
+            <Link to="/professionnels#titre-devis" className="btn">Demander un devis</Link>
+            <Link to="/professionnels" className="btn btn--ghost">En savoir plus</Link>
+          </div>
+        </div>
       </section>
 
       {etapes.length > 0 && (
