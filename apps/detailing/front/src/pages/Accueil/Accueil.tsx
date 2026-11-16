@@ -98,9 +98,9 @@ export function Accueil() {
         <ModifierRubrique rubrique="coordonnees" libelle="Téléphone et coordonnées" />
       </>}>
       {/* Façon « reel », piloté par le défilement : boue, mousse, rinçage, zoom, garage ; titres par étape, puis le texte
-          et le panneau « Réserver ». En mode modification : directement la fin, pour modifier le texte. */}
+          et le panneau « Réserver ». Joué aussi pour le pro connecté (crayons en haut de la section). */}
       <HeroScenes surtitre={accueil.surtitre} titre={accueil.titre} introduction={accueil.introduction}
-        points={accueil.arguments} telephone={telephone || undefined} formules={formules} statique={edition} />
+        points={accueil.arguments} telephone={telephone || undefined} formules={formules} />
       </Zone>
 
       <section id="prestations" className={`container ${styles.section}`} aria-labelledby="titre-prestations">
