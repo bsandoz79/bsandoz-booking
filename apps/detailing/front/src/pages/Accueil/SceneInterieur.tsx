@@ -268,7 +268,7 @@ function SceneAnimee({ titre, textes, douce }: { titre: string; textes: typeof S
       if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) { arretRef.current = false; setArret(false); }
     };
     // Au doigt, pendant le nettoyage, le doigt nettoie : la page ne défile pas (le bouton « Passer » permet de continuer).
-    // Exception : un glissé franchement vers le bas (le geste habituel pour remonter) fait remonter la page, en suivant le
+    // Exception : un long glissé presque vertical vers le bas (le geste habituel pour remonter) fait remonter la page, en suivant le
     // doigt jusqu'à ce qu'il le lâche ; remonter un peu suffit à sortir de l'arrêt.
     const debutDoigt = (e: TouchEvent) => {
       const t = e.touches[0];
@@ -280,7 +280,10 @@ function SceneAnimee({ titre, textes, douce }: { titre: string; textes: typeof S
       if (g && t) {
         const dx = t.clientX - g.x;
         const dy = t.clientY - g.y;
-        if (!g.mode && Math.hypot(dx, dy) > 14) g.mode = dy > 0 && dy > 1.5 * Math.abs(dx) ? 'remonter' : 'nettoyer';
+        // Remonter seulement sur un glissé long et presque vertical : un coup de chiffon vers le bas, même un peu penché, nettoie.
+        if (!g.mode && Math.abs(dx) > 30) g.mode = 'nettoyer';
+        if (!g.mode && dy < -20) g.mode = 'nettoyer';
+        if (!g.mode && dy > 70) g.mode = dy > 4 * Math.abs(dx) ? 'remonter' : 'nettoyer';
         if (g.mode === 'remonter') {
           e.preventDefault();
           dernierPoint.current = null;
