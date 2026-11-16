@@ -1,8 +1,20 @@
-.page { padding-block: 2rem 4rem; display: flex; flex-direction: column; gap: 1.5rem; max-width: 860px; }
+/* Environnement rouge : les couleurs principales du thème (boutons, liens, champs) passent au rouge dans cette page. */
+.page { --bs-color-primary: #c0262d; --bs-color-primary-dark: #a11f25; --bs-color-primary-hover: #9e1d23; --bs-color-primary-soft: #fdeeee;
+  padding-block: 2rem 4rem; display: flex; flex-direction: column; gap: 1.5rem; max-width: 860px; }
+:global(:root[data-theme='nuit']) .page { --bs-color-primary: #c0262d; --bs-color-primary-dark: #ff8a8f; --bs-color-primary-hover: #9e1d23;
+  --bs-color-primary-soft: rgb(192 38 45 / .16); }
+/* En-tête rouge pâle : icône camion, titre, accroche et accès direct au devis. */
+.entete { display: grid; gap: 1rem; padding: clamp(1.1rem, 3vw, 1.75rem); border-radius: var(--bs-radius-md); background: var(--bs-color-primary-soft);
+  border: 1px solid color-mix(in srgb, var(--bs-color-primary) 30%, transparent); }
+.icone { display: inline-grid; place-items: center; width: 56px; height: 56px; border-radius: 12px; background: var(--bs-color-primary); color: #fff; }
+.enteteTexte { display: grid; gap: .5rem; justify-items: start; }
+.enteteTexte h1, .enteteTexte p { margin: 0; }
+@media (min-width: 700px) { .entete { grid-template-columns: auto 1fr; align-items: start; } }
 .page h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
 .surtitre { text-transform: uppercase; letter-spacing: .06em; font-size: .8rem; font-weight: 700; color: var(--bs-color-primary-dark); }
 .intro { font-size: 1.1rem; }
 .atouts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .75rem; }
-.atouts li { display: flex; flex-direction: column; gap: .25rem; padding: 1rem; border: 1px solid var(--bs-color-border); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); }
+.atouts li { display: flex; flex-direction: column; gap: .25rem; padding: 1rem; border: 1px solid color-mix(in srgb, var(--bs-color-primary) 22%, var(--bs-color-border)); border-radius: var(--bs-radius-md); background: var(--bs-color-surface); }
 .atouts span { font-size: .92rem; color: var(--bs-color-text-muted); }
 .section { display: flex; flex-direction: column; gap: .75rem; }
+.atouts strong { color: var(--bs-color-primary-dark); }
