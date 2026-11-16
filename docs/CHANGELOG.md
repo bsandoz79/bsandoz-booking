@@ -223,7 +223,8 @@
   - Un nouveau coup de molette (ou le bouton « Tout nettoyer et continuer », ou la flèche vers le bas) : le chiffon finit tout seul, en allers-retours de gauche à droite du haut vers le bas, comme sur une vitre. La vue ressort ensuite par la portière, propre, toute seule.
   - En remontant, le chemin se rejoue à l'envers et l'habitacle se resalit.
   - L'élan de la molette ou du pavé tactile ne termine pas le nettoyage tout seul : il faut une courte pause, puis un nouveau geste.
-  - En mode « moins d'animations » ou en mode modification : le comparateur avant / après.
+  - Jouée pour tout le monde, pro connecté compris. En mode « moins d'animations » : même scène, sans zoom (fondu enchaîné) et sans défilement automatique à la sortie. Le comparateur avant / après de secours est retiré : Baptiste ne voyait que lui (pro connecté ou animations coupées dans Windows).
+  - Fin du nettoyage : premier passage du chiffon de droite à gauche.
   - Logique pure testée : `etatScene`, `trajetVitre`, `pointDuTrajet`, `cadrageCouvrant`.
 
 ### Corrigé

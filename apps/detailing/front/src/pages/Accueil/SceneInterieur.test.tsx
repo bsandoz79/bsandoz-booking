@@ -30,9 +30,9 @@ describe('etatScene', () => {
 });
 
 describe('trajet du chiffon, comme sur une vitre', () => {
-  it('fait des allers-retours de gauche à droite, du haut vers le bas', () => {
+  it('fait des allers-retours de droite à gauche, du haut vers le bas', () => {
     const trajet = trajetVitre(1000, 400, 50);
-    expect(trajet.slice(0, 4)).toEqual([{ x: 0, y: 25 }, { x: 1000, y: 25 }, { x: 1000, y: 100 }, { x: 0, y: 100 }]);
+    expect(trajet.slice(0, 4)).toEqual([{ x: 1000, y: 25 }, { x: 0, y: 25 }, { x: 0, y: 100 }, { x: 1000, y: 100 }]);
     expect(trajet[trajet.length - 1].y).toBe(375);
     // Rangées assez serrées pour ne rien oublier : moins d'un diamètre entre deux rangées.
     expect(trajet[2].y - trajet[0].y).toBeLessThan(100);
@@ -64,9 +64,14 @@ describe('SceneInterieur', () => {
     expect(screen.queryByRole('button', { name: /Tout nettoyer/ })).not.toBeInTheDocument();
   });
 
-  it('en mode modification : le comparateur avant / après, sans section épinglée', () => {
-    render(<SceneInterieur statique />);
-    expect(screen.getByRole('slider', { name: /avant et après/ })).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: /après/ })).toHaveAttribute('src', SCENE_INTERIEUR.images.habitaclePropre.src);
+  it('se joue aussi avec « moins d’animations » : même scène, sans zoom', () => {
+    const avant = window.matchMedia;
+    window.matchMedia = ((q: string) => ({ matches: q.includes('reduce'), media: q, addEventListener() {}, removeEventListener() {} })) as unknown as typeof window.matchMedia;
+    const { container } = render(<SceneInterieur />);
+    expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+    const porte = screen.getByRole('img', { name: SCENE_INTERIEUR.images.porteSale.alt });
+    expect(porte.style.transform).toBe('');
+    expect(container.querySelector('canvas')).not.toBeNull();
+    window.matchMedia = avant;
   });
 });

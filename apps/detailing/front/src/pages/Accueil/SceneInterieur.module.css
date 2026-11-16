@@ -37,9 +37,6 @@
 .progression { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 3px; background: rgb(255 255 255 / .12); }
 .progression span { display: block; height: 100%; width: calc(var(--avance, 0) * 100%); background: #fff; }
 
-/* Version simple (moins d'animations, mode modification) : le comparateur avant / après. */
-.simple { padding-block: 2.5rem; display: grid; gap: 1rem; }
-
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 @media (prefers-reduced-motion: reduce) {
