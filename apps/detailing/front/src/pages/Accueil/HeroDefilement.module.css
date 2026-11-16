@@ -1,0 +1,70 @@
+/*
+ * Haut de l'accueil piloté par le défilement : section haute, scène collée à l'écran (sous l'en-tête) pendant qu'on
+ * fait défiler. Les valeurs --interieur, --phare, --zoom, --phare-net, --invite et --detail viennent du défilement.
+ */
+.hero { position: relative; height: 360svh; background: var(--brand-navy); color: #fff; }
+.scene { position: sticky; top: 64px; height: calc(100svh - 64px); overflow: hidden; isolation: isolate; display: flex; align-items: flex-end; }
+
+.couche { position: absolute; inset: 0; z-index: -3; }
+.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Sur téléphone (écran vertical), on garde la partie basse gauche de l'habitacle : le tapis qui change. */
+.interieur { object-position: 22% 70%; }
+.phare { opacity: var(--phare, 0); transform: scale(var(--zoom, 1.18)); transform-origin: 55% 50%; }
+.phare .photo { object-position: 50% 50%; }
+
+/* Barre de lumière qui nettoie : un trait blanc net, à peine diffus. */
+.barre { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1.5px; background: #fff;
+  box-shadow: 0 0 14px 2px rgb(255 255 255 / .55); pointer-events: none; }
+
+/* Voile uni (pas de dégradé) pour lire le texte final. */
+.voile { position: absolute; inset: 0; z-index: -1; background: rgb(8 15 28 / .6); opacity: 0; transition: opacity .6s ease; }
+.revele .voile { opacity: 1; }
+
+/* Textes des étapes 1 et 2, en grand, en bas à gauche. */
+.invite, .detail { position: absolute; left: clamp(1.25rem, 5vw, 4rem); bottom: clamp(1.5rem, 8vh, 4.5rem); margin: 0; z-index: 1;
+  font-size: clamp(2.2rem, 9vw, 5rem); font-weight: 900; line-height: .98; letter-spacing: -.02em; text-transform: uppercase;
+  text-shadow: 0 2px 18px rgb(0 0 0 / .45); }
+.invite { opacity: var(--invite, 1); }
+.detail { opacity: var(--detail, 0); }
+
+/* Étape 3 : texte final. */
+.contenu { width: 100%; padding-block: 2.5rem 3rem; position: relative; z-index: 1; }
+.contenu > * { opacity: 0; transform: translateY(18px); }
+.revele .contenu > * { animation: arrivee .6s cubic-bezier(.2, .7, .2, 1) both; animation-delay: var(--d, 0ms); }
+@keyframes arrivee { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.contenu > * { pointer-events: none; }
+.revele .contenu > * { pointer-events: auto; }
+
+.surtitre { margin: 0; text-transform: uppercase; letter-spacing: .14em; font-size: .78rem; font-weight: 800; color: #8cc2f2; }
+.titre { margin: .7rem 0 0; font-size: clamp(2.3rem, 8.5vw, 4.4rem); line-height: 1.04; letter-spacing: -.02em; max-width: 14ch; }
+.revele .contenu > .titre { animation: none; opacity: 1; transform: none; }
+.titre .mot { display: inline-block; opacity: 0; transform: translateY(.5em); }
+.revele .titre .mot { animation: mot .55s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(.1s + var(--i) * 70ms); }
+@keyframes mot { from { opacity: 0; transform: translateY(.5em); } to { opacity: 1; transform: none; } }
+.titre::after { content: ''; display: block; width: 0; height: 5px; margin-top: 1rem; border-radius: 4px; background: var(--bs-color-primary); }
+.revele .titre::after { animation: trait .5s ease .6s both; }
+@keyframes trait { to { width: 4.5rem; } }
+
+.phrase { margin: 1rem 0 0; max-width: 40ch; font-size: 1.15rem; color: #dbe6f3; }
+.boutons { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.5rem; }
+.boutons :global(.btn) { min-height: 52px; }
+.boutons .appeler { gap: .5rem; background: #13794a; }
+.boutons .appeler:hover { background: #0f6640; }
+.points { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: .45rem; font-size: .88rem; }
+.points li { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .8rem; border-radius: 999px;
+  background: rgb(255 255 255 / .1); border: 1px solid rgb(255 255 255 / .2); }
+.points li::before { content: "✓"; display: grid; place-items: center; width: 1.1rem; height: 1.1rem; border-radius: 50%;
+  background: #8cc2f2; color: var(--brand-navy); font-size: .68rem; font-weight: 900; }
+
+/* Version simple (« moins d'animations », mode modification) : une seule hauteur d'écran, photo « après », texte. */
+.simple { height: auto; }
+.simple .scene { position: relative; top: 0; min-height: calc(100svh - 64px); height: auto; }
+.simple .couche:first-child .net { clip-path: none !important; }
+.simple .phare, .simple .barre, .simple .invite, .simple .detail { display: none; }
+.simple .voile { transition: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .contenu > *, .titre .mot { opacity: 1; transform: none; }
+  .revele .contenu > *, .revele .titre .mot, .revele .titre::after { animation: none; }
+  .titre::after { width: 4.5rem; }
+}
