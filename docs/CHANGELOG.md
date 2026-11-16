@@ -197,6 +197,7 @@
 - Formule complète (formule combinée) : une formule intérieur + une extérieur au choix, remise de 15 €, options des deux et de la formule (rénovation des phares) ; catalogue, devis, réservation, facture, planning et espace pro (migration Version20261114100000).
 - Abonnements : offres du pro (prestation comprise, rythme, prix), souscription et résiliation dans Mon espace, prélèvement Stripe à chaque période, une prestation par période déduite à la réservation, onglet pro « Abonnements », prélèvements en comptabilité (migration Version20261114120000).
 - Accueil : clip de 3 s (nettoyage, libre de droits Coverr) à la place de la photo du camion, joué une fois puis arrêté sur la dernière image ; test des horaires à date fixe.
+- Accueil façon reel : clip plein écran (portrait / paysage), texte révélé par-dessus à la fin du clip (HeroAccueil.module.css).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

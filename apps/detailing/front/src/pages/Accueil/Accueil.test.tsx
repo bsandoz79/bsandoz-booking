@@ -27,7 +27,7 @@ describe('Accueil', () => {
     await userEvent.click(within(faq).getByRole('button', { name: 'Enregistrer' }));
     expect(await screen.findByText('Intervenez-vous le dimanche ?')).toBeInTheDocument();
 
-    expect(screen.getByRole('button', { name: 'Modifier : Photo de l’accueil' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Modifier : Image fixe (si moins d’animations)' })).toBeInTheDocument();
     // Section avis vide : visible pour le pro seulement, avec son crayon.
     expect(screen.getByRole('button', { name: 'Modifier : Avis clients' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Modifier : Horaires et congés' })).toBeInTheDocument();

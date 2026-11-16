@@ -27,6 +27,7 @@ import { CarteFormule } from './CarteFormule';
 import { AvantApres } from '../../components/AvantApres/AvantApres';
 import { VideoAuto } from '../../components/VideoAuto/VideoAuto';
 import { ClipAccueil } from './ClipAccueil';
+import hero from './HeroAccueil.module.css';
 import styles from './Accueil.module.css';
 
 /** Accueil : textes, étapes, réalisations, avis, FAQ et communes modifiables dans l'espace pro (« Mon site »). */
@@ -34,6 +35,8 @@ export function Accueil() {
   const telephone = useTelephone();
   const { contenu } = useContenu();
   useSeo(PAGES_SEO[0].titre, PAGES_SEO[0].description);
+  // Haut de page façon « reel » : le texte apparaît quand le clip se termine.
+  const [texteVisible, setTexteVisible] = useState(false);
   // Catalogue réel (API) dès qu'il est chargé ; données de démonstration en attendant ou si l'API ne répond pas.
   const [formules, setFormules] = useState<Formule[]>(FORMULES);
   const [options, setOptions] = useState<OptionItem[]>(OPTIONS);
@@ -94,36 +97,38 @@ export function Accueil() {
 
   return (
     <main>
-      <Zone crayons={<><ModifierRubrique rubrique="accueil" libelle="Titre, présentation et points forts" /><ModifierRubrique rubrique="coordonnees" libelle="Téléphone et coordonnées" /></>}>
-      <section className={styles.hero}>
-        {/* Grand écran : texte à gauche, clip (ou photo) à droite ; téléphone et tablette : sous le titre. */}
-        <div className={`container ${styles.heroGrille}`}>
-          <p className={styles.eyebrow}>{accueil.surtitre}</p>
+      <Zone crayons={<>
+        <ModifierRubrique rubrique="accueil" libelle="Titre, présentation et points forts" />
+        <ModifierRubrique rubrique="coordonnees" libelle="Téléphone et coordonnées" />
+        <ModifierRubrique rubrique="photo" libelle="Image fixe (si moins d’animations)" />
+      </>}>
+      {/* Façon « reel » : clip plein écran, puis le texte arrive par-dessus quand il se termine (tout de suite en
+          mode modification). La page défile librement pendant le clip. */}
+      <section className={`${hero.hero} ${texteVisible || edition ? hero.revele : ''}`} aria-labelledby="titre-accueil">
+        <ClipAccueil photo={accueil.photo || undefined} onFin={() => setTexteVisible(true)} />
+        <div className={hero.voile} aria-hidden="true" />
+        <div className={`container ${hero.contenu}`}>
+          <p className={hero.surtitre} style={{ '--d': '0ms' } as CSSProperties}>{accueil.surtitre}</p>
           {/* Titre révélé mot par mot (lu normalement par les lecteurs d'écran). */}
-          <h1 className={styles.title} aria-label={accueil.titre}>
+          <h1 id="titre-accueil" className={hero.titre} aria-label={accueil.titre}>
             {accueil.titre.split(' ').map((mot, i) => (
-              <Fragment key={`${i}-${mot}`}><span aria-hidden="true" className={styles.mot} style={{ '--i': i } as CSSProperties}>{mot}</span>{' '}</Fragment>
+              <Fragment key={`${i}-${mot}`}><span aria-hidden="true" className={hero.mot} style={{ '--i': i } as CSSProperties}>{mot}</span>{' '}</Fragment>
             ))}
           </h1>
-          <Zone className={styles.zonePhoto} crayons={<ModifierRubrique rubrique="photo" />}>
-            {/* Court clip d'un lavage (3 s, sans son), joué une fois puis arrêté sur sa dernière image. La photo choisie avec
-                le crayon sert d'image fixe quand « moins d'animations » est demandé. */}
-            <div className={styles.heroPhoto}>
-              <ClipAccueil photo={accueil.photo || undefined} />
-            </div>
-          </Zone>
-          <p className={styles.lead}>{accueil.introduction}</p>
-          <div className={styles.ctas}>
-            <Link to="/reserver" className={`btn ${styles.impulsion}`}>Réserver un créneau</Link>
-            {telephone && <a href={lienTel(telephone)} className={`btn ${styles.appeler}`} aria-label={`Appeler le ${telephone}`}><IconeTelephone /> {telephone}</a>}
-            <a href="#prestations" className="btn btn--ghost">Voir les prestations</a>
+          <p className={hero.phrase} style={{ '--d': '550ms' } as CSSProperties}>{accueil.introduction}</p>
+          <div className={hero.boutons} style={{ '--d': '700ms' } as CSSProperties}>
+            <Link to="/reserver" className="btn">Réserver un créneau</Link>
+            {telephone && <a href={lienTel(telephone)} className={`btn ${hero.appeler}`} aria-label={`Appeler le ${telephone}`}><IconeTelephone /> {telephone}</a>}
           </div>
           {accueil.arguments.length > 0 && (
-            <ul className={styles.args}>
-              {accueil.arguments.map((a, i) => <li key={a} style={{ '--i': i } as CSSProperties}>{a}</li>)}
+            <ul className={hero.points} style={{ '--d': '850ms' } as CSSProperties}>
+              {accueil.arguments.map((a) => <li key={a}>{a}</li>)}
             </ul>
           )}
         </div>
+        <a href="#prestations" className={hero.defiler} aria-label="Voir les prestations">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+        </a>
       </section>
       </Zone>
 
