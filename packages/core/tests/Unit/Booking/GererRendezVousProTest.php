@@ -120,6 +120,17 @@ final class GererRendezVousProTest extends TestCase
         self::assertSame($this->clock->now()->setTimezone(new \DateTimeZone('UTC'))->format(DATE_ATOM), $planning[0]['createdAt'], 'date de prise du rendez-vous');
     }
 
+    public function testPlanningMasqueLePaiementAbandonneDesLaFinDuBlocage(): void
+    {
+        $abandon = ($this->reserver)(self::commande('09:00'))->reservationId;
+        $planning = fn (): array => array_column($this->pro->planning(new \DateTimeImmutable('2026-11-09'), new \DateTimeImmutable('2026-11-12')), 'status', 'id');
+        self::assertSame('pending_payment', $planning()[$abandon] ?? null, 'pendant le blocage : affiché, en attente');
+
+        $this->clock->modify('+11 minutes');
+        self::assertArrayNotHasKey($abandon, $planning(), 'blocage dépassé, même pas encore passé en « expiré » par la tâche planifiée');
+        self::assertSame('pending_payment', $this->reservations->get($abandon)->status()->value);
+    }
+
     public function testPlanningDonneLeTempsDeTrajetAvantLeRendezVous(): void
     {
         $id = $this->reservationPayee();

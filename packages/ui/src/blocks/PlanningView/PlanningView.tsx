@@ -70,6 +70,8 @@ export interface PlanningViewProps {
 const DEFAULT_WEEKDAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 /** Hauteur d'une heure dans la grille (px). */
 const HEURE_PX = 64;
+/** Hauteur minimale de la bande « avant » (temps réservé avant un événement), pour que son libellé reste lisible. */
+const BANDE_MIN_PX = 16;
 
 /** Lundi de la semaine de `date`. */
 export function startOfWeek(date: string): string {
@@ -196,13 +198,17 @@ export function PlanningView({
               </>
             );
             const style: CSSProperties = { top: fitHeight ? pos(Math.max(debut, debutH * 60)) : top, height: fitHeight ? `max(22px, ${((fin - Math.max(debut, debutH * 60)) / (nbHeures * 60)) * 100}%)` : h, left: `calc(${(col / cols) * 100}% + 2px)`, width: `calc(${100 / cols}% - 4px)`, ...couleur(e) };
-            // Temps réservé avant l'événement : bande hachurée juste au-dessus de la case, même largeur.
+            // Temps réservé avant l'événement : bande hachurée collée au-dessus de la case, même largeur. Au moins
+            // BANDE_MIN_PX de haut pour rester lisible (un trajet de 5 min ferait sinon un trait illisible).
             const avant = e.before && e.before.minutes > 0 ? e.before : undefined;
             const debutAvant = avant ? Math.max(debut - avant.minutes, debutH * 60) : debut;
+            const hauteurBande = fitHeight
+              ? `max(${BANDE_MIN_PX}px, ${((debut - debutAvant) / (nbHeures * 60)) * 100}%)`
+              : `${Math.max(BANDE_MIN_PX, px(debut) - px(debutAvant))}px`;
             const bande = avant && debutAvant < debut && (
               <div className={styles.avant} title={avant.label}
-                style={{ top: pos(debutAvant), height: fitHeight ? `${((debut - debutAvant) / (nbHeures * 60)) * 100}%` : px(debut) - px(debutAvant), left: style.left, width: style.width, ...couleur(e) }}>
-                {(fitHeight ? debut - debutAvant >= 20 : px(debut) - px(debutAvant) >= 18) && <span className={styles.avantTexte}>{avant.label}</span>}
+                style={{ top: `calc(${fitHeight ? pos(debut) : `${px(debut)}px`} - ${hauteurBande})`, height: hauteurBande, left: style.left, width: style.width, ...couleur(e) }}>
+                <span className={styles.avantTexte}>{avant.label}</span>
               </div>
             );
             return <li key={e.id}>{bande}{bouton(e, contenu, classeEvenement(e, court ? styles.court : ''), style)}</li>;

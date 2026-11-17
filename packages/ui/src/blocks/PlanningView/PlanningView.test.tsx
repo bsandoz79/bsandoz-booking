@@ -91,10 +91,21 @@ describe('PlanningView', () => {
     });
     const bande = screen.getByText('Trajet 30 min').parentElement!;
     // 07h45 – 08h15 : la journée commence à 7 h (élargie), 64 px l'heure.
-    expect(bande).toHaveStyle({ top: '48px', height: '32px' });
+    expect(bande.style.top).toBe('calc(48px)'); // 80 px (08h15) moins 32 px
+    expect(bande.style.height).toBe('32px');
     expect(bande).toHaveAttribute('title', 'Trajet 30 min');
     expect(screen.getByText('07:00')).toBeInTheDocument();
     expect(screen.getByText('Avec trajet').parentElement).toHaveStyle({ top: '80px' });
+  });
+
+  it('trajet court : bande d’au moins 16 px, libellé toujours affiché', () => {
+    afficher({
+      hourStart: 8, hourEnd: 19,
+      events: [{ id: 't', start: '2026-11-12T10:00', end: '2026-11-12T11:00', title: 'Tout près', before: { minutes: 5, label: 'Trajet 5 min' } }],
+    });
+    const bande = screen.getByText('Trajet 5 min').parentElement!;
+    expect(bande.style.height).toBe('16px');
+    expect(bande.style.top).toBe('calc(112px)'); // 128 px (10h00) moins 16 px minimum
   });
 
   it('affiche la vue jour triée et ouvre un événement', async () => {

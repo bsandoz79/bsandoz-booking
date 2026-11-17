@@ -277,3 +277,4 @@
 - Scène de l'intérieur sur téléphone : impossible de remonter pendant le nettoyage ; un glissé vers le bas fait désormais remonter la page.
 - Scène de l'intérieur sur téléphone : geste pour remonter trop sensible ; il faut maintenant un long glissé presque vertical vers le bas.
 - Accueil en ligne : les anciens textes enregistrés masquaient « L’éclat du neuf, livré chez vous. » ; migration qui remet les nouveaux surtitre, titre et introduction.
+- Planning pro : rendez-vous en double (paiement en ligne abandonné encore affiché après la fin du blocage) ; bande de trajet illisible pour un trajet court.
