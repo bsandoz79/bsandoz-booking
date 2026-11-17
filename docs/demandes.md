@@ -140,6 +140,7 @@ Légende : ✅ fait et en ligne après déploiement · 🔧 en cours · ⏳ à f
 - ✅ Moment « chiffon » sur téléphone : un glissé du doigt franchement vers le bas fait remonter la page (on peut revenir un peu en arrière) ; les autres gestes nettoient.
 - ✅ Geste pour remonter rendu moins sensible : il faut un long glissé (plus de 70 px) presque vertical vers le bas ; les coups de chiffon courts, penchés ou commencés de côté nettoient.
 - ✅ « L’éclat du neuf, livré chez vous. » remis en ligne : le contenu enregistré gardait les anciens textes (« Un habitacle comme au premier jour »). Migration Version20261116220000 : nouveaux surtitre, titre et introduction, points forts et photo gardés. S’applique avec `sh deploy/apres-envoi.sh` sur le serveur.
+- ✅ Planning pro : temps de trajet hachuré juste avant chaque rendez-vous (« Trajet 25 min », couleur du rendez-vous), vues jour et semaine, légende ; heure de départ dans le détail (« départ à 08:35 »). Même trajet que celui bloqué par les créneaux, depuis le point de départ.
 
 ### Décisions en attente
 - ❓ Lien de la fiche Google (à créer), informations de facturation du vendeur (`[à compléter]`).

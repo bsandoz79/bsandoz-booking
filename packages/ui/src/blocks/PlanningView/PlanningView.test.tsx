@@ -84,6 +84,19 @@ describe('emploi du temps', () => {
 });
 
 describe('PlanningView', () => {
+  it('affiche le temps réservé avant un événement en bande hachurée juste au-dessus, plage élargie au besoin', () => {
+    afficher({
+      hourStart: 8, hourEnd: 19,
+      events: [{ id: 't', start: '2026-11-12T08:15', end: '2026-11-12T09:15', title: 'Avec trajet', color: '#2563eb', before: { minutes: 30, label: 'Trajet 30 min' } }],
+    });
+    const bande = screen.getByText('Trajet 30 min').parentElement!;
+    // 07h45 – 08h15 : la journée commence à 7 h (élargie), 64 px l'heure.
+    expect(bande).toHaveStyle({ top: '48px', height: '32px' });
+    expect(bande).toHaveAttribute('title', 'Trajet 30 min');
+    expect(screen.getByText('07:00')).toBeInTheDocument();
+    expect(screen.getByText('Avec trajet').parentElement).toHaveStyle({ top: '80px' });
+  });
+
   it('affiche la vue jour triée et ouvre un événement', async () => {
     const onEventClick = vi.fn();
     afficher({ onEventClick });

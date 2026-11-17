@@ -83,6 +83,8 @@ export function PlanningOnglet() {
       subtitle: avecProduits(r) ? `+ ${r.produits!.map((p) => `${p.quantite > 1 ? `${p.quantite} × ` : ''}${p.nom}`).join(', ')}` : undefined,
       tone: r.status === 'pending_payment' ? ('muted' as const) : ('default' as const),
       color: r.status === 'done' ? COULEUR_TERMINE : avecProduits(r) ? COULEUR_PRODUITS : COULEUR_RDV,
+      // Trajet aller : hachuré juste avant le rendez-vous (le temps que les créneaux bloquent déjà).
+      before: r.trajetMinutes ? { minutes: r.trajetMinutes, label: `Trajet ${dureeTexte(r.trajetMinutes)}` } : undefined,
     })),
     ...conges.map((c) => ({ id: `conge-${c.id}`, start: localIso(c.start), end: localIso(c.end), title: c.reason || 'Indisponible', tone: 'blocked' as const })),
   ];
@@ -100,6 +102,7 @@ export function PlanningOnglet() {
         <li><span style={{ background: COULEUR_PRODUITS }} aria-hidden="true" />Avec produit à apporter</li>
         <li><span style={{ background: COULEUR_TERMINE }} aria-hidden="true" />Terminé</li>
         <li><span className={styles.legendeAttente} aria-hidden="true" />Paiement en attente</li>
+        <li><span className={styles.legendeTrajet} aria-hidden="true" />Trajet avant le rendez-vous</li>
         <li><span className={styles.legendeConge} aria-hidden="true" />Indisponible</li>
       </ul>
       <div className={mode === 'day' ? styles.vueJour : undefined}>
@@ -175,7 +178,10 @@ export function DetailRendezVous({ rdv, nomsOptions = {}, onFermer, onChange }: 
       <div className={styles.detailEntete}>
         <div>
           <p className={styles.detailQuand}>{dateHeure(rdv.start)} → {heureFin}</p>
-          <p className={r.aide}>{dureeTexte(dureeMin)} sur place</p>
+          <p className={r.aide}>
+            {dureeTexte(dureeMin)} sur place
+            {rdv.trajetMinutes ? ` · départ à ${new Date(new Date(rdv.start).getTime() - rdv.trajetMinutes * 60000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} (trajet ${dureeTexte(rdv.trajetMinutes)})` : ''}
+          </p>
         </div>
         <span className={`${styles.pastilleStatut} ${styles[`statut_${rdv.status}`] ?? ''}`}>{STATUTS[rdv.status]}</span>
         {onFermer && <button type="button" className={r.boutonContour} onClick={onFermer}>Fermer</button>}

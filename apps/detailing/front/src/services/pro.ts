@@ -67,6 +67,8 @@ export interface RendezVousPro {
   moyenSurPlace?: MoyenPaiement | null;
   encaisseLe?: string | null;
   travelFeeCents: number;
+  /** Temps de trajet aller depuis le point de départ (minutes), compté avant le rendez-vous comme pour les créneaux. */
+  trajetMinutes?: number;
   notes: string;
   metierData: Record<string, unknown>;
 }
@@ -146,7 +148,7 @@ const demoRdv = (id: string, jours: number, heure: number, duree: number, presta
     id, status, createdAt: new Date(debut.getTime() - (4 + jours) * 86400000).toISOString(), start: debut.toISOString(), end: new Date(debut.getTime() + duree * 60000).toISOString(), prestationId, prestation: f.name,
     variante: null, optionIds: [], clientId: `client-${id}`, client: { name: client, email: 'client@example.org', phone: '01 02 03 04 05' },
     address: '1 Place Max Lejeune 80100 Abbeville', totalCents: tarif.priceCents, depositCents: Math.ceil(tarif.priceCents * 0.3), travelFeeCents: 0,
-    notes: '', metierData: {},
+    trajetMinutes: 25, notes: '', metierData: {},
   };
 };
 const demo = {

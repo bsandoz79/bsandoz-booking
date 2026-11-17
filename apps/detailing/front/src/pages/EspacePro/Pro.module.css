@@ -37,6 +37,8 @@
 .legende span { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
 .legendeAttente { background: repeating-linear-gradient(135deg, #2563eb 0 4px, #93b4f5 4px 8px); }
 .legendeConge { background: repeating-linear-gradient(45deg, #9ca3af 0 3px, #b8bec7 3px 6px); }
+/* Trajet : hachures pâles et bord pointillé, comme la bande au-dessus des rendez-vous (pas une case pleine). */
+.legendeTrajet { background: repeating-linear-gradient(135deg, rgb(37 99 235 / .25) 0 3px, transparent 3px 6px); outline: 1px dashed rgb(37 99 235 / .6); outline-offset: -1px; }
 
 /* Planning, vue jour : emploi du temps à gauche, détail du rendez-vous à droite (dessous sur téléphone). */
 .vueJour { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; align-items: start; }

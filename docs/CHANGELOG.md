@@ -236,6 +236,7 @@
 - Encart « Professionnels » de l'accueil en rouge (fond pâle, icône et bouton rouges), sans liseré bleu.
 - Scène de l'intérieur : chiffon agrandi, fin automatique en 3 passages rapides, sortie toute seule une fois l'habitacle nettoyé à la main.
 - Page Professionnels en environnement rouge (en-tête avec icône camion et accès direct au devis, formulaire et boutons rouges).
+- Planning pro : trajet hachuré avant chaque rendez-vous et heure de départ dans le détail (API : `trajetMinutes` ; kit : option `before` du bloc PlanningView).
 
 ### Corrigé
 - Kit front : vocabulaire métier retiré des blocs et de leurs tests (`ChoiceChips`, `PriceSummary`, `Stepper`), conformément à la règle « aucun métier dans packages/ ».

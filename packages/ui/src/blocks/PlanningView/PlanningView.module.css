@@ -56,6 +56,13 @@ button.event:hover { filter: brightness(1.08); }
 .agendaSemaine .court .eventTitle { display: block; white-space: nowrap; text-overflow: ellipsis; }
 /* En attente (ex. paiement en ligne non reçu) : rayé, bordure en pointillés. */
 .muted { background: repeating-linear-gradient(135deg, var(--couleur, var(--couleur-defaut)) 0 8px, color-mix(in srgb, var(--couleur, var(--couleur-defaut)) 75%, #fff) 8px 16px); outline: 2px dashed rgb(255 255 255 / .7); outline-offset: -3px; }
+/* Temps réservé avant l'événement (ex. trajet) : hachures de la couleur de la case, bord pointillé, sans clic. */
+.avant { position: absolute; z-index: 0; display: flex; align-items: flex-start; overflow: hidden; padding: 2px 6px; border-radius: 6px 6px 0 0;
+  border: 1px dashed color-mix(in srgb, var(--couleur, var(--couleur-defaut)) 60%, transparent); border-bottom: 0;
+  background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--couleur, var(--couleur-defaut)) 22%, transparent) 0 5px, transparent 5px 10px);
+  pointer-events: none; }
+.avantTexte { font-size: .68rem; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: color-mix(in srgb, var(--couleur, var(--couleur-defaut)) 80%, var(--bs-color-text, #0f1b2d)); }
 /* Indisponibilité : gris hachuré. */
 .blocked { background: repeating-linear-gradient(45deg, #9ca3af 0 6px, #b8bec7 6px 12px); color: #1f2937; box-shadow: none; }
 
