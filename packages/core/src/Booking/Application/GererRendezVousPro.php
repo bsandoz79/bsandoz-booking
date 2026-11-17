@@ -46,8 +46,11 @@ final class GererRendezVousPro
     public function planning(\DateTimeImmutable $from, \DateTimeImmutable $to): array
     {
         $planning = [];
+        $now = $this->clock->now();
         foreach ($this->reservations->between($from, $to) as $r) {
-            if ($r->status() === ReservationStatus::Expired) {
+            // Paiement en ligne abandonné : dès la fin du blocage, le créneau est libre ; il n'apparaît plus, sans
+            // attendre que la tâche planifiée le passe en « expiré » (sinon il double le rendez-vous repris ensuite).
+            if ($r->status() === ReservationStatus::Expired || ($r->status() === ReservationStatus::PendingPayment && !$r->blocks($now))) {
                 continue;
             }
             $planning[] = $this->vue($r);

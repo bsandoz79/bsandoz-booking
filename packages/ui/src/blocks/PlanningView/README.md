@@ -29,7 +29,7 @@ Les heures sont des chaînes locales `YYYY-MM-DDTHH:mm` : l'application converti
 
 `tone` : `default` (rendez-vous), `muted` (secondaire, ex. en attente de paiement), `blocked` (indisponibilité, hachuré).
 
-`before` : `{ minutes, label }`, temps réservé juste avant l'événement (ex. trajet, préparation). Vues jour et semaine : bande hachurée de la couleur de la case, collée au-dessus d'elle, avec son libellé si la place suffit (sinon en infobulle). La plage horaire s'élargit pour l'inclure.
+`before` : `{ minutes, label }`, temps réservé juste avant l'événement (ex. trajet, préparation). Vues jour et semaine : bande hachurée de la couleur de la case, collée au-dessus d’elle, avec son libellé ; au moins 16 px de haut pour rester lisible (un temps très court est donc légèrement agrandi). La plage horaire s'élargit pour l'inclure.
 
 ## Emploi du temps (jour, semaine)
 Toute la journée est affichée (`hourStart` → `hourEnd`, 7 h – 20 h par défaut, élargie si un événement en sort), même sans événement. Chaque événement est une case de couleur pleine (`color`, sinon la couleur par défaut) dont la hauteur suit la durée ; les événements qui se chevauchent sont placés côte à côte (`disposer`). `tone: 'muted'` : case rayée (ex. paiement en attente) ; `tone: 'blocked'` : gris hachuré (indisponibilité). `now` (« HH:mm ») trace l'heure courante dans la colonne d'aujourd'hui ; `showTime={false}` n'écrit pas les heures dans les cases (la grille les donne). Vue mois : grille, événements en pastilles colorées, « +n » au-delà de `maxPerMonthCell` (3).
