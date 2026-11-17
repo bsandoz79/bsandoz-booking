@@ -38,6 +38,7 @@ final class GererRendezVousPro
         private ?\Bsandoz\Core\Facturation\Application\EmettreFacture $emettreFacture = null,
         private ?StockProduits $stock = null,
         private ?\Bsandoz\Core\Payment\Application\GererAvoirs $avoirs = null,
+        private ?Trajet $trajet = null,
     ) {
     }
 
@@ -202,6 +203,8 @@ final class GererRendezVousPro
             'address' => $r->address(),
             'lat' => $r->lat(),
             'lng' => $r->lng(),
+            // Temps de trajet aller depuis le point de départ du pro : le même que celui que bloquent les créneaux.
+            'trajetMinutes' => $this->trajet?->versReservation($r->lat(), $r->lng()) ?? 0,
             'totalCents' => $r->total()->cents,
             'depositCents' => $r->deposit()->cents,
             'produits' => $r->produits(),

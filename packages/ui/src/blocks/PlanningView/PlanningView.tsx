@@ -16,6 +16,11 @@ export interface PlanningEvent {
   tone?: 'default' | 'muted' | 'blocked';
   /** Couleur de la case (ex. selon le type de prestation) ; sinon couleur principale du thème. */
   color?: string;
+  /**
+   * Temps réservé juste avant l'événement (ex. trajet, préparation), en minutes : bande hachurée de la couleur de la
+   * case, collée au-dessus d'elle (vues jour et semaine).
+   */
+  before?: { minutes: number; label: string };
 }
 
 export interface PlanningLabels {
@@ -141,7 +146,7 @@ export function PlanningView({
   // Plage horaire : celle demandée, élargie aux événements affichés.
   const places = jours.map((j) => disposer(events, j));
   const toutes = places.flat();
-  const debutH = Math.min(hourStart, ...toutes.map((p) => Math.floor(p.debut / 60)));
+  const debutH = Math.min(hourStart, ...toutes.map((p) => Math.floor((p.debut - (p.event.before?.minutes ?? 0)) / 60)));
   const finH = Math.max(hourEnd, ...toutes.map((p) => Math.ceil(p.fin / 60)));
   const heures = Array.from({ length: finH - debutH }, (_, i) => debutH + i);
   const nbHeures = finH - debutH;
@@ -191,7 +196,16 @@ export function PlanningView({
               </>
             );
             const style: CSSProperties = { top: fitHeight ? pos(Math.max(debut, debutH * 60)) : top, height: fitHeight ? `max(22px, ${((fin - Math.max(debut, debutH * 60)) / (nbHeures * 60)) * 100}%)` : h, left: `calc(${(col / cols) * 100}% + 2px)`, width: `calc(${100 / cols}% - 4px)`, ...couleur(e) };
-            return <li key={e.id}>{bouton(e, contenu, classeEvenement(e, court ? styles.court : ''), style)}</li>;
+            // Temps réservé avant l'événement : bande hachurée juste au-dessus de la case, même largeur.
+            const avant = e.before && e.before.minutes > 0 ? e.before : undefined;
+            const debutAvant = avant ? Math.max(debut - avant.minutes, debutH * 60) : debut;
+            const bande = avant && debutAvant < debut && (
+              <div className={styles.avant} title={avant.label}
+                style={{ top: pos(debutAvant), height: fitHeight ? `${((debut - debutAvant) / (nbHeures * 60)) * 100}%` : px(debut) - px(debutAvant), left: style.left, width: style.width, ...couleur(e) }}>
+                {(fitHeight ? debut - debutAvant >= 20 : px(debut) - px(debutAvant) >= 18) && <span className={styles.avantTexte}>{avant.label}</span>}
+              </div>
+            );
+            return <li key={e.id}>{bande}{bouton(e, contenu, classeEvenement(e, court ? styles.court : ''), style)}</li>;
           })}
         </ul>
         {day === today && now && minutes(now) >= debutH * 60 && minutes(now) <= finH * 60 && (

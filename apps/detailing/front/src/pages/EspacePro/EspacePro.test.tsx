@@ -160,8 +160,12 @@ describe('Espace pro', () => {
     await rubrique('Planning');
     await userEvent.click(screen.getByRole('button', { name: 'Jour' }));
     await userEvent.click(await screen.findByRole('button', { name: /Client démo A · Intérieur Éclat/ }));
+    // Trajet aller hachuré juste avant le rendez-vous (09:00, 25 min de route) : départ à 08:35.
+    expect(screen.getAllByTitle('Trajet 25 min').length).toBeGreaterThan(0);
+    expect(screen.getByText('Trajet avant le rendez-vous')).toBeInTheDocument();
     const detail = screen.getByRole('region', { name: /Rendez-vous du/ });
     expect(within(detail).getByRole('link', { name: /Appeler 01 02 03 04 05/ })).toHaveAttribute('href', 'tel:0102030405');
+    expect(detail).toHaveTextContent('départ à 08:35 (trajet 25 min)');
     // Fiche compacte : client, prestation, paiement ; contact tout en bas.
     expect(detail).toHaveTextContent(/Client.*Client démo A.*Prestation.*Intérieur Éclat.*Paiement.*À encaisser sur place/);
     expect(within(detail).getByRole('link', { name: /Écrire/ })).toHaveAttribute('href', 'mailto:client@example.org');

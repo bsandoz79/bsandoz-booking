@@ -120,6 +120,29 @@ final class GererRendezVousProTest extends TestCase
         self::assertSame($this->clock->now()->setTimezone(new \DateTimeZone('UTC'))->format(DATE_ATOM), $planning[0]['createdAt'], 'date de prise du rendez-vous');
     }
 
+    public function testPlanningDonneLeTempsDeTrajetAvantLeRendezVous(): void
+    {
+        $id = $this->reservationPayee();
+        $planning = $this->pro->planning(new \DateTimeImmutable('2026-11-09'), new \DateTimeImmutable('2026-11-12'));
+        self::assertSame(0, $planning[0]['trajetMinutes'], 'sans calcul de trajet branché : 0');
+
+        // Pro à domicile : le trajet affiché est celui que bloquent les créneaux (depuis le point de départ du pro).
+        $zone = new ConfiguredSettingsProvider(
+            ['min_notice_hours' => 24, 'horizon_days' => 60, 'buffer_min' => 0, 'slot_step_min' => 60, 'free_cancel_hours' => 48, 'deposit_percent' => 30, 'deposit_fixed_cents' => null, 'hold_minutes' => 10],
+            ['origin_lat' => 50.10, 'origin_lng' => 1.83, 'free_radius_km' => 15.0, 'price_per_km_cents' => 50, 'max_distance_km' => 20000.0, 'road_factor' => 1.3, 'average_speed_kmh' => 50.0],
+            'Europe/Paris',
+        );
+        $trajet = new Trajet($zone, new ZoneCalculator());
+        $r = $this->reservations->get($id);
+        $pro = new GererRendezVousPro($this->reservations, new InMemoryUserRepository(), new InMemoryPrestationRepository(), $this->reserver, $this->session,
+            new RembourserAcompte(new InMemoryPaymentRepository(), $this->gateway), new NotificationsReservation($this->notifier, new InMemoryUserRepository(), new InMemoryPrestationRepository(), new IcsGenerator(), 'Marque', 'pro@example.test'),
+            $this->clock, trajet: $trajet);
+
+        $minutes = $pro->planning(new \DateTimeImmutable('2026-11-09'), new \DateTimeImmutable('2026-11-12'))[0]['trajetMinutes'];
+        self::assertSame($trajet->versReservation($r->lat(), $r->lng()), $minutes);
+        self::assertGreaterThan(0, $minutes);
+    }
+
     public function testMarquerFaitOuAbsentApresLeDebut(): void
     {
         $id = $this->reservationPayee();
