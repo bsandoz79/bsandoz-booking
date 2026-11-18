@@ -40,6 +40,12 @@ use Bsandoz\Core\Booking\Infrastructure\Http\ManageController;
 use Bsandoz\Core\Notification\Domain\Port\Notifier;
 use Bsandoz\Core\Booking\Application\NotificationsReservation;
 use Bsandoz\Core\Admin\Application\GererContenuSite;
+use Bsandoz\Core\Carte\Application\GererCarte;
+use Bsandoz\Core\Carte\Domain\Port\Articles as ArticlesCarte;
+use Bsandoz\Core\Carte\Domain\Port\Categories as CategoriesCarte;
+use Bsandoz\Core\Carte\Infrastructure\Http\CarteController;
+use Bsandoz\Core\Carte\Infrastructure\Persistence\DoctrineArticles;
+use Bsandoz\Core\Carte\Infrastructure\Persistence\DoctrineCategories;
 use Bsandoz\Core\Fidelite\Application\GererFidelite;
 use Bsandoz\Core\Fidelite\Domain\Port\CartesFidelite;
 use Bsandoz\Core\Fidelite\Infrastructure\Http\FideliteController;
@@ -250,6 +256,14 @@ return static function (ContainerConfigurator $container): void {
     $services->alias(StockageMedias::class, DossierMedias::class);
     $services->set(GererMedias::class);
     $services->set(SiteController::class)->public()->tag('controller.service_arguments');
+
+    // Carte d'un commerce (rubriques, articles, prix barré, « Nouveau », « Épuisé »)
+    $services->set(DoctrineCategories::class);
+    $services->alias(CategoriesCarte::class, DoctrineCategories::class);
+    $services->set(DoctrineArticles::class);
+    $services->alias(ArticlesCarte::class, DoctrineArticles::class);
+    $services->set(GererCarte::class);
+    $services->set(CarteController::class)->public()->tag('controller.service_arguments');
 
     // Fidélité (tampons, remise sur la réservation suivante)
     $services->set(DoctrineCartesFidelite::class);

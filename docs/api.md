@@ -203,3 +203,11 @@ Une prestation comprise par période (semaine, 15 jours, mois, année), prélev�
 - Pro : `GET /admin/abonnements/offres`, `POST` (création), `PUT …/{id}` `{nom, prestationId, periodicite, prixCents, description?, active?, position?}` ; `GET /admin/abonnements` → abonnés `[{id, client: {nom, email, telephone}, offre, statut, debut, finPeriode, resiliationDemandee}]`. Comptabilité : prélèvements comptés le mois de leur réception (`parMoyenCents.abonnement`).
 - Webhook Stripe (même adresse que les paiements) : `checkout.session.completed` (mode `subscription`) active l'abonnement ; `invoice.paid` prolonge la période et note le prélèvement (une fois par facture) ; `invoice.payment_failed` le passe en impayé ; `customer.subscription.deleted` le termine.
 
+## Carte d'un commerce (module `Carte`)
+Pour un restaurant ou un commerce sans réservation (premier usage : Croc's). Prix en centimes.
+- `GET /api/v1/carte` (public, cache 30 s) → `[{id, nom, articles: [{id, categorieId, nom, description, prixCents, prixBarreCents, nouveau, epuise, photo, visible}]}]` : rubriques dans l'ordre, articles visibles, rubriques vides omises. `prixBarreCents` : ancien prix pendant le mois qui suit un changement, sinon `null`. `nouveau` : article ajouté il y a moins d'un mois. `epuise` : jusqu'à minuit (fuseau du commerce, Europe/Paris par défaut).
+- `GET /api/v1/admin/carte` (pro) : toutes les rubriques et articles, cachés compris.
+- `POST /api/v1/admin/carte/rubriques` `{nom}` · `PATCH …/rubriques/{id}` `{nom}` · `DELETE …/rubriques/{id}` (409 si elle contient des articles) · `PUT …/rubriques-ordre` `{ids}`.
+- `POST /api/v1/admin/carte/articles` `{categorieId, nom, description?, prixCents, visible?, photo?}` · `PUT …/articles/{id}` (tous les champs ; un prix différent garde l'ancien barré un mois) · `PUT …/articles/{id}/epuise` `{epuise: bool}` · `PUT …/articles-ordre` `{ids}` · `DELETE …/articles/{id}`.
+- Photo : envoyée d'abord par `POST /api/v1/admin/medias` (réduite à l'envoi), puis son nom (`photo`) donné à l'article.
+- Tables `carte_category` et `carte_article` : créées par la migration de l'application qui utilise la carte (une application qui ne s'en sert pas peut les laisser de côté).
