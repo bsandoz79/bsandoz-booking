@@ -5,6 +5,7 @@ export * from './blocks/SlotPicker';
 export * from './blocks/OptionCard';
 export * from './blocks/ChoiceChips';
 export * from './blocks/PriceSummary';
+export * from './blocks/Carte';
 export * from './blocks/Stepper';
 export * from './blocks/StepCard';
 export * from './blocks/Dialog';
