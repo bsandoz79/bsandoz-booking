@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (Croc's)
+- `docs/crocs/carte-releve.md` : carte de Croc's relevée sur une photo publique (prix à faire valider), couleurs, coordonnées, avis cités avec accord.
 ### Ajouté (module Carte)
 - Kit back : module `Carte` (domaine) : `Categorie` et `Article` ; un prix changé reste barré à côté du nouveau pendant 1 mois, un article ajouté est « Nouveau » 1 mois, « Épuisé » jusqu'au début du jour suivant à l'heure du commerce ; 8 tests. Premier pas du site de Croc's (voir `docs/plan.md`).
 ### Ajouté
