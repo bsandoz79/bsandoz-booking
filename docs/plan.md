@@ -74,5 +74,5 @@ Site vitrine avec la carte, que le patron modifie lui-même. Démo privée (adre
 - [ ] `feature/carte-api` : kit, module `Carte` : cas d'usage, Doctrine, routes publiques (carte) et pro (ajouter, modifier, prix, épuisé, ordre, photo réduite à l'envoi)
 - [ ] `feature/carte-ui` : kit front, blocs `Carte` (affichage : prix barré, « Nouveau », « Épuisé ») et `EditeurCarte` (espace pro)
 - [ ] `feature/crocs-app` : `apps/crocs` (API + front, base dédiée) : accueil, carte, horaires et fermetures exceptionnelles (module Booking réutilisé pour l'affichage), appeler, itinéraire, avis cités avec accord
-- [ ] `feature/crocs-contenus` : carte exacte, couleurs, photos et avis (en attente des photos de la carte et de la devanture, et de l'accord du patron)
+- [ ] `feature/crocs-contenus` : carte relevée (`docs/crocs/carte-releve.md`, prix à faire valider), couleurs rouge et jaune ; photos et avis : avec l'accord du patron
 - [ ] `feature/crocs-demo` : démo privée en ligne (sous-domaine secret, `noindex`, bandeau)
