@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (module Carte, API)
+- Kit back : `GererCarte` (carte publique et pro, rubriques et articles : ajouter, modifier, prix barré, « Épuisé », ordre, suppression, photo limitée aux noms envoyés), Doctrine (`carte_category`, `carte_article`), `CarteController` (`/api/v1/carte`, `/api/v1/admin/carte/…`) ; 7 tests (dont un en base). Voir `docs/api.md`.
 ### Ajouté (Croc's)
 - `docs/crocs/carte-releve.md` : carte de Croc's relevée sur une photo publique (prix à faire valider), couleurs, coordonnées, avis cités avec accord.
 ### Ajouté (module Carte)
