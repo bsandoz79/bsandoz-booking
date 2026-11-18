@@ -72,7 +72,8 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 Site vitrine avec la carte, que le patron modifie lui-même. Démo privée (adresse secrète, `noindex`, bandeau « Maquette proposée par Baptiste Sandoz ») tant qu'il n'a pas accepté ; rien au nom de Croc's n'est publié sans son accord.
 - [x] `feature/carte-domaine` : kit, module `Carte` (domaine) : rubriques et articles ; prix changé barré 1 mois, « Nouveau » 1 mois, « Épuisé » jusqu'au lendemain (heure du commerce), photo
 - [x] `feature/carte-api` : kit, module `Carte` : cas d'usage, Doctrine, routes publiques (carte) et pro (ajouter, modifier, prix, épuisé, ordre, photo réduite à l'envoi)
-- [ ] `feature/carte-ui` : kit front, blocs `Carte` (affichage : prix barré, « Nouveau », « Épuisé ») et `EditeurCarte` (espace pro)
+- [x] `feature/carte-ui` : kit front, bloc `Carte` (carte en code, façon tableau : prix barré, « Nouveau », « Épuisé », notes de rubrique, thème `--bs-carte-*`)
+- [ ] `feature/carte-editeur` : kit front, bloc `EditeurCarte` (espace pro, pensé pour le téléphone : prix en deux gestes, « Épuisé » en une touche, photo)
 - [ ] `feature/crocs-app` : `apps/crocs` (API + front, base dédiée) : accueil, carte, horaires et fermetures exceptionnelles (module Booking réutilisé pour l'affichage), appeler, itinéraire, avis cités avec accord
 - [ ] `feature/crocs-contenus` : carte relevée (`docs/crocs/carte-releve.md`, prix à faire valider), couleurs rouge et jaune ; photos et avis : avec l'accord du patron
 - [ ] `feature/crocs-demo` : démo privée en ligne (sous-domaine secret, `noindex`, bandeau)

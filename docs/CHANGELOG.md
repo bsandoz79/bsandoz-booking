@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (bloc Carte)
+- Kit front : bloc `Carte` (carte d'un commerce en code, façon tableau : panneaux par rubrique, nom … prix reliés par des points, ancien prix barré à côté du nouveau, pastilles « Nouveau » et « Épuisé », note de rubrique, 1 à 3 colonnes) ; thème par variables `--bs-carte-*` ; 4 tests. Essayé aux couleurs de Croc's (rouge et jaune) avec sa carte relevée.
 ### Ajouté (module Carte, API)
 - Kit back : `GererCarte` (carte publique et pro, rubriques et articles : ajouter, modifier, prix barré, « Épuisé », ordre, suppression, photo limitée aux noms envoyés), Doctrine (`carte_category`, `carte_article`), `CarteController` (`/api/v1/carte`, `/api/v1/admin/carte/…`) ; 7 tests (dont un en base). Voir `docs/api.md`.
 ### Ajouté (Croc's)
