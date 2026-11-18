@@ -67,3 +67,12 @@ Une case = une branche. Commits « un ajout = un commit », tests et docs à jou
 
 ## À faire
 - [ ] `feature/facturation-electronique` : envoi automatique des factures (clients pro) et des données de vente (particuliers) à la plateforme agréée choisie, via son API (voir `docs/demandes.md`, « À faire »)
+
+## Deuxième client : Croc's (kebab, 220 rue de Rouen, Amiens)
+Site vitrine avec la carte, que le patron modifie lui-même. Démo privée (adresse secrète, `noindex`, bandeau « Maquette proposée par Baptiste Sandoz ») tant qu'il n'a pas accepté ; rien au nom de Croc's n'est publié sans son accord.
+- [x] `feature/carte-domaine` : kit, module `Carte` (domaine) : rubriques et articles ; prix changé barré 1 mois, « Nouveau » 1 mois, « Épuisé » jusqu'au lendemain (heure du commerce), photo
+- [ ] `feature/carte-api` : kit, module `Carte` : cas d'usage, Doctrine, routes publiques (carte) et pro (ajouter, modifier, prix, épuisé, ordre, photo réduite à l'envoi)
+- [ ] `feature/carte-ui` : kit front, blocs `Carte` (affichage : prix barré, « Nouveau », « Épuisé ») et `EditeurCarte` (espace pro)
+- [ ] `feature/crocs-app` : `apps/crocs` (API + front, base dédiée) : accueil, carte, horaires et fermetures exceptionnelles (module Booking réutilisé pour l'affichage), appeler, itinéraire, avis cités avec accord
+- [ ] `feature/crocs-contenus` : carte exacte, couleurs, photos et avis (en attente des photos de la carte et de la devanture, et de l'accord du patron)
+- [ ] `feature/crocs-demo` : démo privée en ligne (sous-domaine secret, `noindex`, bandeau)
