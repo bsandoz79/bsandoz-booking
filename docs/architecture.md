@@ -18,6 +18,7 @@ Chaque client a **sa propre application et sa propre base** : aucune donnée par
 | Payment | acompte Stripe Checkout, webhook signé, remboursement |
 | Notification | mails (confirmation, rappel veille, annulation, activation), fichier .ics, flux iCal du pro, Web Push |
 | Admin | paramètres (identité, couleurs, textes de mails), tableau de bord |
+| Carte | carte d'un commerce sans réservation (rubriques, articles, prix, photo) modifiée par le pro : prix changé barré 1 mois, « Nouveau » 1 mois, « Épuisé » jusqu'au lendemain |
 
 Dans chaque module : `Domain/` (PHP pur) → `Application/` (cas d'usage) → `Infrastructure/` (Doctrine, HTTP, Stripe, Mailer, géocodage).
 
