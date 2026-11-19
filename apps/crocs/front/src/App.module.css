@@ -241,19 +241,21 @@
   background: #fff;
 }
 
+/* Avis : pas de cartes, juste le texte du client en grand, séparés par un trait pointillé comme sur un ticket. */
 .listeAvis {
   display: grid;
-  gap: 1rem;
   margin: 0 0 1rem;
   padding: 0;
   list-style: none;
 }
 
 .listeAvis li {
-  padding: 1.1rem 1.2rem;
-  border-left: 5px solid var(--croc-jaune);
-  border-radius: 0.6rem;
-  background: var(--croc-creme);
+  padding: 1.25rem 0;
+  border-top: 2px dashed #e3d3c4;
+}
+
+.listeAvis li:first-child {
+  border-top: 0;
 }
 
 .listeAvis blockquote {
@@ -261,8 +263,13 @@
 }
 
 .listeAvis blockquote p {
-  margin: 0 0 0.4rem;
-  font-size: 1.05rem;
+  margin: 0 0 0.5rem;
+}
+
+.texteAvis {
+  font-family: var(--croc-police-titre);
+  font-size: 1.3rem;
+  line-height: 1.35;
 }
 
 .etoiles {
@@ -273,8 +280,11 @@
 .auteur {
   margin: 0;
   color: #6b5a52;
-  font-weight: 700;
   font-size: 0.9rem;
+}
+
+.auteur strong {
+  color: var(--croc-rouge);
 }
 
 .photos {
@@ -339,5 +349,16 @@
 
   .listeAvis {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .listeAvis li {
+    padding: 0.5rem 1.75rem;
+    border-top: 0;
+    border-left: 2px dashed #e3d3c4;
+  }
+
+  .listeAvis li:first-child {
+    padding-left: 0;
+    border-left: 0;
   }
 }
