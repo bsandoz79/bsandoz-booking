@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (bloc EditeurCarte)
+- Kit front : bloc `EditeurCarte` (espace pro, pensé pour le téléphone) : fiche d'un article (nom, prix en euros, description, rubrique, affiché ou caché, suppression en deux touches), « Épuisé » en une touche, ordre des articles par glisser et des rubriques par flèches, rubrique avec note et pictogramme ; aucune API appelée par le bloc ; 8 tests.
 ### Ajouté (module Carte)
 - Rubriques : note (« Avec frites : + 1 € ») et pictogramme (clé choisie par le site) modifiables ; `PATCH …/rubriques/{id}` ne change que les champs donnés et renvoie la rubrique. Colonnes `note` et `icon` de `carte_category`.
 ### Modifié (bloc Carte, site de Croc's)

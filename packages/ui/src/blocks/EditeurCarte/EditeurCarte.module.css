@@ -1,0 +1,264 @@
+/*
+ * Éditeur de carte (espace pro) : pensé pour le téléphone, grandes zones à toucher, thème du kit (--bs-*).
+ * Pictogrammes teintés par --bs-carte-trait (sinon la couleur principale).
+ */
+.editeur {
+  display: grid;
+  gap: var(--bs-space-4);
+  font-family: var(--bs-font);
+  color: var(--bs-color-text);
+}
+
+.rubrique {
+  display: grid;
+  gap: var(--bs-space-2);
+  padding: var(--bs-space-3);
+  border: 1px solid var(--bs-color-border);
+  border-radius: var(--bs-radius-md);
+  background: var(--bs-color-surface);
+}
+
+.enteteRubrique {
+  display: flex;
+  align-items: center;
+  gap: var(--bs-space-2);
+}
+
+.titreRubrique {
+  flex: 1;
+  min-width: 0;
+}
+
+.titreRubrique h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.note {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: var(--bs-color-text-muted);
+}
+
+.actionsRubrique {
+  display: flex;
+  gap: 4px;
+}
+
+.icone {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--bs-color-border);
+  border-radius: var(--bs-radius-sm);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.icone:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.picto {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  background: var(--bs-carte-trait, var(--bs-color-primary));
+  -webkit-mask: var(--_picto) center / contain no-repeat;
+  mask: var(--_picto) center / contain no-repeat;
+}
+
+.article {
+  display: flex;
+  align-items: stretch;
+  gap: var(--bs-space-2);
+  width: 100%;
+}
+
+.cache .ouvrir {
+  opacity: 0.6;
+}
+
+.ouvrir {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 var(--bs-space-2);
+  min-height: 48px;
+  padding: var(--bs-space-2);
+  border: 0;
+  border-radius: var(--bs-radius-sm);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ouvrir:hover {
+  background: var(--bs-color-primary-soft);
+}
+
+.nom {
+  font-weight: 700;
+}
+
+.description {
+  grid-column: 1;
+  font-size: 0.82rem;
+  color: var(--bs-color-text-muted);
+}
+
+.prix {
+  grid-column: 2;
+  grid-row: 1;
+  font-weight: 800;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.prix s {
+  font-weight: 500;
+  color: var(--bs-color-text-muted);
+}
+
+.pastille {
+  margin-left: var(--bs-space-2);
+  padding: 1px 7px;
+  border: 1px solid currentColor;
+  border-radius: var(--bs-radius-pill);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--bs-color-text-muted);
+}
+
+.pastilleNouveau {
+  border-color: transparent;
+  background: var(--bs-color-primary);
+  color: #fff;
+}
+
+/* « Épuisé » : une touche, état clair (rempli quand actif). */
+.epuise {
+  flex: none;
+  min-width: 84px;
+  min-height: 44px;
+  padding: 0 var(--bs-space-2);
+  border: 2px solid var(--bs-color-border);
+  border-radius: var(--bs-radius-pill);
+  background: transparent;
+  color: var(--bs-color-text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.epuiseActif {
+  border-color: var(--bs-color-danger);
+  background: var(--bs-color-danger);
+  color: #fff;
+}
+
+.vide {
+  margin: 0;
+  color: var(--bs-color-text-muted);
+  font-size: 0.9rem;
+}
+
+.erreur {
+  margin: 0;
+  padding: var(--bs-space-2) var(--bs-space-3);
+  border-radius: var(--bs-radius-sm);
+  background: color-mix(in srgb, var(--bs-color-danger) 12%, transparent);
+  color: var(--bs-color-danger);
+  font-weight: 600;
+}
+
+.formulaire {
+  display: grid;
+  gap: var(--bs-space-3);
+}
+
+.choix {
+  display: grid;
+  gap: 4px;
+}
+
+.choix label {
+  font-weight: 600;
+}
+
+.choix select {
+  min-height: 44px;
+  padding: 0 var(--bs-space-2);
+  border: 1px solid var(--bs-color-border);
+  border-radius: var(--bs-radius-sm);
+  background: var(--bs-color-surface);
+  color: inherit;
+  font: inherit;
+}
+
+.icones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bs-space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.icones legend {
+  margin-bottom: var(--bs-space-2);
+  font-weight: 600;
+}
+
+.choixIcone {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 2px solid var(--bs-color-border);
+  border-radius: var(--bs-radius-sm);
+  cursor: pointer;
+}
+
+.choixIcone input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.choixIcone:has(input:checked) {
+  border-color: var(--bs-color-primary);
+  background: var(--bs-color-primary-soft);
+}
+
+.choixIcone:has(input:focus-visible) {
+  outline: 3px solid var(--bs-color-primary);
+  outline-offset: 2px;
+}
+
+.aucun {
+  font-size: 0.75rem;
+  color: var(--bs-color-text-muted);
+}
+
+.boutons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--bs-space-2);
+}
+
+.supprimer {
+  margin-right: auto;
+  color: var(--bs-color-danger);
+}
