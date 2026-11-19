@@ -1,0 +1,83 @@
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { EspacePro } from './EspacePro';
+
+const carte = [{
+  id: 'r1', nom: 'Les Sandwichs', note: 'Avec frites : + 1 €', icone: 'sandwich',
+  articles: [{ id: 'a1', categorieId: 'r1', nom: 'Kebab', description: 'Poulet-dinde', prixCents: 550, prixBarreCents: null, nouveau: false, epuise: false, visible: true, photo: null }],
+}];
+
+type Appel = { url: string; methode: string; corps: unknown; auth: string | undefined };
+
+/** Faux serveur : répond selon l'adresse et garde la trace des appels. */
+function fauxServeur(roles = ['ROLE_PRO'], site: Record<string, unknown> = { autre: 'gardé' }) {
+  const appels: Appel[] = [];
+  vi.stubGlobal('fetch', vi.fn(async (url: string, init: RequestInit = {}) => {
+    const methode = init.method ?? 'GET';
+    const headers = (init.headers ?? {}) as Record<string, string>;
+    appels.push({ url, methode, corps: init.body ? JSON.parse(String(init.body)) : undefined, auth: headers.Authorization });
+    const json = (corps: unknown, status = 200) => new Response(JSON.stringify(corps), { status, headers: { 'Content-Type': 'application/json' } });
+    if (url.endsWith('/auth/refresh')) return json({ detail: 'Session expirée.' }, 401);
+    if (url.endsWith('/auth/login')) return json({ token: 'jeton-1', expiresIn: 900, roles });
+    if (url.endsWith('/admin/carte')) return json(carte);
+    if (url.endsWith('/site')) return json(site);
+    return new Response(null, { status: 204 });
+  }));
+  return appels;
+}
+
+async function seConnecter() {
+  await userEvent.type(await screen.findByLabelText(/E-mail/), 'patron@example.test');
+  await userEvent.type(screen.getByLabelText(/Mot de passe/), 'secret');
+  await userEvent.click(screen.getByRole('button', { name: 'Se connecter' }));
+}
+
+describe('Espace du patron', () => {
+  beforeEach(() => vi.stubEnv('VITE_API_URL', 'https://api.example.test'));
+  afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
+
+  it('se connecte, voit sa carte et met un plat « Épuisé » en une touche', async () => {
+    const appels = fauxServeur();
+    render(<EspacePro />);
+    await seConnecter();
+    const rubrique = await screen.findByRole('region', { name: 'Les Sandwichs' });
+    await userEvent.click(within(rubrique).getByRole('button', { name: 'Épuisé : Kebab' }));
+    const epuise = appels.find((a) => a.url.endsWith('/admin/carte/articles/a1/epuise'));
+    expect(epuise).toMatchObject({ methode: 'PUT', corps: { epuise: true }, auth: 'Bearer jeton-1' });
+    expect(epuise!.url).toBe('https://api.example.test/api/v1/admin/carte/articles/a1/epuise');
+  });
+
+  it('change un prix : envoyé en centimes, avec la photo existante', async () => {
+    const appels = fauxServeur();
+    render(<EspacePro />);
+    await seConnecter();
+    await userEvent.click(await screen.findByRole('button', { name: /^Kebab/ }));
+    const fiche = screen.getByRole('dialog', { name: 'Modifier le plat' });
+    await userEvent.clear(within(fiche).getByLabelText(/Prix/));
+    await userEvent.type(within(fiche).getByLabelText(/Prix/), '6');
+    await userEvent.click(within(fiche).getByRole('button', { name: 'Enregistrer' }));
+    expect(appels.find((a) => a.methode === 'PUT' && a.url.endsWith('/admin/carte/articles/a1'))?.corps)
+      .toEqual({ categorieId: 'r1', nom: 'Kebab', description: 'Poulet-dinde', prixCents: 600, visible: true, photo: null });
+  });
+
+  it('refuse un compte qui n’est pas celui du commerce', async () => {
+    fauxServeur(['ROLE_CLIENT']);
+    render(<EspacePro />);
+    await seConnecter();
+    expect(await screen.findByRole('alert')).toHaveTextContent('n’a pas accès');
+  });
+
+  it('modifie les horaires et l’annonce sans perdre le reste du contenu', async () => {
+    const appels = fauxServeur();
+    render(<EspacePro />);
+    await seConnecter();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Infos du site' }));
+    await userEvent.type(await screen.findByLabelText(/Annonce/), 'Fermé lundi 24');
+    await userEvent.clear(screen.getByLabelText('Heures (ligne 2)'));
+    await userEvent.type(screen.getByLabelText('Heures (ligne 2)'), 'Fermé');
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    expect(await screen.findByRole('status')).toHaveTextContent('Enregistré');
+    const envoi = appels.find((a) => a.methode === 'PUT' && a.url.endsWith('/admin/site'));
+    expect(envoi?.corps).toMatchObject({ autre: 'gardé', annonce: 'Fermé lundi 24', horaires: [{ jours: 'Du lundi au samedi' }, { jours: 'Dimanche', heures: 'Fermé' }] });
+  });
+});

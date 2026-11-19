@@ -3,16 +3,20 @@ import assiette from './assets/assiette.webp';
 import comptoir from './assets/comptoir.webp';
 import salle from './assets/salle.webp';
 import { Trajet } from './components/Trajet';
-import { avis, carte, crocs, itineraires } from './data/crocs';
+import { avis, crocs, itineraires } from './data/crocs';
+import { useContenu } from './hooks/useContenu';
 import styles from './App.module.css';
 
 /** Site de Croc's (démo) : une seule page, de l'envie (photo, carte) au trajet. */
 export function App() {
+  const { carte, accroche, horaires, horairesAConfirmer, annonce } = useContenu();
   return (
     <>
       <p className={styles.maquette}>
         Maquette proposée par <a href="https://bsandoz.fr">Baptiste Sandoz</a> · prix et horaires à confirmer avec Croc’s
       </p>
+
+      {annonce && <p className={styles.annonce} role="status">{annonce}</p>}
 
       <header className={styles.entete}>
         <a href="#haut" className={styles.logo} aria-label={`${crocs.nom}, haut de page`}>{crocs.nom}</a>
@@ -29,7 +33,7 @@ export function App() {
           <div className={styles.heroTexte}>
             <p className={styles.surtitre}>{crocs.activite} · Amiens</p>
             <h1 id="titre" className={styles.titre}>{crocs.nom}</h1>
-            <p className={styles.accroche}>{crocs.accroche}</p>
+            <p className={styles.accroche}>{accroche}</p>
             <div className={styles.boutons}>
               <a href={crocs.telephoneLien} className={styles.boutonJaune}>Appeler le {crocs.telephone}</a>
               <a href={itineraires.google} className={styles.boutonBlanc} target="_blank" rel="noopener noreferrer">Itinéraire</a>
@@ -62,14 +66,14 @@ export function App() {
               </div>
               <h3 className={styles.petitTitre}>Horaires</h3>
               <dl className={styles.horaires}>
-                {crocs.horaires.map((h) => (
+                {horaires.map((h) => (
                   <div key={h.jours}>
                     <dt>{h.jours}</dt>
                     <dd>{h.heures}</dd>
                   </div>
                 ))}
               </dl>
-              {crocs.horairesAConfirmer && <p className={styles.discret}>Horaires relevés dans les annuaires, à confirmer.</p>}
+              {horairesAConfirmer && <p className={styles.discret}>Horaires relevés dans les annuaires, à confirmer.</p>}
               <p><a href={crocs.telephoneLien} className={styles.telephone}>{crocs.telephone}</a></p>
             </div>
             <Trajet />

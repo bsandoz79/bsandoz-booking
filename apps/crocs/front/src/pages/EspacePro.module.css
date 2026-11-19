@@ -1,0 +1,123 @@
+/* Espace du patron : clair et lisible au téléphone, aux couleurs de Croc's (thème du kit surchargé dans .page). */
+.page {
+  --bs-color-primary: var(--croc-rouge);
+  --bs-color-primary-dark: var(--croc-rouge-fonce);
+  --bs-color-primary-soft: var(--croc-jaune-doux);
+  --bs-carte-trait: var(--croc-rouge-mat);
+
+  display: grid;
+  gap: 1rem;
+  max-width: 760px;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+}
+
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.titre {
+  flex: 1 1 100%;
+  margin: 0;
+  font-family: var(--croc-police-titre);
+  font-size: 1.8rem;
+  color: var(--croc-rouge);
+}
+
+.lien {
+  color: var(--croc-rouge-fonce);
+  font-weight: 700;
+}
+
+.onglets {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.onglets button {
+  flex: 1;
+  min-height: 48px;
+  border: 2px solid var(--croc-rouge);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--croc-rouge);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.onglets button[aria-selected='true'] {
+  background: var(--croc-rouge);
+  color: #fff;
+}
+
+.carteBlanche {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid #e3d3c4;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.carteBlanche h2 {
+  margin: 0;
+}
+
+.aide {
+  margin: 0;
+  color: #6b5a52;
+  font-size: 0.92rem;
+}
+
+.horaires {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.horaires legend {
+  margin-bottom: 0.5rem;
+  font-weight: 800;
+}
+
+.ligneHoraire {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  gap: 0.5rem;
+}
+
+.erreur,
+.succes {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.6rem;
+  font-weight: 700;
+}
+
+.erreur {
+  background: #fde8e6;
+  color: var(--croc-rouge-fonce);
+}
+
+.succes {
+  background: #e6f4ea;
+  color: #1e5b32;
+}
+
+@media (max-width: 520px) {
+  .ligneHoraire {
+    grid-template-columns: 1fr auto;
+  }
+
+  .ligneHoraire > :first-child {
+    grid-column: 1 / -1;
+  }
+}

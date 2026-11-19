@@ -112,12 +112,16 @@ final class GererCarte
         }
     }
 
-    /** Nouvel article, à la fin de sa rubrique : « Nouveau » pendant un mois. */
-    public function ajouterArticle(string $categorieId, string $nom, string $description, int $prixCents, bool $visible = true, ?string $photo = null): Article
+    /**
+     * Nouvel article, à la fin de sa rubrique : « Nouveau » pendant un mois.
+     * `$nouveau = false` : article repris d'une carte existante (installation), sans la mention « Nouveau ».
+     */
+    public function ajouterArticle(string $categorieId, string $nom, string $description, int $prixCents, bool $visible = true, ?string $photo = null, bool $nouveau = true): Article
     {
         $this->categories->get($categorieId);
         $position = count(array_filter($this->articles->all(), static fn (Article $a): bool => $a->categorieId() === $categorieId));
-        $article = new Article($this->ids->generate(), $categorieId, $nom, self::prix($prixCents), $this->clock->now(), $description, $position, $visible, self::photo($photo));
+        $ajouteLe = $nouveau ? $this->clock->now() : $this->clock->now()->modify('-1 year');
+        $article = new Article($this->ids->generate(), $categorieId, $nom, self::prix($prixCents), $ajouteLe, $description, $position, $visible, self::photo($photo));
         $this->articles->save($article);
 
         return $article;

@@ -1,6 +1,10 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (espace du patron de Croc's)
+- `apps/crocs/api` : API de Croc's (kit `bsandoz/core` seul, base dédiée), migration de toutes les tables du kit, commande `crocs:carte:charger` (carte relevée chargée une fois, sans « Nouveau »), 3 tests ; job CI et envoi par GitHub (`FTP_SERVER_DIR_CROCS_API`), guide de mise en ligne dans son README.
+- Site de Croc's : carte et textes lus sur l'API (carte intégrée si elle ne répond pas), annonce en haut du site ; espace du patron sur `/pro` : connexion, carte modifiable (bloc `EditeurCarte` : prix, textes, plats et rubriques, « Épuisé », ordre, pictogrammes), annonce, phrase d'accueil et horaires ; 5 tests.
+- Kit : `GererCarte::ajouterArticle(…, nouveau: false)` pour reprendre une carte existante sans la mention « Nouveau ».
 ### Ajouté (bloc EditeurCarte)
 - Kit front : bloc `EditeurCarte` (espace pro, pensé pour le téléphone) : fiche d'un article (nom, prix en euros, description, rubrique, affiché ou caché, suppression en deux touches), « Épuisé » en une touche, ordre des articles par glisser et des rubriques par flèches, rubrique avec note et pictogramme ; aucune API appelée par le bloc ; 8 tests.
 ### Ajouté (module Carte)

@@ -1,4 +1,5 @@
-# Déploiement de la démo Perfect Clean sur o2switch (FTPS), après une CI verte sur main, ou à la demande.
+# Déploiement des démos sur o2switch (FTPS) : Perfect Clean (front, API) et l'API de Croc's, après une CI verte sur main, ou à la demande.
+# Le front de Croc's s'envoie à la main (ses photos ne sont pas dans le dépôt public) : apps/crocs/front/README.md.
 # Guide complet : docs/deploiement.md. Secrets et variables à créer dans GitHub (Settings → Secrets and variables → Actions).
 name: Déploiement
 
@@ -12,7 +13,7 @@ on:
       cible:
         description: 'Que déployer ?'
         type: choice
-        options: [tout, front, api]
+        options: [tout, front, api, crocs]
         default: tout
 
 concurrency:
@@ -24,7 +25,7 @@ jobs:
     name: Front (demo.bsandoz.fr)
     if: >-
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
-      (github.event_name == 'workflow_dispatch' && inputs.cible != 'api')
+      (github.event_name == 'workflow_dispatch' && (inputs.cible == 'tout' || inputs.cible == 'front'))
     runs-on: ubuntu-latest
     environment: demo
     steps:
@@ -97,7 +98,7 @@ jobs:
     name: API (api.demo.bsandoz.fr)
     if: >-
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
-      (github.event_name == 'workflow_dispatch' && inputs.cible != 'front')
+      (github.event_name == 'workflow_dispatch' && (inputs.cible == 'tout' || inputs.cible == 'api'))
     runs-on: ubuntu-latest
     environment: demo
     steps:
@@ -165,3 +166,76 @@ jobs:
         if: steps.config.outputs.pret == 'true'
         run: |
           echo "Archive envoyée. Sur le serveur (terminal cPanel) : sh deploy/apres-envoi.sh — décompresse, vide le cache et applique les migrations."
+
+  crocs-api:
+    name: API de Croc's (api.crocs.demo.bsandoz.fr)
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_dispatch' && (inputs.cible == 'tout' || inputs.cible == 'crocs'))
+    runs-on: ubuntu-latest
+    environment: demo
+    steps:
+      - name: Vérifier la configuration FTP
+        id: config
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_SERVER_DIR_CROCS_API }}
+        run: |
+          manquants=""
+          [ -n "$FTP_SERVER" ] || manquants="$manquants FTP_SERVER"
+          [ -n "$FTP_USERNAME" ] || manquants="$manquants FTP_USERNAME"
+          [ -n "$FTP_PASSWORD" ] || manquants="$manquants FTP_PASSWORD"
+          [ -n "$FTP_DIR" ] || manquants="$manquants FTP_SERVER_DIR_CROCS_API"
+          if [ -n "$manquants" ]; then
+            echo "::warning title=Déploiement non configuré::Secrets manquants dans l'environnement GitHub « demo » :$manquants. Envoi ignoré (voir docs/deploiement.md § 3)."
+            echo "pret=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "pret=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.config.outputs.pret == 'true'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: shivammathur/setup-php@v2
+        if: steps.config.outputs.pret == 'true'
+        with: { php-version: '8.3', tools: composer }
+      - name: Dépendances de production (kit copié dans vendor, pas de lien symbolique)
+        if: steps.config.outputs.pret == 'true'
+        working-directory: apps/crocs/api
+        run: composer install --no-dev --optimize-autoloader --classmap-authoritative --no-interaction --no-scripts --prefer-dist
+        env:
+          COMPOSER_MIRROR_PATH_REPOS: '1'
+      - name: Archive de l'API (un seul fichier à envoyer, sans var/, tests ni secrets)
+        if: steps.config.outputs.pret == 'true'
+        run: |
+          mkdir -p envoi-crocs-api/deploy
+          cd apps/crocs/api
+          zip -qr ../../../envoi-crocs-api/api.zip . -x 'var/*' 'tests/*' '.env.local' '.env.*.local' '.env.test' 'phpunit.dist.xml' 'phpstan.neon.dist' '.phpunit.cache/*' '.git*'
+          cp deploy/apres-envoi.sh ../../../envoi-crocs-api/deploy/
+          ls -lh ../../../envoi-crocs-api/api.zip
+      - name: Envoi FTPS (archive + script de décompression)
+        if: steps.config.outputs.pret == 'true'
+        # lftp plutôt que FTP-Deploy-Action : ce dernier échoue en FTPS avec les versions récentes d'OpenSSL
+        # (« tls_process_new_session_ticket: length mismatch » sur le canal de données). Certificat vérifié :
+        # FTP_SERVER doit être le nom couvert par le certificat (chez o2switch, le nom du serveur, ex. muguet.o2switch.net).
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_SERVER_DIR_CROCS_API }}
+        run: |
+          sudo apt-get update -qq > /dev/null && sudo apt-get install -y -qq lftp > /dev/null
+          # Intermédiaires Let's Encrypt absents côté serveur : chaîne reconstituée, certificat toujours vérifié.
+          # TLS 1.2 : en TLS 1.3, lftp (gnutls) échoue sur le canal de données (« gnutls_record_recv: Error in parsing »).
+          sh .github/chaine-ftps.sh "$FTP_SERVER" "$RUNNER_TEMP/chaine-ftps.pem"
+          lftp -u "$FTP_USERNAME,$FTP_PASSWORD" "$FTP_SERVER" -e "
+            set ssl:ca-file $RUNNER_TEMP/chaine-ftps.pem; set ssl:priority NORMAL:-VERS-TLS1.3; set ftp:ssl-force true; set ftp:ssl-protect-data true;
+            set net:max-retries 3; set net:reconnect-interval-base 5; set net:timeout 30;
+            mirror --reverse --no-perms --parallel=4 --verbose=1 envoi-crocs-api/ $FTP_DIR;
+            bye"
+      - name: Rappel
+        if: steps.config.outputs.pret == 'true'
+        run: |
+          echo "Archive envoyée. Sur le serveur (terminal cPanel) : sh deploy/apres-envoi.sh — décompresse, vide le cache et applique les migrations (première fois : voir apps/crocs/api/README.md)."

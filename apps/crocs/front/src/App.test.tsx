@@ -52,4 +52,17 @@ describe('Site de Croc’s', () => {
     expect(within(avis).getAllByRole('listitem')).toHaveLength(3);
     expect(avis).toHaveTextContent('Restaurant Guru');
   });
+  it('affiche la carte, les horaires et l’annonce modifiés par le patron (API)', async () => {
+    vi.stubEnv('VITE_API_URL', 'https://api.example.test');
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => new Response(JSON.stringify(url.endsWith('/carte')
+      ? [{ id: 'x', nom: 'Les Wraps', note: '', icone: 'libanais', articles: [{ id: 'w', categorieId: 'x', nom: 'Wrap poulet', description: '', prixCents: 700, prixBarreCents: 650, nouveau: true, epuise: false, visible: true }] }]
+      : { annonce: 'Fermé lundi 24', horaires: [{ jours: 'Tous les jours', heures: '11 h – 23 h' }] }))));
+    render(<App />);
+    expect(await screen.findByRole('status')).toHaveTextContent('Fermé lundi 24');
+    const carte = screen.getByRole('region', { name: 'La carte de Croc’s' });
+    expect(await within(carte).findByRole('region', { name: 'Les Wraps' })).toHaveTextContent('Ancien prix : 6,50 € Nouveau prix : 7 €');
+    expect(screen.getByText('Tous les jours')).toBeInTheDocument();
+    expect(screen.queryByText(/à confirmer\./)).not.toBeInTheDocument();
+    vi.unstubAllEnvs();
+  });
 });

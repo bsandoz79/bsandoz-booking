@@ -1,0 +1,302 @@
+[
+  {
+    "nom": "Les Sandwichs",
+    "note": "Avec frites : + 1 €",
+    "icone": "sandwich",
+    "articles": [
+      {
+        "nom": "Kebab",
+        "prixCents": 550,
+        "description": "Poulet-dinde"
+      },
+      {
+        "nom": "Steak",
+        "prixCents": 500,
+        "description": ""
+      },
+      {
+        "nom": "Chicken chika",
+        "prixCents": 600,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "nom": "Les Libanais",
+    "note": "Avec frites : + 1 €",
+    "icone": "libanais",
+    "articles": [
+      {
+        "nom": "Classic",
+        "prixCents": 550,
+        "description": "Poulet-dinde"
+      },
+      {
+        "nom": "Royal",
+        "prixCents": 650,
+        "description": "Steak, veau-dinde"
+      },
+      {
+        "nom": "Chicken chika / Savoyard",
+        "prixCents": 600,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "nom": "Les Menus",
+    "note": "",
+    "icone": "menu",
+    "articles": [
+      {
+        "nom": "Menu Kebab",
+        "prixCents": 750,
+        "description": "Kebab, frites, boisson 33 cl"
+      },
+      {
+        "nom": "Menu Libanais",
+        "prixCents": 750,
+        "description": "Libanais, frites, boisson 33 cl"
+      },
+      {
+        "nom": "Menu Enfant",
+        "prixCents": 400,
+        "description": "4 nuggets, frites, boisson"
+      }
+    ]
+  },
+  {
+    "nom": "Les Tacos",
+    "note": "Kebab, nuggets, poulet ou steak",
+    "icone": "tacos",
+    "articles": [
+      {
+        "nom": "1 viande",
+        "prixCents": 650,
+        "description": ""
+      },
+      {
+        "nom": "2 viandes",
+        "prixCents": 750,
+        "description": ""
+      },
+      {
+        "nom": "3 viandes",
+        "prixCents": 900,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "nom": "Les Assiettes",
+    "note": "",
+    "icone": "assiette",
+    "articles": [
+      {
+        "nom": "Kebab",
+        "prixCents": 850,
+        "description": "Poulet-dinde"
+      },
+      {
+        "nom": "Steak",
+        "prixCents": 850,
+        "description": "2 × 100 g"
+      },
+      {
+        "nom": "3 Merguez",
+        "prixCents": 800,
+        "description": ""
+      },
+      {
+        "nom": "Chicken chika",
+        "prixCents": 900,
+        "description": ""
+      },
+      {
+        "nom": "Viande + frites",
+        "prixCents": 850,
+        "description": ""
+      },
+      {
+        "nom": "Mixte",
+        "prixCents": 1000,
+        "description": "Steak et kebab"
+      }
+    ]
+  },
+  {
+    "nom": "Les Burgers",
+    "note": "Avec frites + boisson 33 cl : + 2 €",
+    "icone": "burger",
+    "articles": [
+      {
+        "nom": "Burger simple",
+        "prixCents": 450,
+        "description": ""
+      },
+      {
+        "nom": "Double steak",
+        "prixCents": 600,
+        "description": ""
+      },
+      {
+        "nom": "Triple steak",
+        "prixCents": 800,
+        "description": ""
+      },
+      {
+        "nom": "Chicken burger",
+        "prixCents": 500,
+        "description": ""
+      },
+      {
+        "nom": "Mega burger",
+        "prixCents": 600,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "nom": "Les Paninis",
+    "note": "En menu (boisson 33 cl + frites) : 7 € · Avec frites : + 1 €",
+    "icone": "panini",
+    "articles": [
+      {
+        "nom": "Steak",
+        "prixCents": 500,
+        "description": ""
+      },
+      {
+        "nom": "Kebab",
+        "prixCents": 500,
+        "description": ""
+      },
+      {
+        "nom": "3 Fromages",
+        "prixCents": 500,
+        "description": ""
+      },
+      {
+        "nom": "Brochette poulet",
+        "prixCents": 500,
+        "description": ""
+      },
+      {
+        "nom": "Fricadelle",
+        "prixCents": 500,
+        "description": ""
+      },
+      {
+        "nom": "Mexicanos",
+        "prixCents": 500,
+        "description": ""
+      },
+      {
+        "nom": "Thon",
+        "prixCents": 500,
+        "description": ""
+      },
+      {
+        "nom": "Fish",
+        "prixCents": 500,
+        "description": ""
+      },
+      {
+        "nom": "Chicken chika",
+        "prixCents": 500,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "nom": "Nuggets et Wings",
+    "note": "Avec frites : + 1 €",
+    "icone": "pilon",
+    "articles": [
+      {
+        "nom": "Nuggets 6 pièces",
+        "prixCents": 400,
+        "description": ""
+      },
+      {
+        "nom": "Nuggets 10 pièces",
+        "prixCents": 600,
+        "description": ""
+      },
+      {
+        "nom": "Wings 5 pièces",
+        "prixCents": 600,
+        "description": ""
+      },
+      {
+        "nom": "Wings 10 pièces",
+        "prixCents": 1000,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "nom": "À côté",
+    "note": "",
+    "icone": "frites",
+    "articles": [
+      {
+        "nom": "Barquette de viande",
+        "prixCents": 600,
+        "description": ""
+      },
+      {
+        "nom": "Frites petite",
+        "prixCents": 250,
+        "description": ""
+      },
+      {
+        "nom": "Frites grande",
+        "prixCents": 300,
+        "description": ""
+      },
+      {
+        "nom": "Supplément viande",
+        "prixCents": 150,
+        "description": ""
+      },
+      {
+        "nom": "Supplément fromage",
+        "prixCents": 50,
+        "description": ""
+      }
+    ]
+  },
+  {
+    "nom": "Les Boissons",
+    "note": "",
+    "icone": "canette",
+    "articles": [
+      {
+        "nom": "Canette 33 cl",
+        "prixCents": 150,
+        "description": ""
+      },
+      {
+        "nom": "Bouteille 50 cl",
+        "prixCents": 200,
+        "description": ""
+      },
+      {
+        "nom": "Bouteille 1,5 l",
+        "prixCents": 300,
+        "description": ""
+      },
+      {
+        "nom": "Eau 33 cl",
+        "prixCents": 100,
+        "description": ""
+      },
+      {
+        "nom": "Café",
+        "prixCents": 100,
+        "description": ""
+      }
+    ]
+  }
+]

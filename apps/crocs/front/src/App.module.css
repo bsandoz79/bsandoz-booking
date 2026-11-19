@@ -12,6 +12,16 @@
   color: var(--croc-jaune);
 }
 
+/* Annonce du patron (ex. fermeture exceptionnelle), modifiable dans son espace. */
+.annonce {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  background: var(--croc-moutarde, #f0c54e);
+  color: #3b0d09;
+  font-weight: 800;
+  text-align: center;
+}
+
 .entete {
   position: sticky;
   top: 0;
