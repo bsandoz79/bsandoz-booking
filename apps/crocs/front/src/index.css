@@ -1,0 +1,28 @@
+/* Thème de Croc's : couleurs de l'enseigne (rouge vif, jaune), et thème du bloc Carte du kit. */
+:root {
+  --croc-rouge: #d0111b;
+  --croc-rouge-fonce: #8a0a10;
+  --croc-rouge-carte: #c50f18;
+  --croc-jaune: #ffd21a;
+  --croc-jaune-doux: #fff3c4;
+  --croc-creme: #fff8ef;
+  --croc-police-titre: 'Cooper Black', 'Rockwell Extra Bold', Georgia, serif;
+
+  --bs-font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --bs-carte-fond: transparent;
+  --bs-carte-panneau: var(--croc-rouge-carte);
+  --bs-carte-bord: rgb(255 255 255 / 0.85);
+  --bs-carte-titre: var(--croc-jaune);
+  --bs-carte-texte: #ffffff;
+  --bs-carte-texte-doux: #ffe0dc;
+  --bs-carte-prix: #ffffff;
+  --bs-carte-accent: var(--croc-jaune);
+  --bs-carte-accent-texte: var(--croc-rouge-fonce);
+  --bs-carte-police-titre: var(--croc-police-titre);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+body { margin: 0; font-family: var(--bs-font); color: #2a1a16; line-height: 1.5; background: #fff; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--croc-jaune); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

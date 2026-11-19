@@ -1,0 +1,343 @@
+/* Croc's : rouge vif et jaune de l'enseigne, blanc et crème. Mobile d'abord. */
+.maquette {
+  margin: 0;
+  padding: 0.45rem 1rem;
+  background: #1e1414;
+  color: #f3e9e4;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.maquette a {
+  color: var(--croc-jaune);
+}
+
+.entete {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--croc-rouge);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.18);
+}
+
+.logo {
+  font-family: var(--croc-police-titre);
+  font-size: 1.6rem;
+  color: var(--croc-jaune);
+  text-decoration: none;
+}
+
+.nav {
+  display: none;
+  gap: 1.2rem;
+  margin-left: auto;
+}
+
+.nav a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.appelEntete {
+  margin-left: auto;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: var(--croc-jaune);
+  color: var(--croc-rouge-fonce);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.hero {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 2rem 1.25rem 2.5rem;
+  background: var(--croc-rouge);
+  color: #fff;
+}
+
+.surtitre {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--croc-jaune);
+  font-size: 0.85rem;
+}
+
+.titre {
+  margin: 0.2rem 0 0.4rem;
+  font-family: var(--croc-police-titre);
+  font-size: clamp(3.2rem, 14vw, 6rem);
+  line-height: 0.95;
+  color: var(--croc-jaune);
+  text-shadow: 3px 3px 0 var(--croc-rouge-fonce);
+}
+
+.accroche {
+  margin: 0 0 1.2rem;
+  max-width: 30rem;
+  font-size: 1.15rem;
+}
+
+.boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.boutonJaune,
+.boutonBlanc {
+  display: inline-flex;
+  align-items: center;
+  min-height: 50px;
+  padding: 0 1.3rem;
+  border-radius: 999px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.boutonJaune {
+  background: var(--croc-jaune);
+  color: var(--croc-rouge-fonce);
+}
+
+.boutonBlanc {
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+.adresse {
+  margin: 1rem 0 0;
+  color: #ffe0dc;
+  font-weight: 600;
+}
+
+.heroPhoto {
+  justify-self: center;
+  margin: 0;
+}
+
+.heroPhoto img {
+  display: block;
+  width: min(70vw, 300px);
+  height: auto;
+  border: 6px solid #fff;
+  border-radius: 1.25rem;
+  transform: rotate(2deg);
+  box-shadow: 0 18px 40px rgb(0 0 0 / 0.35);
+}
+
+.conteneur {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.carte {
+  padding: 2.5rem 0 1.5rem;
+  background: var(--croc-rouge-carte);
+  border-top: 6px solid var(--croc-jaune);
+}
+
+.sectionTitre,
+.sectionTitreRouge {
+  margin: 0 0 1.25rem;
+  font-family: var(--croc-police-titre);
+  font-size: 2.2rem;
+}
+
+.sectionTitre {
+  color: var(--croc-jaune);
+}
+
+.sectionTitreRouge {
+  color: var(--croc-rouge);
+}
+
+.venir {
+  padding: 3rem 0;
+  background: var(--croc-creme);
+}
+
+.deuxColonnes {
+  display: grid;
+  gap: 2rem;
+}
+
+.infos p {
+  margin: 0 0 0.8rem;
+}
+
+.adresseGrande {
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.liens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.liens a {
+  padding: 0.45rem 0.9rem;
+  border: 2px solid var(--croc-rouge);
+  border-radius: 999px;
+  color: var(--croc-rouge);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.petitTitre {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.horaires {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0 0 0.5rem;
+}
+
+.horaires div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.15rem 1rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px dashed #dccfc4;
+}
+
+.horaires dt {
+  font-weight: 700;
+}
+
+.horaires dd {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.telephone {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--croc-rouge);
+}
+
+.discret {
+  color: #6b5a52;
+  font-size: 0.85rem;
+}
+
+.avis {
+  padding: 3rem 0;
+  background: #fff;
+}
+
+.listeAvis {
+  display: grid;
+  gap: 1rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.listeAvis li {
+  padding: 1.1rem 1.2rem;
+  border-left: 5px solid var(--croc-jaune);
+  border-radius: 0.6rem;
+  background: var(--croc-creme);
+}
+
+.listeAvis blockquote {
+  margin: 0;
+}
+
+.listeAvis blockquote p {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+}
+
+.etoiles {
+  color: #e6a700;
+  letter-spacing: 0.1em;
+}
+
+.auteur {
+  margin: 0;
+  color: #6b5a52;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.photos {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0 1rem 3rem;
+  background: #fff;
+}
+
+.photos img {
+  height: 160px;
+  width: auto;
+  border-radius: 0.8rem;
+  object-fit: cover;
+}
+
+.pied {
+  padding: 2rem 1.25rem;
+  background: #1e1414;
+  color: #f3e9e4;
+  text-align: center;
+}
+
+.pied p {
+  margin: 0 0 0.5rem;
+}
+
+.pied a {
+  color: var(--croc-jaune);
+}
+
+.logoPied {
+  font-family: var(--croc-police-titre);
+  font-size: 2rem;
+  color: var(--croc-jaune);
+}
+
+.discretPied {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+@media (min-width: 800px) {
+  .nav {
+    display: flex;
+  }
+
+  .appelEntete {
+    margin-left: 0;
+  }
+
+  .hero {
+    grid-template-columns: 1.3fr 1fr;
+    padding: 4rem max(1.5rem, calc((100vw - 1180px) / 2 + 1.25rem));
+  }
+
+  .deuxColonnes {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  .listeAvis {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

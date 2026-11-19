@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (site de Croc's)
+- `apps/crocs/front` : site de démo de Croc's aux couleurs de l'enseigne (rouge et jaune) : accueil avec photo, « Appeler » et « Itinéraire » (Google Maps, Waze, Plans), carte complète en code, horaires (à confirmer), « À combien de temps êtes-vous ? » (voiture, vélo, pied, depuis la position ou une adresse, calcul dans le navigateur), avis cités avec leur source ; bandeau de maquette et `noindex` ; 9 tests.
 ### Ajouté (bloc Carte)
 - Kit front : bloc `Carte` (carte d'un commerce en code, façon tableau : panneaux par rubrique, nom … prix reliés par des points, ancien prix barré à côté du nouveau, pastilles « Nouveau » et « Épuisé », note de rubrique, 1 à 3 colonnes) ; thème par variables `--bs-carte-*` ; 4 tests. Essayé aux couleurs de Croc's (rouge et jaune) avec sa carte relevée.
 ### Ajouté (module Carte, API)
