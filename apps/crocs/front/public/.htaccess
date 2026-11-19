@@ -1,0 +1,22 @@
+# Site de Croc's (o2switch, crocs.demo.bsandoz.fr) : HTTPS obligatoire, démo privée non indexée.
+RewriteEngine On
+RewriteBase /
+
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+<IfModule mod_headers.c>
+  # Démo privée : les moteurs de recherche ne l'indexent pas (en plus de la balise robots de index.html).
+  Header always set X-Robots-Tag "noindex, nofollow"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "DENY"
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  # Fichiers du build (nom avec empreinte) : cache d'un an.
+  <If "%{REQUEST_URI} =~ m#^/assets/#">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </If>
+</IfModule>

@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (site de Croc's)
+- Mise en ligne de la démo sur crocs.demo.bsandoz.fr : `.htaccess` (HTTPS obligatoire, non indexée), envoi à la main décrit dans le README (photos hors du dépôt public).
 ### Modifié (site de Croc's)
 - Avis : plus de cartes à bordure colorée ; le texte du client en grand (police de l'enseigne), séparés par un trait pointillé.
 ### Corrigé (module Carte)
