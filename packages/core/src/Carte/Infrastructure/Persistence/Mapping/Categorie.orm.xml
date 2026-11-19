@@ -7,5 +7,7 @@
         <id name="id" type="string" length="36"/>
         <field name="nom" column="name" type="string" length="60"/>
         <field name="position" type="integer"/>
+        <field name="note" type="string" length="200"><options><option name="default"></option></options></field>
+        <field name="icone" column="icon" type="string" length="40" nullable="true"/>
     </entity>
 </doctrine-mapping>

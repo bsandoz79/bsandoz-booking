@@ -61,6 +61,31 @@ final class GererCarteTest extends TestCase
         self::assertFalse($this->carte->vueArticle($a)['epuise']);
     }
 
+    public function testNoteEtPictogrammeDeRubrique(): void
+    {
+        $r = $this->carte->ajouterRubrique('Sandwichs', 'Avec frites : + 1 €', 'sandwich');
+        $this->carte->ajouterArticle($r->id(), 'Kebab', '', 550);
+        self::assertSame(['id' => $r->id(), 'nom' => 'Sandwichs', 'note' => 'Avec frites : + 1 €', 'icone' => 'sandwich'], array_diff_key($this->carte->publique()[0], ['articles' => 1]));
+
+        // Champs absents inchangés ; icône vide : retirée.
+        $this->carte->modifierRubrique($r->id(), note: 'Avec frites : + 1,50 €');
+        self::assertSame('Sandwichs', $this->carte->pro()[0]['nom']);
+        self::assertSame('Avec frites : + 1,50 €', $this->carte->pro()[0]['note']);
+        $this->carte->modifierRubrique($r->id(), icone: '');
+        self::assertNull($this->carte->pro()[0]['icone']);
+
+        try {
+            $this->carte->modifierRubrique($r->id(), icone: '../image.svg');
+            self::fail('Pictogramme invalide accepté.');
+        } catch (DomainError) {
+        }
+        try {
+            $this->carte->modifierRubrique($r->id(), note: str_repeat('a', 201));
+            self::fail('Note trop longue acceptée.');
+        } catch (DomainError) {
+        }
+    }
+
     public function testOrdreDesRubriquesEtDesArticles(): void
     {
         $a = $this->carte->ajouterRubrique('A');
