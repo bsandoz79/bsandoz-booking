@@ -15,10 +15,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Carte d'un commerce (module Carte).
- *   GET    /api/v1/carte                                (public) → [{id, nom, articles: [{…, prixBarreCents, nouveau, epuise}]}]
+ *   GET    /api/v1/carte                                (public) → [{id, nom, note, icone, articles: [{…, prixBarreCents, nouveau, epuise}]}]
  *   GET    /api/v1/admin/carte                          (pro)    → toutes les rubriques et articles (cachés compris)
- *   POST   /api/v1/admin/carte/rubriques                {nom}
- *   PATCH  /api/v1/admin/carte/rubriques/{id}           {nom}
+ *   POST   /api/v1/admin/carte/rubriques                {nom, note?, icone?}
+ *   PATCH  /api/v1/admin/carte/rubriques/{id}           {nom?, note?, icone?} (champs absents : inchangés)
  *   DELETE /api/v1/admin/carte/rubriques/{id}           (refusé si la rubrique a des articles)
  *   PUT    /api/v1/admin/carte/rubriques-ordre          {ids}
  *   POST   /api/v1/admin/carte/articles                 {categorieId, nom, description?, prixCents, visible?, photo?}
@@ -55,18 +55,20 @@ final class CarteController
     #[IsGranted('ROLE_PRO')]
     public function ajouterRubrique(Request $request): JsonResponse
     {
-        $c = $this->carte->ajouterRubrique(self::texte(Json::corps($request), 'nom'));
+        $d = Json::corps($request);
+        $c = $this->carte->ajouterRubrique(self::texte($d, 'nom'), self::texte($d, 'note', ''), self::facultatif($d, 'icone'));
 
-        return new JsonResponse(['id' => $c->id(), 'nom' => $c->nom()], Response::HTTP_CREATED);
+        return new JsonResponse(GererCarte::vueRubrique($c), Response::HTTP_CREATED);
     }
 
     #[Route('/api/v1/admin/carte/rubriques/{id}', name: 'bsandoz_admin_carte_rubrique_renommer', methods: ['PATCH'])]
     #[IsGranted('ROLE_PRO')]
-    public function renommerRubrique(string $id, Request $request): Response
+    public function modifierRubrique(string $id, Request $request): JsonResponse
     {
-        $this->carte->renommerRubrique($id, self::texte(Json::corps($request), 'nom'));
+        $d = Json::corps($request);
+        $c = $this->carte->modifierRubrique($id, self::facultatif($d, 'nom'), self::facultatif($d, 'note'), array_key_exists('icone', $d) ? (self::facultatif($d, 'icone') ?? '') : null);
 
-        return new Response(null, Response::HTTP_NO_CONTENT);
+        return new JsonResponse(GererCarte::vueRubrique($c));
     }
 
     #[Route('/api/v1/admin/carte/rubriques/{id}', name: 'bsandoz_admin_carte_rubrique_supprimer', methods: ['DELETE'])]
@@ -157,6 +159,17 @@ final class CarteController
     {
         $valeur = $d[$cle] ?? $defaut;
         if (!is_string($valeur)) {
+            throw new InvalidRequest(sprintf('« %s » doit être un texte.', $cle));
+        }
+
+        return $valeur;
+    }
+
+    /** @param array<string, mixed> $d */
+    private static function facultatif(array $d, string $cle): ?string
+    {
+        $valeur = $d[$cle] ?? null;
+        if ($valeur !== null && !is_string($valeur)) {
             throw new InvalidRequest(sprintf('« %s » doit être un texte.', $cle));
         }
 

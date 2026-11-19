@@ -19,7 +19,7 @@ use Bsandoz\Core\Shared\Domain\Money;
  * Les règles (prix barré, « Nouveau », « Épuisé ») sont dans `Article` ; ici, l'orchestration et les vues.
  *
  * @phpstan-type VueArticle array{id: string, categorieId: string, nom: string, description: string, prixCents: int, prixBarreCents: int|null, nouveau: bool, epuise: bool, photo: string|null, visible: bool}
- * @phpstan-type VueRubrique array{id: string, nom: string, articles: list<VueArticle>}
+ * @phpstan-type VueRubrique array{id: string, nom: string, note: string, icone: string|null, articles: list<VueArticle>}
  */
 final class GererCarte
 {
@@ -53,9 +53,27 @@ final class GererCarte
         return $this->vue(true);
     }
 
-    public function ajouterRubrique(string $nom): Categorie
+    public function ajouterRubrique(string $nom, string $note = '', ?string $icone = null): Categorie
     {
-        $categorie = new Categorie($this->ids->generate(), $nom, count($this->categories->all()));
+        $categorie = new Categorie($this->ids->generate(), $nom, count($this->categories->all()), $note, $icone);
+        $this->categories->save($categorie);
+
+        return $categorie;
+    }
+
+    /** Modifie les champs donnés (null : inchangé ; pour l'icône, '' la retire). */
+    public function modifierRubrique(string $id, ?string $nom = null, ?string $note = null, ?string $icone = null): Categorie
+    {
+        $categorie = $this->categories->get($id);
+        if ($nom !== null) {
+            $categorie->renommer($nom);
+        }
+        if ($note !== null) {
+            $categorie->changerNote($note);
+        }
+        if ($icone !== null) {
+            $categorie->changerIcone($icone);
+        }
         $this->categories->save($categorie);
 
         return $categorie;
@@ -63,9 +81,13 @@ final class GererCarte
 
     public function renommerRubrique(string $id, string $nom): void
     {
-        $categorie = $this->categories->get($id);
-        $categorie->renommer($nom);
-        $this->categories->save($categorie);
+        $this->modifierRubrique($id, $nom);
+    }
+
+    /** @return array{id: string, nom: string, note: string, icone: string|null} */
+    public static function vueRubrique(Categorie $c): array
+    {
+        return ['id' => $c->id(), 'nom' => $c->nom(), 'note' => $c->note(), 'icone' => $c->icone()];
     }
 
     /** @throws Conflit la rubrique contient encore des articles */
@@ -178,7 +200,7 @@ final class GererCarte
                     $liste[] = $this->vueArticle($a);
                 }
             }
-            $rubriques[] = ['id' => $c->id(), 'nom' => $c->nom(), 'articles' => $liste];
+            $rubriques[] = [...self::vueRubrique($c), 'articles' => $liste];
         }
 
         return $rubriques;

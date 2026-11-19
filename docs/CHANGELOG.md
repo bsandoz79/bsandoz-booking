@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (module Carte)
+- Rubriques : note (« Avec frites : + 1 € ») et pictogramme (clé choisie par le site) modifiables ; `PATCH …/rubriques/{id}` ne change que les champs donnés et renvoie la rubrique. Colonnes `note` et `icon` de `carte_category`.
 ### Modifié (bloc Carte, site de Croc's)
 - Bloc `Carte` façon menu dessiné : pictogramme facultatif par rubrique (`pictogramme`, teinté par `--bs-carte-trait`), trait ondulé sous les titres, mode `compacte` (4 colonnes) pour voir toute la carte sans défiler ; 1 test.
 - Croc's : carte en rouge mat avec grain de papier, titres jaune moutarde, cadre tracé à la main, 10 pictogrammes dessinés (sandwich, libanais, menu, tacos, assiette, burger, panini, pilon, frites, canette) ; la carte tient en entier à l'écran sur ordinateur.
