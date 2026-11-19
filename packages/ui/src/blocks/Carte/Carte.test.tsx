@@ -44,4 +44,14 @@ describe('Carte', () => {
     expect(epuise).toHaveTextContent('Plus disponible');
     expect(epuise).not.toHaveTextContent('Nouveau');
   });
+
+  it('sommaire facultatif : un lien par rubrique vers sa section', () => {
+    const { rerender } = render(<Carte titre="Carte" rubriques={rubriques} />);
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+    rerender(<Carte titre="Carte" rubriques={rubriques} sommaire="Aller à une rubrique" />);
+    const liens = within(screen.getByRole('navigation', { name: 'Aller à une rubrique' })).getAllByRole('link');
+    expect(liens.map((l) => l.textContent)).toEqual(['Rubrique A', 'Rubrique B']);
+    const cible = document.querySelector(liens[0].getAttribute('href')!);
+    expect(cible).toBe(screen.getByRole('region', { name: 'Rubrique A' }));
+  });
 });

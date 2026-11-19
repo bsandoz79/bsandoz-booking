@@ -1,10 +1,10 @@
 /*
- * Carte façon tableau de restaurant : panneaux par rubrique, nom … prix reliés par des points.
+ * Carte façon menu imprimé : pas de panneaux, des titres de rubrique surlignés, nom … prix reliés par des points.
  * Toutes les couleurs sont des variables --bs-carte-* (thème du client), avec le thème du kit par défaut.
  */
 .carte {
-  --_fond: var(--bs-carte-fond, var(--bs-color-surface));
-  --_panneau: var(--bs-carte-panneau, var(--bs-color-surface));
+  --_fond: var(--bs-carte-fond, transparent);
+  --_panneau: var(--bs-carte-panneau, transparent);
   --_bord: var(--bs-carte-bord, var(--bs-color-border));
   --_titre: var(--bs-carte-titre, var(--bs-color-primary-dark));
   --_texte: var(--bs-carte-texte, var(--bs-color-text));
@@ -12,6 +12,7 @@
   --_prix: var(--bs-carte-prix, var(--bs-color-text));
   --_accent: var(--bs-carte-accent, var(--bs-color-primary));
   --_accent-texte: var(--bs-carte-accent-texte, #fff);
+  --_surlignage: var(--bs-carte-surlignage, color-mix(in srgb, var(--_accent) 25%, transparent));
   --_police-titre: var(--bs-carte-police-titre, var(--bs-font));
 
   background: var(--_fond);
@@ -25,10 +26,45 @@
   color: var(--_titre);
 }
 
-/* Une colonne sur téléphone, deux puis trois sur grand écran ; les panneaux ne se coupent pas. */
+/* Sommaire : les rubriques en pastilles, qui défilent de côté sur téléphone. */
+.sommaire {
+  display: flex;
+  gap: var(--bs-space-2);
+  margin: 0 0 var(--bs-space-6, 2rem);
+  padding: 0 0 var(--bs-space-2);
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.sommaire a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 0.95rem;
+  border: 1px solid var(--_bord);
+  border-radius: var(--bs-radius-pill);
+  background: var(--bs-carte-sommaire-fond, var(--_panneau));
+  color: var(--_texte);
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+@media (min-width: 720px) {
+  .sommaire { flex-wrap: wrap; overflow-x: visible; }
+}
+
+.sommaire a:hover {
+  border-color: var(--_titre);
+  color: var(--_titre);
+}
+
+/* Une colonne sur téléphone, deux puis trois sur grand écran ; une rubrique ne se coupe pas. */
 .rubriques {
   columns: 1;
-  column-gap: var(--bs-space-4);
+  column-gap: 3rem;
 }
 
 @media (min-width: 720px) {
@@ -41,26 +77,28 @@
 
 .rubrique {
   break-inside: avoid;
-  margin: 0 0 var(--bs-space-4);
-  padding: var(--bs-space-4) var(--bs-space-4) var(--bs-space-3);
-  border: 2px solid var(--_bord);
-  border-radius: var(--bs-radius-sm);
+  margin: 0 0 2.25rem;
   background: var(--_panneau);
+  scroll-margin-top: 5rem;
 }
 
 .rubriqueNom {
-  margin: 0 0 var(--bs-space-3);
+  display: inline;
+  margin: 0;
+  padding: 0 0.15em;
   font-family: var(--_police-titre);
-  font-size: 1.45rem;
+  font-size: 1.6rem;
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.5;
   color: var(--_titre);
+  background: linear-gradient(transparent 58%, var(--_surlignage) 58%, var(--_surlignage) 92%, transparent 92%);
+  box-decoration-break: clone;
 }
 
 .articles {
   display: grid;
-  gap: var(--bs-space-3);
-  margin: 0;
+  gap: 0.7rem;
+  margin: var(--bs-space-3) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -94,19 +132,21 @@
 
 .nom {
   font-weight: 700;
+  font-size: 1.05rem;
 }
 
 /* Points de conduite entre le nom et le prix, comme sur une carte imprimée. */
 .points {
   flex: 1 1 1.5rem;
   min-width: 1.5rem;
-  border-bottom: 2px dotted color-mix(in srgb, var(--_texte) 45%, transparent);
+  border-bottom: 2px dotted var(--_bord);
   transform: translateY(-0.3em);
 }
 
 .prix {
   margin-left: auto;
   font-weight: 800;
+  font-size: 1.05rem;
   color: var(--_prix);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -118,15 +158,13 @@
 }
 
 .description {
-  margin: 2px 0 0;
+  margin: 1px 0 0;
   font-size: 0.88rem;
   color: var(--_doux);
 }
 
 .note {
   margin: var(--bs-space-3) 0 0;
-  padding-top: var(--bs-space-2);
-  border-top: 1px solid var(--_bord);
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--_doux);

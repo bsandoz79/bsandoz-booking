@@ -140,9 +140,10 @@
   padding: 0 1.25rem;
 }
 
+/* Carte : menu imprimé sur fond crème (le rouge reste pour les titres et les prix). */
 .carte {
-  padding: 2.5rem 0 1.5rem;
-  background: var(--croc-rouge-carte);
+  padding: 3rem 0 1rem;
+  background: var(--croc-creme);
   border-top: 6px solid var(--croc-jaune);
 }
 

@@ -1,6 +1,9 @@
 # Journal des modifications
 
 ## [Non publié]
+### Modifié (bloc Carte, site de Croc's)
+- Bloc `Carte` façon menu imprimé : plus de panneaux encadrés, titres de rubrique surlignés (`--bs-carte-surlignage`), sommaire facultatif des rubriques en pastilles cliquables (`sommaire`, `--bs-carte-sommaire-fond`) ; 1 test.
+- Croc's : carte sur fond crème, titres rouges surlignés en jaune, prix en rouge, sommaire des rubriques.
 ### Ajouté (site de Croc's)
 - Mise en ligne de la démo sur crocs.demo.bsandoz.fr : `.htaccess` (HTTPS obligatoire, non indexée), envoi à la main décrit dans le README (photos hors du dépôt public).
 ### Modifié (site de Croc's)
