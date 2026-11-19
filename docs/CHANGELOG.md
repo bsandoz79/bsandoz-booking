@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Corrigé (module Carte)
+- Déploiement de l'API en échec (« Cannot generate lazy ghost: class … Article is final ») : `Article` et `Categorie` ne sont plus `final` (Doctrine crée des objets chargés à la demande). Nouveau test : aucune entité du kit n'est `final` (les objets intégrés le peuvent).
 ### Ajouté (site de Croc's)
 - `apps/crocs/front` : site de démo de Croc's aux couleurs de l'enseigne (rouge et jaune) : accueil avec photo, « Appeler » et « Itinéraire » (Google Maps, Waze, Plans), carte complète en code, horaires (à confirmer), « À combien de temps êtes-vous ? » (voiture, vélo, pied, depuis la position ou une adresse, calcul dans le navigateur), avis cités avec leur source ; bandeau de maquette et `noindex` ; 9 tests.
 ### Ajouté (bloc Carte)
