@@ -1,0 +1,119 @@
+.trajet {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.25rem;
+  border: 2px solid var(--croc-rouge);
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.question {
+  margin: 0;
+  font-family: var(--croc-police-titre);
+  font-size: 1.35rem;
+  color: var(--croc-rouge);
+}
+
+.actions {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.formulaire {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.formulaire input {
+  flex: 1;
+  min-width: 0;
+  min-height: 46px;
+  padding: 0 0.9rem;
+  border: 1px solid #d9cfc6;
+  border-radius: 999px;
+  font: inherit;
+}
+
+.bouton,
+.boutonSecondaire {
+  min-height: 46px;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.bouton {
+  border: 0;
+  background: var(--croc-rouge);
+  color: #fff;
+}
+
+.boutonSecondaire {
+  border: 2px solid var(--croc-rouge);
+  background: #fff;
+  color: var(--croc-rouge);
+}
+
+.bouton:disabled,
+.boutonSecondaire:disabled {
+  opacity: 0.6;
+}
+
+.resultat {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.phrase {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.modes li {
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: var(--croc-jaune-doux);
+  font-weight: 800;
+}
+
+.mode {
+  font-weight: 500;
+}
+
+.note,
+.erreur {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b5a52;
+}
+
+.erreur {
+  color: var(--croc-rouge-fonce);
+  font-weight: 700;
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+@media (min-width: 640px) {
+  .actions {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+  }
+}
