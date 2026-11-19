@@ -140,11 +140,49 @@
   padding: 0 1.25rem;
 }
 
-/* Carte : menu imprimé sur fond crème (le rouge reste pour les titres et les prix). */
+/* Carte : rouge mat avec un grain de papier, cadre tracé à la main ; elle tient en entier à l'écran sur ordinateur. */
 .carte {
-  padding: 3rem 0 1rem;
-  background: var(--croc-creme);
-  border-top: 6px solid var(--croc-jaune);
+  padding: 1.5rem 0;
+  background-color: var(--croc-rouge-mat);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  border-top: 6px solid var(--croc-moutarde);
+}
+
+.cadreCarte {
+  padding: 1.25rem 1.1rem 0.4rem;
+  border: 2px solid rgb(251 236 214 / 0.55);
+  border-radius: 22px 8px 26px 10px / 8px 24px 10px 20px;
+}
+
+.titreCarte {
+  margin: 0 0 1rem;
+  font-family: var(--croc-police-titre);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--croc-moutarde);
+}
+
+@media (min-width: 1000px) {
+  .carte {
+    display: flex;
+    align-items: center;
+    min-height: calc(100svh - 4rem);
+    padding: 0.6rem 0;
+  }
+
+  .carte > div {
+    width: 100%;
+  }
+
+  .cadreCarte {
+    padding: 0.8rem 1.75rem 0.2rem;
+  }
+
+  .titreCarte {
+    margin-bottom: 0.6rem;
+    font-size: 1.8rem;
+    text-align: center;
+  }
 }
 
 .sectionTitre,

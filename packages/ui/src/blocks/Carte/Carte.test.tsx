@@ -6,6 +6,7 @@ const rubriques: RubriqueCarte[] = [
     id: 'r1',
     nom: 'Rubrique A',
     note: 'Supplément : + 1 €',
+    pictogramme: '/picto.svg',
     articles: [
       { id: 'a1', nom: 'Article un', description: 'Détail', prixCents: 600, prixBarreCents: 550 },
       { id: 'a2', nom: 'Article deux', prixCents: 500, nouveau: true },
@@ -53,5 +54,13 @@ describe('Carte', () => {
     expect(liens.map((l) => l.textContent)).toEqual(['Rubrique A', 'Rubrique B']);
     const cible = document.querySelector(liens[0].getAttribute('href')!);
     expect(cible).toBe(screen.getByRole('region', { name: 'Rubrique A' }));
+  });
+
+  it('pictogramme décoratif à côté du titre de rubrique, caché aux lecteurs d’écran', () => {
+    render(<Carte titre="Carte" rubriques={rubriques} compacte />);
+    const a = screen.getByRole('region', { name: 'Rubrique A' });
+    const picto = a.querySelector('[aria-hidden="true"]') as HTMLElement;
+    expect(picto.style.getPropertyValue('--_picto')).toBe('url("/picto.svg")');
+    expect(screen.getByRole('region', { name: 'Rubrique B' }).querySelector('[aria-hidden="true"][style]')).toBeNull();
   });
 });

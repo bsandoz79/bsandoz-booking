@@ -9,22 +9,25 @@
   --croc-police-titre: 'Cooper Black', 'Rockwell Extra Bold', Georgia, serif;
 
   --bs-font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Carte : rouge mat (brique), crème et jaune moutarde, comme un menu peint. */
+  --croc-rouge-mat: #962a22;
+  --croc-moutarde: #f0c54e;
   --bs-carte-fond: transparent;
   --bs-carte-panneau: transparent;
-  --bs-carte-sommaire-fond: #fff;
-  --bs-carte-bord: #dcc9b8;
-  --bs-carte-titre: var(--croc-rouge);
-  --bs-carte-texte: #2a1a16;
-  --bs-carte-texte-doux: #75625a;
-  --bs-carte-prix: var(--croc-rouge);
-  --bs-carte-accent: var(--croc-jaune);
-  --bs-carte-accent-texte: var(--croc-rouge-fonce);
-  --bs-carte-surlignage: var(--croc-jaune);
+  --bs-carte-sommaire-fond: transparent;
+  --bs-carte-bord: rgb(251 236 214 / 0.4);
+  --bs-carte-titre: var(--croc-moutarde);
+  --bs-carte-texte: #fbecd6;
+  --bs-carte-texte-doux: #ecc8b8;
+  --bs-carte-prix: #fff6dc;
+  --bs-carte-accent: var(--croc-moutarde);
+  --bs-carte-accent-texte: #4f120d;
+  --bs-carte-trait: var(--croc-moutarde);
   --bs-carte-police-titre: var(--croc-police-titre);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+html { scroll-behavior: smooth; scroll-padding-top: 3.75rem; }
 body { margin: 0; font-family: var(--bs-font); color: #2a1a16; line-height: 1.5; background: #fff; }
 a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--croc-jaune); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

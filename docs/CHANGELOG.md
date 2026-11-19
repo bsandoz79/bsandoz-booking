@@ -2,6 +2,9 @@
 
 ## [Non publié]
 ### Modifié (bloc Carte, site de Croc's)
+- Bloc `Carte` façon menu dessiné : pictogramme facultatif par rubrique (`pictogramme`, teinté par `--bs-carte-trait`), trait ondulé sous les titres, mode `compacte` (4 colonnes) pour voir toute la carte sans défiler ; 1 test.
+- Croc's : carte en rouge mat avec grain de papier, titres jaune moutarde, cadre tracé à la main, 10 pictogrammes dessinés (sandwich, libanais, menu, tacos, assiette, burger, panini, pilon, frites, canette) ; la carte tient en entier à l'écran sur ordinateur.
+### Modifié (bloc Carte, site de Croc's)
 - Bloc `Carte` façon menu imprimé : plus de panneaux encadrés, titres de rubrique surlignés (`--bs-carte-surlignage`), sommaire facultatif des rubriques en pastilles cliquables (`sommaire`, `--bs-carte-sommaire-fond`) ; 1 test.
 - Croc's : carte sur fond crème, titres rouges surlignés en jaune, prix en rouge, sommaire des rubriques.
 ### Ajouté (site de Croc's)
