@@ -6,8 +6,9 @@ namespace Bsandoz\Core\Carte\Domain\Model;
 
 use Bsandoz\Core\Shared\Domain\DomainError;
 
-/** Une rubrique de la carte (ex. « Sandwichs », « Boissons »), dans l'ordre choisi par le pro. */
-final class Categorie
+/** Entité Doctrine : pas « final » (Doctrine crée des objets chargés à la demande à partir d’elle).
+ * Une rubrique de la carte (ex. « Sandwichs », « Boissons »), dans l'ordre choisi par le pro. */
+class Categorie
 {
     public const NOM_MAX = 60;
 

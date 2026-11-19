@@ -8,13 +8,14 @@ use Bsandoz\Core\Shared\Domain\DomainError;
 use Bsandoz\Core\Shared\Domain\Money;
 
 /**
+ * Entité Doctrine : pas « final » (Doctrine crée des objets chargés à la demande à partir d’elle).
  * Un article de la carte (un plat, une boisson, un service…) que le pro modifie lui-même.
  * - Prix changé : l'ancien prix reste affiché barré à côté du nouveau pendant DUREE_MISE_EN_AVANT, puis disparaît.
  * - Article ajouté : « Nouveau » pendant DUREE_MISE_EN_AVANT.
  * - « Épuisé » : jusqu'au début du jour suivant (heure locale du commerce), puis l'article revient tout seul.
  * Le kit ne connaît pas le métier : un article n'est qu'un nom, une description, un prix et une photo.
  */
-final class Article
+class Article
 {
     public const DUREE_MISE_EN_AVANT = '+1 month';
     public const NOM_MAX = 120;
