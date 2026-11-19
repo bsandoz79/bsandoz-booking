@@ -11,3 +11,11 @@ Site d'une page pour Croc's (restauration rapide, 220 rue de Rouen, Amiens) : ac
 npm install
 npm run lint && npm run test && npm run build
 ```
+
+## Mise en ligne (crocs.demo.bsandoz.fr)
+
+Démo montrée au patron avec son accord. Les photos n'étant pas dans le dépôt public, la CI ne peut pas construire le site complet : il est envoyé à la main.
+
+1. Construire : `npm run build` (avec les photos dans `src/assets/`).
+2. Compresser le contenu de `dist/` (dont `.htaccess` : HTTPS obligatoire, `X-Robots-Tag: noindex`).
+3. cPanel → Gestionnaire de fichiers → dossier `crocs.demo.bsandoz.fr` → Charger le zip → Extraire (les fichiers à la racine du dossier).
