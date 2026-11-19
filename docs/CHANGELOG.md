@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Modifié (site de Croc's)
+- Avis : plus de cartes à bordure colorée ; le texte du client en grand (police de l'enseigne), séparés par un trait pointillé.
 ### Corrigé (module Carte)
 - Déploiement de l'API en échec (« Cannot generate lazy ghost: class … Article is final ») : `Article` et `Categorie` ne sont plus `final` (Doctrine crée des objets chargés à la demande). Nouveau test : aucune entité du kit n'est `final` (les objets intégrés le peuvent).
 ### Ajouté (site de Croc's)

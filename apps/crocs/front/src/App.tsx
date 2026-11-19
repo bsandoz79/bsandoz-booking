@@ -82,9 +82,9 @@ export function App() {
                 <li key={a.auteur}>
                   <blockquote>
                     <p className={styles.etoiles} aria-label={`${a.note} sur 5`}>{'★'.repeat(a.note)}</p>
-                    <p>« {a.texte} »</p>
+                    <p className={styles.texteAvis}>« {a.texte} »</p>
                   </blockquote>
-                  <p className={styles.auteur}>{a.auteur}, {a.quand}</p>
+                  <p className={styles.auteur}><strong>{a.auteur}</strong>, {a.quand}</p>
                 </li>
               ))}
             </ul>
