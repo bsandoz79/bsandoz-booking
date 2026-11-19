@@ -86,6 +86,13 @@ final class GererCarteTest extends TestCase
         }
     }
 
+    public function testArticleRepriseDUneCarteExistanteSansNouveau(): void
+    {
+        $r = $this->carte->ajouterRubrique('Boissons');
+        $this->carte->ajouterArticle($r->id(), 'Canette', '', 150, nouveau: false);
+        self::assertFalse($this->carte->publique()[0]['articles'][0]['nouveau']);
+    }
+
     public function testOrdreDesRubriquesEtDesArticles(): void
     {
         $a = $this->carte->ajouterRubrique('A');

@@ -75,6 +75,6 @@ Site vitrine avec la carte, que le patron modifie lui-même. Démo privée (adre
 - [x] `feature/carte-ui` : kit front, bloc `Carte` (carte en code, façon tableau : prix barré, « Nouveau », « Épuisé », notes de rubrique, thème `--bs-carte-*`)
 - [x] `feature/carte-editeur` : kit front, bloc `EditeurCarte` (espace pro, pensé pour le téléphone : prix en deux gestes, « Épuisé » en une touche, photo)
 - [x] `feature/crocs-app` : `apps/crocs/front` : site d'une page (accueil, appeler, itinéraire, carte en code, horaires, temps de trajet voiture / vélo / pied, avis, photos), démo privée (bandeau, `noindex`)
-- [ ] `feature/crocs-espace-pro` : `apps/crocs/api` (base dédiée, module `Carte`) et espace du patron (`EditeurCarte`), horaires et fermetures exceptionnelles modifiables
+- [x] `feature/crocs-espace-pro` : `apps/crocs/api` (base dédiée, module `Carte`) et espace du patron (`EditeurCarte`), horaires et fermetures exceptionnelles modifiables
 - [ ] `feature/crocs-contenus` : carte relevée (`docs/crocs/carte-releve.md`, prix à faire valider), couleurs rouge et jaune ; photos et avis : avec l'accord du patron
 - [ ] `feature/crocs-demo` : démo privée en ligne (sous-domaine secret, `noindex`, bandeau)

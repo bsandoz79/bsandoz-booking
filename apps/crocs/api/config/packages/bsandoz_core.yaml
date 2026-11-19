@@ -1,0 +1,14 @@
+# Réglages du kit bsandoz/core pour Croc's (restauration rapide, sur place) : seuls la carte, le contenu du site,
+# les photos et l'espace pro servent. Pas de zone d'intervention (activité sur place).
+bsandoz_core:
+    timezone: 'Europe/Paris'
+    mail:
+        from_email: '%env(MAILER_FROM)%'
+        from_name: 'Croc’s'
+        brand: 'Croc’s'
+        front_url: '%env(FRONT_URL)%'
+        pro_email: '%env(default::PRO_EMAIL)%'
+
+when@test:
+    bsandoz_core:
+        medias_dir: '%kernel.project_dir%/var/test-medias'

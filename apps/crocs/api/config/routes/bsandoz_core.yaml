@@ -1,0 +1,2 @@
+bsandoz_core:
+    resource: '@BsandozCoreBundle/config/routes.php'

@@ -115,7 +115,7 @@ const LIBELLES: EditeurCarteLibelles = {
   pictogramme: 'Dessin',
   aucunPictogramme: 'Aucun',
   visible: 'Affiché sur la carte',
-  visibleAide: 'Décochez pour le cacher sans le supprimer.',
+  visibleAide: 'Désactivez pour le cacher sans le supprimer.',
   epuise: 'Épuisé',
   epuiseAide: 'Épuisé jusqu’à ce soir minuit',
   cache: 'Caché',

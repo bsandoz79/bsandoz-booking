@@ -6,6 +6,9 @@ RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# Espace du patron (/pro) : même application, servie par index.html.
+RewriteRule ^pro/?$ index.html [L]
+
 <IfModule mod_headers.c>
   # Démo privée : les moteurs de recherche ne l'indexent pas (en plus de la balise robots de index.html).
   Header always set X-Robots-Tag "noindex, nofollow"

@@ -1,0 +1,23 @@
+security:
+    # Les comptes sont gérés par le kit (bsandoz/core) : chargés par id à chaque requête authentifiée.
+    providers:
+        bsandoz_users:
+            id: Bsandoz\Core\Auth\Infrastructure\Security\SecurityUserProvider
+
+    firewalls:
+        dev:
+            pattern: ^/(_profiler(/|$)|(_wdt|assets|build)/)
+            security: false
+        # API sans état : jeton d'accès JWT en « Authorization: Bearer … » (facultatif sur les routes publiques).
+        api:
+            pattern: ^/api/
+            stateless: true
+            provider: bsandoz_users
+            jwt: ~
+
+    role_hierarchy:
+        ROLE_PRO: [ROLE_CLIENT]
+
+    access_control:
+        - { path: ^/api/v1/me, roles: ROLE_CLIENT }
+        - { path: ^/api/v1/admin, roles: ROLE_PRO }
