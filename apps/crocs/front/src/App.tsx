@@ -43,8 +43,8 @@ export function App() {
 
         <section id="carte" className={styles.carte} aria-labelledby="carte-titre">
           <div className={styles.conteneur}>
-            <h2 id="carte-titre" className={styles.sectionTitre}>La carte</h2>
-            <Carte titre="La carte de Croc’s" rubriques={carte} />
+            <h2 id="carte-titre" className={styles.sectionTitreRouge}>La carte</h2>
+            <Carte titre="La carte de Croc’s" rubriques={carte} sommaire="Aller à une rubrique de la carte" />
           </div>
         </section>
 

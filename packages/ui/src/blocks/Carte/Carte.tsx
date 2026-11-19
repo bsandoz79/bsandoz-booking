@@ -35,6 +35,8 @@ export interface CarteProps {
   /** Titre de la carte, pour les lecteurs d'écran (et affiché si `titreVisible`). */
   titre: string;
   titreVisible?: boolean;
+  /** Nom du sommaire (ex. « Aller à une rubrique ») : s'il est donné, les rubriques sont listées en liens en haut. */
+  sommaire?: string;
   libelles?: Partial<CarteLibelles>;
 }
 
@@ -46,19 +48,28 @@ export function prixCarte(cents: number): string {
 }
 
 /**
- * Carte d'un commerce : rubriques en panneaux, articles avec nom, description et prix.
+ * Carte d'un commerce façon menu imprimé : rubriques aux titres surlignés, articles avec nom, description et prix.
  * Prix changé : l'ancien barré à côté du nouveau. « Nouveau » et « Épuisé » en pastilles.
  * Couleurs, police et fond viennent du thème (variables --bs-carte-*), aucun texte métier en dur.
  */
-export function Carte({ rubriques, titre, titreVisible = false, libelles }: CarteProps) {
+export function Carte({ rubriques, titre, titreVisible = false, sommaire, libelles }: CarteProps) {
   const l = { ...LIBELLES, ...libelles };
   return (
     <section className={styles.carte} aria-label={titre}>
       {titreVisible && <h2 className={styles.titre}>{titre}</h2>}
+      {sommaire && (
+        <nav aria-label={sommaire}>
+          <ul className={styles.sommaire}>
+            {rubriques.map((r) => (
+              <li key={r.id}><a href={`#rubrique-${r.id}`}>{r.nom}</a></li>
+            ))}
+          </ul>
+        </nav>
+      )}
       <div className={styles.rubriques}>
         {rubriques.map((r) => (
-          <section key={r.id} className={styles.rubrique} aria-labelledby={`rubrique-${r.id}`}>
-            <h3 id={`rubrique-${r.id}`} className={styles.rubriqueNom}>{r.nom}</h3>
+          <section key={r.id} id={`rubrique-${r.id}`} className={styles.rubrique} aria-labelledby={`rubrique-${r.id}-nom`}>
+            <h3 id={`rubrique-${r.id}-nom`} className={styles.rubriqueNom}>{r.nom}</h3>
             <ul className={styles.articles}>
               {r.articles.map((a) => (
                 <li key={a.id} className={a.epuise ? `${styles.article} ${styles.epuise}` : styles.article}>
