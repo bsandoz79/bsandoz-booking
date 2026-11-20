@@ -4,7 +4,7 @@ import { App } from './App';
 import { crocs } from './data/crocs';
 
 describe('Site de Croc’s', () => {
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => { vi.unstubAllGlobals(); localStorage.clear(); });
 
   it('montre le nom, appeler, l’itinéraire, les mentions légales et le créateur du site', () => {
     render(<App />);
@@ -61,7 +61,7 @@ describe('Site de Croc’s', () => {
       ? [{ id: 'x', nom: 'Les Wraps', note: '', icone: 'libanais', articles: [{ id: 'w', categorieId: 'x', nom: 'Wrap poulet', description: '', prixCents: 700, prixBarreCents: 650, nouveau: true, epuise: false, visible: true }] }]
       : { annonce: 'Fermé lundi 24', horaires: [{ jours: 'Tous les jours', heures: '11 h – 23 h' }] }))));
     render(<App />);
-    expect(await screen.findByRole('status')).toHaveTextContent('Fermé lundi 24');
+    expect(await screen.findByText('Fermé lundi 24')).toHaveAttribute('role', 'status');
     const carte = screen.getByRole('region', { name: 'La carte de Croc’s' });
     expect(await within(carte).findByRole('region', { name: 'Les Wraps' })).toHaveTextContent('Ancien prix : 6,50 € Nouveau prix : 7 €');
     // « Tous les jours » enregistré d'un bloc : réparti sur les 7 jours.
@@ -109,6 +109,31 @@ describe('Site de Croc’s', () => {
     await userEvent.click(within(diaporama).getByRole('button', { name: 'Photo précédente' }));
     expect(within(diaporama).getByRole('button', { name: 'Agrandir la photo : Photo 7' })).toBeInTheDocument();
     expect(screen.queryByRole('region', { name: 'Photos de Croc’s' })).not.toBeInTheDocument();
+    vi.unstubAllEnvs();
+  });
+
+  it('pas de clignotement : attend l’API à la première visite, puis montre tout de suite le dernier contenu reçu', async () => {
+    vi.stubEnv('VITE_API_URL', 'https://api.example.test');
+    const carteApi = [{ id: 'x', nom: 'Les Wraps', note: '', icone: null, articles: [{ id: 'w', categorieId: 'x', nom: 'Wrap', description: '', prixCents: 700, prixBarreCents: 650, nouveau: false, epuise: false, visible: true }] }];
+    let repondre: () => void = () => {};
+    const reponse = new Promise<void>((ok) => { repondre = ok; });
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      await reponse;
+      return new Response(JSON.stringify(url.endsWith('/carte') ? carteApi : {}));
+    }));
+    const premiere = render(<App />);
+    // En attendant l'API : ni la carte intégrée ni rien qui changerait.
+    expect(screen.getByText('Chargement de la carte…')).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'La carte de Croc’s' })).not.toBeInTheDocument();
+    repondre();
+    expect(await screen.findByRole('region', { name: 'Les Wraps' })).toHaveTextContent('6,50 €');
+    premiere.unmount();
+
+    // Visite suivante : la carte reçue la fois d'avant s'affiche aussitôt, avant la réponse de l'API.
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(() => {})));
+    render(<App />);
+    expect(screen.queryByText('Chargement de la carte…')).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Les Wraps' })).toHaveTextContent('6,50 €');
     vi.unstubAllEnvs();
   });
 });
