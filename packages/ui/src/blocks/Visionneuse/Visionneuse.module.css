@@ -1,0 +1,118 @@
+/* Visionneuse : photo en grand sur fond sombre, commandes fines et discrètes. */
+.fond {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: rgb(10 8 8 / 0.95);
+  animation: apparition 0.2s ease;
+}
+
+.visionneuse {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 3.5rem 0.75rem 1rem;
+  box-sizing: border-box;
+}
+
+.figure {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+}
+
+.image {
+  display: block;
+  /* La photo occupe la place disponible (même une petite photo), sans être déformée ni coupée. */
+  width: min(100%, 1400px);
+  height: calc(100svh - 7.5rem);
+  object-fit: contain;
+}
+
+.legende {
+  color: #e9e3df;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.position {
+  color: #a59d98;
+}
+
+.fermer,
+.fleche {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #cfc8c3;
+  cursor: pointer;
+  transition: color var(--bs-transition), background var(--bs-transition);
+}
+
+.fermer:hover,
+.fleche:hover {
+  color: #fff;
+  background: rgb(255 255 255 / 0.08);
+}
+
+.fermer:focus-visible,
+.fleche:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.fermer {
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+.fleche {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.gauche {
+  left: 0.25rem;
+}
+
+.droite {
+  right: 0.25rem;
+}
+
+@media (min-width: 720px) {
+  .visionneuse {
+    padding: 3.5rem 4.5rem 1.5rem;
+  }
+
+  .gauche {
+    left: 1rem;
+  }
+
+  .droite {
+    right: 1rem;
+  }
+}
+
+@keyframes apparition {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fond {
+    animation: none;
+  }
+}

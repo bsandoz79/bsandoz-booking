@@ -13,4 +13,5 @@ Bande d'éléments (avis, photos…) qui défile toute seule : `visibles` élém
 - Un seul élément à la fois (téléphone) : la bande prend la hauteur de l'élément affiché (suivie si elle change).
 - Pas plus d'éléments que de places : simple liste, sans boutons, une colonne par élément.
 - Props : `label`, `visibles`, `visiblesMobile`, `largeurMin` (720 px), `intervalle` (ms), `libelles`.
-- Thème : `--bs-defilant-ecart` (espace entre éléments), `--bs-defilant-bouton` (couleur des boutons).
+- Commandes discrètes : flèches et pause en trait fin gris, sans cadre (zone de 44 px pour le doigt).
+- Thème : `--bs-defilant-ecart` (espace entre éléments), `--bs-defilant-bouton` (couleur des commandes, gris par défaut), `--bs-defilant-bouton-survol`.

@@ -40,34 +40,32 @@
 .commandes {
   display: flex;
   justify-content: center;
-  gap: var(--bs-space-2);
+  gap: 0.25rem;
 }
 
+/* Commandes discrètes : traits fins et gris, sans cadre ; zone de 44 px pour le doigt. */
 .commandes button {
   display: inline-grid;
   place-items: center;
-  min-width: 44px;
-  min-height: 44px;
-  border: 2px solid var(--bs-defilant-bouton, var(--bs-color-primary));
-  border-radius: var(--bs-radius-pill);
-  background: var(--bs-color-surface);
-  color: var(--bs-defilant-bouton, var(--bs-color-primary));
-  font: inherit;
-  font-size: 1.4rem;
-  font-weight: 800;
-  line-height: 1;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--bs-defilant-bouton, #8a8380);
   cursor: pointer;
-  transition: background var(--bs-transition), color var(--bs-transition);
+  transition: color var(--bs-transition), background var(--bs-transition);
 }
 
 .commandes button:hover {
-  background: var(--bs-defilant-bouton, var(--bs-color-primary));
-  color: var(--bs-color-surface);
+  color: var(--bs-defilant-bouton-survol, var(--bs-color-text));
+  background: rgb(0 0 0 / 0.05);
 }
 
 .commandes button:focus-visible {
-  outline: 3px solid var(--bs-defilant-bouton, var(--bs-color-primary));
-  outline-offset: 2px;
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,6 +1,11 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (bloc Visionneuse)
+- Kit front : bloc `Visionneuse` : photo agrandie en plein écran sur fond sombre, flèches fines (et touches ← →) pour passer d'une photo à l'autre, fermeture par la croix, Échap ou clic sur le fond ; 4 tests.
+- Croc's : la photo principale et celles du bas de page s'agrandissent au clic ; 1 test.
+### Modifié (bloc Defilant)
+- Commandes discrètes : flèches et pause en trait fin gris, sans cadre (zone de 44 px gardée pour le doigt).
 ### Corrigé (site de Croc's sur téléphone)
 - La page ne déborde plus en largeur sur les petits téléphones (rubrique « Venir » et bloc du temps de trajet autorisés à rétrécir) ; vérifié de 320 à 768 px.
 - « Calculer » passe sous le champ d'adresse quand la place manque ; numéros de téléphone sur une seule ligne ; photos chargées dès l'arrivée.

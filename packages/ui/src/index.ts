@@ -7,6 +7,7 @@ export * from './blocks/ChoiceChips';
 export * from './blocks/PriceSummary';
 export * from './blocks/Carte';
 export * from './blocks/Defilant';
+export * from './blocks/Visionneuse';
 export * from './blocks/EditeurCarte';
 export * from './blocks/Stepper';
 export * from './blocks/StepCard';

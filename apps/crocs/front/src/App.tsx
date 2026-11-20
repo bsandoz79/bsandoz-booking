@@ -1,4 +1,5 @@
-import { Carte, Defilant } from '@bsandoz/ui';
+import { useState } from 'react';
+import { Carte, Defilant, Visionneuse } from '@bsandoz/ui';
 import { Logo } from './components/Logo';
 import { Trajet } from './components/Trajet';
 import { crocs, itineraires } from './data/crocs';
@@ -14,6 +15,9 @@ const photo = (nom: string) => `/photos/${nom}.webp`;
 /** Site de Croc's (démo) : une seule page, de l'envie (photo, carte) au trajet. */
 export function App() {
   const { carte, accroche, horaires, horairesAConfirmer, annonce, avis, photos } = useContenu();
+  // Photos qui s'agrandissent au clic : la photo principale, puis celles du bas de page.
+  const galerie = [{ url: photo('assiette'), description: 'Assiettes kebab, frites et salade' }, ...photos];
+  const [agrandie, setAgrandie] = useState<number | null>(null);
   return (
     <>
       {annonce && <p className={styles.annonce} role="status">{annonce}</p>}
@@ -41,7 +45,9 @@ export function App() {
             <p className={styles.adresse}>{crocs.adresse}, {crocs.ville}</p>
           </div>
           <figure className={styles.heroPhoto}>
-            <img src={photo('assiette')} alt="Assiettes kebab, frites et salade" width="477" height="571" />
+            <button type="button" className={styles.agrandir} onClick={() => setAgrandie(0)} aria-label={`Agrandir la photo : ${galerie[0].description}`}>
+              <img src={galerie[0].url} alt="" width="477" height="571" />
+            </button>
           </figure>
         </section>
 
@@ -105,11 +111,17 @@ export function App() {
         {photos.length > 0 && (
           <section className={styles.photos} aria-label="Photos de Croc’s">
             <Defilant label="Photos de Croc’s" visibles={3} visiblesMobile={1} intervalle={3000}>
-              {photos.map((p, i) => <img key={i} src={p.url} alt={p.description} />)}
+              {photos.map((p, i) => (
+                <button key={i} type="button" className={styles.agrandir} onClick={() => setAgrandie(i + 1)} aria-label={`Agrandir la photo : ${p.description}`}>
+                  <img src={p.url} alt="" />
+                </button>
+              ))}
             </Defilant>
           </section>
         )}
       </main>
+
+      <Visionneuse photos={galerie} index={agrandie} onChange={setAgrandie} onClose={() => setAgrandie(null)} />
 
       <footer className={styles.pied}>
         <div className={styles.piedCommerce}>
