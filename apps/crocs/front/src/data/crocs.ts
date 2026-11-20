@@ -23,10 +23,10 @@ export const crocs = {
     { jours: 'Jeudi', heures: '11 h 30 – 14 h 30 · 18 h – 22 h 30' },
     { jours: 'Vendredi', heures: '11 h 30 – 14 h 30 · 18 h – 22 h 30' },
     { jours: 'Samedi', heures: '11 h 30 – 14 h 30 · 18 h – 22 h 30' },
-    { jours: 'Dimanche', heures: 'à confirmer' },
+    { jours: 'Dimanche', heures: 'Fermé' },
   ],
-  /** Les annuaires ne sont pas d'accord sur le dimanche : à demander au patron. */
-  horairesAConfirmer: true,
+  /** Horaires de la fiche Google de Croc's (relevés le 20/11/2026), dimanche fermé. */
+  horairesAConfirmer: false,
 };
 
 export const itineraires = {
