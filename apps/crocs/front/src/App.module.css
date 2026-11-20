@@ -292,19 +292,16 @@
 
 /* Avis : pas de cartes, juste le texte du client en grand, séparés par un trait pointillé comme sur un ticket. */
 .listeAvis {
-  display: grid;
+  --bs-defilant-bouton: var(--croc-rouge);
+  --bs-defilant-ecart: 1.5rem;
   margin: 0 0 1rem;
-  padding: 0;
-  list-style: none;
 }
 
-.listeAvis li {
-  padding: 1.25rem 0;
+.unAvis {
+  height: 100%;
+  margin: 0;
+  padding: 1.25rem 0 0;
   border-top: 2px dashed #e3d3c4;
-}
-
-.listeAvis li:first-child {
-  border-top: 0;
 }
 
 .listeAvis blockquote {
@@ -396,18 +393,10 @@
     align-items: start;
   }
 
-  .listeAvis {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .listeAvis li {
-    padding: 0.5rem 1.75rem;
+  /* Grand écran : avis côte à côte, séparés par un trait pointillé vertical. */
+  .unAvis {
+    padding: 0.5rem 0 0.5rem 1.5rem;
     border-top: 0;
     border-left: 2px dashed #e3d3c4;
-  }
-
-  .listeAvis li:first-child {
-    padding-left: 0;
-    border-left: 0;
   }
 }

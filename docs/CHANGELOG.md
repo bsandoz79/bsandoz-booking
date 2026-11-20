@@ -1,6 +1,9 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (bloc Defilant)
+- Kit front : bloc `Defilant` (avis, photos…) : 3 éléments à la fois sur grand écran, 1 sur téléphone ; toutes les 3 s, celui de gauche sort, les autres glissent d'un cran et un nouveau entre à droite, en boucle. Boutons Précédent, Pause, Suivant ; pause au survol et au clavier ; rien d'automatique si l'appareil demande moins d'animations ; 7 tests.
+- Croc's : avis dans un `Defilant` (ils défilent dès qu'il y en a plus de 3).
 ### Ajouté (module Carte, bloc EditeurCarte)
 - Changer un prix sans barrer l'ancien : `barrerAncienPrix: false` sur `PUT /admin/carte/articles/{id}` (retire aussi un prix barré encore affiché) ; dans la fiche de l'article, interrupteur « Afficher l’ancien prix barré » quand le prix change ; 4 tests.
 ### Ajouté (déploiement de Croc's)
