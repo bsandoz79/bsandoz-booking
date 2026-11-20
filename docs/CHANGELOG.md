@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Modifié (site de Croc's)
+- Pied de page sur toute la largeur sur ordinateur : le commerce à gauche, les liens au milieu, le créateur du site à droite ; en colonne sur téléphone.
 ### Ajouté (site de Croc's)
 - Logo de l'enseigne dans l'en-tête, en titre et en pied de page (fichier déposé sur le serveur, hors du dépôt ; nom en texte s'il manque).
 ### Ajouté (bloc Carte)
