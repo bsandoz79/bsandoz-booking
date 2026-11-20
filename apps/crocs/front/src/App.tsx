@@ -105,7 +105,7 @@ export function App() {
         {photos.length > 0 && (
           <section className={styles.photos} aria-label="Photos de Croc’s">
             <Defilant label="Photos de Croc’s" visibles={3} visiblesMobile={1} intervalle={3000}>
-              {photos.map((p, i) => <img key={i} src={p.url} alt={p.description} loading="lazy" />)}
+              {photos.map((p, i) => <img key={i} src={p.url} alt={p.description} />)}
             </Defilant>
           </section>
         )}

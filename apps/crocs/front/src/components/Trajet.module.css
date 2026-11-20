@@ -1,5 +1,7 @@
 .trajet {
   display: grid;
+  /* Colonnes autorisées à rétrécir : le champ d'adresse ne fixe plus une largeur minimale (petits téléphones). */
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.9rem;
   padding: 1.25rem;
   border: 2px solid var(--croc-rouge);
@@ -16,16 +18,20 @@
 
 .actions {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.6rem;
 }
 
 .formulaire {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
+/* Le bouton « Calculer » passe sous le champ quand la place manque (petit téléphone). */
 .formulaire input {
-  flex: 1;
+  flex: 1 1 12rem;
+  width: 100%;
   min-width: 0;
   min-height: 46px;
   padding: 0 0.9rem;
@@ -113,7 +119,7 @@
 
 @media (min-width: 640px) {
   .actions {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
   }
 }
