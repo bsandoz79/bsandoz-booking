@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Modifié (site de Croc's)
+- Photos du bas de page en galerie fixe (6 vignettes au plus, centrées ; « +N » sur la dernière s'il y en a plus) : seuls les avis défilent, plus deux bandes qui bougent en même temps ; 1 test.
 ### Ajouté (bloc Visionneuse)
 - Kit front : bloc `Visionneuse` : photo agrandie en plein écran sur fond sombre, flèches fines (et touches ← →) pour passer d'une photo à l'autre, fermeture par la croix, Échap ou clic sur le fond ; 4 tests.
 - Croc's : la photo principale et celles du bas de page s'agrandissent au clic ; 1 test.

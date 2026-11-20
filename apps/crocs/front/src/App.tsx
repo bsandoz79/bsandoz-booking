@@ -12,6 +12,9 @@ import styles from './App.module.css';
  */
 const photo = (nom: string) => `/photos/${nom}.webp`;
 
+/** Vignettes affichées en bas de page ; au-delà, la dernière indique combien il en reste. */
+const PHOTOS_VISIBLES = 6;
+
 /** Site de Croc's (démo) : une seule page, de l'envie (photo, carte) au trajet. */
 export function App() {
   const { carte, accroche, horaires, horairesAConfirmer, annonce, avis, photos } = useContenu();
@@ -109,14 +112,22 @@ export function App() {
         </section>}
 
         {photos.length > 0 && (
+          // Galerie fixe (seuls les avis défilent) : 6 vignettes au plus, la dernière ouvre la suite dans la visionneuse.
           <section className={styles.photos} aria-label="Photos de Croc’s">
-            <Defilant label="Photos de Croc’s" visibles={3} visiblesMobile={1} intervalle={3000}>
-              {photos.map((p, i) => (
-                <button key={i} type="button" className={styles.agrandir} onClick={() => setAgrandie(i + 1)} aria-label={`Agrandir la photo : ${p.description}`}>
-                  <img src={p.url} alt="" />
-                </button>
-              ))}
-            </Defilant>
+            <ul className={styles.galerie}>
+              {photos.slice(0, PHOTOS_VISIBLES).map((p, i) => {
+                const reste = i === PHOTOS_VISIBLES - 1 ? photos.length - PHOTOS_VISIBLES : 0;
+                return (
+                  <li key={i}>
+                    <button type="button" className={styles.agrandir} onClick={() => setAgrandie(i + 1)}
+                      aria-label={reste > 0 ? `Voir les ${photos.length} photos, à partir de : ${p.description}` : `Agrandir la photo : ${p.description}`}>
+                      <img src={p.url} alt="" />
+                      {reste > 0 && <span className={styles.reste} aria-hidden="true">+{reste}</span>}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
           </section>
         )}
       </main>
