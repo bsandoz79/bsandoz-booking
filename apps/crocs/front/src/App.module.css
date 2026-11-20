@@ -493,3 +493,16 @@
     border-left: 2px dashed #e3d3c4;
   }
 }
+
+/* Première visite, en attendant l'API : place gardée, rien d'affiché qui changerait une seconde plus tard. */
+.enAttente {
+  visibility: hidden;
+}
+
+.chargementCarte {
+  display: grid;
+  place-items: center;
+  min-height: 60vh;
+  margin: 0;
+  color: var(--bs-carte-texte-doux, #ecc8b8);
+}

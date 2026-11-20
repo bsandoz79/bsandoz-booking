@@ -19,7 +19,7 @@ export const PHOTOS_MAX = 8;
 
 /** Site de Croc's (démo) : une seule page, de l'envie (photo, carte) au trajet. */
 export function App() {
-  const { carte, accroche, horaires, horairesAConfirmer, annonce, avis, photos } = useContenu();
+  const { carte, accroche, horaires, horairesAConfirmer, annonce, avis, photos, enAttente } = useContenu();
   // Diaporama du haut (photo principale puis celles du patron), photos agrandies au clic.
   const galerie = [{ url: photo('assiette'), description: 'Assiettes kebab, frites et salade' }, ...photos].slice(0, PHOTOS_MAX);
   const [agrandie, setAgrandie] = useState<number | null>(null);
@@ -42,7 +42,7 @@ export function App() {
           <div className={styles.heroTexte}>
             <p className={styles.surtitre}>{crocs.activite} · Amiens</p>
             <h1 id="titre" className={styles.titre}><Logo /></h1>
-            <p className={styles.accroche}>{accroche}</p>
+            <p className={enAttente ? `${styles.accroche} ${styles.enAttente}` : styles.accroche}>{accroche}</p>
             <div className={styles.boutons}>
               <a href={crocs.telephoneLien} className={styles.boutonJaune}>Appeler le {crocs.telephone}</a>
               <a href={itineraires.google} className={styles.boutonBlanc} target="_blank" rel="noopener noreferrer">Itinéraire</a>
@@ -58,7 +58,9 @@ export function App() {
           <div className={styles.conteneur}>
             <div className={styles.cadreCarte}>
               <h2 id="carte-titre" className={styles.titreCarte}>La carte</h2>
-              <Carte titre="La carte de Croc’s" rubriques={carte} sommaire="Aller à une rubrique de la carte" compacte ajustee />
+              {enAttente
+                ? <p className={styles.chargementCarte} role="status">Chargement de la carte…</p>
+                : <Carte titre="La carte de Croc’s" rubriques={carte} sommaire="Aller à une rubrique de la carte" compacte ajustee />}
             </div>
           </div>
         </section>
@@ -75,7 +77,7 @@ export function App() {
               </div>
               <h3 className={styles.petitTitre}>Horaires</h3>
               {/* Jour par jour, aujourd'hui mis en avant (heure de France). */}
-              <dl className={styles.horaires}>
+              <dl className={enAttente ? `${styles.horaires} ${styles.enAttente}` : styles.horaires} aria-busy={enAttente || undefined}>
                 {horairesParJour(horaires).map((h, i) => {
                   const aujourdhui = i === rangAujourdhui();
                   return (
@@ -93,7 +95,7 @@ export function App() {
           </div>
         </section>
 
-        {avis.length > 0 && <section id="avis" className={styles.avis} aria-labelledby="avis-titre">
+        {!enAttente && avis.length > 0 && <section id="avis" className={styles.avis} aria-labelledby="avis-titre">
           <div className={styles.conteneur}>
             <h2 id="avis-titre" className={styles.sectionTitreRouge}>Ce qu’en disent les clients</h2>
             {/* 3 avis à la fois ; au-delà, ils défilent d'un cran toutes les 3 secondes. */}

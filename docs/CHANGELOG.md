@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Corrigé (site de Croc's)
+- Plus de clignotement au chargement (prix barré, avis, horaires qui disparaissaient puis revenaient) : le dernier contenu reçu de l'API est gardé sur l'appareil et affiché tout de suite ; à la première visite, la carte, les horaires et les avis attendent l'API (2,5 s au plus, puis contenu intégré) ; 1 test.
 ### Corrigé (déploiement de l'API de Croc's)
 - Tâche cron documentée corrigée : chemin de `php` en clair et journal dans le dossier personnel (l'ancienne ligne ne se lançait pas : l'API restait à l'ancienne version, prix toujours barrés).
 ### Corrigé (mentions légales de Croc's)
