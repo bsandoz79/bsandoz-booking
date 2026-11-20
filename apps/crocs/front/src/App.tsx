@@ -40,7 +40,7 @@ export function App() {
             <p className={styles.adresse}>{crocs.adresse}, {crocs.ville}</p>
           </div>
           <figure className={styles.heroPhoto}>
-            <img src={photo('assiette')} alt="Assiette kebab, frites et salade" width="175" height="219" />
+            <img src={photo('assiette')} alt="Assiettes kebab, frites et salade" width="477" height="571" />
           </figure>
         </section>
 
@@ -48,7 +48,7 @@ export function App() {
           <div className={styles.conteneur}>
             <div className={styles.cadreCarte}>
               <h2 id="carte-titre" className={styles.titreCarte}>La carte</h2>
-              <Carte titre="La carte de Croc’s" rubriques={carte} sommaire="Aller à une rubrique de la carte" compacte />
+              <Carte titre="La carte de Croc’s" rubriques={carte} sommaire="Aller à une rubrique de la carte" compacte ajustee />
             </div>
           </div>
         </section>
