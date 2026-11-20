@@ -112,13 +112,14 @@ export function App() {
       </main>
 
       <footer className={styles.pied}>
-        <p className={styles.logoPied}><Logo /></p>
-        <p>{crocs.adresse}, {crocs.ville} · <a href={crocs.telephoneLien}>{crocs.telephone}</a></p>
-        <p>
+        <div className={styles.piedCommerce}>
+          <p className={styles.logoPied}><Logo /></p>
+          <p>{crocs.adresse}, {crocs.ville} · <a href={crocs.telephoneLien}>{crocs.telephone}</a></p>
+        </div>
+        <nav className={styles.piedLiens} aria-label="Informations">
           <a href="/mentions-legales" className={styles.lienPied}>Mentions légales et données personnelles</a>
-          {' · '}
           <a href="/pro" className={styles.lienPied}>Espace pro</a>
-        </p>
+        </nav>
         <a href="https://bsandoz.fr" className={styles.pub}>
           <span>Site créé par <strong>Baptiste Sandoz</strong></span>
           <span>Vous aussi, un site à votre image, sans abonnement →</span>
