@@ -1,6 +1,9 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (site fictif d'avocat)
+- `apps/avocat/front` : site d'un cabinet d'avocat fictif, « Maître Baptiste Sandoz » : haut de page avec balance dessinée, parcours, trois domaines d'intervention numérotés (numérique, contrats, propriété intellectuelle), contact en quatre blocs, menu repliable sur téléphone ; mentions légales et confidentialité ; bandeau « Site fictif… Baptiste Sandoz n'est pas avocat », coordonnées fictives, jamais indexé ; 6 tests.
+- CI (job `avocat-front`) et envoi automatique sur o2switch dès que le secret `FTP_SERVER_DIR_AVOCAT_FRONT` existe.
 ### Ajouté (espace du patron de Croc's)
 - Contact en cas de problème : « Un problème avec le site ? Appelez Baptiste Sandoz », avec le téléphone cliquable, visible aussi sur l'écran de connexion ; 1 test.
 ### Ajouté (site de Croc's)

@@ -1,0 +1,35 @@
+/* Thème du cabinet (fictif) : encre bleu nuit, papier ivoire, laiton. Titres en serif, texte en police système. */
+:root {
+  --av-encre: #1c2836;
+  --av-encre-douce: #46505c;
+  --av-papier: #f8f6f1;
+  --av-papier-fonce: #efebe2;
+  --av-blanc: #ffffff;
+  --av-laiton: #7d5f26; /* texte et liens : contraste AA sur ivoire */
+  --av-laiton-clair: #c4a265; /* traits décoratifs, texte sur fond bleu nuit */
+  --av-trait: #ddd6c8;
+  --av-serif: Georgia, 'Times New Roman', 'Liberation Serif', serif;
+  --av-largeur: 72rem;
+
+  --bs-font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --bs-color-primary: var(--av-encre);
+  --bs-color-text: var(--av-encre);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+body {
+  margin: 0;
+  font-family: var(--bs-font);
+  font-size: 1.0625rem;
+  color: var(--av-encre);
+  line-height: 1.65;
+  background: var(--av-papier);
+}
+img, svg { max-width: 100%; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--av-laiton-clair); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

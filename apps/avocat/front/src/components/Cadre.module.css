@@ -1,0 +1,155 @@
+/* Bandeau « site fictif », en-tête collant et pied de page bleu nuit. */
+.evitement {
+  position: absolute;
+  left: -999px;
+  top: 0.5rem;
+  z-index: 20;
+  padding: 0.5rem 1rem;
+  background: var(--av-blanc);
+}
+.evitement:focus { left: 0.5rem; }
+
+.bandeau {
+  margin: 0;
+  padding: 0.55rem 1rem;
+  background: var(--av-papier-fonce);
+  border-bottom: 1px solid var(--av-trait);
+  color: var(--av-encre-douce);
+  font-size: 0.85rem;
+  text-align: center;
+}
+.bandeau a { color: var(--av-laiton); font-weight: 600; }
+
+.entete {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgb(248 246 241 / 0.96);
+  border-bottom: 1px solid var(--av-trait);
+  backdrop-filter: blur(6px);
+}
+.enteteInterieur {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  max-width: var(--av-largeur);
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+}
+
+.marque {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+.monogramme {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  color: var(--av-laiton);
+}
+.marqueNom {
+  display: block;
+  font-family: var(--av-serif);
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+.marqueRole {
+  display: block;
+  color: var(--av-laiton);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.boutonMenu {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--av-trait);
+  border-radius: 2px;
+  background: var(--av-blanc);
+  color: var(--av-encre);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.menu { display: none; width: 100%; }
+.menuOuvert { display: block; }
+.menu ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.menu a {
+  display: block;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--av-trait);
+  text-decoration: none;
+}
+.menu a:hover { color: var(--av-laiton); }
+
+@media (min-width: 56rem) {
+  .boutonMenu { display: none; }
+  .menu { display: block; width: auto; }
+  .menu ul { display: flex; gap: 2rem; }
+  .menu a {
+    padding: 0.4rem 0;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    font-size: 0.95rem;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .menu a:hover { border-bottom-color: var(--av-laiton-clair); }
+}
+
+.pied {
+  background: var(--av-encre);
+  color: #e9e4da;
+}
+.piedInterieur {
+  display: grid;
+  gap: 1.75rem;
+  max-width: var(--av-largeur);
+  margin: 0 auto;
+  padding: 3rem 1.25rem 2rem;
+}
+.piedMarque {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.piedMarque .monogramme { color: var(--av-laiton-clair); }
+.piedMarque p { margin: 0; font-size: 0.92rem; }
+.piedMarque strong { font-family: var(--av-serif); font-size: 1.15rem; font-weight: 400; }
+.piedMenu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.piedMenu a { text-decoration: none; }
+.piedMenu a:hover, .piedBas a:hover { color: var(--av-laiton-clair); }
+.piedCoordonnees { margin: 0; font-size: 0.92rem; }
+
+@media (min-width: 56rem) {
+  .piedInterieur { grid-template-columns: 1.2fr 1fr 1fr; align-items: center; }
+  .piedCoordonnees { text-align: right; }
+}
+
+.piedBas {
+  max-width: var(--av-largeur);
+  margin: 0 auto;
+  padding: 1.25rem 1.25rem 1.75rem;
+  border-top: 1px solid rgb(233 228 218 / 0.18);
+  color: #c9c3b7;
+  font-size: 0.82rem;
+}
+.piedBas p { margin: 0.3rem 0; }

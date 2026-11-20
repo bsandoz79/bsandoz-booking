@@ -1,0 +1,20 @@
+.page {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 4.5rem;
+}
+.page h1 {
+  margin: 0 0 0.5rem;
+  font-family: var(--av-serif);
+  font-size: clamp(1.9rem, 1.4rem + 2vw, 2.6rem);
+  font-weight: 400;
+}
+.intro { color: var(--av-laiton); font-style: italic; }
+.page h2 {
+  margin: 2.25rem 0 0.5rem;
+  font-family: var(--av-serif);
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+.page p { color: var(--av-encre-douce); }
+.page a { color: var(--av-laiton); }
