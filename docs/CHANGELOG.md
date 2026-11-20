@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Corrigé (déploiement de l'API de Croc's)
+- Tâche cron documentée corrigée : chemin de `php` en clair et journal dans le dossier personnel (l'ancienne ligne ne se lançait pas : l'API restait à l'ancienne version, prix toujours barrés).
 ### Corrigé (mentions légales de Croc's)
 - Adresse du siège d'o2switch (chemin des Pardiaux, 63000 Clermont-Ferrand, d'après l'annuaire des entreprises) : plus aucun « [à compléter] ».
 ### Modifié (horaires de Croc's)
