@@ -136,16 +136,6 @@
   margin: 0;
 }
 
-.heroPhoto img {
-  display: block;
-  width: min(70vw, 300px);
-  height: auto;
-  border: 6px solid #fff;
-  border-radius: 1.25rem;
-  transform: rotate(2deg);
-  box-shadow: 0 18px 40px rgb(0 0 0 / 0.35);
-}
-
 .conteneur {
   max-width: 1180px;
   margin: 0 auto;
@@ -362,62 +352,6 @@
   color: var(--croc-rouge);
 }
 
-.photos {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 0 1rem 3rem;
-}
-
-/* Galerie fixe : 2 vignettes par ligne sur téléphone, 3 sur ordinateur. */
-.galerie {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.6rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* Ordinateur : 3 par ligne, centrées (2 photos ne restent pas collées à gauche). */
-@media (min-width: 720px) {
-  .galerie {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-  }
-
-  .galerie li {
-    flex: 0 1 calc((100% - 2rem) / 3);
-  }
-}
-
-.photos img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  height: auto;
-  border-radius: 0.8rem;
-  object-fit: cover;
-}
-
-.photos .agrandir {
-  position: relative;
-}
-
-/* « +3 » sur la dernière vignette quand il y a plus de photos. */
-.reste {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 0.8rem;
-  background: rgb(20 12 12 / 0.55);
-  color: #fff;
-  font-size: 1.8rem;
-  font-weight: 800;
-}
-
 .pied {
   padding: 2rem 1.25rem;
   background: #1e1414;
@@ -557,40 +491,5 @@
     padding: 0.5rem 0 0.5rem 1.5rem;
     border-top: 0;
     border-left: 2px dashed #e3d3c4;
-  }
-}
-
-/* Photo cliquable : s'ouvre en grand dans la visionneuse. */
-.agrandir {
-  display: block;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  border-radius: 0.8rem;
-  background: none;
-  cursor: zoom-in;
-}
-
-.agrandir:focus-visible {
-  outline: 3px solid var(--croc-rouge);
-  outline-offset: 3px;
-}
-
-.heroPhoto .agrandir {
-  width: auto;
-  border-radius: 1.25rem;
-}
-
-.photos .agrandir img {
-  transition: transform 0.25s ease, filter 0.25s ease;
-}
-
-.photos .agrandir:hover img {
-  filter: brightness(1.06);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .photos .agrandir img {
-    transition: none;
   }
 }

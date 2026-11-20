@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Carte, Defilant, Visionneuse } from '@bsandoz/ui';
 import { horairesParJour, rangAujourdhui } from './calculs/horaires';
 import { Logo } from './components/Logo';
+import { PhotosHero } from './components/PhotosHero';
 import { Trajet } from './components/Trajet';
 import { crocs, itineraires } from './data/crocs';
 import { useContenu } from './hooks/useContenu';
@@ -13,14 +14,14 @@ import styles from './App.module.css';
  */
 const photo = (nom: string) => `/photos/${nom}.webp`;
 
-/** Vignettes affichées en bas de page ; au-delà, la dernière indique combien il en reste. */
-const PHOTOS_VISIBLES = 6;
+/** Photos du diaporama du haut : la photo principale et 7 photos du patron au plus. */
+export const PHOTOS_MAX = 8;
 
 /** Site de Croc's (démo) : une seule page, de l'envie (photo, carte) au trajet. */
 export function App() {
   const { carte, accroche, horaires, horairesAConfirmer, annonce, avis, photos } = useContenu();
-  // Photos qui s'agrandissent au clic : la photo principale, puis celles du bas de page.
-  const galerie = [{ url: photo('assiette'), description: 'Assiettes kebab, frites et salade' }, ...photos];
+  // Diaporama du haut (photo principale puis celles du patron), photos agrandies au clic.
+  const galerie = [{ url: photo('assiette'), description: 'Assiettes kebab, frites et salade' }, ...photos].slice(0, PHOTOS_MAX);
   const [agrandie, setAgrandie] = useState<number | null>(null);
   return (
     <>
@@ -48,11 +49,9 @@ export function App() {
             </div>
             <p className={styles.adresse}>{crocs.adresse}, {crocs.ville}</p>
           </div>
-          <figure className={styles.heroPhoto}>
-            <button type="button" className={styles.agrandir} onClick={() => setAgrandie(0)} aria-label={`Agrandir la photo : ${galerie[0].description}`}>
-              <img src={galerie[0].url} alt="" width="477" height="571" />
-            </button>
-          </figure>
+          <div className={styles.heroPhoto}>
+            <PhotosHero photos={galerie} onAgrandir={setAgrandie} />
+          </div>
         </section>
 
         <section id="carte" className={styles.carte} aria-labelledby="carte-titre">
@@ -116,25 +115,6 @@ export function App() {
           </div>
         </section>}
 
-        {photos.length > 0 && (
-          // Galerie fixe (seuls les avis défilent) : 6 vignettes au plus, la dernière ouvre la suite dans la visionneuse.
-          <section className={styles.photos} aria-label="Photos de Croc’s">
-            <ul className={styles.galerie}>
-              {photos.slice(0, PHOTOS_VISIBLES).map((p, i) => {
-                const reste = i === PHOTOS_VISIBLES - 1 ? photos.length - PHOTOS_VISIBLES : 0;
-                return (
-                  <li key={i}>
-                    <button type="button" className={styles.agrandir} onClick={() => setAgrandie(i + 1)}
-                      aria-label={reste > 0 ? `Voir les ${photos.length} photos, à partir de : ${p.description}` : `Agrandir la photo : ${p.description}`}>
-                      <img src={p.url} alt="" />
-                      {reste > 0 && <span className={styles.reste} aria-hidden="true">+{reste}</span>}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        )}
       </main>
 
       <Visionneuse photos={galerie} index={agrandie} onChange={setAgrandie} onClose={() => setAgrandie(null)} />
