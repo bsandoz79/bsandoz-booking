@@ -1,4 +1,5 @@
 import { Children, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Fleche } from '../Visionneuse';
 import styles from './Defilant.module.css';
 
 export interface DefilantLibelles {
@@ -161,13 +162,17 @@ export function Defilant({ children, label, visibles = 3, visiblesMobile = 1, la
       </div>
       <div className={styles.commandes}>
         <button type="button" aria-label={l.precedent} onClick={reculer}>
-          <span aria-hidden="true">‹</span>
+          <Fleche sens="gauche" />
         </button>
         <button type="button" aria-label={enPause ? l.lecture : l.pause} onClick={() => setEnPause((p) => !p)}>
-          <span aria-hidden="true">{enPause ? '▶' : '❚❚'}</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+            {enPause
+              ? <path d="M8 5.5v13l10-6.5z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+              : <path d="M9 6v12M15 6v12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />}
+          </svg>
         </button>
         <button type="button" aria-label={l.suivant} onClick={() => setIndex((i) => (i >= n ? i : i + 1))}>
-          <span aria-hidden="true">›</span>
+          <Fleche sens="droite" />
         </button>
       </div>
     </section>

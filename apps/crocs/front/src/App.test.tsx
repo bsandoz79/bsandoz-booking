@@ -79,8 +79,19 @@ describe('Site de Croc’s', () => {
     const zone = await screen.findByRole('region', { name: 'Avis des clients' });
     expect(zone).toHaveTextContent('Client 4 · sur Google');
     expect(within(zone).getByRole('button', { name: 'Mettre en pause le défilement' })).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: 'La terrasse' })).toHaveAttribute('src', 'https://api.example.test/medias/a.jpg');
-    expect(screen.queryByRole('img', { name: 'La salle aux murs rouges' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Agrandir la photo : La terrasse' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /La salle aux murs rouges/ })).not.toBeInTheDocument();
     vi.unstubAllEnvs();
+  });
+
+  it('agrandit une photo au clic, passe à la suivante et se ferme', async () => {
+    render(<App />);
+    await userEvent.click(screen.getByRole('button', { name: 'Agrandir la photo : La salle aux murs rouges' }));
+    const visionneuse = screen.getByRole('dialog', { name: 'Photo agrandie' });
+    expect(within(visionneuse).getByRole('img', { name: 'La salle aux murs rouges' })).toBeInTheDocument();
+    await userEvent.click(within(visionneuse).getByRole('button', { name: 'Photo suivante' }));
+    expect(within(visionneuse).getByRole('img', { name: 'Le comptoir et la carte au mur' })).toBeInTheDocument();
+    await userEvent.click(within(visionneuse).getByRole('button', { name: 'Fermer' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
