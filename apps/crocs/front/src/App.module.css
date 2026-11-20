@@ -172,6 +172,9 @@
   }
 
   .cadreCarte {
+    /* Hauteur laissée aux rubriques : l'écran moins l'en-tête du site, les marges, le cadre et le titre de la carte.
+       Plus de plats que de place : la carte rapetisse, puis se sépare en pages (bloc Carte « ajustee »). */
+    --bs-carte-hauteur-max: calc(100svh - 9.5rem);
     padding: 0.8rem 1.75rem 0.2rem;
   }
 

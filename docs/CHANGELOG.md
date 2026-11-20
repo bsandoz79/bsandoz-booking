@@ -1,6 +1,12 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (bloc Carte)
+- Option `ajustee` : la carte compacte tient toujours à l'écran sur ordinateur ; trop longue, elle rapetisse (jusqu'à 80 %), puis se sépare en pages avec des boutons ; tailles de la carte compacte en `em` ; 3 tests. Croc's l'utilise (le patron peut ajouter des plats sans que la carte déborde).
+### Modifié (site de Croc's)
+- Nouvelle photo principale (deux assiettes kebab), déposée sur le serveur comme les autres photos.
+### Corrigé (tests du kit et de Perfect Clean)
+- Matchers jest-dom branchés aussi sur l'expect global, comme pour Croc's.
 ### Ajouté (espace du patron de Croc's)
 - Appli à installer sur le téléphone : icône « Croc's PRO » qui ouvre directement /pro en plein écran (manifeste, icônes) ; bouton « Mettre sur mon téléphone » ou explication pour iPhone ; lien « Espace pro » en pied de site.
 - Déconnexion après 30 minutes sans activité (aussi à la réouverture), avec la raison affichée ; 3 tests.

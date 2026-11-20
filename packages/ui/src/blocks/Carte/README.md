@@ -6,6 +6,7 @@ Carte d'un commerce (restaurant, snack, boutique…) façon menu dessiné : pas 
 - `note` : précision sous une rubrique (ex. un supplément).
 - `pictogramme` (par rubrique, facultatif) : adresse d'une image d'un seul ton (SVG au trait), teintée par `--bs-carte-trait`.
 - `compacte` : carte serrée, 4 colonnes dès 1000 px, pour la voir en entier sans défiler ; le sommaire y est caché sur grand écran.
+- `ajustee` (avec `compacte`) : sur grand écran, la carte tient toujours dans la hauteur `--bs-carte-hauteur-max` (à régler dans le thème, ex. `calc(100svh - 9.5rem)`). Trop longue, elle rapetisse par pas de 5 % jusqu'à 80 % (`ECHELLE_MIN`), puis se sépare en pages de poids proches (`decouperCarte`, une rubrique n'est jamais coupée), avec les boutons « Page précédente » et « Page suivante ». Elle se remesure quand la carte ou la taille de l'écran change. Sur téléphone, rien ne change (la carte défile).
 - `sommaire` (facultatif) : nom de la navigation ; s'il est donné, les rubriques sont listées en pastilles cliquables en haut (défilement de côté sur téléphone, sur plusieurs lignes au-delà de 720 px).
 - Une colonne sur téléphone, deux à partir de 720 px, trois à partir de 1100 px.
 

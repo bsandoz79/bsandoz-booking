@@ -1,5 +1,5 @@
-import { render, screen, within } from '@testing-library/react';
-import { Carte, prixCarte, type RubriqueCarte } from './Carte';
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { Carte, decouperCarte, prixCarte, type RubriqueCarte } from './Carte';
 
 const rubriques: RubriqueCarte[] = [
   {
@@ -62,5 +62,52 @@ describe('Carte', () => {
     const picto = a.querySelector('[aria-hidden="true"]') as HTMLElement;
     expect(picto.style.getPropertyValue('--_picto')).toBe('url("/picto.svg")');
     expect(screen.getByRole('region', { name: 'Rubrique B' }).querySelector('[aria-hidden="true"][style]')).toBeNull();
+  });
+
+  describe('carte ajustée (tient dans la hauteur de l’écran)', () => {
+    const longue: RubriqueCarte[] = Array.from({ length: 6 }, (_, i) => ({
+      id: `r${i}`, nom: `Rubrique ${i + 1}`, articles: Array.from({ length: 4 }, (_, j) => ({ id: `a${i}-${j}`, nom: `Plat ${i}-${j}`, prixCents: 500 })),
+    }));
+
+    /** Grand écran simulé : hauteur disponible 300 px ; la carte mesure 100 px par rubrique affichée, à l'échelle du moment. */
+    function ecran() {
+      vi.stubGlobal('matchMedia', () => ({ matches: true, addEventListener: () => {}, removeEventListener: () => {} }));
+      vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (this: HTMLElement) {
+        if (this.className.includes('sonde')) return 300;
+        if (this.className.includes('rubriques')) {
+          const echelle = Number(this.closest('section')?.style.getPropertyValue('--_echelle') || 1);
+          return this.querySelectorAll(':scope > section').length * 100 * echelle;
+        }
+        return 0;
+      });
+    }
+    afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
+
+    it('sépare les rubriques en pages de poids proches, sans couper une rubrique', () => {
+      expect(decouperCarte(longue, 2).map((g) => g.length)).toEqual([3, 3]);
+      expect(decouperCarte(longue, 3).map((g) => g.length)).toEqual([2, 2, 2]);
+      expect(decouperCarte(longue, 1)).toEqual([longue]);
+    });
+
+    it('rapetisse d’abord, puis se sépare en pages, toutes accessibles par des boutons', () => {
+      ecran();
+      render(<Carte titre="Menu" rubriques={longue} compacte ajustee />);
+      const carte = screen.getByRole('region', { name: 'Menu' });
+      expect(carte.style.getPropertyValue('--_echelle')).toBe('0.8');
+      const pages = screen.getByRole('navigation', { name: 'Pages de la carte' });
+      expect(pages).toHaveTextContent('Page 1 sur 2');
+      expect(within(carte).getByRole('region', { name: 'Rubrique 1' })).toBeInTheDocument();
+      expect(within(carte).queryByRole('region', { name: 'Rubrique 6' })).not.toBeInTheDocument();
+      fireEvent.click(within(pages).getByRole('button', { name: /Page suivante/ }));
+      expect(within(carte).getByRole('region', { name: 'Rubrique 6' })).toBeInTheDocument();
+      expect(pages).toHaveTextContent('Page 2 sur 2');
+    });
+
+    it('une carte qui tient reste entière, à sa taille', () => {
+      ecran();
+      render(<Carte titre="Menu" rubriques={longue.slice(0, 2)} compacte ajustee />);
+      expect(screen.getByRole('region', { name: 'Menu' }).style.getPropertyValue('--_echelle')).toBe('1');
+      expect(screen.queryByRole('navigation', { name: 'Pages de la carte' })).not.toBeInTheDocument();
+    });
   });
 });

@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { formatEuros } from '../PriceSummary';
 import styles from './Carte.module.css';
 
@@ -31,6 +31,11 @@ export interface CarteLibelles {
   epuise: string;
   ancienPrix: string;
   nouveauPrix: string;
+  /** Pagination d'une carte ajustée trop longue. « {n} » et « {total} » sont remplacés. */
+  pages: string;
+  page: string;
+  pagePrecedente: string;
+  pageSuivante: string;
 }
 
 export interface CarteProps {
@@ -42,10 +47,45 @@ export interface CarteProps {
   sommaire?: string;
   /** Carte serrée (4 colonnes sur grand écran) pour la voir en entier sans défiler ; le sommaire n'y est utile que sur téléphone. */
   compacte?: boolean;
+  /**
+   * Avec `compacte`, sur grand écran : la carte tient toujours dans la hauteur `--bs-carte-hauteur-max` (thème).
+   * Trop longue, elle rapetisse (jusqu'à 80 %), puis se sépare en pages avec des boutons.
+   */
+  ajustee?: boolean;
   libelles?: Partial<CarteLibelles>;
 }
 
-const LIBELLES: CarteLibelles = { nouveau: 'Nouveau', epuise: 'Épuisé', ancienPrix: 'Ancien prix', nouveauPrix: 'Nouveau prix' };
+const LIBELLES: CarteLibelles = {
+  nouveau: 'Nouveau', epuise: 'Épuisé', ancienPrix: 'Ancien prix', nouveauPrix: 'Nouveau prix',
+  pages: 'Pages de la carte', page: 'Page {n} sur {total}', pagePrecedente: 'Page précédente', pageSuivante: 'Page suivante',
+};
+
+/** Taille la plus petite d'une carte ajustée (au-delà, elle se sépare en pages) et pas de réduction. */
+export const ECHELLE_MIN = 0.8;
+const PAS = 0.05;
+/** Largeur d'écran à partir de laquelle la carte compacte est en colonnes (voir le CSS). */
+const GRAND_ECRAN = '(min-width: 1000px)';
+
+/**
+ * Sépare les rubriques en `pages` groupes qui se suivent, de poids proches (poids d'une rubrique : ses articles,
+ * plus son titre et sa note). Une rubrique n'est jamais coupée.
+ */
+export function decouperCarte(rubriques: RubriqueCarte[], pages: number): RubriqueCarte[][] {
+  const poids = rubriques.map((r) => r.articles.length + 2 + (r.note ? 1 : 0));
+  const total = poids.reduce((a, b) => a + b, 0);
+  const groupes: RubriqueCarte[][] = [[]];
+  let cumul = 0;
+  rubriques.forEach((r, i) => {
+    const seuil = (total * groupes.length) / pages;
+    // Nouvelle page si la moitié de la rubrique dépasserait la part de la page en cours.
+    if (groupes.length < pages && groupes[groupes.length - 1].length > 0 && cumul + poids[i] / 2 > seuil) groupes.push([]);
+    groupes[groupes.length - 1].push(r);
+    cumul += poids[i];
+  });
+  return groupes;
+}
+
+const grandEcran = () => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia(GRAND_ECRAN).matches;
 
 /** Prix sans « ,00 » inutile, comme sur une carte : 5,50 € ; 6 €. */
 export function prixCarte(cents: number): string {
@@ -57,10 +97,52 @@ export function prixCarte(cents: number): string {
  * Prix changé : l'ancien barré à côté du nouveau. « Nouveau » et « Épuisé » en pastilles.
  * Couleurs, police et fond viennent du thème (variables --bs-carte-*), aucun texte métier en dur.
  */
-export function Carte({ rubriques, titre, titreVisible = false, sommaire, compacte = false, libelles }: CarteProps) {
+export function Carte({ rubriques, titre, titreVisible = false, sommaire, compacte = false, ajustee = false, libelles }: CarteProps) {
   const l = { ...LIBELLES, ...libelles };
+  const actif = compacte && ajustee;
+  const [echelle, setEchelle] = useState(1);
+  const [pages, setPages] = useState(1);
+  const [page, setPage] = useState(0);
+  const [mesure, setMesure] = useState(0);
+  const zone = useRef<HTMLDivElement>(null);
+  const sonde = useRef<HTMLDivElement>(null);
+  const navPages = useRef<HTMLElement>(null);
+
+  // Nouvelle carte ou nouvelle taille d'écran : on repart de la taille normale, sur une seule page.
+  useLayoutEffect(() => {
+    setEchelle(1);
+    setPages(1);
+    setPage(0);
+  }, [rubriques, mesure]);
+
+  useEffect(() => {
+    if (!actif) return;
+    let attente: number | undefined;
+    const changer = () => {
+      window.clearTimeout(attente);
+      attente = window.setTimeout(() => setMesure((m) => m + 1), 150);
+    };
+    window.addEventListener('resize', changer);
+    return () => { window.clearTimeout(attente); window.removeEventListener('resize', changer); };
+  }, [actif]);
+
+  // Mesure : trop haute, la carte rapetisse d'un pas ; à la taille minimale, une page de plus.
+  useLayoutEffect(() => {
+    if (!actif || !grandEcran() || !zone.current || !sonde.current) return;
+    const disponible = sonde.current.offsetHeight - (navPages.current?.offsetHeight ?? 0);
+    if (disponible <= 0 || zone.current.offsetHeight <= disponible) return;
+    if (echelle > ECHELLE_MIN + 0.001) setEchelle((e) => Math.max(ECHELLE_MIN, Math.round((e - PAS) * 100) / 100));
+    else if (pages < rubriques.length) setPages((p) => p + 1);
+  }, [actif, echelle, pages, page, rubriques, mesure]);
+
+  const groupes = actif && pages > 1 ? decouperCarte(rubriques, pages) : [rubriques];
+  const enCours = Math.min(page, groupes.length - 1);
+  const affichees = groupes[enCours];
+  const classes = [styles.carte, compacte ? styles.compacte : '', actif ? styles.ajustee : ''].filter(Boolean).join(' ');
+
   return (
-    <section className={compacte ? `${styles.carte} ${styles.compacte}` : styles.carte} aria-label={titre}>
+    <section className={classes} aria-label={titre} style={actif ? ({ '--_echelle': echelle } as CSSProperties) : undefined}>
+      {actif && <div ref={sonde} className={styles.sonde} aria-hidden="true" />}
       {titreVisible && <h2 className={styles.titre}>{titre}</h2>}
       {sommaire && (
         <nav aria-label={sommaire}>
@@ -71,8 +153,8 @@ export function Carte({ rubriques, titre, titreVisible = false, sommaire, compac
           </ul>
         </nav>
       )}
-      <div className={styles.rubriques}>
-        {rubriques.map((r) => (
+      <div ref={zone} className={styles.rubriques}>
+        {affichees.map((r) => (
           <section key={r.id} id={`rubrique-${r.id}`} className={styles.rubrique} aria-labelledby={`rubrique-${r.id}-nom`}>
             <div className={styles.entete}>
               {r.pictogramme && (
@@ -109,6 +191,13 @@ export function Carte({ rubriques, titre, titreVisible = false, sommaire, compac
           </section>
         ))}
       </div>
+      {groupes.length > 1 && (
+        <nav ref={navPages} className={styles.pages} aria-label={l.pages}>
+          <button type="button" disabled={enCours === 0} onClick={() => setPage(enCours - 1)}>← {l.pagePrecedente}</button>
+          <span aria-live="polite">{l.page.replace('{n}', String(enCours + 1)).replace('{total}', String(groupes.length))}</span>
+          <button type="button" disabled={enCours === groupes.length - 1} onClick={() => setPage(enCours + 1)}>{l.pageSuivante} →</button>
+        </nav>
+      )}
     </section>
   );
 }
