@@ -281,6 +281,28 @@
   white-space: nowrap;
 }
 
+/* Le jour d'aujourd'hui : trait rouge à gauche, texte appuyé, pastille. */
+.horaires .aujourdhui {
+  margin-left: -0.75rem;
+  padding: 0.35rem 0.5rem 0.35rem 0.6rem;
+  border-bottom-color: transparent;
+  border-left: 4px solid var(--croc-rouge);
+  border-radius: 0.3rem;
+  background: #fff;
+  font-weight: 800;
+}
+
+.pastilleJour {
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--croc-rouge);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  vertical-align: 0.1em;
+}
+
 .telephone {
   white-space: nowrap;
   font-size: 1.3rem;

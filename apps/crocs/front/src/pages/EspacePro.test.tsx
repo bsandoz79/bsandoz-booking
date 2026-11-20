@@ -74,12 +74,15 @@ describe('Espace du patron', () => {
     await seConnecter();
     await userEvent.click(await screen.findByRole('tab', { name: 'Infos du site' }));
     await userEvent.type(await screen.findByLabelText(/Annonce/), 'Fermé lundi 24');
-    await userEvent.clear(screen.getByLabelText('Heures (ligne 2)'));
-    await userEvent.type(screen.getByLabelText('Heures (ligne 2)'), 'Fermé');
+    await userEvent.clear(screen.getByLabelText('Lundi'));
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(await screen.findByRole('status')).toHaveTextContent('Enregistré');
     const envoi = appels.find((a) => a.methode === 'PUT' && a.url.endsWith('/admin/site'));
-    expect(envoi?.corps).toMatchObject({ autre: 'gardé', annonce: 'Fermé lundi 24', horaires: [{ jours: 'Du lundi au samedi' }, { jours: 'Dimanche', heures: 'Fermé' }] });
+    const horaires = (envoi?.corps as { horaires: { jours: string; heures: string }[] }).horaires;
+    expect(envoi?.corps).toMatchObject({ autre: 'gardé', annonce: 'Fermé lundi 24' });
+    expect(horaires.map((h) => h.jours)).toEqual(['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']);
+    expect(horaires[0].heures).toBe('Fermé');
+    expect(horaires[1].heures).toBe('11 h 30 – 14 h 30 · 18 h – 22 h 30');
   });
 
   it('ajoute un avis en tête, en gardant les avis déjà affichés et le reste du contenu', async () => {

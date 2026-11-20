@@ -64,7 +64,8 @@ describe('Site de Croc’s', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('Fermé lundi 24');
     const carte = screen.getByRole('region', { name: 'La carte de Croc’s' });
     expect(await within(carte).findByRole('region', { name: 'Les Wraps' })).toHaveTextContent('Ancien prix : 6,50 € Nouveau prix : 7 €');
-    expect(screen.getByText('Tous les jours')).toBeInTheDocument();
+    // « Tous les jours » enregistré d'un bloc : réparti sur les 7 jours.
+    expect(screen.getAllByText('11 h – 23 h')).toHaveLength(7);
     expect(screen.queryByText(/à confirmer\./)).not.toBeInTheDocument();
     vi.unstubAllEnvs();
   });

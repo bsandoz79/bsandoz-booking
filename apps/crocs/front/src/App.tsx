@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Carte, Defilant, Visionneuse } from '@bsandoz/ui';
+import { horairesParJour, rangAujourdhui } from './calculs/horaires';
 import { Logo } from './components/Logo';
 import { Trajet } from './components/Trajet';
 import { crocs, itineraires } from './data/crocs';
@@ -74,13 +75,17 @@ export function App() {
                 <a href={itineraires.plans} target="_blank" rel="noopener noreferrer">Plans (iPhone)</a>
               </div>
               <h3 className={styles.petitTitre}>Horaires</h3>
+              {/* Jour par jour, aujourd'hui mis en avant (heure de France). */}
               <dl className={styles.horaires}>
-                {horaires.map((h) => (
-                  <div key={h.jours}>
-                    <dt>{h.jours}</dt>
-                    <dd>{h.heures}</dd>
-                  </div>
-                ))}
+                {horairesParJour(horaires).map((h, i) => {
+                  const aujourdhui = i === rangAujourdhui();
+                  return (
+                    <div key={h.jours} className={aujourdhui ? styles.aujourdhui : undefined} aria-current={aujourdhui ? 'date' : undefined}>
+                      <dt>{h.jours}{aujourdhui && <span className={styles.pastilleJour}>Aujourd’hui</span>}</dt>
+                      <dd>{h.heures}</dd>
+                    </div>
+                  );
+                })}
               </dl>
               {horairesAConfirmer && <p className={styles.discret}>Horaires relevés dans les annuaires, à confirmer.</p>}
               <p><a href={crocs.telephoneLien} className={styles.telephone}>{crocs.telephone}</a></p>
