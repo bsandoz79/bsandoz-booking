@@ -65,9 +65,18 @@ class Article
     /**
      * Nouveau prix : l'ancien reste affiché barré pendant un mois. Un prix inchangé ne fait rien.
      * Deux changements dans le mois : c'est le prix d'avant le dernier changement qui est barré.
+     * `$barrer` à false : le prix change sans ancien prix barré (et un prix barré encore affiché est retiré,
+     * même si le prix ne change pas).
      */
-    public function changerPrix(Money $nouveau, \DateTimeImmutable $maintenant): void
+    public function changerPrix(Money $nouveau, \DateTimeImmutable $maintenant, bool $barrer = true): void
     {
+        if (!$barrer) {
+            $this->ancienPrixCents = null;
+            $this->prixChangeLe = null;
+            $this->prix = $nouveau;
+
+            return;
+        }
         if ($nouveau->cents === $this->prix->cents) {
             return;
         }

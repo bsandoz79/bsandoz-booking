@@ -64,8 +64,31 @@ describe('EditeurCarte', () => {
     await userEvent.clear(prix);
     await userEvent.type(prix, '6,50');
     await userEvent.click(within(fiche).getByRole('button', { name: 'Enregistrer' }));
-    expect(f.onModifierArticle).toHaveBeenCalledWith('a1', { categorieId: 'r1', nom: 'Article un', description: 'Détail', prixCents: 650, visible: true });
+    expect(f.onModifierArticle).toHaveBeenCalledWith('a1', { categorieId: 'r1', nom: 'Article un', description: 'Détail', prixCents: 650, visible: true, barrerAncienPrix: true });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('change un prix sans barrer l’ancien, au choix', async () => {
+    const f = monter();
+    await userEvent.click(screen.getByRole('button', { name: /^Article deux/ }));
+    const fiche = screen.getByRole('dialog', { name: 'Modifier l’article' });
+    expect(within(fiche).queryByRole('switch', { name: 'Afficher l’ancien prix barré' })).not.toBeInTheDocument();
+    await userEvent.clear(within(fiche).getByLabelText(/Prix/));
+    await userEvent.type(within(fiche).getByLabelText(/Prix/), '5');
+    const barrer = within(fiche).getByRole('switch', { name: 'Afficher l’ancien prix barré' });
+    expect(barrer).toHaveAccessibleDescription(/^4,50 € barré/);
+    await userEvent.click(barrer);
+    await userEvent.click(within(fiche).getByRole('button', { name: 'Enregistrer' }));
+    expect(f.onModifierArticle).toHaveBeenCalledWith('a2', expect.objectContaining({ prixCents: 500, barrerAncienPrix: false }));
+  });
+
+  it('retire un prix barré encore affiché sans changer le prix', async () => {
+    const f = monter();
+    await userEvent.click(screen.getByRole('button', { name: /^Article un/ }));
+    const fiche = screen.getByRole('dialog', { name: 'Modifier l’article' });
+    await userEvent.click(within(fiche).getByRole('switch', { name: 'Afficher l’ancien prix barré' }));
+    await userEvent.click(within(fiche).getByRole('button', { name: 'Enregistrer' }));
+    expect(f.onModifierArticle).toHaveBeenCalledWith('a1', expect.objectContaining({ prixCents: 600, barrerAncienPrix: false }));
   });
 
   it('refuse un prix illisible sans rien envoyer', async () => {

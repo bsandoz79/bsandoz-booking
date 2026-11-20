@@ -35,6 +35,8 @@ export interface ArticleSaisi {
   description: string;
   prixCents: number;
   visible: boolean;
+  /** Modification seulement : false = nouveau prix sans l'ancien barré (et un prix barré encore affiché est retiré). */
+  barrerAncienPrix?: boolean;
 }
 
 export interface RubriqueSaisie {
@@ -60,6 +62,9 @@ export interface EditeurCarteLibelles {
   prix: string;
   prixAide: string;
   prixInvalide: string;
+  barrer: string;
+  /** « {prix} » est remplacé par l'ancien prix. */
+  barrerAide: string;
   rubrique: string;
   note: string;
   noteAide: string;
@@ -107,8 +112,10 @@ const LIBELLES: EditeurCarteLibelles = {
   nom: 'Nom',
   description: 'Description (facultative)',
   prix: 'Prix (€)',
-  prixAide: 'Par exemple 7,50. Si vous changez le prix, l’ancien reste affiché barré pendant un mois.',
+  prixAide: 'Par exemple 7,50.',
   prixInvalide: 'Indiquez un prix, par exemple 7,50.',
+  barrer: 'Afficher l’ancien prix barré',
+  barrerAide: '{prix} barré à côté du nouveau prix, pendant un mois. Désactivez pour changer le prix sans le montrer.',
   rubrique: 'Rubrique',
   note: 'Note sous la rubrique (facultative)',
   noteAide: 'Par exemple : Avec frites : + 1 €',
@@ -325,13 +332,19 @@ function FenetreArticle({ l, rubriques, article, categorieId, erreur, enCours, o
   const [rubrique, setRubrique] = useState(article?.categorieId ?? categorieId);
   const [visible, setVisible] = useState(article?.visible ?? true);
   const [prixFaux, setPrixFaux] = useState(false);
+  const [barrer, setBarrer] = useState(true);
+
+  // Choix proposé quand le prix change, ou quand un ancien prix est encore barré (pour pouvoir le retirer).
+  const prixSaisi = lirePrix(prix);
+  const ancienPrix = article && prixSaisi !== null && prixSaisi !== article.prixCents ? article.prixCents : article?.prixBarreCents ?? null;
 
   const envoyer = (e: FormEvent) => {
     e.preventDefault();
     const prixCents = lirePrix(prix);
     setPrixFaux(prixCents === null);
     if (prixCents === null) return;
-    void onEnregistrer({ categorieId: rubrique, nom: nom.trim(), description: description.trim(), prixCents, visible });
+    const saisi: ArticleSaisi = { categorieId: rubrique, nom: nom.trim(), description: description.trim(), prixCents, visible };
+    void onEnregistrer(article ? { ...saisi, barrerAncienPrix: ancienPrix === null || barrer } : saisi);
   };
 
   return (
@@ -339,6 +352,9 @@ function FenetreArticle({ l, rubriques, article, categorieId, erreur, enCours, o
       <form className={styles.formulaire} onSubmit={envoyer} noValidate>
         <Field label={l.nom} value={nom} onChange={(e) => setNom(e.target.value)} required maxLength={80} />
         <Field label={l.prix} value={prix} onChange={(e) => setPrix(e.target.value)} inputMode="decimal" required hint={l.prixAide} error={prixFaux ? l.prixInvalide : undefined} />
+        {ancienPrix !== null && (
+          <Toggle label={l.barrer} hint={l.barrerAide.replace('{prix}', `${ecrirePrix(ancienPrix)} €`)} checked={barrer} onChange={setBarrer} />
+        )}
         <Field label={l.description} value={description} onChange={(e) => setDescription(e.target.value)} multiline rows={2} maxLength={300} />
         <div className={styles.choix}>
           <label htmlFor="editeur-rubrique">{l.rubrique}</label>

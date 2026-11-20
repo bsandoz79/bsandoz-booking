@@ -57,7 +57,7 @@ describe('Espace du patron', () => {
     await userEvent.type(within(fiche).getByLabelText(/Prix/), '6');
     await userEvent.click(within(fiche).getByRole('button', { name: 'Enregistrer' }));
     expect(appels.find((a) => a.methode === 'PUT' && a.url.endsWith('/admin/carte/articles/a1'))?.corps)
-      .toEqual({ categorieId: 'r1', nom: 'Kebab', description: 'Poulet-dinde', prixCents: 600, visible: true, photo: null });
+      .toEqual({ categorieId: 'r1', nom: 'Kebab', description: 'Poulet-dinde', prixCents: 600, visible: true, barrerAncienPrix: true, photo: null });
   });
 
   it('refuse un compte qui n’est pas celui du commerce', async () => {

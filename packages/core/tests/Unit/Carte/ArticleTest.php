@@ -50,6 +50,25 @@ final class ArticleTest extends TestCase
         self::assertSame(800, $article->prixBarre(self::le('2026-04-15 12:00:00'))?->cents, 'le mois repart du dernier changement');
     }
 
+    public function testUnPrixPeutChangerSansBarrerLAncien(): void
+    {
+        $article = $this->article();
+        $article->changerPrix(Money::cents(800), self::le('2026-03-10 12:00:00'), barrer: false);
+
+        self::assertSame(800, $article->prix()->cents);
+        self::assertNull($article->prixBarre(self::le('2026-03-10 12:00:01')));
+    }
+
+    public function testNePlusBarrerRetireUnPrixBarreDejaAffiche(): void
+    {
+        $article = $this->article();
+        $article->changerPrix(Money::cents(800), self::le('2026-03-10 12:00:00'));
+        $article->changerPrix(Money::cents(800), self::le('2026-03-11 12:00:00'), barrer: false);
+
+        self::assertSame(800, $article->prix()->cents);
+        self::assertNull($article->prixBarre(self::le('2026-03-11 12:00:01')), 'prix inchangé, mais plus barré');
+    }
+
     public function testUnArticleAjouteEstNouveauPendantUnMois(): void
     {
         $article = $this->article('2026-02-01 09:00:00');
