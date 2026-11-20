@@ -1,8 +1,5 @@
 import { crocs } from './crocs';
 
-/** Information manquante, à demander au patron (jamais inventée). */
-const A_COMPLETER = (quoi: string) => `[à compléter : ${quoi}]`;
-
 export interface SectionLegale {
   titre: string;
   paragraphes: string[];
@@ -11,7 +8,7 @@ export interface SectionLegale {
 /**
  * Mentions légales et données personnelles de Croc's (loi pour la confiance dans l'économie numérique, art. 6 ; RGPD).
  * Éditeur : annuaire des entreprises (recherche-entreprises.api.gouv.fr, relevé le 20/11/2026), à faire confirmer par le patron.
- * Hébergeur : informations publiées sur la page d'accueil d'o2switch (relevées le 20/11/2026).
+ * Hébergeur : page d'accueil d'o2switch et annuaire des entreprises pour l'adresse du siège (relevées le 20/11/2026).
  */
 export const mentionsLegales: SectionLegale[] = [
   {
@@ -25,7 +22,7 @@ export const mentionsLegales: SectionLegale[] = [
   {
     titre: 'Hébergeur',
     paragraphes: [
-      `o2switch, SAS au capital de 100 000 €, RCS Clermont-Ferrand, SIRET 510 909 807 00032. Adresse : ${A_COMPLETER('adresse de l’hébergeur')}. Téléphone : 04 44 44 60 40. Site : www.o2switch.fr.`,
+      'o2switch, SAS au capital de 100 000 €, RCS Clermont-Ferrand, SIRET 510 909 807 00032. Siège : chemin des Pardiaux, 63000 Clermont-Ferrand. Téléphone : 04 44 44 60 40. Site : www.o2switch.fr.',
     ],
   },
   {

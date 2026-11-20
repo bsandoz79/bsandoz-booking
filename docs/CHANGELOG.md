@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Corrigé (mentions légales de Croc's)
+- Adresse du siège d'o2switch (chemin des Pardiaux, 63000 Clermont-Ferrand, d'après l'annuaire des entreprises) : plus aucun « [à compléter] ».
 ### Modifié (horaires de Croc's)
 - Aujourd'hui mis en avant discrètement : ligne plus foncée, jour en gras, petit « aujourd'hui » dessous ; les autres jours un peu plus clairs.
 ### Modifié (Croc's)
