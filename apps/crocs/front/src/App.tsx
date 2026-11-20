@@ -80,7 +80,7 @@ export function App() {
                   const aujourdhui = i === rangAujourdhui();
                   return (
                     <div key={h.jours} className={aujourdhui ? styles.aujourdhui : undefined} aria-current={aujourdhui ? 'date' : undefined}>
-                      <dt>{h.jours}{aujourdhui && <span className={styles.pastilleJour}>Aujourd’hui</span>}</dt>
+                      <dt>{h.jours}{aujourdhui && <span className={styles.pastilleJour}>aujourd’hui</span>}</dt>
                       <dd>{h.heures}</dd>
                     </div>
                   );

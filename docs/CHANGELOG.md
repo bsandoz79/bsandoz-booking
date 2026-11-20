@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Modifié (horaires de Croc's)
+- Aujourd'hui mis en avant discrètement : ligne plus foncée, jour en gras, petit « aujourd'hui » dessous ; les autres jours un peu plus clairs.
 ### Modifié (Croc's)
 - Mentions légales : éditeur renseigné d'après l'annuaire des entreprises (entreprise individuelle, SIRET), à faire confirmer par le patron.
 - Horaires de départ d'après la fiche Google : 11 h 30 – 14 h 30 · 18 h – 22 h 30 du lundi au samedi, dimanche fermé ; plus de mention « à confirmer ».
