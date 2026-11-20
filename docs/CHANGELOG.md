@@ -1,6 +1,9 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (déploiement de Croc's)
+- Le site de Croc's s'envoie tout seul par GitHub (job `crocs-front`, secret `FTP_SERVER_DIR_CROCS_FRONT`) et passe la CI (lint, tests, build). Photos sorties du code : lues dans le dossier `photos/` du serveur, jamais dans le dépôt ni écrasées par l'envoi.
+- API de Croc's : mise en place automatique par une tâche cron ; `deploy/apres-envoi.sh` refuse une archive abîmée sans toucher au code en place, et l'archive est envoyée sous un nom provisoire.
 ### Ajouté (espace du patron de Croc's)
 - `apps/crocs/api` : API de Croc's (kit `bsandoz/core` seul, base dédiée), migration de toutes les tables du kit, commande `crocs:carte:charger` (carte relevée chargée une fois, sans « Nouveau »), 3 tests ; job CI et envoi par GitHub (`FTP_SERVER_DIR_CROCS_API`), guide de mise en ligne dans son README.
 - Site de Croc's : carte et textes lus sur l'API (carte intégrée si elle ne répond pas), annonce en haut du site ; espace du patron sur `/pro` : connexion, carte modifiable (bloc `EditeurCarte` : prix, textes, plats et rubriques, « Épuisé », ordre, pictogrammes), annonce, phrase d'accueil et horaires ; 5 tests.

@@ -2,7 +2,7 @@
 
 Site d'une page pour Croc's (restauration rapide, 220 rue de Rouen, Amiens) : accueil (appeler, itinéraire), carte en code (bloc `Carte` du kit), venir (adresse, Google Maps, Waze, Plans, horaires, temps de trajet), avis, photos.
 
-**Démo privée** tant que le patron n'a pas accepté : bandeau « Maquette proposée par Baptiste Sandoz », `noindex`. Prix et horaires relevés sur des sources publiques (voir `docs/crocs/carte-releve.md`), à faire valider. Photos de Google Maps en miniature : seulement en local (`src/assets/`, ignoré par Git, ce dépôt étant public) ; à remplacer par ses photos, avec son accord.
+**Démo privée** tant que le patron n'a pas accepté : bandeau « Maquette proposée par Baptiste Sandoz », `noindex`. Prix et horaires relevés sur des sources publiques (voir `docs/crocs/carte-releve.md`), à faire valider. Photos de Google Maps en miniature : sur le serveur et en local seulement (`public/photos/`, ignoré par Git, ce dépôt étant public) ; à remplacer par ses photos, avec son accord.
 
 - Données : `src/data/crocs.ts` (coordonnées, horaires, avis, carte intégrée).
 - **Modifiable par le patron** : avec `VITE_API_URL` (`.env.production` : `https://api.crocs.demo.bsandoz.fr`), le site lit la carte (`/carte`) et les textes (`/site` : annonce en haut du site, phrase d'accueil, horaires) sur l'API `apps/crocs/api`. Si l'API ne répond pas, il garde la carte intégrée.
@@ -16,8 +16,6 @@ npm run lint && npm run test && npm run build
 
 ## Mise en ligne (crocs.demo.bsandoz.fr)
 
-Démo montrée au patron avec son accord. Les photos n'étant pas dans le dépôt public, la CI ne peut pas construire le site complet : il est envoyé à la main.
+Démo montrée au patron avec son accord. **Envoi automatique** par GitHub (job `crocs-front` de `.github/workflows/deploy.yml`) après une CI verte sur `main`, ou Actions → Déploiement → « crocs ». Secret de l'environnement `demo` : `FTP_SERVER_DIR_CROCS_FRONT` = `crocs.demo.bsandoz.fr/`. Le `.htaccess` (HTTPS obligatoire, `X-Robots-Tag: noindex`, `/pro`) fait partie du build.
 
-1. Construire : `npm run build` (avec les photos dans `src/assets/`).
-2. Compresser le contenu de `dist/` (dont `.htaccess` : HTTPS obligatoire, `X-Robots-Tag: noindex`).
-3. cPanel → Gestionnaire de fichiers → dossier `crocs.demo.bsandoz.fr` → Charger le zip → Extraire (les fichiers à la racine du dossier).
+**Photos** : jamais dans ce dépôt public. Le site les lit dans le dossier `photos/` du serveur (`/photos/assiette.webp`, `salle.webp`, `comptoir.webp`) ; l'envoi ne touche jamais à ce dossier. En local : `public/photos/` (ignoré par Git). Pour en changer une : la déposer dans `crocs.demo.bsandoz.fr/photos/` (gestionnaire de fichiers cPanel), même nom.

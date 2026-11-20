@@ -23,5 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 
-# Photos de Google Maps (droits de leurs auteurs) : seulement en local pour la démo, jamais dans ce dépôt public.
-src/assets/*.webp
+# Photos (Google Maps pour la démo, droits de leurs auteurs) : seulement en local et sur le serveur (dossier photos/), jamais dans ce dépôt public.
+public/photos/

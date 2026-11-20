@@ -1,5 +1,5 @@
-# Déploiement des démos sur o2switch (FTPS) : Perfect Clean (front, API) et l'API de Croc's, après une CI verte sur main, ou à la demande.
-# Le front de Croc's s'envoie à la main (ses photos ne sont pas dans le dépôt public) : apps/crocs/front/README.md.
+# Déploiement des démos sur o2switch (FTPS) : Perfect Clean (front, API) et Croc's (site, API), après une CI verte sur main, ou à la demande.
+# Les photos de Croc's ne sont pas dans le dépôt public : elles restent sur le serveur (dossier photos/), jamais écrasées.
 # Guide complet : docs/deploiement.md. Secrets et variables à créer dans GitHub (Settings → Secrets and variables → Actions).
 name: Déploiement
 
@@ -233,9 +233,73 @@ jobs:
           lftp -u "$FTP_USERNAME,$FTP_PASSWORD" "$FTP_SERVER" -e "
             set ssl:ca-file $RUNNER_TEMP/chaine-ftps.pem; set ssl:priority NORMAL:-VERS-TLS1.3; set ftp:ssl-force true; set ftp:ssl-protect-data true;
             set net:max-retries 3; set net:reconnect-interval-base 5; set net:timeout 30;
+            set xfer:use-temp-file yes;
             mirror --reverse --no-perms --parallel=4 --verbose=1 envoi-crocs-api/ $FTP_DIR;
             bye"
       - name: Rappel
         if: steps.config.outputs.pret == 'true'
         run: |
-          echo "Archive envoyée. Sur le serveur (terminal cPanel) : sh deploy/apres-envoi.sh — décompresse, vide le cache et applique les migrations (première fois : voir apps/crocs/api/README.md)."
+          echo "Archive envoyée. La tâche cron du serveur la décompresse dans les 5 minutes (sinon, terminal cPanel : sh deploy/apres-envoi.sh). Voir apps/crocs/api/README.md."
+
+  crocs-front:
+    name: Site de Croc's (crocs.demo.bsandoz.fr)
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_dispatch' && (inputs.cible == 'tout' || inputs.cible == 'crocs'))
+    runs-on: ubuntu-latest
+    environment: demo
+    steps:
+      - name: Vérifier la configuration FTP
+        id: config
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_SERVER_DIR_CROCS_FRONT }}
+        run: |
+          manquants=""
+          [ -n "$FTP_SERVER" ] || manquants="$manquants FTP_SERVER"
+          [ -n "$FTP_USERNAME" ] || manquants="$manquants FTP_USERNAME"
+          [ -n "$FTP_PASSWORD" ] || manquants="$manquants FTP_PASSWORD"
+          [ -n "$FTP_DIR" ] || manquants="$manquants FTP_SERVER_DIR_CROCS_FRONT"
+          if [ -n "$manquants" ]; then
+            echo "::warning title=Déploiement non configuré::Secrets manquants dans l'environnement GitHub « demo » :$manquants. Envoi ignoré (voir apps/crocs/front/README.md)."
+            echo "pret=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "pret=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.config.outputs.pret == 'true'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        if: steps.config.outputs.pret == 'true'
+        with: { node-version: 22 }
+      - run: npm install
+        if: steps.config.outputs.pret == 'true'
+        working-directory: packages/ui
+      - run: npm install
+        if: steps.config.outputs.pret == 'true'
+        working-directory: apps/crocs/front
+      - name: Build (adresse de l'API dans .env.production)
+        if: steps.config.outputs.pret == 'true'
+        run: npm run build
+        working-directory: apps/crocs/front
+      - name: Envoi FTPS (sans toucher au dossier photos/ du serveur)
+        if: steps.config.outputs.pret == 'true'
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_SERVER_DIR_CROCS_FRONT }}
+        run: |
+          sudo apt-get update -qq > /dev/null && sudo apt-get install -y -qq lftp > /dev/null
+          # Mêmes réglages TLS que le site de Perfect Clean (voir le job front). Fichiers du build d'abord, index.html ensuite :
+          # la page ne pointe jamais vers un CSS/JS pas encore envoyé. Rien n'est supprimé sur le serveur (photos/ conservé).
+          sh .github/chaine-ftps.sh "$FTP_SERVER" "$RUNNER_TEMP/chaine-ftps.pem"
+          lftp -u "$FTP_USERNAME,$FTP_PASSWORD" "$FTP_SERVER" -e "
+            set ssl:ca-file $RUNNER_TEMP/chaine-ftps.pem; set ssl:priority NORMAL:-VERS-TLS1.3; set ftp:ssl-force true; set ftp:ssl-protect-data true;
+            set net:max-retries 3; set net:reconnect-interval-base 5; set net:timeout 30;
+            mirror --reverse --no-perms --parallel=4 --verbose=1 --exclude ^photos/ --exclude-glob *.html apps/crocs/front/dist/ $FTP_DIR;
+            mirror --reverse --no-perms --parallel=4 --verbose=1 --exclude ^photos/ apps/crocs/front/dist/ $FTP_DIR;
+            bye"
