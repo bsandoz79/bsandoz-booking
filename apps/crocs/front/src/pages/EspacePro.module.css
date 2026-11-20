@@ -6,6 +6,8 @@
   --bs-carte-trait: var(--croc-rouge-mat);
 
   display: grid;
+  /* Lignes à leur taille, en haut : sinon, pendant un chargement (page presque vide), la grille les étire sur tout l'écran. */
+  align-content: start;
   gap: 1rem;
   max-width: 760px;
   min-height: 100svh;

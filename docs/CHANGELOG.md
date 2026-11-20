@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Corrigé (espace du patron de Croc's)
+- Pendant un chargement (arrivée sur /pro, changement d'onglet), la page n'étire plus ses blocs sur tout l'écran (onglets gonflés en gros ronds, titre et liens écartés).
 ### Ajouté (espace du patron de Croc's)
 - Onglets « Avis » (ajouter, modifier, ordonner, retirer les avis de ses clients) et « Photos » (photo prise au téléphone, réduite avant l'envoi, avec sa description ; ordre, retrait) ; rangés dans le contenu du site, sans changement d'API.
 - Site : avis et photos du patron (sinon ceux de départ), avec l'endroit où l'avis a été publié ; photos du bas de page dans un `Defilant` ; rubrique cachée si la liste est vide ; 4 tests.
