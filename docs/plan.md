@@ -86,3 +86,7 @@ Site vitrine avec la carte, que le patron modifie lui-même. Démo privée (adre
 - [x] `feature/visionneuse` : kit front, bloc `Visionneuse` (photo agrandie au clic) ; commandes du `Defilant` discrètes
 - [ ] `feature/crocs-contenus` : carte relevée (`docs/crocs/carte-releve.md`, prix à faire valider), couleurs rouge et jaune ; photos et avis : avec l'accord du patron
 - [ ] `feature/crocs-demo` : démo privée en ligne (sous-domaine secret, `noindex`, bandeau)
+
+## Démonstration : site fictif d'avocat
+Site vitrine d'un cabinet d'avocat fictif au nom de Baptiste Sandoz (qui n'est pas avocat, dit partout sur le site), pour montrer un site de profession libérale. Jamais indexé.
+- [x] `feature/avocat-demo` : `apps/avocat/front` : une page (cabinet, parcours, 3 domaines numérotés, contact), mentions légales, confidentialité, coordonnées fictives ; CI et envoi automatique (secret `FTP_SERVER_DIR_AVOCAT_FRONT`)
