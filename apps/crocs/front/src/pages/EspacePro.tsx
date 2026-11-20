@@ -6,6 +6,7 @@ import {
   avecApi, carteApi, connecter, deconnecter, enregistrerContenu, lireCartePro, lireContenu, reprendreSession,
   type ContenuSite, type Horaire, type RubriqueApi,
 } from '../services/api';
+import { FERME, horairesParJour } from '../calculs/horaires';
 import styles from './EspacePro.module.css';
 import { inactifTropLongtemps, noterActivite, oublierActivite, useInactivite } from './pro/inactivite';
 import { Installer } from './pro/Installer';
@@ -181,14 +182,16 @@ function MesInfos() {
   useEffect(() => {
     void lireContenu().then((c) => {
       setContenu({ accroche: c.accroche ?? crocs.accroche, annonce: c.annonce ?? '', ...c });
-      setHoraires(c.horaires && c.horaires.length > 0 ? c.horaires : crocs.horaires);
+      // Une ligne par jour (d'anciens horaires groupés sont répartis) ; « Fermé » s'écrit en laissant vide.
+      setHoraires(horairesParJour(c.horaires && c.horaires.length > 0 ? c.horaires : crocs.horaires)
+        .map((h) => (h.heures === FERME ? { ...h, heures: '' } : h)));
     }).catch(() => setMessage({ texte: 'Les infos n’ont pas pu être chargées.', erreur: true }));
   }, []);
 
   if (!contenu) return message ? <p className={styles.erreur} role="alert">{message.texte}</p> : <p role="status">Chargement…</p>;
 
-  const changerHoraire = (i: number, champ: keyof Horaire, valeur: string) =>
-    setHoraires((h) => h.map((ligne, j) => (j === i ? { ...ligne, [champ]: valeur } : ligne)));
+  const changerHeures = (i: number, valeur: string) =>
+    setHoraires((h) => h.map((ligne, j) => (j === i ? { ...ligne, heures: valeur } : ligne)));
 
   const envoyer = async (e: FormEvent) => {
     e.preventDefault();
@@ -196,7 +199,7 @@ function MesInfos() {
     setMessage(undefined);
     try {
       // Le contenu est remplacé en entier : on renvoie aussi ce qui n'est pas modifiable ici.
-      await enregistrerContenu({ ...contenu, horaires: horaires.filter((h) => h.jours.trim() !== '').map((h) => ({ jours: h.jours.trim(), heures: h.heures.trim() })) });
+      await enregistrerContenu({ ...contenu, horaires: horaires.map((h) => ({ jours: h.jours, heures: h.heures.trim() || FERME })) });
       setMessage({ texte: 'Enregistré : le site est à jour.', erreur: false });
     } catch (err) {
       setMessage({ texte: err instanceof Error ? err.message : 'L’enregistrement n’a pas abouti.', erreur: true });
@@ -212,15 +215,11 @@ function MesInfos() {
       <Field label="Phrase d’accueil" multiline rows={2} value={contenu.accroche ?? ''} onChange={(e) => setContenu({ ...contenu, accroche: e.target.value })} maxLength={200} />
 
       <fieldset className={styles.horaires}>
-        <legend>Horaires</legend>
+        <legend>Horaires, jour par jour</legend>
+        <p className={styles.aide}>Par exemple : 11 h 30 – 14 h 30 · 18 h – 22 h 30. Laissez vide un jour de fermeture.</p>
         {horaires.map((h, i) => (
-          <div key={i} className={styles.ligneHoraire}>
-            <Field label={`Jours (ligne ${i + 1})`} value={h.jours} onChange={(e) => changerHoraire(i, 'jours', e.target.value)} placeholder="Du lundi au samedi" />
-            <Field label={`Heures (ligne ${i + 1})`} value={h.heures} onChange={(e) => changerHoraire(i, 'heures', e.target.value)} placeholder="11 h 30 – 14 h 30" />
-            <Button variant="ghost" aria-label={`Retirer la ligne ${i + 1}`} onClick={() => setHoraires((liste) => liste.filter((_, j) => j !== i))}>✕</Button>
-          </div>
+          <Field key={h.jours} label={h.jours} value={h.heures} onChange={(e) => changerHeures(i, e.target.value)} placeholder={FERME} maxLength={80} />
         ))}
-        <Button variant="ghost" onClick={() => setHoraires((liste) => [...liste, { jours: '', heures: '' }])}>+ Ajouter une ligne</Button>
       </fieldset>
 
       {message && <p className={message.erreur ? styles.erreur : styles.succes} role={message.erreur ? 'alert' : 'status'}>{message.texte}</p>}

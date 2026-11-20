@@ -17,7 +17,12 @@ export const crocs = {
   position: { lat: 49.887017, lng: 2.282462 },
   accroche: 'Kebabs, tacos, libanais, paninis et burgers, rue de Rouen à Amiens.',
   horaires: [
-    { jours: 'Du lundi au samedi', heures: '11 h 30 – 14 h 30 · 18 h – 22 h 30' },
+    { jours: 'Lundi', heures: '11 h 30 – 14 h 30 · 18 h – 22 h 30' },
+    { jours: 'Mardi', heures: '11 h 30 – 14 h 30 · 18 h – 22 h 30' },
+    { jours: 'Mercredi', heures: '11 h 30 – 14 h 30 · 18 h – 22 h 30' },
+    { jours: 'Jeudi', heures: '11 h 30 – 14 h 30 · 18 h – 22 h 30' },
+    { jours: 'Vendredi', heures: '11 h 30 – 14 h 30 · 18 h – 22 h 30' },
+    { jours: 'Samedi', heures: '11 h 30 – 14 h 30 · 18 h – 22 h 30' },
     { jours: 'Dimanche', heures: 'à confirmer' },
   ],
   /** Les annuaires ne sont pas d'accord sur le dimanche : à demander au patron. */

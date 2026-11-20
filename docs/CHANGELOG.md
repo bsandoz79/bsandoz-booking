@@ -1,6 +1,9 @@
 # Journal des modifications
 
 ## [Non publié]
+### Modifié (horaires de Croc's)
+- Horaires jour par jour (lundi → dimanche), aujourd'hui mis en avant (heure de France, pastille « Aujourd'hui ») ; anciens horaires groupés (« Du lundi au samedi », « Tous les jours ») répartis automatiquement ; jour vide = « Fermé ».
+- Espace pro : une ligne par jour dans « Infos du site » (vide = fermé) ; 3 tests.
 ### Modifié (site de Croc's)
 - Photos du bas de page en galerie fixe (6 vignettes au plus, centrées ; « +N » sur la dernière s'il y en a plus) : seuls les avis défilent, plus deux bandes qui bougent en même temps ; 1 test.
 ### Ajouté (bloc Visionneuse)
