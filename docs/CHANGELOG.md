@@ -1,6 +1,11 @@
 # Journal des modifications
 
 ## [Non publié]
+### Corrigé (site de Croc's sur téléphone)
+- La page ne déborde plus en largeur sur les petits téléphones (rubrique « Venir » et bloc du temps de trajet autorisés à rétrécir) ; vérifié de 320 à 768 px.
+- « Calculer » passe sous le champ d'adresse quand la place manque ; numéros de téléphone sur une seule ligne ; photos chargées dès l'arrivée.
+### Modifié (bloc Defilant)
+- Un seul élément à la fois (téléphone) : la bande prend la hauteur de celui affiché, plus de grand blanc sous un avis court.
 ### Modifié (site de Croc's)
 - Pied de page sur toute la largeur sur ordinateur : le commerce à gauche, les liens au milieu, le créateur du site à droite ; en colonne sur téléphone.
 ### Ajouté (site de Croc's)

@@ -69,6 +69,8 @@ export function Defilant({ children, label, visibles = 3, visiblesMobile = 1, la
   const [enPause, setEnPause] = useState(moinsDAnimations);
   const [survol, setSurvol] = useState(false);
   const piste = useRef<HTMLUListElement>(null);
+  /** Un seul élément à la fois : la bande prend la hauteur de celui affiché (pas de grand blanc sous un avis court). */
+  const [hauteur, setHauteur] = useState<number>();
 
   useEffect(() => { if (moinsDAnimations) setEnPause(true); }, [moinsDAnimations]);
   useEffect(() => { setIndex(0); }, [parPage, n]);
@@ -96,6 +98,24 @@ export function Defilant({ children, label, visibles = 3, visiblesMobile = 1, la
     void piste.current?.offsetWidth;
     setSansTransition(false);
   }, [sansTransition]);
+
+  useLayoutEffect(() => {
+    if (parPage !== 1 || !piste.current) {
+      setHauteur(undefined);
+      return;
+    }
+    const element = piste.current.children[index] as HTMLElement | undefined;
+    const mesurer = () => {
+      const h = element?.offsetHeight ?? 0;
+      setHauteur(h > 0 ? h : undefined);
+    };
+    mesurer();
+    // Police ou image chargée après coup : la hauteur suit.
+    if (!element || typeof ResizeObserver === 'undefined') return;
+    const observateur = new ResizeObserver(mesurer);
+    observateur.observe(element);
+    return () => observateur.disconnect();
+  }, [index, parPage, n]);
 
   const reculer = () => {
     if (index > 0) {
@@ -127,7 +147,7 @@ export function Defilant({ children, label, visibles = 3, visiblesMobile = 1, la
       onFocus={() => setSurvol(true)}
       onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setSurvol(false); }}
     >
-      <div className={styles.fenetre}>
+      <div className={styles.fenetre} style={hauteur ? { height: hauteur } : undefined}>
         <ul
           ref={piste}
           className={[styles.piste, sansTransition ? styles.sansTransition : ''].join(' ').trim()}

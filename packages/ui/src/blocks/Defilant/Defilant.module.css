@@ -6,10 +6,12 @@
 
 .fenetre {
   overflow: hidden;
+  transition: height 0.3s ease;
 }
 
 .piste {
   display: flex;
+  align-items: flex-start;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -69,7 +71,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .piste {
+  .piste,
+  .fenetre {
     transition: none;
   }
 }
