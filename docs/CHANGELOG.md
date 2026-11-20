@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (espace du patron de Croc's)
+- Contact en cas de problème : « Un problème avec le site ? Appelez Baptiste Sandoz », avec le téléphone cliquable, visible aussi sur l'écran de connexion ; 1 test.
 ### Ajouté (site de Croc's)
 - Icône de Croc's tirée de son logo : « C » jaune sur rouge dans l'onglet du navigateur, logo entier pour l'écran d'accueil ; icônes de l'appli de l'espace pro refaites avec le logo et « PRO ».
 ### Corrigé (site de Croc's)
