@@ -25,6 +25,8 @@ npm run lint && npm run test && npm run build
 
 Démo montrée au patron avec son accord. **Envoi automatique** par GitHub (job `crocs-front` de `.github/workflows/deploy.yml`) après une CI verte sur `main`, ou Actions → Déploiement → « crocs ». Secret de l'environnement `demo` : `FTP_SERVER_DIR_CROCS_FRONT` = `crocs.demo.bsandoz.fr/`. Le `.htaccess` (HTTPS obligatoire, `X-Robots-Tag: noindex`, `/pro`) fait partie du build.
 
+**Icônes** : `public/favicon-*.png` (le « C » du logo, onglet du navigateur), `public/apple-touch-icon.png` (logo entier, écran d'accueil), `public/pro-icones/` (logo + « PRO », appli de l'espace pro), tirées du logo fourni par Croc's.
+
 **Logo** : `photos/logo-crocs.webp` sur le serveur (lettres jaunes sur fond transparent, découpées du logo fourni), comme les photos ; composant `Logo` (en-tête, titre, pied de page), texte « Croc’s » si le fichier manque.
 
 **Photos** : jamais dans ce dépôt public. Le site les lit dans le dossier `photos/` du serveur (`/photos/assiette.webp`, `salle.webp`, `comptoir.webp`) ; l'envoi ne touche jamais à ce dossier. En local : `public/photos/` (ignoré par Git). Pour en changer une : la déposer dans `crocs.demo.bsandoz.fr/photos/` (gestionnaire de fichiers cPanel), même nom.

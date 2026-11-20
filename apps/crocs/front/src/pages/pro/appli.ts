@@ -9,7 +9,10 @@ export function brancherAppliPro(): void {
     document.head.appendChild(el);
   };
   ajouter('link', { rel: 'manifest', href: '/pro.webmanifest' });
-  ajouter('link', { rel: 'apple-touch-icon', href: '/pro-icones/apple-touch-icon.png' });
+  // L'icône d'écran d'accueil du site est remplacée par celle de l'appli (logo + « PRO »).
+  const icone = document.querySelector<HTMLLinkElement>('link[rel="apple-touch-icon"]');
+  if (icone) icone.href = '/pro-icones/apple-touch-icon.png';
+  else ajouter('link', { rel: 'apple-touch-icon', href: '/pro-icones/apple-touch-icon.png' });
   ajouter('meta', { name: 'apple-mobile-web-app-capable', content: 'yes' });
   ajouter('meta', { name: 'apple-mobile-web-app-title', content: 'Croc’s Pro' });
   document.title = 'Croc’s · Espace pro';
