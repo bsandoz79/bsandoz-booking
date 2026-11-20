@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { Button, EditeurCarte, Field } from '@bsandoz/ui';
+import { createur } from '../data/createur';
 import { crocs } from '../data/crocs';
 import { pictos } from '../data/pictos';
 import {
@@ -89,7 +90,20 @@ export function EspacePro() {
           <Installer />
         </>
       )}
+      {etat !== 'chargement' && <Urgence />}
     </main>
+  );
+}
+
+/** Contact du créateur du site, visible même sans être connecté (mot de passe oublié, site en panne…). */
+function Urgence() {
+  return (
+    <aside className={styles.urgence} aria-labelledby="urgence-titre">
+      <h2 id="urgence-titre">Un problème avec le site ?</h2>
+      <p>
+        Appelez {createur.nom} : <a href={createur.telephoneLien}>{createur.telephone}</a>
+      </p>
+    </aside>
   );
 }
 

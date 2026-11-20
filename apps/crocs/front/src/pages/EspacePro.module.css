@@ -270,3 +270,29 @@
 .installer p {
   margin: 0;
 }
+
+/* Contact en cas de problème : discret, en bas de l'espace. */
+.urgence {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: 1rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 0.8rem;
+  background: #f6efe9;
+  color: #4a3a34;
+}
+
+.urgence h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.urgence p {
+  margin: 0;
+}
+
+.urgence a {
+  color: var(--croc-rouge-fonce);
+  font-weight: 800;
+  white-space: nowrap;
+}

@@ -170,4 +170,12 @@ describe('Espace du patron', () => {
     await userEvent.click(within(zone).getByRole('button', { name: 'Mettre sur mon téléphone' }));
     expect(within(zone).getByRole('status')).toHaveTextContent('Ajouter à l’écran d’accueil');
   });
+
+  it('montre le contact en cas de problème, même avant de se connecter', async () => {
+    fauxServeur();
+    render(<EspacePro />);
+    const urgence = await screen.findByRole('complementary', { name: 'Un problème avec le site ?' });
+    expect(within(urgence).getByRole('link', { name: '07 69 28 78 37' })).toHaveAttribute('href', 'tel:+33769287837');
+    expect(screen.getByLabelText(/E-mail/)).toBeInTheDocument();
+  });
 });
