@@ -1,6 +1,9 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (espace du patron de Croc's)
+- Appli à installer sur le téléphone : icône « Croc's PRO » qui ouvre directement /pro en plein écran (manifeste, icônes) ; bouton « Mettre sur mon téléphone » ou explication pour iPhone ; lien « Espace pro » en pied de site.
+- Déconnexion après 30 minutes sans activité (aussi à la réouverture), avec la raison affichée ; 3 tests.
 ### Ajouté (site de Croc's)
 - Page « Mentions légales et données personnelles » (`/mentions-legales`) : éditeur, hébergeur, réalisation, données traitées (aucun suivi, position calculée sur l'appareil, adresse envoyée à la Base Adresse Nationale), droits et CNIL ; inconnus marqués `[à compléter]` ; 1 test.
 - Pied de page : lien vers les mentions légales et mention « Site créé par Baptiste Sandoz » vers bsandoz.fr.

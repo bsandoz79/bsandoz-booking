@@ -113,7 +113,11 @@ export function App() {
       <footer className={styles.pied}>
         <p className={styles.logoPied}>{crocs.nom}</p>
         <p>{crocs.adresse}, {crocs.ville} · <a href={crocs.telephoneLien}>{crocs.telephone}</a></p>
-        <p><a href="/mentions-legales" className={styles.lienPied}>Mentions légales et données personnelles</a></p>
+        <p>
+          <a href="/mentions-legales" className={styles.lienPied}>Mentions légales et données personnelles</a>
+          {' · '}
+          <a href="/pro" className={styles.lienPied}>Espace pro</a>
+        </p>
         <a href="https://bsandoz.fr" className={styles.pub}>
           <span>Site créé par <strong>Baptiste Sandoz</strong></span>
           <span>Vous aussi, un site à votre image, sans abonnement →</span>

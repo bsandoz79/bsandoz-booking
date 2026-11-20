@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { EspacePro } from './EspacePro';
 
@@ -35,7 +35,7 @@ async function seConnecter() {
 
 describe('Espace du patron', () => {
   beforeEach(() => vi.stubEnv('VITE_API_URL', 'https://api.example.test'));
-  afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
+  afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); localStorage.clear(); });
 
   it('se connecte, voit sa carte et met un plat « Épuisé » en une touche', async () => {
     const appels = fauxServeur();
@@ -135,5 +135,36 @@ describe('Espace du patron', () => {
       { url: '/photos/comptoir.webp', description: 'Le comptoir et la carte au mur' },
       { url: 'https://api.example.test/medias/abc.jpg', nom: 'abc.jpg', description: 'La terrasse' },
     ]);
+  });
+
+  it('rouvert plus de 30 minutes après la dernière action : déconnecté, avec la raison', async () => {
+    localStorage.setItem('crocs-pro-derniere-activite', String(Date.now() - 31 * 60 * 1000));
+    const appels = fauxServeur();
+    render(<EspacePro />);
+    expect(await screen.findByRole('status')).toHaveTextContent('30 minutes sans activité');
+    expect(screen.getByLabelText(/E-mail/)).toBeInTheDocument();
+    expect(appels.some((a) => a.url.endsWith('/auth/refresh'))).toBe(false);
+    expect(appels.some((a) => a.url.endsWith('/auth/logout'))).toBe(true);
+  });
+
+  it('déconnecte après 30 minutes sans activité pendant la session', async () => {
+    const appels = fauxServeur();
+    render(<EspacePro />);
+    await seConnecter();
+    await screen.findByRole('tab', { name: 'La carte' });
+    localStorage.setItem('crocs-pro-derniere-activite', String(Date.now() - 31 * 60 * 1000));
+    fireEvent(document, new Event('visibilitychange'));
+    expect(await screen.findByText(/30 minutes sans activité/)).toBeInTheDocument();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    expect(appels.some((a) => a.url.endsWith('/auth/logout'))).toBe(true);
+  });
+
+  it('propose de mettre l’espace sur le téléphone', async () => {
+    fauxServeur();
+    render(<EspacePro />);
+    await seConnecter();
+    const zone = await screen.findByRole('region', { name: 'Votre espace sur votre téléphone' });
+    await userEvent.click(within(zone).getByRole('button', { name: 'Mettre sur mon téléphone' }));
+    expect(within(zone).getByRole('status')).toHaveTextContent('Ajouter à l’écran d’accueil');
   });
 });
