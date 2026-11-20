@@ -1,4 +1,4 @@
-import { Carte } from '@bsandoz/ui';
+import { Carte, Defilant } from '@bsandoz/ui';
 import { Trajet } from './components/Trajet';
 import { avis, crocs, itineraires } from './data/crocs';
 import { useContenu } from './hooks/useContenu';
@@ -86,17 +86,20 @@ export function App() {
         <section id="avis" className={styles.avis} aria-labelledby="avis-titre">
           <div className={styles.conteneur}>
             <h2 id="avis-titre" className={styles.sectionTitreRouge}>Ce qu’en disent les clients</h2>
-            <ul className={styles.listeAvis}>
-              {avis.map((a) => (
-                <li key={a.auteur}>
-                  <blockquote>
-                    <p className={styles.etoiles} aria-label={`${a.note} sur 5`}>{'★'.repeat(a.note)}</p>
-                    <p className={styles.texteAvis}>« {a.texte} »</p>
-                  </blockquote>
-                  <p className={styles.auteur}><strong>{a.auteur}</strong>, {a.quand}</p>
-                </li>
-              ))}
-            </ul>
+            {/* 3 avis à la fois ; au-delà, ils défilent d'un cran toutes les 3 secondes. */}
+            <div className={styles.listeAvis}>
+              <Defilant label="Avis des clients" visibles={3} intervalle={3000}>
+                {avis.map((a) => (
+                  <figure key={a.auteur} className={styles.unAvis}>
+                    <blockquote>
+                      <p className={styles.etoiles} aria-label={`${a.note} sur 5`}>{'★'.repeat(a.note)}</p>
+                      <p className={styles.texteAvis}>« {a.texte} »</p>
+                    </blockquote>
+                    <figcaption className={styles.auteur}><strong>{a.auteur}</strong>, {a.quand}</figcaption>
+                  </figure>
+                ))}
+              </Defilant>
+            </div>
             <p className={styles.discret}>Avis publiés sur Restaurant Guru.</p>
           </div>
         </section>

@@ -1,0 +1,75 @@
+/* Défilant : bande d'éléments qui glisse d'un cran à la fois. Thème : --bs-defilant-ecart, --bs-defilant-bouton. */
+.defilant {
+  display: grid;
+  gap: var(--bs-space-3);
+}
+
+.fenetre {
+  overflow: hidden;
+}
+
+.piste {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transition: transform 0.6s ease;
+}
+
+.sansTransition {
+  transition: none;
+}
+
+.element {
+  flex: 0 0 calc(100% / var(--_visibles));
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 0 calc(var(--bs-defilant-ecart, var(--bs-space-4)) / 2);
+}
+
+.statique {
+  display: grid;
+  grid-template-columns: repeat(var(--_visibles), minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.commandes {
+  display: flex;
+  justify-content: center;
+  gap: var(--bs-space-2);
+}
+
+.commandes button {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: 2px solid var(--bs-defilant-bouton, var(--bs-color-primary));
+  border-radius: var(--bs-radius-pill);
+  background: var(--bs-color-surface);
+  color: var(--bs-defilant-bouton, var(--bs-color-primary));
+  font: inherit;
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--bs-transition), color var(--bs-transition);
+}
+
+.commandes button:hover {
+  background: var(--bs-defilant-bouton, var(--bs-color-primary));
+  color: var(--bs-color-surface);
+}
+
+.commandes button:focus-visible {
+  outline: 3px solid var(--bs-defilant-bouton, var(--bs-color-primary));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piste {
+    transition: none;
+  }
+}

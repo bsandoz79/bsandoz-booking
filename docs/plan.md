@@ -78,5 +78,6 @@ Site vitrine avec la carte, que le patron modifie lui-même. Démo privée (adre
 - [x] `feature/crocs-espace-pro` : `apps/crocs/api` (base dédiée, module `Carte`) et espace du patron (`EditeurCarte`), horaires et fermetures exceptionnelles modifiables
 - [x] `feature/crocs-deploiement-auto` : site de Croc's envoyé par GitHub (photos gardées sur le serveur), API mise en place par cron
 - [x] `feature/carte-prix-sans-barre` : changer un prix sans barrer l'ancien (au choix dans la fiche de l'article)
+- [x] `feature/defilant` : kit front, bloc `Defilant` (avis qui défilent par 3, toutes les 3 s, pause), utilisé pour les avis de Croc's
 - [ ] `feature/crocs-contenus` : carte relevée (`docs/crocs/carte-releve.md`, prix à faire valider), couleurs rouge et jaune ; photos et avis : avec l'accord du patron
 - [ ] `feature/crocs-demo` : démo privée en ligne (sous-domaine secret, `noindex`, bandeau)
