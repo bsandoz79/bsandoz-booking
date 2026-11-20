@@ -1,3 +1,4 @@
+import type { AvisSite, PhotoSite } from '../services/api';
 import type { RubriqueCarte } from '@bsandoz/ui';
 import { urlPicto } from './pictos';
 
@@ -29,11 +30,20 @@ export const itineraires = {
   plans: `https://maps.apple.com/?daddr=${crocs.position.lat},${crocs.position.lng}`,
 };
 
-/** Avis publiés sur Restaurant Guru, cités tels quels (à garder seulement avec l'accord du patron). */
-export const avis = [
-  { auteur: 'Amanda', note: 5, quand: 'il y a environ 6 ans', texte: 'J’adore ça fait plusieurs année que j’y vais, je n’ai jamais été déçue. Très bon et propre, ils sont très agréable. Je recommande.' },
-  { auteur: 'Lea', note: 5, quand: 'il y a environ 2 ans', texte: 'Merci pour ce tacos D’Halloween incroyable' },
-  { auteur: 'Claire', note: 5, quand: 'il y a environ 3 ans', texte: 'Très bon snack' },
+/**
+ * Avis publiés sur Restaurant Guru, cités tels quels (à garder seulement avec l'accord du patron) :
+ * affichés tant que le patron n'a pas mis les siens dans son espace.
+ */
+export const avis: AvisSite[] = [
+  { auteur: 'Amanda', note: 5, quand: 'il y a environ 6 ans', source: 'Restaurant Guru', texte: 'J’adore ça fait plusieurs année que j’y vais, je n’ai jamais été déçue. Très bon et propre, ils sont très agréable. Je recommande.' },
+  { auteur: 'Lea', note: 5, quand: 'il y a environ 2 ans', source: 'Restaurant Guru', texte: 'Merci pour ce tacos D’Halloween incroyable' },
+  { auteur: 'Claire', note: 5, quand: 'il y a environ 3 ans', source: 'Restaurant Guru', texte: 'Très bon snack' },
+];
+
+/** Photos du bas de page, déposées sur le serveur (dossier photos/) : affichées tant que le patron n'a pas mis les siennes. */
+export const photos: PhotoSite[] = [
+  { url: '/photos/salle.webp', description: 'La salle aux murs rouges' },
+  { url: '/photos/comptoir.webp', description: 'Le comptoir et la carte au mur' },
 ];
 
 let n = 0;

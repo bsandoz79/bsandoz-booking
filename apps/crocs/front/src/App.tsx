@@ -1,6 +1,6 @@
 import { Carte, Defilant } from '@bsandoz/ui';
 import { Trajet } from './components/Trajet';
-import { avis, crocs, itineraires } from './data/crocs';
+import { crocs, itineraires } from './data/crocs';
 import { useContenu } from './hooks/useContenu';
 import styles from './App.module.css';
 
@@ -12,7 +12,7 @@ const photo = (nom: string) => `/photos/${nom}.webp`;
 
 /** Site de Croc's (démo) : une seule page, de l'envie (photo, carte) au trajet. */
 export function App() {
-  const { carte, accroche, horaires, horairesAConfirmer, annonce } = useContenu();
+  const { carte, accroche, horaires, horairesAConfirmer, annonce, avis, photos } = useContenu();
   return (
     <>
       <p className={styles.maquette}>
@@ -83,31 +83,35 @@ export function App() {
           </div>
         </section>
 
-        <section id="avis" className={styles.avis} aria-labelledby="avis-titre">
+        {avis.length > 0 && <section id="avis" className={styles.avis} aria-labelledby="avis-titre">
           <div className={styles.conteneur}>
             <h2 id="avis-titre" className={styles.sectionTitreRouge}>Ce qu’en disent les clients</h2>
             {/* 3 avis à la fois ; au-delà, ils défilent d'un cran toutes les 3 secondes. */}
             <div className={styles.listeAvis}>
               <Defilant label="Avis des clients" visibles={3} intervalle={3000}>
-                {avis.map((a) => (
-                  <figure key={a.auteur} className={styles.unAvis}>
+                {avis.map((a, i) => (
+                  <figure key={i} className={styles.unAvis}>
                     <blockquote>
                       <p className={styles.etoiles} aria-label={`${a.note} sur 5`}>{'★'.repeat(a.note)}</p>
                       <p className={styles.texteAvis}>« {a.texte} »</p>
                     </blockquote>
-                    <figcaption className={styles.auteur}><strong>{a.auteur}</strong>, {a.quand}</figcaption>
+                    <figcaption className={styles.auteur}>
+                      <strong>{a.auteur}</strong>{a.quand && `, ${a.quand}`}{a.source && ` · sur ${a.source}`}
+                    </figcaption>
                   </figure>
                 ))}
               </Defilant>
             </div>
-            <p className={styles.discret}>Avis publiés sur Restaurant Guru.</p>
           </div>
-        </section>
+        </section>}
 
-        <section className={styles.photos} aria-label="La salle">
-          <img src={photo('salle')} alt="La salle aux murs rouges" width="175" height="125" loading="lazy" />
-          <img src={photo('comptoir')} alt="Le comptoir et la carte au mur" width="175" height="292" loading="lazy" />
-        </section>
+        {photos.length > 0 && (
+          <section className={styles.photos} aria-label="Photos de Croc’s">
+            <Defilant label="Photos de Croc’s" visibles={3} visiblesMobile={1} intervalle={3000}>
+              {photos.map((p, i) => <img key={i} src={p.url} alt={p.description} loading="lazy" />)}
+            </Defilant>
+          </section>
+        )}
       </main>
 
       <footer className={styles.pied}>

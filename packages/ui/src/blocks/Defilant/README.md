@@ -10,6 +10,6 @@ Bande d'éléments (avis, photos…) qui défile toute seule : `visibles` élém
 
 - Accessibilité : zone nommée (`aria-roledescription="carrousel"`), boutons Précédent, Pause / Reprendre et Suivant (44 px), pause au survol et quand un élément a le focus ; les copies servant à la boucle sont cachées aux lecteurs d'écran (`aria-hidden`, `inert`). Annonce des changements seulement en pause (`aria-live`).
 - Appareil réglé sur « réduire les animations » : pas de défilement automatique ni d'animation, boutons toujours utilisables.
-- Pas plus d'éléments que de places : simple liste, sans boutons.
+- Pas plus d'éléments que de places : simple liste, sans boutons, une colonne par élément.
 - Props : `label`, `visibles`, `visiblesMobile`, `largeurMin` (720 px), `intervalle` (ms), `libelles`.
 - Thème : `--bs-defilant-ecart` (espace entre éléments), `--bs-defilant-bouton` (couleur des boutons).

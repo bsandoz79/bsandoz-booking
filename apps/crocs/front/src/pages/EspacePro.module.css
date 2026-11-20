@@ -34,12 +34,18 @@
 }
 
 .onglets {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
 }
 
+@media (min-width: 640px) {
+  .onglets {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 .onglets button {
-  flex: 1;
   min-height: 48px;
   border: 2px solid var(--croc-rouge);
   border-radius: 999px;
@@ -120,4 +126,116 @@
   .ligneHoraire > :first-child {
     grid-column: 1 / -1;
   }
+}
+
+/* Onglets « Avis » et « Photos » */
+.pile {
+  display: grid;
+  gap: 1rem;
+}
+
+.liste {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ligne {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  border: 1px solid #e3d3c4;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.ligneTexte {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.miniature + .ligneTexte {
+  grid-column: auto;
+}
+
+.ligneTexte p {
+  margin: 0 0 0.3rem;
+}
+
+.ligneBoutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  grid-column: 1 / -1;
+}
+
+.etoiles {
+  color: #b07d00;
+  letter-spacing: 0.1em;
+}
+
+.miniature {
+  width: 88px;
+  height: 66px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+.apercu {
+  width: 100%;
+  max-height: 240px;
+  border-radius: 0.75rem;
+  object-fit: cover;
+}
+
+.formulaire {
+  display: grid;
+  gap: 1rem;
+}
+
+.choix {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 700;
+}
+
+.choix select {
+  min-height: 48px;
+  padding: 0 0.75rem;
+  border: 1px solid #cdbcae;
+  border-radius: 0.6rem;
+  background: #fff;
+  font: inherit;
+  font-weight: 400;
+}
+
+/* Bouton « Ajouter une photo » : le vrai champ fichier reste accessible au clavier, posé sous le bouton. */
+.boutonFichier {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  justify-self: start;
+  min-height: 48px;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  background: var(--croc-rouge);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.boutonFichier input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.boutonFichier:focus-within {
+  outline: 3px solid var(--croc-rouge-fonce);
+  outline-offset: 2px;
 }
