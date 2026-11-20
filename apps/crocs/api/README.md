@@ -32,4 +32,9 @@ Application Symfony du deuxième client : elle installe le kit `bsandoz/core` et
    ```
 6. Envoyer le site (`apps/crocs/front/README.md`) : il lit la carte sur cette API ; le patron se connecte sur `/pro`.
 
-Ensuite, à chaque changement de l'API : envoi automatique par GitHub, puis `sh deploy/apres-envoi.sh` dans le terminal.
+7. **cPanel → Tâches cron** (une fois) : toutes les 5 minutes, met en place l'API qu'a envoyée GitHub, s'il y en a une :
+   ```sh
+   */5 * * * * cd ~/api.crocs.demo.bsandoz.fr && [ -f api.zip ] && sh deploy/apres-envoi.sh >> var/log/deploiement.log 2>&1
+   ```
+
+Ensuite, à chaque changement de l'API : envoi automatique par GitHub (archive envoyée sous un nom provisoire, renommée une fois complète), mise en place par la tâche cron dans les 5 minutes. Une archive abîmée est refusée sans toucher au code en place. À la main si besoin : `sh deploy/apres-envoi.sh`.

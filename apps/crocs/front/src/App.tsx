@@ -1,11 +1,14 @@
 import { Carte } from '@bsandoz/ui';
-import assiette from './assets/assiette.webp';
-import comptoir from './assets/comptoir.webp';
-import salle from './assets/salle.webp';
 import { Trajet } from './components/Trajet';
 import { avis, crocs, itineraires } from './data/crocs';
 import { useContenu } from './hooks/useContenu';
 import styles from './App.module.css';
+
+/**
+ * Photos servies par le serveur (dossier `photos/` du site), hors du dépôt public et hors du build :
+ * le site se déploie depuis GitHub sans elles, et elles se changent sans redéployer. En local : `public/photos/`.
+ */
+const photo = (nom: string) => `/photos/${nom}.webp`;
 
 /** Site de Croc's (démo) : une seule page, de l'envie (photo, carte) au trajet. */
 export function App() {
@@ -41,7 +44,7 @@ export function App() {
             <p className={styles.adresse}>{crocs.adresse}, {crocs.ville}</p>
           </div>
           <figure className={styles.heroPhoto}>
-            <img src={assiette} alt="Assiette kebab, frites et salade" width="175" height="219" />
+            <img src={photo('assiette')} alt="Assiette kebab, frites et salade" width="175" height="219" />
           </figure>
         </section>
 
@@ -99,8 +102,8 @@ export function App() {
         </section>
 
         <section className={styles.photos} aria-label="La salle">
-          <img src={salle} alt="La salle aux murs rouges" width="175" height="125" loading="lazy" />
-          <img src={comptoir} alt="Le comptoir et la carte au mur" width="175" height="292" loading="lazy" />
+          <img src={photo('salle')} alt="La salle aux murs rouges" width="175" height="125" loading="lazy" />
+          <img src={photo('comptoir')} alt="Le comptoir et la carte au mur" width="175" height="292" loading="lazy" />
         </section>
       </main>
 
