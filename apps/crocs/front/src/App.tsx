@@ -15,10 +15,6 @@ export function App() {
   const { carte, accroche, horaires, horairesAConfirmer, annonce, avis, photos } = useContenu();
   return (
     <>
-      <p className={styles.maquette}>
-        Maquette proposée par <a href="https://bsandoz.fr">Baptiste Sandoz</a> · prix et horaires à confirmer avec Croc’s
-      </p>
-
       {annonce && <p className={styles.annonce} role="status">{annonce}</p>}
 
       <header className={styles.entete}>
@@ -117,7 +113,11 @@ export function App() {
       <footer className={styles.pied}>
         <p className={styles.logoPied}>{crocs.nom}</p>
         <p>{crocs.adresse}, {crocs.ville} · <a href={crocs.telephoneLien}>{crocs.telephone}</a></p>
-        <p className={styles.discretPied}>Site réalisé par <a href="https://bsandoz.fr">Baptiste Sandoz</a></p>
+        <p><a href="/mentions-legales" className={styles.lienPied}>Mentions légales et données personnelles</a></p>
+        <a href="https://bsandoz.fr" className={styles.pub}>
+          <span>Site créé par <strong>Baptiste Sandoz</strong></span>
+          <span>Vous aussi, un site à votre image, sans abonnement →</span>
+        </a>
       </footer>
     </>
   );

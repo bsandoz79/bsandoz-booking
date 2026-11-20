@@ -6,12 +6,14 @@ import { crocs } from './data/crocs';
 describe('Site de Croc’s', () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it('montre le nom, appeler et l’itinéraire, et se présente comme une maquette', () => {
+  it('montre le nom, appeler, l’itinéraire, les mentions légales et le créateur du site', () => {
     render(<App />);
     expect(screen.getByRole('heading', { level: 1, name: crocs.nom })).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: /Appeler/ })[0]).toHaveAttribute('href', crocs.telephoneLien);
     expect(screen.getAllByRole('link', { name: 'Itinéraire' })[0].getAttribute('href')).toContain('destination=49.887017,2.282462');
-    expect(screen.getByText(/Maquette proposée par/)).toBeInTheDocument();
+    expect(screen.queryByText(/Maquette proposée par/)).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Mentions légales et données personnelles' })).toHaveAttribute('href', '/mentions-legales');
+    expect(screen.getByRole('link', { name: /Site créé par Baptiste Sandoz/ })).toHaveAttribute('href', 'https://bsandoz.fr');
   });
 
   it('affiche la carte complète, en code', () => {

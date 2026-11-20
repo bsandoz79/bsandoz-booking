@@ -1,17 +1,4 @@
 /* Croc's : rouge vif et jaune de l'enseigne, blanc et crème. Mobile d'abord. */
-.maquette {
-  margin: 0;
-  padding: 0.45rem 1rem;
-  background: #1e1414;
-  color: #f3e9e4;
-  font-size: 0.8rem;
-  text-align: center;
-}
-
-.maquette a {
-  color: var(--croc-jaune);
-}
-
 /* Annonce du patron (ex. fermeture exceptionnelle), modifiable dans son espace. */
 .annonce {
   margin: 0;
@@ -370,9 +357,42 @@
   color: var(--croc-jaune);
 }
 
-.discretPied {
-  font-size: 0.8rem;
-  opacity: 0.8;
+.lienPied {
+  font-size: 0.9rem;
+}
+
+/* Petite mention du créateur du site, discrète mais cliquable. */
+.pub {
+  display: inline-grid;
+  gap: 0.15rem;
+  margin-top: 1rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid rgb(243 233 228 / 0.35);
+  border-radius: 0.9rem;
+  color: #f3e9e4;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.pied .pub {
+  color: #f3e9e4;
+}
+
+.pub strong {
+  color: var(--croc-jaune);
+}
+
+.pub:hover,
+.pub:focus-visible {
+  border-color: var(--croc-jaune);
+  background: rgb(255 255 255 / 0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pub {
+    transition: none;
+  }
 }
 
 @media (min-width: 800px) {

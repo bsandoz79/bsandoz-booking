@@ -1,6 +1,13 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (site de Croc's)
+- Page « Mentions légales et données personnelles » (`/mentions-legales`) : éditeur, hébergeur, réalisation, données traitées (aucun suivi, position calculée sur l'appareil, adresse envoyée à la Base Adresse Nationale), droits et CNIL ; inconnus marqués `[à compléter]` ; 1 test.
+- Pied de page : lien vers les mentions légales et mention « Site créé par Baptiste Sandoz » vers bsandoz.fr.
+### Modifié (site de Croc's)
+- Bandeau « Maquette proposée par… » retiré.
+### Corrigé (tests de Croc's)
+- Matchers jest-dom branchés aussi sur l'expect global : plus d'échecs « Invalid Chai property » par moments.
 ### Corrigé (espace du patron de Croc's)
 - Pendant un chargement (arrivée sur /pro, changement d'onglet), la page n'étire plus ses blocs sur tout l'écran (onglets gonflés en gros ronds, titre et liens écartés).
 ### Ajouté (espace du patron de Croc's)
