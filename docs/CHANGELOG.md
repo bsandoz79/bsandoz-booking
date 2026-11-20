@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (site de Croc's)
+- Icône de Croc's tirée de son logo : « C » jaune sur rouge dans l'onglet du navigateur, logo entier pour l'écran d'accueil ; icônes de l'appli de l'espace pro refaites avec le logo et « PRO ».
 ### Corrigé (site de Croc's)
 - Plus de clignotement au chargement (prix barré, avis, horaires qui disparaissaient puis revenaient) : le dernier contenu reçu de l'API est gardé sur l'appareil et affiché tout de suite ; à la première visite, la carte, les horaires et les avis attendent l'API (2,5 s au plus, puis contenu intégré) ; 1 test.
 ### Corrigé (déploiement de l'API de Croc's)
