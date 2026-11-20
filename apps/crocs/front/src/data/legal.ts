@@ -10,6 +10,7 @@ export interface SectionLegale {
 
 /**
  * Mentions légales et données personnelles de Croc's (loi pour la confiance dans l'économie numérique, art. 6 ; RGPD).
+ * Éditeur : annuaire des entreprises (recherche-entreprises.api.gouv.fr, relevé le 20/11/2026), à faire confirmer par le patron.
  * Hébergeur : informations publiées sur la page d'accueil d'o2switch (relevées le 20/11/2026).
  */
 export const mentionsLegales: SectionLegale[] = [
@@ -17,8 +18,8 @@ export const mentionsLegales: SectionLegale[] = [
     titre: 'Éditeur du site',
     paragraphes: [
       `${crocs.nom}, ${crocs.activite.toLowerCase()}, ${crocs.adresse}, ${crocs.ville}. Téléphone : ${crocs.telephone}.`,
-      `Raison sociale et forme : ${A_COMPLETER('nom de l’entreprise et forme juridique (EI, SARL…)')}. SIRET : ${A_COMPLETER('numéro SIRET')}.`,
-      `Directeur de la publication : ${A_COMPLETER('nom du responsable')}.`,
+      'Entreprise individuelle de Larbi Ait Oussous (restauration rapide, code APE 56.10C). SIREN 531 701 688, SIRET 531 701 688 00024.',
+      'Directeur de la publication : Larbi Ait Oussous.',
     ],
   },
   {

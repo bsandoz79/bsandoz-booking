@@ -1,6 +1,9 @@
 # Journal des modifications
 
 ## [Non publié]
+### Modifié (Croc's)
+- Mentions légales : éditeur renseigné d'après l'annuaire des entreprises (entreprise individuelle, SIRET), à faire confirmer par le patron.
+- Horaires de départ d'après la fiche Google : 11 h 30 – 14 h 30 · 18 h – 22 h 30 du lundi au samedi, dimanche fermé ; plus de mention « à confirmer ».
 ### Modifié (photos de Croc's)
 - Photos en diaporama en haut de page, dans le cadre penché de la photo principale : fondu toutes les 4 s, pause au survol et au clavier, commandes fines et discrètes, agrandies au clic ; 8 photos au plus (la principale et 7 du patron, limite aussi dans l'espace pro). Plus de galerie en bas de page.
 ### Modifié (horaires de Croc's)
