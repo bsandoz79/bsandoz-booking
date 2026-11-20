@@ -1,4 +1,5 @@
 import { Carte, Defilant } from '@bsandoz/ui';
+import { Logo } from './components/Logo';
 import { Trajet } from './components/Trajet';
 import { crocs, itineraires } from './data/crocs';
 import { useContenu } from './hooks/useContenu';
@@ -18,7 +19,7 @@ export function App() {
       {annonce && <p className={styles.annonce} role="status">{annonce}</p>}
 
       <header className={styles.entete}>
-        <a href="#haut" className={styles.logo} aria-label={`${crocs.nom}, haut de page`}>{crocs.nom}</a>
+        <a href="#haut" className={styles.logo} aria-label={`${crocs.nom}, haut de page`}><Logo decoratif /></a>
         <nav aria-label="Rubriques" className={styles.nav}>
           <a href="#carte">La carte</a>
           <a href="#venir">Venir</a>
@@ -31,7 +32,7 @@ export function App() {
         <section className={styles.hero} aria-labelledby="titre">
           <div className={styles.heroTexte}>
             <p className={styles.surtitre}>{crocs.activite} · Amiens</p>
-            <h1 id="titre" className={styles.titre}>{crocs.nom}</h1>
+            <h1 id="titre" className={styles.titre}><Logo /></h1>
             <p className={styles.accroche}>{accroche}</p>
             <div className={styles.boutons}>
               <a href={crocs.telephoneLien} className={styles.boutonJaune}>Appeler le {crocs.telephone}</a>
@@ -111,7 +112,7 @@ export function App() {
       </main>
 
       <footer className={styles.pied}>
-        <p className={styles.logoPied}>{crocs.nom}</p>
+        <p className={styles.logoPied}><Logo /></p>
         <p>{crocs.adresse}, {crocs.ville} · <a href={crocs.telephoneLien}>{crocs.telephone}</a></p>
         <p>
           <a href="/mentions-legales" className={styles.lienPied}>Mentions légales et données personnelles</a>
