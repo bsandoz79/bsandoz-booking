@@ -110,7 +110,7 @@ export function Defilant({ children, label, visibles = 3, visiblesMobile = 1, la
 
   if (!defile) {
     return (
-      <ul className={styles.statique} aria-label={label} style={{ '--_visibles': parPage } as CSSProperties}>
+      <ul className={styles.statique} aria-label={label} style={{ '--_visibles': Math.max(1, Math.min(n, parPage)) } as CSSProperties}>
         {elements.map((e, i) => <li key={i} className={styles.element}>{e}</li>)}
       </ul>
     );

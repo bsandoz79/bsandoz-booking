@@ -19,7 +19,8 @@ export class ApiError extends Error {
 let jeton: string | null = null;
 
 async function appel<T>(chemin: string, init: RequestInit = {}, authentifie = false, retente = true): Promise<T> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json', Accept: 'application/json' };
+  // Envoi de fichier (FormData) : le navigateur choisit lui-même le Content-Type (multipart).
+  const headers: Record<string, string> = init.body instanceof FormData ? { Accept: 'application/json' } : { 'Content-Type': 'application/json', Accept: 'application/json' };
   if (authentifie && jeton) headers.Authorization = `Bearer ${jeton}`;
   const res = await fetch(`${base()}/api/v1${chemin}`, { credentials: 'include', ...init, headers });
   // Jeton expiré (15 min) : on renouvelle la session une fois, puis on rejoue l'appel.
@@ -91,12 +92,44 @@ export const carteApi = {
 /* ── Textes du site (accroche, horaires, annonce) ── */
 
 export interface Horaire { jours: string; heures: string }
+/** Avis d'un client, recopié par le patron tel qu'il a été écrit. */
+export interface AvisSite {
+  auteur: string;
+  /** 1 à 5 étoiles. */
+  note: number;
+  texte: string;
+  /** Quand il a été laissé (texte libre, ex. « mars 2026 »). */
+  quand?: string;
+  /** Où il a été publié (ex. Google), facultatif. */
+  source?: string;
+}
+export interface PhotoSite {
+  url: string;
+  /** Ce que montre la photo (lu par les lecteurs d'écran). */
+  description: string;
+  /** Nom du fichier envoyé à l'API (pour le supprimer) ; absent pour les photos de départ. */
+  nom?: string;
+}
 export interface ContenuSite {
   accroche?: string;
   horaires?: Horaire[];
   /** Message en haut du site (ex. fermeture exceptionnelle) ; vide : rien. */
   annonce?: string;
+  /** Avis mis par le patron ; absent : ceux du site. */
+  avis?: AvisSite[];
+  /** Photos du bas de page mises par le patron ; absent : celles du site. */
+  photos?: PhotoSite[];
 }
 
 export const lireContenu = () => appel<ContenuSite>('/site');
 export const enregistrerContenu = (c: ContenuSite) => envoyer('/admin/site', 'PUT', c);
+
+/* ── Photos ── */
+
+/** Envoie une photo (JPEG, PNG ou WebP, 5 Mo au plus) ; renvoie son nom et son adresse. */
+export function envoyerPhoto(photo: Blob, nomFichier: string): Promise<{ name: string; url: string }> {
+  const corps = new FormData();
+  corps.append('fichier', photo, nomFichier);
+  return appel('/admin/medias', { method: 'POST', body: corps }, true);
+}
+export const supprimerPhoto = (nom: string) => envoyer(`/admin/medias/${encodeURIComponent(nom)}`, 'DELETE');

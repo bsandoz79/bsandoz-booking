@@ -7,13 +7,23 @@ import {
   type ContenuSite, type Horaire, type RubriqueApi,
 } from '../services/api';
 import styles from './EspacePro.module.css';
+import { MesAvis } from './pro/MesAvis';
+import { MesPhotos } from './pro/MesPhotos';
 
 type Etat = 'chargement' | 'connexion' | 'connecte';
+type Onglet = 'carte' | 'infos' | 'avis' | 'photos';
 
-/** Espace du patron (/pro) : se connecter, modifier la carte et les infos du site (accroche, horaires, annonce). */
+const ONGLETS: { id: Onglet; nom: string }[] = [
+  { id: 'carte', nom: 'La carte' },
+  { id: 'infos', nom: 'Infos du site' },
+  { id: 'avis', nom: 'Avis' },
+  { id: 'photos', nom: 'Photos' },
+];
+
+/** Espace du patron (/pro) : se connecter, modifier la carte, les infos du site (accroche, horaires, annonce), les avis et les photos. */
 export function EspacePro() {
   const [etat, setEtat] = useState<Etat>('chargement');
-  const [onglet, setOnglet] = useState<'carte' | 'infos'>('carte');
+  const [onglet, setOnglet] = useState<Onglet>('carte');
 
   useEffect(() => {
     if (!avecApi()) return;
@@ -45,14 +55,18 @@ export function EspacePro() {
       {etat === 'connecte' && (
         <>
           <div className={styles.onglets} role="tablist" aria-label="Que voulez-vous modifier ?">
-            <button type="button" role="tab" id="onglet-carte" aria-controls="panneau-carte" aria-selected={onglet === 'carte'} onClick={() => setOnglet('carte')}>La carte</button>
-            <button type="button" role="tab" id="onglet-infos" aria-controls="panneau-infos" aria-selected={onglet === 'infos'} onClick={() => setOnglet('infos')}>Infos du site</button>
+            {ONGLETS.map((o) => (
+              <button key={o.id} type="button" role="tab" id={`onglet-${o.id}`} aria-controls={`panneau-${o.id}`} aria-selected={onglet === o.id} onClick={() => setOnglet(o.id)}>
+                {o.nom}
+              </button>
+            ))}
           </div>
-          {onglet === 'carte' ? (
-            <section id="panneau-carte" role="tabpanel" aria-labelledby="onglet-carte"><MaCarte /></section>
-          ) : (
-            <section id="panneau-infos" role="tabpanel" aria-labelledby="onglet-infos"><MesInfos /></section>
-          )}
+          <section id={`panneau-${onglet}`} role="tabpanel" aria-labelledby={`onglet-${onglet}`}>
+            {onglet === 'carte' && <MaCarte />}
+            {onglet === 'infos' && <MesInfos />}
+            {onglet === 'avis' && <MesAvis />}
+            {onglet === 'photos' && <MesPhotos />}
+          </section>
         </>
       )}
     </main>

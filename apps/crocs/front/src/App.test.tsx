@@ -65,4 +65,19 @@ describe('Site de Croc’s', () => {
     expect(screen.queryByText(/à confirmer\./)).not.toBeInTheDocument();
     vi.unstubAllEnvs();
   });
+
+  it('affiche les avis et les photos mis par le patron ; plus de 3 avis : ils défilent', async () => {
+    vi.stubEnv('VITE_API_URL', 'https://api.example.test');
+    const avis = [1, 2, 3, 4].map((i) => ({ auteur: `Client ${i}`, note: 5, texte: `Avis ${i}`, source: 'Google' }));
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => new Response(JSON.stringify(url.endsWith('/carte')
+      ? []
+      : { avis, photos: [{ url: 'https://api.example.test/medias/a.jpg', description: 'La terrasse' }] }))));
+    render(<App />);
+    const zone = await screen.findByRole('region', { name: 'Avis des clients' });
+    expect(zone).toHaveTextContent('Client 4 · sur Google');
+    expect(within(zone).getByRole('button', { name: 'Mettre en pause le défilement' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'La terrasse' })).toHaveAttribute('src', 'https://api.example.test/medias/a.jpg');
+    expect(screen.queryByRole('img', { name: 'La salle aux murs rouges' })).not.toBeInTheDocument();
+    vi.unstubAllEnvs();
+  });
 });

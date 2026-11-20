@@ -1,6 +1,10 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (espace du patron de Croc's)
+- Onglets « Avis » (ajouter, modifier, ordonner, retirer les avis de ses clients) et « Photos » (photo prise au téléphone, réduite avant l'envoi, avec sa description ; ordre, retrait) ; rangés dans le contenu du site, sans changement d'API.
+- Site : avis et photos du patron (sinon ceux de départ), avec l'endroit où l'avis a été publié ; photos du bas de page dans un `Defilant` ; rubrique cachée si la liste est vide ; 4 tests.
+- Bloc `Defilant` : sans défilement, autant de colonnes que d'éléments (au plus `visibles`).
 ### Ajouté (bloc Defilant)
 - Kit front : bloc `Defilant` (avis, photos…) : 3 éléments à la fois sur grand écran, 1 sur téléphone ; toutes les 3 s, celui de gauche sort, les autres glissent d'un cran et un nouveau entre à droite, en boucle. Boutons Précédent, Pause, Suivant ; pause au survol et au clavier ; rien d'automatique si l'appareil demande moins d'animations ; 7 tests.
 - Croc's : avis dans un `Defilant` (ils défilent dès qu'il y en a plus de 3).

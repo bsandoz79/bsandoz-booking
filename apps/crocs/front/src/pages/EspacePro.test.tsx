@@ -15,12 +15,13 @@ function fauxServeur(roles = ['ROLE_PRO'], site: Record<string, unknown> = { aut
   vi.stubGlobal('fetch', vi.fn(async (url: string, init: RequestInit = {}) => {
     const methode = init.method ?? 'GET';
     const headers = (init.headers ?? {}) as Record<string, string>;
-    appels.push({ url, methode, corps: init.body ? JSON.parse(String(init.body)) : undefined, auth: headers.Authorization });
+    appels.push({ url, methode, corps: typeof init.body === 'string' ? JSON.parse(init.body) : init.body, auth: headers.Authorization });
     const json = (corps: unknown, status = 200) => new Response(JSON.stringify(corps), { status, headers: { 'Content-Type': 'application/json' } });
     if (url.endsWith('/auth/refresh')) return json({ detail: 'Session expirée.' }, 401);
     if (url.endsWith('/auth/login')) return json({ token: 'jeton-1', expiresIn: 900, roles });
     if (url.endsWith('/admin/carte')) return json(carte);
     if (url.endsWith('/site')) return json(site);
+    if (url.endsWith('/admin/medias') && methode === 'POST') return json({ name: 'abc.jpg', url: 'https://api.example.test/medias/abc.jpg' }, 201);
     return new Response(null, { status: 204 });
   }));
   return appels;
@@ -79,5 +80,60 @@ describe('Espace du patron', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('Enregistré');
     const envoi = appels.find((a) => a.methode === 'PUT' && a.url.endsWith('/admin/site'));
     expect(envoi?.corps).toMatchObject({ autre: 'gardé', annonce: 'Fermé lundi 24', horaires: [{ jours: 'Du lundi au samedi' }, { jours: 'Dimanche', heures: 'Fermé' }] });
+  });
+
+  it('ajoute un avis en tête, en gardant les avis déjà affichés et le reste du contenu', async () => {
+    const appels = fauxServeur();
+    render(<EspacePro />);
+    await seConnecter();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Avis' }));
+    await userEvent.click(await screen.findByRole('button', { name: '+ Ajouter un avis' }));
+    const fiche = screen.getByRole('dialog', { name: 'Ajouter un avis' });
+    await userEvent.type(within(fiche).getByLabelText(/Nom du client/), 'Karim');
+    await userEvent.selectOptions(within(fiche).getByLabelText('Note'), '4');
+    await userEvent.type(within(fiche).getByLabelText(/^Avis/), 'Toujours aussi bon');
+    await userEvent.type(within(fiche).getByLabelText(/Publié sur/), 'Google');
+    await userEvent.click(within(fiche).getByRole('button', { name: 'Enregistrer' }));
+    const envoi = appels.find((a) => a.methode === 'PUT' && a.url.endsWith('/admin/site'));
+    expect(envoi?.corps).toMatchObject({ autre: 'gardé' });
+    const avis = (envoi?.corps as { avis: unknown[] }).avis;
+    expect(avis).toHaveLength(4);
+    expect(avis[0]).toEqual({ auteur: 'Karim', note: 4, texte: 'Toujours aussi bon', source: 'Google' });
+    expect(await screen.findByText('« Toujours aussi bon »')).toBeInTheDocument();
+  });
+
+  it('retire un avis en deux touches', async () => {
+    const appels = fauxServeur(['ROLE_PRO'], { avis: [{ auteur: 'Lea', note: 5, texte: 'Super' }, { auteur: 'Tom', note: 4, texte: 'Bien' }] });
+    render(<EspacePro />);
+    await seConnecter();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Avis' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Retirer l’avis de Lea' }));
+    expect(appels.some((a) => a.methode === 'PUT')).toBe(false);
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmer : retirer l’avis de Lea' }));
+    const envoi = appels.find((a) => a.methode === 'PUT' && a.url.endsWith('/admin/site'));
+    expect(envoi?.corps).toEqual({ avis: [{ auteur: 'Tom', note: 4, texte: 'Bien' }] });
+  });
+
+  it('ajoute une photo : envoyée au serveur, puis ajoutée au site avec sa description', async () => {
+    const appels = fauxServeur();
+    render(<EspacePro />);
+    await seConnecter();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Photos' }));
+    const fichier = new File(['photo'], 'salle.jpg', { type: 'image/jpeg' });
+    await userEvent.upload(await screen.findByLabelText('+ Ajouter une photo'), fichier);
+    const fiche = screen.getByRole('dialog', { name: 'Ajouter une photo' });
+    await userEvent.click(within(fiche).getByRole('button', { name: 'Ajouter la photo' }));
+    expect(within(fiche).getByRole('alert')).toHaveTextContent('Décrivez la photo');
+    await userEvent.type(within(fiche).getByLabelText(/Que montre la photo/), 'La terrasse');
+    await userEvent.click(within(fiche).getByRole('button', { name: 'Ajouter la photo' }));
+    const envoiPhoto = appels.find((a) => a.methode === 'POST' && a.url.endsWith('/admin/medias'));
+    expect(envoiPhoto?.auth).toBe('Bearer jeton-1');
+    expect((envoiPhoto?.corps as FormData).get('fichier')).toBeInstanceOf(Blob);
+    const envoi = appels.find((a) => a.methode === 'PUT' && a.url.endsWith('/admin/site'));
+    expect((envoi?.corps as { photos: unknown[] }).photos).toEqual([
+      { url: '/photos/salle.webp', description: 'La salle aux murs rouges' },
+      { url: '/photos/comptoir.webp', description: 'Le comptoir et la carte au mur' },
+      { url: 'https://api.example.test/medias/abc.jpg', nom: 'abc.jpg', description: 'La terrasse' },
+    ]);
   });
 });
