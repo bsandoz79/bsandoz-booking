@@ -271,26 +271,26 @@
   white-space: nowrap;
 }
 
-/* Le jour d'aujourd'hui : trait rouge à gauche, texte appuyé, pastille. */
+/* Le jour d'aujourd'hui, discret : les autres jours un peu plus clairs, lui plus foncé et appuyé, petit « aujourd'hui » à côté. */
+.horaires div:not(.aujourdhui) {
+  color: #6b5a52;
+}
+
 .horaires .aujourdhui {
-  margin-left: -0.75rem;
-  padding: 0.35rem 0.5rem 0.35rem 0.6rem;
-  border-bottom-color: transparent;
-  border-left: 4px solid var(--croc-rouge);
-  border-radius: 0.3rem;
-  background: #fff;
+  align-items: center;
+  color: #1e1414;
+}
+
+.horaires .aujourdhui dt {
   font-weight: 800;
 }
 
 .pastilleJour {
-  margin-left: 0.5rem;
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
-  background: var(--croc-rouge);
-  color: #fff;
+  display: block;
+  color: #6b5a52;
   font-size: 0.72rem;
-  font-weight: 800;
-  vertical-align: 0.1em;
+  font-weight: 600;
+  line-height: 1.1;
 }
 
 .telephone {
