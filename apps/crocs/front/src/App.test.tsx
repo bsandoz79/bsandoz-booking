@@ -80,14 +80,17 @@ describe('Site de Croc’s', () => {
     const zone = await screen.findByRole('region', { name: 'Avis des clients' });
     expect(zone).toHaveTextContent('Client 4 · sur Google');
     expect(within(zone).getByRole('button', { name: 'Mettre en pause le défilement' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Agrandir la photo : La terrasse' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /La salle aux murs rouges/ })).not.toBeInTheDocument();
+    // Diaporama du haut : la photo principale, puis celles du patron (les photos de départ ne sont plus montrées).
+    const diaporama = screen.getByRole('figure', { name: 'Photos de Croc’s' });
+    await waitFor(() => expect([...diaporama.querySelectorAll('img')].map((i) => i.getAttribute('src'))).toEqual(['/photos/assiette.webp', 'https://api.example.test/medias/a.jpg']));
     vi.unstubAllEnvs();
   });
 
   it('agrandit une photo au clic, passe à la suivante et se ferme', async () => {
     render(<App />);
-    await userEvent.click(screen.getByRole('button', { name: 'Agrandir la photo : La salle aux murs rouges' }));
+    const diaporama = screen.getByRole('figure', { name: 'Photos de Croc’s' });
+    await userEvent.click(within(diaporama).getByRole('button', { name: 'Photo suivante' }));
+    await userEvent.click(within(diaporama).getByRole('button', { name: 'Agrandir la photo : La salle aux murs rouges' }));
     const visionneuse = screen.getByRole('dialog', { name: 'Photo agrandie' });
     expect(within(visionneuse).getByRole('img', { name: 'La salle aux murs rouges' })).toBeInTheDocument();
     await userEvent.click(within(visionneuse).getByRole('button', { name: 'Photo suivante' }));
@@ -96,16 +99,16 @@ describe('Site de Croc’s', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('photos en galerie fixe : 6 vignettes, la dernière ouvre la suite', async () => {
+  it('diaporama du haut : 8 photos au plus, en boucle, sans galerie en bas de page', async () => {
     vi.stubEnv('VITE_API_URL', 'https://api.example.test');
-    const photos = Array.from({ length: 8 }, (_, i) => ({ url: `/p${i + 1}.jpg`, description: `Photo ${i + 1}` }));
+    const photos = Array.from({ length: 10 }, (_, i) => ({ url: `/p${i + 1}.jpg`, description: `Photo ${i + 1}` }));
     vi.stubGlobal('fetch', vi.fn(async (url: string) => new Response(JSON.stringify(url.endsWith('/carte') ? [] : { photos }))));
     render(<App />);
-    const galerie = await screen.findByRole('region', { name: 'Photos de Croc’s' });
-    await waitFor(() => expect(within(galerie).getAllByRole('listitem')).toHaveLength(6));
-    expect(within(galerie).queryByRole('button', { name: /Mettre en pause/ })).not.toBeInTheDocument();
-    await userEvent.click(within(galerie).getByRole('button', { name: 'Voir les 8 photos, à partir de : Photo 6' }));
-    expect(screen.getByRole('dialog', { name: 'Photo agrandie' })).toHaveTextContent('Photo 6 · 7 / 9');
+    const diaporama = screen.getByRole('figure', { name: 'Photos de Croc’s' });
+    await waitFor(() => expect(diaporama.querySelectorAll('img')).toHaveLength(8));
+    await userEvent.click(within(diaporama).getByRole('button', { name: 'Photo précédente' }));
+    expect(within(diaporama).getByRole('button', { name: 'Agrandir la photo : Photo 7' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Photos de Croc’s' })).not.toBeInTheDocument();
     vi.unstubAllEnvs();
   });
 });

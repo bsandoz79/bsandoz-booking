@@ -78,7 +78,7 @@ describe('Espace du patron', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(await screen.findByRole('status')).toHaveTextContent('Enregistré');
     const envoi = appels.find((a) => a.methode === 'PUT' && a.url.endsWith('/admin/site'));
-    const horaires = (envoi?.corps as { horaires: { jours: string; heures: string }[] }).horaires;
+    const horaires = (envoi!.corps as { horaires: { jours: string; heures: string }[] }).horaires;
     expect(envoi?.corps).toMatchObject({ autre: 'gardé', annonce: 'Fermé lundi 24' });
     expect(horaires.map((h) => h.jours)).toEqual(['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']);
     expect(horaires[0].heures).toBe('Fermé');
@@ -99,7 +99,7 @@ describe('Espace du patron', () => {
     await userEvent.click(within(fiche).getByRole('button', { name: 'Enregistrer' }));
     const envoi = appels.find((a) => a.methode === 'PUT' && a.url.endsWith('/admin/site'));
     expect(envoi?.corps).toMatchObject({ autre: 'gardé' });
-    const avis = (envoi?.corps as { avis: unknown[] }).avis;
+    const avis = (envoi!.corps as { avis: unknown[] }).avis;
     expect(avis).toHaveLength(4);
     expect(avis[0]).toEqual({ auteur: 'Karim', note: 4, texte: 'Toujours aussi bon', source: 'Google' });
     expect(await screen.findByText('« Toujours aussi bon »')).toBeInTheDocument();
@@ -131,9 +131,9 @@ describe('Espace du patron', () => {
     await userEvent.click(within(fiche).getByRole('button', { name: 'Ajouter la photo' }));
     const envoiPhoto = appels.find((a) => a.methode === 'POST' && a.url.endsWith('/admin/medias'));
     expect(envoiPhoto?.auth).toBe('Bearer jeton-1');
-    expect((envoiPhoto?.corps as FormData).get('fichier')).toBeInstanceOf(Blob);
+    expect((envoiPhoto!.corps as FormData).get('fichier')).toBeInstanceOf(Blob);
     const envoi = appels.find((a) => a.methode === 'PUT' && a.url.endsWith('/admin/site'));
-    expect((envoi?.corps as { photos: unknown[] }).photos).toEqual([
+    expect((envoi!.corps as { photos: unknown[] }).photos).toEqual([
       { url: '/photos/salle.webp', description: 'La salle aux murs rouges' },
       { url: '/photos/comptoir.webp', description: 'Le comptoir et la carte au mur' },
       { url: 'https://api.example.test/medias/abc.jpg', nom: 'abc.jpg', description: 'La terrasse' },

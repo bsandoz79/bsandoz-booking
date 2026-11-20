@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Modifié (photos de Croc's)
+- Photos en diaporama en haut de page, dans le cadre penché de la photo principale : fondu toutes les 4 s, pause au survol et au clavier, commandes fines et discrètes, agrandies au clic ; 8 photos au plus (la principale et 7 du patron, limite aussi dans l'espace pro). Plus de galerie en bas de page.
 ### Modifié (horaires de Croc's)
 - Horaires jour par jour (lundi → dimanche), aujourd'hui mis en avant (heure de France, pastille « Aujourd'hui ») ; anciens horaires groupés (« Du lundi au samedi », « Tous les jours ») répartis automatiquement ; jour vide = « Fermé ».
 - Espace pro : une ligne par jour dans « Infos du site » (vide = fermé) ; 3 tests.

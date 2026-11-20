@@ -7,6 +7,9 @@ import styles from '../EspacePro.module.css';
 import { deplacer, Retirer } from './outils';
 import { useContenuPro } from './useContenuPro';
 
+/** Le diaporama du haut montre la photo principale et 7 photos au plus. */
+export const PHOTOS_PATRON_MAX = 7;
+
 /** Onglet « Photos » : photos du bas du site, prises au téléphone ; au-delà de 3, elles défilent. */
 export function MesPhotos() {
   const { contenu, erreurLecture, enregistrer } = useContenuPro();
@@ -35,13 +38,17 @@ export function MesPhotos() {
   return (
     <div className={styles.pile}>
       <p className={styles.aide}>
-        Ces photos s’affichent en bas du site : 3 à la fois, et au-delà elles défilent. Prenez-les à la lumière du jour,
+        Ces photos défilent en haut du site, après la photo principale ({PHOTOS_PATRON_MAX} au plus). Prenez-les à la lumière du jour,
         sans personne reconnaissable sans son accord.
       </p>
-      <label className={styles.boutonFichier}>
-        + Ajouter une photo
-        <input type="file" accept="image/jpeg,image/png,image/webp" onChange={choisir} />
-      </label>
+      {liste.length < PHOTOS_PATRON_MAX ? (
+        <label className={styles.boutonFichier}>
+          + Ajouter une photo
+          <input type="file" accept="image/jpeg,image/png,image/webp" onChange={choisir} />
+        </label>
+      ) : (
+        <p className={styles.info}>{PHOTOS_PATRON_MAX} photos au plus : retirez-en une pour en ajouter une autre.</p>
+      )}
       {message && <p className={styles.erreur} role="alert">{message}</p>}
       {liste.length === 0 && <p>Aucune photo : la rubrique est cachée sur le site.</p>}
       <ul className={styles.liste} aria-label="Photos affichées sur le site">
