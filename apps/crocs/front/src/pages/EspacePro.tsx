@@ -7,6 +7,8 @@ import {
   type ContenuSite, type Horaire, type RubriqueApi,
 } from '../services/api';
 import styles from './EspacePro.module.css';
+import { inactifTropLongtemps, noterActivite, oublierActivite, useInactivite } from './pro/inactivite';
+import { Installer } from './pro/Installer';
 import { MesAvis } from './pro/MesAvis';
 import { MesPhotos } from './pro/MesPhotos';
 
@@ -24,11 +26,26 @@ const ONGLETS: { id: Onglet; nom: string }[] = [
 export function EspacePro() {
   const [etat, setEtat] = useState<Etat>('chargement');
   const [onglet, setOnglet] = useState<Onglet>('carte');
+  const [avis, setAvis] = useState('');
+
+  const fermer = useCallback((raison: string) => {
+    oublierActivite();
+    setAvis(raison);
+    setEtat('connexion');
+    void deconnecter();
+  }, []);
+  const expire = useCallback(() => fermer('Vous avez été déconnecté après 30 minutes sans activité. Reconnectez-vous pour continuer.'), [fermer]);
+  useInactivite(etat === 'connecte', expire);
 
   useEffect(() => {
     if (!avecApi()) return;
+    // Appli rouverte plus de 30 minutes après la dernière action : on ferme la session au lieu de la reprendre.
+    if (inactifTropLongtemps()) {
+      expire();
+      return;
+    }
     void reprendreSession().then((ok) => setEtat(ok ? 'connecte' : 'connexion'));
-  }, []);
+  }, [expire]);
 
   if (!avecApi()) {
     return (
@@ -46,12 +63,13 @@ export function EspacePro() {
         <h1 className={styles.titre}>Espace de {crocs.nom}</h1>
         <a href="/" className={styles.lien}>Voir le site</a>
         {etat === 'connecte' && (
-          <Button variant="ghost" onClick={() => void deconnecter().then(() => setEtat('connexion'))}>Se déconnecter</Button>
+          <Button variant="ghost" onClick={() => fermer('')}>Se déconnecter</Button>
         )}
       </div>
 
       {etat === 'chargement' && <p role="status">Chargement…</p>}
-      {etat === 'connexion' && <Connexion onConnecte={() => setEtat('connecte')} />}
+      {etat === 'connexion' && avis && <p className={styles.info} role="status">{avis}</p>}
+      {etat === 'connexion' && <Connexion onConnecte={() => { noterActivite(); setAvis(''); setEtat('connecte'); }} />}
       {etat === 'connecte' && (
         <>
           <div className={styles.onglets} role="tablist" aria-label="Que voulez-vous modifier ?">
@@ -67,6 +85,7 @@ export function EspacePro() {
             {onglet === 'avis' && <MesAvis />}
             {onglet === 'photos' && <MesPhotos />}
           </section>
+          <Installer />
         </>
       )}
     </main>

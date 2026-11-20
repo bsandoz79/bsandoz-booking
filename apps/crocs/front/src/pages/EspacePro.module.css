@@ -241,3 +241,32 @@
   outline: 3px solid var(--croc-rouge-fonce);
   outline-offset: 2px;
 }
+
+.info {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.6rem;
+  background: var(--croc-jaune-doux);
+  color: #3b0d09;
+  font-weight: 700;
+}
+
+/* « Mettre sur mon téléphone » */
+.installer {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+  margin-top: 1rem;
+  padding: 1.1rem 1.25rem;
+  border: 2px dashed #e3d3c4;
+  border-radius: 1rem;
+}
+
+.installer h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.installer p {
+  margin: 0;
+}

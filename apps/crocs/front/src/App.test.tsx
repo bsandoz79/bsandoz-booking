@@ -14,6 +14,7 @@ describe('Site de Croc’s', () => {
     expect(screen.queryByText(/Maquette proposée par/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Mentions légales et données personnelles' })).toHaveAttribute('href', '/mentions-legales');
     expect(screen.getByRole('link', { name: /Site créé par Baptiste Sandoz/ })).toHaveAttribute('href', 'https://bsandoz.fr');
+    expect(screen.getByRole('link', { name: 'Espace pro' })).toHaveAttribute('href', '/pro');
   });
 
   it('affiche la carte complète, en code', () => {

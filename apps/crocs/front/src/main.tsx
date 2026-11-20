@@ -5,10 +5,13 @@ import './index.css';
 import { App } from './App';
 import { EspacePro } from './pages/EspacePro';
 import { MentionsLegales } from './pages/MentionsLegales';
+import { brancherAppliPro } from './pages/pro/appli';
 
 /** Pages du site, toutes servies par index.html (voir public/.htaccess). */
 const chemin = window.location.pathname.replace(/\/$/, '');
 const page = chemin === '/pro' ? <EspacePro /> : chemin === '/mentions-legales' ? <MentionsLegales /> : <App />;
+// L'espace du patron s'installe comme une appli (icône sur l'écran d'accueil qui ouvre /pro).
+if (chemin === '/pro') brancherAppliPro();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

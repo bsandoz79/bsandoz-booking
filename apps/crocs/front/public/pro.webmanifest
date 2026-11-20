@@ -1,0 +1,16 @@
+{
+  "name": "Croc’s · Espace pro",
+  "short_name": "Croc’s Pro",
+  "description": "Modifier la carte, les infos, les avis et les photos du site de Croc’s.",
+  "lang": "fr",
+  "id": "/pro",
+  "start_url": "/pro",
+  "scope": "/pro",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#d0111b",
+  "icons": [
+    { "src": "/pro-icones/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/pro-icones/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

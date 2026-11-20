@@ -2,6 +2,9 @@
 RewriteEngine On
 RewriteBase /
 
+# Manifeste de l'appli de l'espace pro.
+AddType application/manifest+json .webmanifest
+
 RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
@@ -15,7 +18,7 @@ RewriteRule ^(pro|mentions-legales)/?$ index.html [L]
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "DENY"
-  <FilesMatch "\.html$">
+  <FilesMatch "\.(html|webmanifest)$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
   # Fichiers du build (nom avec empreinte) : cache d'un an.

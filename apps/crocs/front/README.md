@@ -8,7 +8,7 @@ Site d'une page pour Croc's (restauration rapide, 220 rue de Rouen, Amiens) : ac
 
 - Données : `src/data/crocs.ts` (coordonnées, horaires, avis, carte intégrée).
 - **Modifiable par le patron** : avec `VITE_API_URL` (`.env.production` : `https://api.crocs.demo.bsandoz.fr`), le site lit la carte (`/carte`) et les textes (`/site` : annonce en haut du site, phrase d'accueil, horaires) sur l'API `apps/crocs/api`. Si l'API ne répond pas, il garde la carte intégrée.
-- **Espace du patron** : `/pro` (connexion), quatre onglets :
+- **Espace du patron** : `/pro` (connexion ; lien discret « Espace pro » en pied de page). S'installe comme une appli sur le téléphone (`public/pro.webmanifest`, icônes `public/pro-icones/`, manifeste ajouté seulement sur `/pro`) : bouton « Mettre sur mon téléphone » (Android) ou explication (iPhone : Partager → Sur l'écran d'accueil). Déconnexion après 30 minutes sans activité, y compris quand l'appli est rouverte plus tard (dernière activité gardée sur l'appareil). Quatre onglets :
   - « La carte » (bloc `EditeurCarte`) : prix changé, l'ancien barré un mois au choix ; plat ajouté : « Nouveau » un mois ; « Épuisé » jusqu'à minuit ;
   - « Infos du site » : annonce, phrase d'accueil, horaires ;
   - « Avis » : avis recopiés par le patron (nom, note, texte, quand, où publié), ordre, retrait en deux touches ;
