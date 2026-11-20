@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (module Carte, bloc EditeurCarte)
+- Changer un prix sans barrer l'ancien : `barrerAncienPrix: false` sur `PUT /admin/carte/articles/{id}` (retire aussi un prix barré encore affiché) ; dans la fiche de l'article, interrupteur « Afficher l’ancien prix barré » quand le prix change ; 4 tests.
 ### Ajouté (déploiement de Croc's)
 - Le site de Croc's s'envoie tout seul par GitHub (job `crocs-front`, secret `FTP_SERVER_DIR_CROCS_FRONT`) et passe la CI (lint, tests, build). Photos sorties du code : lues dans le dossier `photos/` du serveur, jamais dans le dépôt ni écrasées par l'envoi.
 - API de Croc's : mise en place automatique par une tâche cron ; `deploy/apres-envoi.sh` refuse une archive abîmée sans toucher au code en place, et l'archive est envoyée sous un nom provisoire.

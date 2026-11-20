@@ -118,8 +118,8 @@ function MaCarte() {
   return (
     <>
       <p className={styles.aide}>
-        Touchez un plat pour changer son nom, son prix ou sa description. Un nouveau prix garde l’ancien barré pendant un mois,
-        un plat ajouté est marqué « Nouveau » pendant un mois, et « Épuisé » dure jusqu’à ce soir minuit.
+        Touchez un plat pour changer son nom, son prix ou sa description. Quand vous changez un prix, vous choisissez si l’ancien
+        reste affiché barré pendant un mois. Un plat ajouté est marqué « Nouveau » pendant un mois, et « Épuisé » dure jusqu’à ce soir minuit.
       </p>
       <EditeurCarte
         rubriques={rubriques}

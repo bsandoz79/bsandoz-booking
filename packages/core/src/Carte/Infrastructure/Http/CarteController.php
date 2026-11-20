@@ -119,6 +119,7 @@ final class CarteController
             self::prix($d),
             ($d['visible'] ?? true) !== false,
             self::photo($d),
+            ($d['barrerAncienPrix'] ?? true) !== false,
         );
 
         return new JsonResponse($this->carte->vueArticle($article));

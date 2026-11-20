@@ -3,7 +3,7 @@
 Espace pro : la carte d'un commerce, modifiable au téléphone (pendant du bloc `Carte`, qui l'affiche aux visiteurs).
 - Article : le toucher ouvre sa fiche (nom, prix, description, rubrique, affiché ou caché, supprimer en deux touches) ; « Épuisé » en une touche (bouton à bascule) ; ordre par glisser (appui long au doigt, flèches au clavier).
 - Rubrique : nom, note (« Avec frites : + 1 € »), pictogramme choisi parmi `icones`, ordre par ↑ ↓, suppression (refusée par l'API si elle n'est pas vide : le message reçu est affiché).
-- Prix saisis en euros (« 7,50 », « 7.5 », « 7 € ») et envoyés en centimes (`lirePrix`).
+- Prix saisis en euros (« 7,50 », « 7.5 », « 7 € ») et envoyés en centimes (`lirePrix`). Prix changé (ou ancien prix encore barré) : interrupteur « Afficher l’ancien prix barré », activé par défaut ; `ArticleSaisi.barrerAncienPrix` (modification seulement) vaut false s'il est désactivé.
 
 Le bloc n'appelle aucune API : chaque action passe par une fonction (`onAjouterArticle`, `onModifierArticle`, `onEpuiser`, `onSupprimerArticle`, `onOrdonnerArticles`, `onAjouterRubrique`, `onModifierRubrique`, `onSupprimerRubrique`, `onOrdonnerRubriques`) qui renvoie une promesse ; une erreur levée affiche son message. Après chaque action, l'application recharge la carte et la redonne en `rubriques`.
 

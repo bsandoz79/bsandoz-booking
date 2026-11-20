@@ -128,12 +128,13 @@ final class GererCarte
     }
 
     /** Modification : un prix différent garde l'ancien barré pendant un mois. */
-    public function modifierArticle(string $id, string $categorieId, string $nom, string $description, int $prixCents, bool $visible, ?string $photo): Article
+    /** `$barrerAncienPrix` à false : nouveau prix sans l'ancien barré (et un prix barré encore affiché est retiré). */
+    public function modifierArticle(string $id, string $categorieId, string $nom, string $description, int $prixCents, bool $visible, ?string $photo, bool $barrerAncienPrix = true): Article
     {
         $this->categories->get($categorieId);
         $article = $this->articles->get($id);
         $article->modifier($nom, $description, $categorieId, $visible);
-        $article->changerPrix(self::prix($prixCents), $this->clock->now());
+        $article->changerPrix(self::prix($prixCents), $this->clock->now(), $barrerAncienPrix);
         $article->changerPhoto(self::photo($photo));
         $this->articles->save($article);
 
