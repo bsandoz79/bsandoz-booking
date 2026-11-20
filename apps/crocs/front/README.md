@@ -2,7 +2,9 @@
 
 Site d'une page pour Croc's (restauration rapide, 220 rue de Rouen, Amiens) : accueil (appeler, itinéraire), carte en code (bloc `Carte` du kit), venir (adresse, Google Maps, Waze, Plans, horaires, temps de trajet), avis, photos.
 
-**Démo privée** tant que le patron n'a pas accepté : bandeau « Maquette proposée par Baptiste Sandoz », `noindex`. Prix et horaires relevés sur des sources publiques (voir `docs/crocs/carte-releve.md`), à faire valider. Photos de Google Maps en miniature : sur le serveur et en local seulement (`public/photos/`, ignoré par Git, ce dépôt étant public) ; à remplacer par ses photos, avec son accord.
+**Démo** tant que le patron n'a pas accepté : `noindex` (balise et `.htaccess`). Plus de bandeau « maquette ». Pied de page : lien vers les mentions légales et petite mention « Site créé par Baptiste Sandoz » vers bsandoz.fr.
+
+**Mentions légales** : `/mentions-legales` (`src/data/legal.ts`) : éditeur, hébergeur (o2switch), réalisation, données personnelles (aucun cookie de suivi ni mesure d'audience : pas de bandeau de consentement), avis et photos. Ce qui n'est pas connu (raison sociale, SIRET, directeur de la publication, adresse de l'hébergeur) est marqué `[à compléter]`. Prix et horaires relevés sur des sources publiques (voir `docs/crocs/carte-releve.md`), à faire valider. Photos de Google Maps en miniature : sur le serveur et en local seulement (`public/photos/`, ignoré par Git, ce dépôt étant public) ; à remplacer par ses photos, avec son accord.
 
 - Données : `src/data/crocs.ts` (coordonnées, horaires, avis, carte intégrée).
 - **Modifiable par le patron** : avec `VITE_API_URL` (`.env.production` : `https://api.crocs.demo.bsandoz.fr`), le site lit la carte (`/carte`) et les textes (`/site` : annonce en haut du site, phrase d'accueil, horaires) sur l'API `apps/crocs/api`. Si l'API ne répond pas, il garde la carte intégrée.

@@ -80,5 +80,6 @@ Site vitrine avec la carte, que le patron modifie lui-même. Démo privée (adre
 - [x] `feature/carte-prix-sans-barre` : changer un prix sans barrer l'ancien (au choix dans la fiche de l'article)
 - [x] `feature/defilant` : kit front, bloc `Defilant` (avis qui défilent par 3, toutes les 3 s, pause), utilisé pour les avis de Croc's
 - [x] `feature/crocs-avis-photos` : avis et photos ajoutés à la main par le patron (onglets « Avis » et « Photos »), affichés en défilement
+- [x] `feature/crocs-mentions-legales` : mentions légales et données personnelles, bandeau de maquette retiré, mention du créateur en pied de page
 - [ ] `feature/crocs-contenus` : carte relevée (`docs/crocs/carte-releve.md`, prix à faire valider), couleurs rouge et jaune ; photos et avis : avec l'accord du patron
 - [ ] `feature/crocs-demo` : démo privée en ligne (sous-domaine secret, `noindex`, bandeau)

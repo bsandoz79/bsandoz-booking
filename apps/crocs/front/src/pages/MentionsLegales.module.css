@@ -1,0 +1,34 @@
+/* Mentions légales : page de texte simple, lisible au téléphone. */
+.page {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  max-width: 760px;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 1.25rem 1.25rem 3rem;
+  line-height: 1.6;
+}
+
+.retour {
+  color: var(--croc-rouge-fonce);
+  font-weight: 700;
+}
+
+.titre {
+  margin: 0;
+  font-family: var(--croc-police-titre);
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+  line-height: 1.15;
+  color: var(--croc-rouge);
+}
+
+.section h2 {
+  margin: 0.5rem 0 0.4rem;
+  font-size: 1.15rem;
+  color: var(--croc-rouge-fonce);
+}
+
+.section p {
+  margin: 0 0 0.6rem;
+}
