@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from './App';
 import { crocs } from './data/crocs';
@@ -93,5 +93,18 @@ describe('Site de Croc’s', () => {
     expect(within(visionneuse).getByRole('img', { name: 'Le comptoir et la carte au mur' })).toBeInTheDocument();
     await userEvent.click(within(visionneuse).getByRole('button', { name: 'Fermer' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('photos en galerie fixe : 6 vignettes, la dernière ouvre la suite', async () => {
+    vi.stubEnv('VITE_API_URL', 'https://api.example.test');
+    const photos = Array.from({ length: 8 }, (_, i) => ({ url: `/p${i + 1}.jpg`, description: `Photo ${i + 1}` }));
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => new Response(JSON.stringify(url.endsWith('/carte') ? [] : { photos }))));
+    render(<App />);
+    const galerie = await screen.findByRole('region', { name: 'Photos de Croc’s' });
+    await waitFor(() => expect(within(galerie).getAllByRole('listitem')).toHaveLength(6));
+    expect(within(galerie).queryByRole('button', { name: /Mettre en pause/ })).not.toBeInTheDocument();
+    await userEvent.click(within(galerie).getByRole('button', { name: 'Voir les 8 photos, à partir de : Photo 6' }));
+    expect(screen.getByRole('dialog', { name: 'Photo agrandie' })).toHaveTextContent('Photo 6 · 7 / 9');
+    vi.unstubAllEnvs();
   });
 });
