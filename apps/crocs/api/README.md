@@ -32,9 +32,14 @@ Application Symfony du deuxième client : elle installe le kit `bsandoz/core` et
    ```
 6. Envoyer le site (`apps/crocs/front/README.md`) : il lit la carte sur cette API ; le patron se connecte sur `/pro`.
 
-7. **cPanel → Tâches cron** (une fois) : toutes les 5 minutes, met en place l'API qu'a envoyée GitHub, s'il y en a une :
+7. **Tâche cron** (une fois, depuis le terminal cPanel) : toutes les 5 minutes, met en place l'API qu'a envoyée GitHub, s'il y en a une.
+   Le chemin de `php` est donné en clair (une tâche cron ne le trouve pas toujours) et le journal va dans le dossier personnel
+   (`var/log/` peut ne pas exister : la redirection échouerait et rien ne serait lancé).
    ```sh
-   */5 * * * * cd ~/api.crocs.demo.bsandoz.fr && [ -f api.zip ] && sh deploy/apres-envoi.sh >> var/log/deploiement.log 2>&1
+   P=$(which php)
+   (crontab -l 2>/dev/null | grep -v 'apres-envoi.sh'; echo "*/5 * * * * cd \$HOME/api.crocs.demo.bsandoz.fr && [ -f api.zip ] && PHP=$P sh deploy/apres-envoi.sh >> \$HOME/crocs-deploiement.log 2>&1") | crontab -
+   crontab -l
    ```
+   Vérifier : `ls api.zip` (absent après 5 minutes), `tail ~/crocs-deploiement.log` (« API à jour. »).
 
 Ensuite, à chaque changement de l'API : envoi automatique par GitHub (archive envoyée sous un nom provisoire, renommée une fois complète), mise en place par la tâche cron dans les 5 minutes. Une archive abîmée est refusée sans toucher au code en place. À la main si besoin : `sh deploy/apres-envoi.sh`.
