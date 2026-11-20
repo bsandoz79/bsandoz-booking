@@ -28,6 +28,13 @@
   text-decoration: none;
 }
 
+/* Logo de l'enseigne (image) : la hauteur suit la taille du texte qu'il remplace. */
+.logo img {
+  display: block;
+  width: auto;
+  height: 1.9rem;
+}
+
 .nav {
   display: none;
   gap: 1.2rem;
@@ -75,6 +82,14 @@
   line-height: 0.95;
   color: var(--croc-jaune);
   text-shadow: 3px 3px 0 var(--croc-rouge-fonce);
+}
+
+.titre img {
+  display: block;
+  width: min(100%, 30rem);
+  height: auto;
+  margin: 0.4rem 0 0.6rem;
+  filter: drop-shadow(3px 3px 0 var(--croc-rouge-fonce));
 }
 
 .accroche {
@@ -358,6 +373,13 @@
   font-family: var(--croc-police-titre);
   font-size: 2rem;
   color: var(--croc-jaune);
+}
+
+.logoPied img {
+  display: block;
+  width: 11rem;
+  height: auto;
+  margin: 0 auto;
 }
 
 .lienPied {

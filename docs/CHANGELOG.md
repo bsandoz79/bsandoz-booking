@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (site de Croc's)
+- Logo de l'enseigne dans l'en-tête, en titre et en pied de page (fichier déposé sur le serveur, hors du dépôt ; nom en texte s'il manque).
 ### Ajouté (bloc Carte)
 - Option `ajustee` : la carte compacte tient toujours à l'écran sur ordinateur ; trop longue, elle rapetisse (jusqu'à 80 %), puis se sépare en pages avec des boutons ; tailles de la carte compacte en `em` ; 3 tests. Croc's l'utilise (le patron peut ajouter des plats sans que la carte déborde).
 ### Modifié (site de Croc's)
