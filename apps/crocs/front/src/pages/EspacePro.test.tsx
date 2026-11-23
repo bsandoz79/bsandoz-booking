@@ -37,6 +37,22 @@ describe('Espace du patron', () => {
   beforeEach(() => vi.stubEnv('VITE_API_URL', 'https://api.example.test'));
   afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); localStorage.clear(); });
 
+  it('propose de modifier directement sur le site, une fois connecté', async () => {
+    fauxServeur();
+    render(<EspacePro />);
+    await seConnecter();
+    expect(await screen.findByRole('link', { name: /Modifier directement sur le site/ })).toHaveAttribute('href', '/?modifier');
+  });
+
+  it('ouvre l’onglet demandé dans l’adresse (depuis le site : /pro?onglet=avis)', async () => {
+    fauxServeur();
+    window.history.pushState({}, '', '/pro?onglet=avis');
+    render(<EspacePro />);
+    await seConnecter();
+    expect(await screen.findByRole('tab', { name: 'Avis' })).toHaveAttribute('aria-selected', 'true');
+    window.history.pushState({}, '', '/');
+  });
+
   it('se connecte, voit sa carte et met un plat « Épuisé » en une touche', async () => {
     const appels = fauxServeur();
     render(<EspacePro />);

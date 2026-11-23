@@ -318,3 +318,57 @@
   .compacte .sommaire { display: none; }
   .compacte .rubriques { columns: 4; column-gap: 2.25rem; }
 }
+
+/*
+ * Mode modification : plats et titres de rubrique entourés en pointillé ; un bouton transparent couvre chacun.
+ * Le cadre se renforce au survol et au focus clavier.
+ */
+.modifiable .entete,
+.modifiable .article {
+  position: relative;
+  border-radius: 0.4rem;
+  outline: 2px dashed color-mix(in srgb, var(--_accent) 55%, transparent);
+  outline-offset: 3px;
+}
+
+/* Plats serrés : le cadre de chacun reste séparé de celui du voisin. */
+.modifiable .articles { gap: 0.9rem; }
+
+.modifiable .article:has(.toucher:hover),
+.modifiable .entete:has(.toucher:hover) {
+  outline-style: solid;
+  outline-color: var(--_accent);
+}
+
+/* Posé exactement sur le plat : un bouton qui dépasse empêcherait le navigateur de répartir la carte en colonnes. */
+.toucher {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.toucher:focus-visible {
+  outline: 3px solid var(--_trait);
+  outline-offset: 2px;
+}
+
+.ajouter {
+  margin-top: var(--bs-space-3);
+  min-height: 40px;
+  padding: 0 0.9rem;
+  border: 2px dashed color-mix(in srgb, var(--_accent) 55%, transparent);
+  border-radius: var(--bs-radius-pill);
+  background: transparent;
+  color: var(--_texte);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ajouter:hover { border-style: solid; border-color: var(--_accent); }
+.ajouter:focus-visible { outline: 3px solid var(--_trait); outline-offset: 2px; }

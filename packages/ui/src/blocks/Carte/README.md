@@ -9,6 +9,7 @@ Carte d'un commerce (restaurant, snack, boutique…) façon menu dessiné : pas 
 - `ajustee` (avec `compacte`) : sur grand écran, la carte tient toujours dans la hauteur `--bs-carte-hauteur-max` (à régler dans le thème, ex. `calc(100svh - 9.5rem)`). Trop longue, elle rapetisse par pas de 5 % jusqu'à 80 % (`ECHELLE_MIN`), puis se sépare en pages de poids proches (`decouperCarte`, une rubrique n'est jamais coupée), avec les boutons « Page précédente » et « Page suivante ». Elle se remesure quand la carte ou la taille de l'écran change. Sur téléphone, rien ne change (la carte défile).
 - `sommaire` (facultatif) : nom de la navigation ; s'il est donné, les rubriques sont listées en pastilles cliquables en haut (défilement de côté sur téléphone, sur plusieurs lignes au-delà de 720 px).
 - Une colonne sur téléphone, deux à partir de 720 px, trois à partir de 1100 px.
+- Mode modification (facultatif) : `onToucherArticle(id)`, `onToucherRubrique(id)`, `onAjouterArticle(rubriqueId)`. Chaque plat et chaque titre de rubrique est entouré en pointillé, avec un bouton transparent posé exactement dessus (« Modifier : Kebab ») ; « + Ajouter » sous chaque rubrique. La carte n'enregistre rien : elle dit ce qui a été touché (voir `CarteModifiable`).
 
 ```tsx
 <Carte titre="Notre carte" rubriques={carte} sommaire="Aller à une rubrique" />

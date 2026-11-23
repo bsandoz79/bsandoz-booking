@@ -36,6 +36,10 @@ export interface CarteLibelles {
   page: string;
   pagePrecedente: string;
   pageSuivante: string;
+  /** Mode modification : début du nom du bouton posé sur un plat ou une rubrique (« Modifier : Kebab »). */
+  modifier: string;
+  /** Mode modification : bouton sous chaque rubrique. */
+  ajouter: string;
 }
 
 export interface CarteProps {
@@ -53,11 +57,21 @@ export interface CarteProps {
    */
   ajustee?: boolean;
   libelles?: Partial<CarteLibelles>;
+  /**
+   * Mode modification (le commerçant voit son site tel quel) : chaque plat est entouré et se touche pour être modifié.
+   * La carte n'enregistre rien : elle dit seulement ce qui a été touché.
+   */
+  onToucherArticle?: (id: string) => void;
+  /** Mode modification : le titre de chaque rubrique se touche aussi. */
+  onToucherRubrique?: (id: string) => void;
+  /** Mode modification : un bouton « ajouter » sous chaque rubrique. */
+  onAjouterArticle?: (rubriqueId: string) => void;
 }
 
 const LIBELLES: CarteLibelles = {
   nouveau: 'Nouveau', epuise: 'Épuisé', ancienPrix: 'Ancien prix', nouveauPrix: 'Nouveau prix',
   pages: 'Pages de la carte', page: 'Page {n} sur {total}', pagePrecedente: 'Page précédente', pageSuivante: 'Page suivante',
+  modifier: 'Modifier', ajouter: '+ Ajouter',
 };
 
 /** Taille la plus petite d'une carte ajustée (au-delà, elle se sépare en pages) et pas de réduction. */
@@ -97,7 +111,9 @@ export function prixCarte(cents: number): string {
  * Prix changé : l'ancien barré à côté du nouveau. « Nouveau » et « Épuisé » en pastilles.
  * Couleurs, police et fond viennent du thème (variables --bs-carte-*), aucun texte métier en dur.
  */
-export function Carte({ rubriques, titre, titreVisible = false, sommaire, compacte = false, ajustee = false, libelles }: CarteProps) {
+export function Carte({
+  rubriques, titre, titreVisible = false, sommaire, compacte = false, ajustee = false, libelles, onToucherArticle, onToucherRubrique, onAjouterArticle,
+}: CarteProps) {
   const l = { ...LIBELLES, ...libelles };
   const actif = compacte && ajustee;
   const [echelle, setEchelle] = useState(1);
@@ -138,7 +154,8 @@ export function Carte({ rubriques, titre, titreVisible = false, sommaire, compac
   const groupes = actif && pages > 1 ? decouperCarte(rubriques, pages) : [rubriques];
   const enCours = Math.min(page, groupes.length - 1);
   const affichees = groupes[enCours];
-  const classes = [styles.carte, compacte ? styles.compacte : '', actif ? styles.ajustee : ''].filter(Boolean).join(' ');
+  const modifiable = !!(onToucherArticle || onToucherRubrique || onAjouterArticle);
+  const classes = [styles.carte, compacte ? styles.compacte : '', actif ? styles.ajustee : '', modifiable ? styles.modifiable : ''].filter(Boolean).join(' ');
 
   return (
     <section className={classes} aria-label={titre} style={actif ? ({ '--_echelle': echelle } as CSSProperties) : undefined}>
@@ -161,6 +178,9 @@ export function Carte({ rubriques, titre, titreVisible = false, sommaire, compac
                 <span className={styles.picto} style={{ '--_picto': `url("${r.pictogramme}")` } as CSSProperties} aria-hidden="true" />
               )}
               <h3 id={`rubrique-${r.id}-nom`} className={styles.rubriqueNom}>{r.nom}</h3>
+              {onToucherRubrique && (
+                <button type="button" className={styles.toucher} aria-label={`${l.modifier} : ${r.nom}`} onClick={() => onToucherRubrique(r.id)} />
+              )}
             </div>
             <ul className={styles.articles}>
               {r.articles.map((a) => (
@@ -184,9 +204,16 @@ export function Carte({ rubriques, titre, titreVisible = false, sommaire, compac
                     </p>
                     {a.description && <p className={styles.description}>{a.description}</p>}
                   </div>
+                  {/* Bouton posé sur tout le plat (le contenu reste lu tel quel par les lecteurs d'écran). */}
+                  {onToucherArticle && (
+                    <button type="button" className={styles.toucher} aria-label={`${l.modifier} : ${a.nom}`} onClick={() => onToucherArticle(a.id)} />
+                  )}
                 </li>
               ))}
             </ul>
+            {onAjouterArticle && (
+              <button type="button" className={styles.ajouter} onClick={() => onAjouterArticle(r.id)} aria-label={`${l.ajouter} : ${r.nom}`}>{l.ajouter}</button>
+            )}
             {r.note && <p className={styles.note}>{r.note}</p>}
           </section>
         ))}

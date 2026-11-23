@@ -296,3 +296,27 @@
   font-weight: 800;
   white-space: nowrap;
 }
+
+/* Accès au site en mode modification : le chemin le plus simple, mis en avant au-dessus des onglets. */
+.surLeSite {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 0.9rem;
+  background: var(--croc-rouge);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.15);
+}
+
+.surLeSite strong {
+  color: var(--croc-jaune);
+  font-size: 1.1rem;
+}
+
+.surLeSite span { font-size: 0.92rem; }
+
+.surLeSite:focus-visible {
+  outline: 3px solid var(--croc-jaune);
+  outline-offset: 3px;
+}

@@ -1,6 +1,6 @@
 import { useState, type CSSProperties, type FormEvent } from 'react';
 import { Button } from '../Button';
-import { prixCarte } from '../Carte';
+import { Carte, prixCarte, type CarteProps, type RubriqueCarte } from '../Carte';
 import { Dialog } from '../Dialog';
 import { Field } from '../Field';
 import { SortableList } from '../SortableList';
@@ -74,6 +74,9 @@ export interface EditeurCarteLibelles {
   visibleAide: string;
   epuise: string;
   epuiseAide: string;
+  /** Fenêtre d'un plat (carte modifiable) : bouton pour le marquer épuisé, ou de nouveau disponible. */
+  marquerEpuise: string;
+  marquerDisponible: string;
   cache: string;
   nouveau: string;
   enregistrer: string;
@@ -125,6 +128,8 @@ const LIBELLES: EditeurCarteLibelles = {
   visibleAide: 'Désactivez pour le cacher sans le supprimer.',
   epuise: 'Épuisé',
   epuiseAide: 'Épuisé jusqu’à ce soir minuit',
+  marquerEpuise: 'Épuisé jusqu’à ce soir',
+  marquerDisponible: 'De nouveau disponible',
   cache: 'Caché',
   nouveau: 'Nouveau',
   enregistrer: 'Enregistrer',
@@ -320,11 +325,13 @@ function BoutonSupprimer({ l, onSupprimer, disabled }: { l: EditeurCarteLibelles
   );
 }
 
-function FenetreArticle({ l, rubriques, article, categorieId, erreur, enCours, onFermer, onEnregistrer, onSupprimer }: FenetreCommune & {
+function FenetreArticle({ l, rubriques, article, categorieId, erreur, enCours, onFermer, onEnregistrer, onSupprimer, onEpuiser }: FenetreCommune & {
   rubriques: RubriqueEditable[];
   article?: ArticleEditable;
   categorieId: string;
   onEnregistrer: (a: ArticleSaisi) => Promise<void>;
+  /** Donné : un bouton « Épuisé » dans la fenêtre (enregistré tout de suite, sans le reste du formulaire). */
+  onEpuiser?: () => Promise<void>;
 }) {
   const [nom, setNom] = useState(article?.nom ?? '');
   const [description, setDescription] = useState(article?.description ?? '');
@@ -363,6 +370,11 @@ function FenetreArticle({ l, rubriques, article, categorieId, erreur, enCours, o
           </select>
         </div>
         <Toggle label={l.visible} hint={l.visibleAide} checked={visible} onChange={setVisible} />
+        {article && onEpuiser && (
+          <Button variant="secondary" disabled={enCours} onClick={() => void onEpuiser()}>
+            {article.epuise ? l.marquerDisponible : l.marquerEpuise}
+          </Button>
+        )}
         {erreur && <p className={styles.erreur} role="alert">{erreur}</p>}
         <div className={styles.boutons}>
           {onSupprimer && <BoutonSupprimer l={l} onSupprimer={onSupprimer} disabled={enCours} />}
@@ -414,5 +426,104 @@ function FenetreRubrique({ l, icones, rubrique, erreur, enCours, onFermer, onEnr
         </div>
       </form>
     </Dialog>
+  );
+}
+
+export interface CarteModifiableProps
+  extends Pick<EditeurCarteProps, 'rubriques' | 'icones' | 'onAjouterArticle' | 'onModifierArticle' | 'onEpuiser' | 'onSupprimerArticle' | 'onModifierRubrique'>,
+    Pick<CarteProps, 'titre' | 'titreVisible' | 'sommaire' | 'compacte' | 'ajustee'> {
+  /** Supprimer une rubrique (vide) : facultatif, l'espace pro le fait aussi. */
+  onSupprimerRubrique?: (id: string) => Promise<void>;
+  libelles?: Partial<EditeurCarteLibelles>;
+  /** Libellés de la carte affichée (pastilles, pages, « Modifier »). */
+  libellesCarte?: CarteProps['libelles'];
+}
+
+/**
+ * La carte telle que les clients la voient, mais modifiable : chaque plat est entouré, un toucher ouvre sa fiche
+ * (nom, prix et ancien prix barré, description, rubrique, affiché, épuisé, supprimer) ; le titre d'une rubrique ouvre la sienne ;
+ * « + Ajouter » sous chaque rubrique. Les plats cachés n'y sont pas (ils restent dans l'espace pro).
+ * Comme `EditeurCarte`, le bloc n'appelle aucune API : chaque action passe par une fonction donnée.
+ */
+export function CarteModifiable({
+  rubriques, icones = [], onAjouterArticle, onModifierArticle, onEpuiser, onSupprimerArticle, onModifierRubrique, onSupprimerRubrique,
+  libelles, libellesCarte, ...affichage
+}: CarteModifiableProps) {
+  const l = { ...LIBELLES, ...libelles };
+  const [fenetre, setFenetre] = useState<Fenetre>();
+  const [erreur, setErreur] = useState('');
+  const [enCours, setEnCours] = useState(false);
+
+  const fermer = () => { setFenetre(undefined); setErreur(''); };
+  /** Lance l'action ; réussie, la fenêtre se ferme, sinon le message d'erreur reste affiché dedans. */
+  const agir = async (action: () => Promise<void>) => {
+    setEnCours(true);
+    setErreur('');
+    try {
+      await action();
+      setFenetre(undefined);
+    } catch (e) {
+      setErreur(e instanceof Error && e.message ? e.message : l.erreur);
+    } finally {
+      setEnCours(false);
+    }
+  };
+
+  const affichees: RubriqueCarte[] = rubriques.map((r) => ({
+    id: r.id,
+    nom: r.nom,
+    note: r.note || undefined,
+    pictogramme: icones.find((i) => i.cle === r.icone)?.url,
+    articles: r.articles.filter((a) => a.visible).map((a) => ({ ...a, description: a.description || undefined })),
+  }));
+  const article = (id: string) => rubriques.flatMap((r) => r.articles).find((a) => a.id === id);
+
+  return (
+    <>
+      <Carte
+        {...affichage}
+        rubriques={affichees}
+        libelles={libellesCarte}
+        onToucherArticle={(id) => {
+          const a = article(id);
+          if (a) setFenetre({ type: 'article', article: a, categorieId: a.categorieId });
+        }}
+        onToucherRubrique={(id) => setFenetre({ type: 'rubrique', rubrique: rubriques.find((r) => r.id === id) })}
+        onAjouterArticle={(rubriqueId) => setFenetre({ type: 'article', categorieId: rubriqueId })}
+      />
+
+      {fenetre?.type === 'article' && (
+        <FenetreArticle
+          key={fenetre.article?.id ?? `nouveau-${fenetre.categorieId}`}
+          l={l}
+          rubriques={rubriques}
+          article={fenetre.article}
+          categorieId={fenetre.categorieId}
+          erreur={erreur}
+          enCours={enCours}
+          onFermer={fermer}
+          onEnregistrer={(saisie) => {
+            const a = fenetre.article;
+            return agir(() => (a ? onModifierArticle(a.id, saisie) : onAjouterArticle(saisie)));
+          }}
+          onSupprimer={fenetre.article ? () => agir(() => onSupprimerArticle(fenetre.article!.id)) : undefined}
+          onEpuiser={fenetre.article ? () => agir(() => onEpuiser(fenetre.article!.id, !fenetre.article!.epuise)) : undefined}
+        />
+      )}
+
+      {fenetre?.type === 'rubrique' && fenetre.rubrique && (
+        <FenetreRubrique
+          key={fenetre.rubrique.id}
+          l={l}
+          icones={icones}
+          rubrique={fenetre.rubrique}
+          erreur={erreur}
+          enCours={enCours}
+          onFermer={fermer}
+          onEnregistrer={(saisie) => agir(() => onModifierRubrique(fenetre.rubrique!.id, saisie))}
+          onSupprimer={onSupprimerRubrique && fenetre.rubrique.articles.length === 0 ? () => agir(() => onSupprimerRubrique(fenetre.rubrique!.id)) : undefined}
+        />
+      )}
+    </>
   );
 }
