@@ -1,6 +1,10 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (Croc's : modifier directement sur le site)
+- Le patron voit son site tel que ses clients le voient, avec ce qu'il peut changer entouré en pointillé : un toucher sur un plat ouvre sa fiche (nom, prix, ancien prix barré ou non, description, rubrique, épuisé, supprimer), « + Ajouter un plat » sous chaque rubrique, titre de rubrique, phrase d'accueil, annonce, horaires ; photos et avis mènent au bon onglet de l'espace pro. Enregistré tout de suite, bandeau en bas (« Terminer »).
+- Accès par le bouton « Modifier directement sur le site » de l'espace pro (adresse `/?modifier`) ; sans session ouverte, retour à la connexion ; déconnexion après 30 minutes sans activité, comme l'espace pro. Les onglets restent pour le reste (plats cachés, ordre).
+- Kit front : `Carte` en mode modification (`onToucherArticle`, `onToucherRubrique`, `onAjouterArticle`) et nouveau bloc `CarteModifiable` ; 7 tests (kit) et 7 tests (Croc's).
 ### Ajouté (site fictif d'avocat)
 - `apps/avocat/front` : site d'un cabinet d'avocat fictif, « Maître Baptiste Sandoz » : haut de page avec balance dessinée, parcours, trois domaines d'intervention numérotés (numérique, contrats, propriété intellectuelle), contact en quatre blocs, menu repliable sur téléphone ; mentions légales et confidentialité ; bandeau « Site fictif… Baptiste Sandoz n'est pas avocat », coordonnées fictives, jamais indexé ; 6 tests.
 - CI (job `avocat-front`) et envoi automatique sur o2switch dès que le secret `FTP_SERVER_DIR_AVOCAT_FRONT` existe.

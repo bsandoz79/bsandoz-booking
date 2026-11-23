@@ -22,3 +22,12 @@ Thème du kit (`--bs-*`) ; pictogrammes teintés par `--bs-carte-trait` (sinon `
 
 ## Accessibilité
 Fiches en fenêtre modale (focus gardé, Échap) ; « Épuisé » annoncé avec son état (`aria-pressed`) ; boutons ↑ ↓ nommés avec la rubrique ; erreurs annoncées (`role="alert"`).
+
+## CarteModifiable
+La carte telle que les clients la voient (`Carte`), mais modifiable sur place : toucher un plat ouvre sa fiche (nom, prix et ancien prix barré au choix, description, rubrique, affiché, « Épuisé jusqu'à ce soir », supprimer) ; toucher le titre d'une rubrique ouvre la sienne ; « + Ajouter » sous chaque rubrique. Les plats cachés n'y sont pas (ils restent dans `EditeurCarte`).
+
+Mêmes données (`rubriques`, `icones`) et mêmes fonctions que `EditeurCarte` (`onAjouterArticle`, `onModifierArticle`, `onEpuiser`, `onSupprimerArticle`, `onModifierRubrique`, `onSupprimerRubrique` facultative), plus les réglages d'affichage de `Carte` (`titre`, `sommaire`, `compacte`, `ajustee`). Réussie, une action ferme la fiche ; une erreur levée reste affichée dedans.
+
+```tsx
+<CarteModifiable titre="La carte" compacte rubriques={carte} icones={pictos} onModifierArticle={...} ... />
+```

@@ -110,4 +110,26 @@ describe('Carte', () => {
       expect(screen.queryByRole('navigation', { name: 'Pages de la carte' })).not.toBeInTheDocument();
     });
   });
+
+  describe('mode modification', () => {
+    it('sans fonction donnée, rien n’est cliquable', () => {
+      render(<Carte titre="Menu" rubriques={rubriques} />);
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    });
+
+    it('chaque plat et chaque titre de rubrique se touche, « + Ajouter » sous chaque rubrique', () => {
+      const onToucherArticle = vi.fn();
+      const onToucherRubrique = vi.fn();
+      const onAjouterArticle = vi.fn();
+      render(<Carte titre="Menu" rubriques={rubriques} onToucherArticle={onToucherArticle} onToucherRubrique={onToucherRubrique} onAjouterArticle={onAjouterArticle} />);
+      fireEvent.click(screen.getByRole('button', { name: 'Modifier : Article deux' }));
+      expect(onToucherArticle).toHaveBeenCalledWith('a2');
+      fireEvent.click(screen.getByRole('button', { name: 'Modifier : Rubrique B' }));
+      expect(onToucherRubrique).toHaveBeenCalledWith('r2');
+      fireEvent.click(screen.getByRole('button', { name: '+ Ajouter : Rubrique A' }));
+      expect(onAjouterArticle).toHaveBeenCalledWith('r1');
+      // Le plat reste lisible tel quel (nom, prix) à côté de son bouton.
+      expect(screen.getByRole('region', { name: 'Rubrique A' })).toHaveTextContent('Article deux');
+    });
+  });
 });

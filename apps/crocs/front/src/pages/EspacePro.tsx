@@ -13,6 +13,7 @@ import { inactifTropLongtemps, noterActivite, oublierActivite, useInactivite } f
 import { Installer } from './pro/Installer';
 import { MesAvis } from './pro/MesAvis';
 import { MesPhotos } from './pro/MesPhotos';
+import { ADRESSE_MODIFICATION } from '../modification/useModeModification';
 
 type Etat = 'chargement' | 'connexion' | 'connecte';
 type Onglet = 'carte' | 'infos' | 'avis' | 'photos';
@@ -24,10 +25,16 @@ const ONGLETS: { id: Onglet; nom: string }[] = [
   { id: 'photos', nom: 'Photos' },
 ];
 
+/** Onglet demandé dans l'adresse (/pro?onglet=avis, depuis le site en mode modification). */
+const ongletDemande = (): Onglet => {
+  const demande = new URLSearchParams(window.location.search).get('onglet');
+  return ONGLETS.find((o) => o.id === demande)?.id ?? 'carte';
+};
+
 /** Espace du patron (/pro) : se connecter, modifier la carte, les infos du site (accroche, horaires, annonce), les avis et les photos. */
 export function EspacePro() {
   const [etat, setEtat] = useState<Etat>('chargement');
-  const [onglet, setOnglet] = useState<Onglet>('carte');
+  const [onglet, setOnglet] = useState<Onglet>(ongletDemande);
   const [avis, setAvis] = useState('');
 
   const fermer = useCallback((raison: string) => {
@@ -74,6 +81,10 @@ export function EspacePro() {
       {etat === 'connexion' && <Connexion onConnecte={() => { noterActivite(); setAvis(''); setEtat('connecte'); }} />}
       {etat === 'connecte' && (
         <>
+          <a href={ADRESSE_MODIFICATION} className={styles.surLeSite}>
+            <strong>Modifier directement sur le site</strong>
+            <span>Votre site tel que vos clients le voient : touchez un plat, un prix, les horaires… pour les changer.</span>
+          </a>
           <div className={styles.onglets} role="tablist" aria-label="Que voulez-vous modifier ?">
             {ONGLETS.map((o) => (
               <button key={o.id} type="button" role="tab" id={`onglet-${o.id}`} aria-controls={`panneau-${o.id}`} aria-selected={onglet === o.id} onClick={() => setOnglet(o.id)}>

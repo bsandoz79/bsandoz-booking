@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { RubriqueCarte } from '@bsandoz/ui';
 import { avis as avisIntegres, carte as carteIntegree, crocs, photos as photosIntegrees } from '../data/crocs';
 import { urlPicto } from '../data/pictos';
@@ -15,6 +15,11 @@ export interface Contenu {
   photos: PhotoSite[];
   /** Première visite : la réponse de l'API n'est pas encore là (rien n'est montré plutôt qu'un contenu qui changerait). */
   enAttente: boolean;
+}
+
+export interface ContenuCharge extends Contenu {
+  /** Relit l'API (après une modification faite sur le site par le patron). */
+  recharger: () => Promise<void>;
 }
 
 /** Dernier contenu reçu de l'API, gardé sur l'appareil : affiché tout de suite à la visite suivante. */
@@ -54,35 +59,38 @@ export const versCarte = (rubriques: RubriqueApi[]): RubriqueCarte[] =>
  * à la première visite, on attend l'API (au plus `ATTENTE_MAX`) au lieu de montrer d'abord le contenu intégré.
  * Si l'API ne répond pas, le site reste utilisable avec la carte intégrée.
  */
-export function useContenu(): Contenu {
+export function useContenu(): ContenuCharge {
   const [contenu, setContenu] = useState<Contenu>(() => (avecApi() ? lireCache() ?? { ...INTEGRE, enAttente: true } : INTEGRE));
+  const actif = useRef(true);
+
+  const charger = useCallback(async () => {
+    const [carte, site] = await Promise.allSettled([lireCartePublique(), lireContenu()]);
+    if (!actif.current) return;
+    setContenu(() => {
+      // Toujours à partir du contenu intégré : ce que le patron a retiré ne reste pas depuis le cache.
+      const suite = { ...INTEGRE };
+      if (carte.status === 'fulfilled' && carte.value.length > 0) suite.carte = versCarte(carte.value);
+      if (site.status === 'fulfilled') {
+        const c = site.value;
+        if (c.accroche?.trim()) suite.accroche = c.accroche;
+        if (c.horaires && c.horaires.length > 0) { suite.horaires = c.horaires; suite.horairesAConfirmer = false; }
+        suite.annonce = c.annonce?.trim() ?? '';
+        // Listes données par le patron (même vides : il a pu tout retirer).
+        if (Array.isArray(c.avis)) suite.avis = c.avis;
+        if (Array.isArray(c.photos)) suite.photos = c.photos;
+      }
+      if (carte.status === 'fulfilled' || site.status === 'fulfilled') ecrireCache(suite);
+      return suite;
+    });
+  }, []);
 
   useEffect(() => {
     if (!avecApi()) return;
-    let actif = true;
-    const secours = window.setTimeout(() => { if (actif) setContenu((c) => (c.enAttente ? { ...c, enAttente: false } : c)); }, ATTENTE_MAX);
-    void Promise.allSettled([lireCartePublique(), lireContenu()]).then(([carte, site]) => {
-      if (!actif) return;
-      window.clearTimeout(secours);
-      setContenu(() => {
-        // Toujours à partir du contenu intégré : ce que le patron a retiré ne reste pas depuis le cache.
-        const suite = { ...INTEGRE };
-        if (carte.status === 'fulfilled' && carte.value.length > 0) suite.carte = versCarte(carte.value);
-        if (site.status === 'fulfilled') {
-          const c = site.value;
-          if (c.accroche?.trim()) suite.accroche = c.accroche;
-          if (c.horaires && c.horaires.length > 0) { suite.horaires = c.horaires; suite.horairesAConfirmer = false; }
-          suite.annonce = c.annonce?.trim() ?? '';
-          // Listes données par le patron (même vides : il a pu tout retirer).
-          if (Array.isArray(c.avis)) suite.avis = c.avis;
-          if (Array.isArray(c.photos)) suite.photos = c.photos;
-        }
-        if (carte.status === 'fulfilled' || site.status === 'fulfilled') ecrireCache(suite);
-        return suite;
-      });
-    });
-    return () => { actif = false; window.clearTimeout(secours); };
-  }, []);
+    actif.current = true;
+    const secours = window.setTimeout(() => { if (actif.current) setContenu((c) => (c.enAttente ? { ...c, enAttente: false } : c)); }, ATTENTE_MAX);
+    void charger().then(() => window.clearTimeout(secours));
+    return () => { actif.current = false; window.clearTimeout(secours); };
+  }, [charger]);
 
-  return contenu;
+  return { ...contenu, recharger: charger };
 }

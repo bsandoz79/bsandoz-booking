@@ -1,0 +1,132 @@
+/* Mode modification du site : éléments entourés en pointillé jaune, bandeau fixé en bas de l'écran (l'en-tête du site reste en haut). */
+.page {
+  --bs-color-primary: var(--croc-rouge);
+  --bs-color-primary-dark: var(--croc-rouge-fonce);
+  --bs-color-primary-soft: var(--croc-jaune-doux);
+  /* Place pour le bandeau fixé en bas. */
+  padding-bottom: 5.5rem;
+}
+
+.modifiable {
+  position: relative;
+  border-radius: 0.5rem;
+  outline: 2px dashed var(--croc-jaune);
+  outline-offset: 6px;
+}
+
+/* Bord à bord (annonce) : le cadre et le bouton restent dans l'écran, sans débordement sur le côté ; pas d'étiquette, qui cacherait le texte centré. */
+.pleineLargeur { border-radius: 0; outline-offset: -4px; }
+.pleineLargeur > .toucher { inset: 0; }
+.pleineLargeur > .etiquette { display: none; }
+
+/* Sur fond clair (sections crème), le pointillé passe au rouge. */
+.surClair { outline-color: var(--croc-rouge); }
+
+.modifiable:has(.toucher:hover) { outline-style: solid; }
+
+.toucher {
+  position: absolute;
+  inset: -6px;
+  z-index: 2;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.toucher:focus-visible {
+  outline: 3px solid var(--croc-jaune);
+  outline-offset: 2px;
+}
+
+/* Petite étiquette « Modifier … » dans le coin, pour comprendre sans essayer. */
+.etiquette {
+  position: absolute;
+  top: -1.1rem;
+  right: 0;
+  z-index: 1;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--croc-jaune);
+  color: var(--croc-rouge-fonce);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.barre {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  padding: 0.6rem 1rem;
+  background: #1d1d1b;
+  color: #fff;
+  font-size: 0.92rem;
+  box-shadow: 0 -4px 16px rgb(0 0 0 / 0.25);
+}
+
+.barre p { margin: 0; }
+
+.barreLiens {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.barreLiens a {
+  color: #fff;
+  font-weight: 700;
+}
+
+.barreLiens .terminer {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: var(--croc-jaune);
+  color: var(--croc-rouge-fonce);
+  text-decoration: none;
+}
+
+/* Annonce vide en mode modification : une place pour en écrire une. */
+.annonceVide {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  background: rgb(240 197 78 / 0.35);
+  color: #3b0d09;
+  font-style: italic;
+  text-align: center;
+}
+
+.formulaire {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.erreur {
+  margin: 0;
+  color: #a3122f;
+  font-weight: 700;
+}
+
+.aide {
+  margin: 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.horaires {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
