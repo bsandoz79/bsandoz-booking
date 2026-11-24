@@ -36,12 +36,15 @@ export const couts = {
       'Un site rapide, en HTTPS, avec ses mises à jour, et quelqu’un à appeler en cas de problème.',
     ],
   },
-  /** Prix du marché repris de bsandoz.fr (`marche` dans data/offres.ts du site), avec leur source. */
+  /**
+   * Prix du marché repris de bsandoz.fr (`marche` dans data/offres.ts du site), avec leur source. Agence : seulement le bas
+   * de la fourchette (6 000 à 45 000 €), le haut concernant de gros projets sans rapport avec un site de restaurant.
+   */
   ailleurs: {
     titre: 'Si vous l’aviez fait faire ailleurs',
     intro: 'Pour comparer, voici ce que coûte un site comme le vôtre selon qui le fait :',
     lignes: [
-      { qui: 'Une agence web', quoi: 'Site sur mesure avec des outils (comme votre carte modifiable et votre espace)', prix: '6 000 à 45 000 €', detail: 'la moitié des projets à plus de 18 000 €', source: 'La Fabrique du Net, 2026' },
+      { qui: 'Une agence web', quoi: 'Site sur mesure avec des outils (comme votre carte modifiable et votre espace)', prix: 'à partir de 6 000 €', detail: '', source: 'La Fabrique du Net, 2026' },
       { qui: 'Un indépendant', quoi: 'Site de 5 à 10 pages, sans espace de gestion', prix: '800 à 4 000 €', detail: '', source: 'Plateya, 2026' },
       { qui: 'Avec moi', quoi: 'Votre site, d’après mes tarifs', prix: '1 189 €', detail: 'et vous payez ce que vous voulez', source: '' },
     ],

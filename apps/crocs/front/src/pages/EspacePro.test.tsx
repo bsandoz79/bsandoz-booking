@@ -46,7 +46,8 @@ describe('Espace du patron', () => {
     expect(within(valeur).getByRole('table')).toHaveTextContent(/Formule Fonctionnel.*989 €.*Appli sur le téléphone.*\+ 200 €.*Valeur du site1 189 €/);
     expect(screen.getByRole('region', { name: 'Pourquoi ce prix' })).toHaveTextContent('modèle tout fait');
     const ailleurs = within(screen.getByRole('region', { name: 'Si vous l’aviez fait faire ailleurs' })).getByRole('table');
-    expect(ailleurs).toHaveTextContent(/Une agence web.*6 000 à 45 000 €.*La Fabrique du Net, 2026/);
+    expect(ailleurs).toHaveTextContent(/Une agence web.*à partir de 6 000 €.*La Fabrique du Net, 2026/);
+    expect(ailleurs).not.toHaveTextContent('45 000');
     expect(ailleurs).toHaveTextContent(/Un indépendant.*800 à 4 000 €.*Plateya, 2026/);
     expect(ailleurs).toHaveTextContent(/Avec moi.*1 189 €/);
     const aujourdhui = screen.getByRole('region', { name: 'Aujourd’hui' });
