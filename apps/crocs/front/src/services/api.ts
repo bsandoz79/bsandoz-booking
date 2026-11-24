@@ -117,6 +117,8 @@ export interface ContenuSite {
   annonce?: string;
   /** Avis mis par le patron ; absent : ceux du site. */
   avis?: AvisSite[];
+  /** Le patron a laissé un avis Google au créateur du site : la demande ne s'affiche plus dans son espace. */
+  avisCreateurLaisse?: boolean;
   /** Photos du bas de page mises par le patron ; absent : celles du site. */
   photos?: PhotoSite[];
 }

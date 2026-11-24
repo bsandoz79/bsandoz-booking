@@ -86,6 +86,7 @@ Site vitrine avec la carte, que le patron modifie lui-même. Démo privée (adre
 - [x] `feature/visionneuse` : kit front, bloc `Visionneuse` (photo agrandie au clic) ; commandes du `Defilant` discrètes
 - [x] `feature/crocs-modifier-sur-le-site` : le patron modifie son site en le touchant (plats, prix, rubriques, accroche, annonce, horaires), kit `CarteModifiable`
 - [x] `feature/crocs-couts` : onglet « Coûts » de l'espace pro (coût du site aujourd'hui, options, dans le temps, prix participatif)
+- [x] `feature/crocs-avis-createur` : demande d'avis Google pour le créateur, dans l'espace pro, jusqu'à « C'est fait » (lien de la fiche à renseigner)
 - [ ] `feature/crocs-contenus` : carte relevée (`docs/crocs/carte-releve.md`, prix à faire valider), couleurs rouge et jaune ; photos et avis : avec l'accord du patron
 - [ ] `feature/crocs-demo` : démo privée en ligne (sous-domaine secret, `noindex`, bandeau)
 
