@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (onglet « Coûts » de Croc's)
+- « Si vous l'aviez fait faire ailleurs » : tableau agence web (6 000 à 45 000 €, médiane 18 000 €, La Fabrique du Net, 2026), indépendant (800 à 4 000 €, Plateya, 2026) et « avec moi » (1 189 €, payé ce que le patron veut) ; remplace les deux phrases sous « Pourquoi ce prix ».
 ### Modifié (espace du patron de Croc's)
 - Lien de la fiche Google de bsandoz renseigné : la demande d'avis s'affiche maintenant dans l'espace pro.
 ### Ajouté (onglet « Coûts » de Croc's)

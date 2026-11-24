@@ -36,9 +36,29 @@ export function MesCouts() {
         <ul className={styles.pointsPourquoi}>
           {couts.pourquoi.points.map((p) => <li key={p}>{p}</li>)}
         </ul>
-        <div className={styles.texte}>
-          {couts.pourquoi.marche.map((m) => <p key={m} className={styles.aide}>{m}</p>)}
-        </div>
+      </section>
+
+      <section className={styles.carteBlanche} aria-labelledby="couts-ailleurs">
+        <h2 id="couts-ailleurs">{couts.ailleurs.titre}</h2>
+        <p>{couts.ailleurs.intro}</p>
+        <table className={styles.tableau}>
+          <thead>
+            <tr><th scope="col">Qui le fait</th><th scope="col">Prix</th></tr>
+          </thead>
+          <tbody>
+            {couts.ailleurs.lignes.map((l) => (
+              <tr key={l.qui}>
+                <th scope="row">{l.qui}<span className={styles.detail}>{l.quoi}</span></th>
+                <td>
+                  {l.prix}
+                  {l.detail && <span className={styles.detail}>{l.detail}</span>}
+                  {l.source && <span className={styles.detail}>Source : {l.source}</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className={styles.aide}>{couts.ailleurs.note}</p>
       </section>
 
       <section className={styles.carteBlanche} aria-labelledby="couts-aujourdhui">

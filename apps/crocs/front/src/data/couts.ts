@@ -35,10 +35,17 @@ export const couts = {
       'Les mentions légales et la page données personnelles, obligatoires pour un site professionnel.',
       'Un site rapide, en HTTPS, avec ses mises à jour, et quelqu’un à appeler en cas de problème.',
     ],
-    marche: [
-      'Sur le marché, un site de plusieurs pages fait par un indépendant coûte de 800 à 4 000 € (Plateya, 2026).',
-      'Un site sur mesure avec des outils, fait par une agence, coûte de 6 000 à 45 000 € (La Fabrique du Net, 2026).',
+  },
+  /** Prix du marché repris de bsandoz.fr (`marche` dans data/offres.ts du site), avec leur source. */
+  ailleurs: {
+    titre: 'Si vous l’aviez fait faire ailleurs',
+    intro: 'Pour comparer, voici ce que coûte un site comme le vôtre selon qui le fait :',
+    lignes: [
+      { qui: 'Une agence web', quoi: 'Site sur mesure avec des outils (comme votre carte modifiable et votre espace)', prix: '6 000 à 45 000 €', detail: 'la moitié des projets à plus de 18 000 €', source: 'La Fabrique du Net, 2026' },
+      { qui: 'Un indépendant', quoi: 'Site de 5 à 10 pages, sans espace de gestion', prix: '800 à 4 000 €', detail: '', source: 'Plateya, 2026' },
+      { qui: 'Avec moi', quoi: 'Votre site, d’après mes tarifs', prix: '1 189 €', detail: 'et vous payez ce que vous voulez', source: '' },
     ],
+    note: 'Les prix varient beaucoup d’un prestataire à l’autre : ce sont des fourchettes, pas des devis.',
   },
   aujourdhui: {
     titre: 'Aujourd’hui',
