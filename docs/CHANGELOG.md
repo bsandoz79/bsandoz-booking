@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Ajouté (espace du patron de Croc's)
+- Onglet « Coûts » : ce que coûte le site, en tableaux. Aujourd'hui (hébergement offert 1 an, adresse prêtée, aucun service payant : 0 € par mois), les options (nom de domaine à son nom environ 10 à 15 € par an, hébergement à son nom environ 85 à 100 € par an, aide 29 € de l'heure), ce que ça donne dans le temps, et le prix participatif (Baptiste est étudiant et se lance pour financer ses études, prendre de l'expérience et se faire connaître), et en bas les liens vers bsandoz.fr et portfolio.bsandoz.fr. Montants dans `data/couts.ts` (relevés en novembre 2026) ; 1 test.
 ### Corrigé (Croc's : modifier directement sur le site)
 - Pendant la modification, les liens et boutons du site (Appeler, Itinéraire, Google Maps, Waze, Me localiser, Espace pro du pied de page…) ne s'ouvrent plus : un toucher affiche « Ce bouton ne s'ouvre pas pendant la modification » dans le bandeau, avec un curseur « interdit ». Restent actifs les éléments entourés, les fenêtres de saisie et les liens vers une partie de la page ; les boutons de modification du kit portent `data-modification` ; 2 tests.
 ### Ajouté (Croc's : modifier directement sur le site)

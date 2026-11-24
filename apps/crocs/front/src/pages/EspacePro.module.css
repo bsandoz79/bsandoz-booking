@@ -43,7 +43,7 @@
 
 @media (min-width: 640px) {
   .onglets {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 
@@ -319,4 +319,82 @@
 .surLeSite:focus-visible {
   outline: 3px solid var(--croc-jaune);
   outline-offset: 3px;
+}
+
+/* Onglet « Coûts » : tableaux simples, lisibles au téléphone (deux colonnes, détail en petit sous le texte). */
+.tableau {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.tableau th,
+.tableau td {
+  padding: 0.65rem 0.5rem;
+  border-bottom: 1px solid #efe3d8;
+  text-align: left;
+  vertical-align: top;
+}
+
+.tableau thead th {
+  color: #6b5a4c;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tableau tbody th {
+  font-weight: 700;
+}
+
+.tableau td {
+  min-width: 7rem;
+  color: var(--croc-rouge-fonce);
+  font-weight: 800;
+}
+
+.tableau tfoot th,
+.tableau tfoot td {
+  border-bottom: 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.detail {
+  display: block;
+  margin-top: 0.2rem;
+  color: #6b5a4c;
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+/* Tableau « Dans le temps » : des phrases, pas des montants seuls ; texte normal, plus facile à lire. */
+.tableauPhrases td {
+  color: inherit;
+  font-weight: 400;
+}
+
+/* Bas de l'onglet « Coûts » : le site et le portfolio de Baptiste Sandoz. */
+.liensCreateur {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 700;
+}
+
+.liensCreateur a {
+  color: var(--croc-rouge-fonce);
+}
+
+/* Texte suivi (« Le prix du site ») : paragraphes rapprochés. */
+.texte {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.texte p {
+  margin: 0;
 }
