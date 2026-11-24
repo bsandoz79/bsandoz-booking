@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Modifié (onglet « Coûts » de Croc's)
+- Agence web : « à partir de 6 000 € » au lieu de « 6 000 à 45 000 € » (le haut de la fourchette concerne de gros projets et faisait peur).
 ### Ajouté (onglet « Coûts » de Croc's)
 - « Si vous l'aviez fait faire ailleurs » : tableau agence web (6 000 à 45 000 €, médiane 18 000 €, La Fabrique du Net, 2026), indépendant (800 à 4 000 €, Plateya, 2026) et « avec moi » (1 189 €, payé ce que le patron veut) ; remplace les deux phrases sous « Pourquoi ce prix ».
 ### Modifié (espace du patron de Croc's)
