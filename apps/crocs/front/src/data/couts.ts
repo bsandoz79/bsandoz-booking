@@ -8,7 +8,38 @@ import { createur } from './createur';
  */
 export const couts = {
   releve: 'novembre 2026',
-  intro: 'Le site vous appartient. Voici ce qu’il coûte aujourd’hui, ce que coûteraient les options, et ce que ça donne dans le temps.',
+  intro: 'Le site vous appartient. Voici ce qu’il vaut, ce qu’il coûte aujourd’hui, ce que coûteraient les options, et ce que ça donne dans le temps.',
+  /**
+   * Valeur du site d'après les tarifs publics de bsandoz.fr (24/11/2026) : formule Fonctionnel « à partir de 989 € »
+   * (3 petites options comprises : ici la galerie photos et les avis), plus l'option « Appli sur téléphone » (+ 200 €).
+   */
+  valeur: {
+    titre: 'Ce que vaut votre site',
+    texte: `D’après les tarifs que j’affiche sur bsandoz.fr pour mes clients :`,
+    lignes: [
+      { poste: 'Formule Fonctionnel', detail: 'Un site sur mesure avec son espace de gestion. Galerie photos et avis clients compris.', cout: '989 €' },
+      { poste: 'Appli sur le téléphone', detail: 'Votre espace s’installe comme une appli, avec l’icône Croc’s.', cout: '+ 200 €' },
+    ],
+    total: { poste: 'Valeur du site', cout: '1 189 €' },
+  },
+  pourquoi: {
+    titre: 'Pourquoi ce prix',
+    intro: 'Ce n’est pas un modèle tout fait : chaque partie a été construite pour Croc’s.',
+    points: [
+      'La carte est écrite en code, pas en photo : elle se lit bien sur tous les téléphones et Google peut la lire.',
+      'Vous la changez vous-même : un prix en deux gestes, l’ancien prix barré pendant un mois si vous le voulez, « Nouveau » pendant un mois, « Épuisé » jusqu’au soir.',
+      'Vous pouvez aussi modifier le site directement en le touchant, tel que vos clients le voient.',
+      'Les horaires du jour mis en avant, l’annonce en haut (fermeture exceptionnelle…), les photos qui défilent, les avis de vos clients.',
+      'Le temps de trajet jusqu’à Croc’s en voiture, à vélo et à pied, et l’itinéraire en un toucher (Google Maps, Waze, Plans).',
+      'Votre espace installable sur le téléphone, protégé par un mot de passe, avec déconnexion automatique.',
+      'Les mentions légales et la page données personnelles, obligatoires pour un site professionnel.',
+      'Un site rapide, en HTTPS, avec ses mises à jour, et quelqu’un à appeler en cas de problème.',
+    ],
+    marche: [
+      'Sur le marché, un site de plusieurs pages fait par un indépendant coûte de 800 à 4 000 € (Plateya, 2026).',
+      'Un site sur mesure avec des outils, fait par une agence, coûte de 6 000 à 45 000 € (La Fabrique du Net, 2026).',
+    ],
+  },
   aujourdhui: {
     titre: 'Aujourd’hui',
     lignes: [

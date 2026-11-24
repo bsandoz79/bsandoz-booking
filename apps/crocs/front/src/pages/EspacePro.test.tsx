@@ -42,6 +42,9 @@ describe('Espace du patron', () => {
     render(<EspacePro />);
     await seConnecter();
     await userEvent.click(await screen.findByRole('tab', { name: 'Coûts' }));
+    const valeur = screen.getByRole('region', { name: 'Ce que vaut votre site' });
+    expect(within(valeur).getByRole('table')).toHaveTextContent(/Formule Fonctionnel.*989 €.*Appli sur le téléphone.*\+ 200 €.*Valeur du site1 189 €/);
+    expect(screen.getByRole('region', { name: 'Pourquoi ce prix' })).toHaveTextContent('La Fabrique du Net, 2026');
     const aujourdhui = screen.getByRole('region', { name: 'Aujourd’hui' });
     expect(within(aujourdhui).getByRole('table')).toHaveTextContent('0 € par mois');
     expect(screen.getByRole('region', { name: 'Si vous le souhaitez' })).toHaveTextContent(/nom de domaine.*environ 10 à 15 €par an, à renouveler chaque année/);
