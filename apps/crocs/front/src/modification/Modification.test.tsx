@@ -82,6 +82,28 @@ describe('Site de Croc’s en mode modification', () => {
     expect(envoi.accroche).toBe('Le meilleur kebab.');
   });
 
+  it('les liens et boutons du site ne s’ouvrent pas pendant la modification, le bandeau l’explique', async () => {
+    fauxServeur();
+    render(<App modifier />);
+    await screen.findByRole('button', { name: 'Modifier : Kebab' });
+    const appeler = screen.getAllByRole('link', { name: /Appeler/ })[0];
+    const clic = new MouseEvent('click', { bubbles: true, cancelable: true });
+    appeler.dispatchEvent(clic);
+    expect(clic.defaultPrevented).toBe(true);
+    await waitFor(() => expect(screen.getByRole('region', { name: 'Mode modification' })).toHaveTextContent('Ce bouton ne s’ouvre pas pendant la modification'));
+    // Les éléments à modifier, eux, restent actifs.
+    await userEvent.click(screen.getByRole('button', { name: 'Modifier la phrase d’accueil' }));
+    expect(screen.getByRole('dialog', { name: 'Phrase d’accueil' })).toBeInTheDocument();
+  });
+
+  it('hors modification, les liens du site marchent normalement', async () => {
+    fauxServeur();
+    render(<App />);
+    const clic = new MouseEvent('click', { bubbles: true, cancelable: true });
+    screen.getAllByRole('link', { name: /Itinéraire/ })[0].dispatchEvent(clic);
+    expect(clic.defaultPrevented).toBe(false);
+  });
+
   it('pas connecté : renvoyé vers l’espace pro pour se connecter', async () => {
     fauxServeur(false);
     const vers = vi.spyOn(navigation, 'versEspacePro').mockImplementation(() => {});

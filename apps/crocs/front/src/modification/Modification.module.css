@@ -130,3 +130,8 @@
   padding: 0;
   border: 0;
 }
+
+/* Liens et boutons du site, inactifs pendant la modification (voir `bloquerHorsModification`). */
+.page :is(a, button):not([data-modification], [data-modification] *, [role='dialog'] *, [href^='#']) {
+  cursor: not-allowed;
+}
