@@ -37,6 +37,21 @@ describe('Espace du patron', () => {
   beforeEach(() => vi.stubEnv('VITE_API_URL', 'https://api.example.test'));
   afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); localStorage.clear(); });
 
+  it('onglet « Coûts » : ce que coûte le site en tableaux, et dans le temps', async () => {
+    fauxServeur();
+    render(<EspacePro />);
+    await seConnecter();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Coûts' }));
+    const aujourdhui = screen.getByRole('region', { name: 'Aujourd’hui' });
+    expect(within(aujourdhui).getByRole('table')).toHaveTextContent('0 € par mois');
+    expect(screen.getByRole('region', { name: 'Si vous le souhaitez' })).toHaveTextContent(/nom de domaine.*environ 10 à 15 €par an, à renouveler chaque année/);
+    expect(screen.getByRole('region', { name: 'Dans le temps' })).toHaveTextContent('Première année');
+    expect(screen.getByRole('region', { name: 'Le prix du site' })).toHaveTextContent(/étudiant.*participatif/);
+    const liens = screen.getByRole('navigation', { name: 'Pour en savoir plus sur Baptiste Sandoz' });
+    expect(within(liens).getByRole('link', { name: 'bsandoz.fr' })).toHaveAttribute('href', 'https://bsandoz.fr');
+    expect(within(liens).getByRole('link', { name: 'portfolio.bsandoz.fr' })).toHaveAttribute('href', 'https://portfolio.bsandoz.fr');
+  });
+
   it('propose de modifier directement sur le site, une fois connecté', async () => {
     fauxServeur();
     render(<EspacePro />);

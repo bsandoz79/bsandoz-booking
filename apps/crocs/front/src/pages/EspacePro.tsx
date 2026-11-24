@@ -12,17 +12,19 @@ import styles from './EspacePro.module.css';
 import { inactifTropLongtemps, noterActivite, oublierActivite, useInactivite } from './pro/inactivite';
 import { Installer } from './pro/Installer';
 import { MesAvis } from './pro/MesAvis';
+import { MesCouts } from './pro/MesCouts';
 import { MesPhotos } from './pro/MesPhotos';
 import { ADRESSE_MODIFICATION } from '../modification/useModeModification';
 
 type Etat = 'chargement' | 'connexion' | 'connecte';
-type Onglet = 'carte' | 'infos' | 'avis' | 'photos';
+type Onglet = 'carte' | 'infos' | 'avis' | 'photos' | 'couts';
 
 const ONGLETS: { id: Onglet; nom: string }[] = [
   { id: 'carte', nom: 'La carte' },
   { id: 'infos', nom: 'Infos du site' },
   { id: 'avis', nom: 'Avis' },
   { id: 'photos', nom: 'Photos' },
+  { id: 'couts', nom: 'Coûts' },
 ];
 
 /** Onglet demandé dans l'adresse (/pro?onglet=avis, depuis le site en mode modification). */
@@ -31,7 +33,7 @@ const ongletDemande = (): Onglet => {
   return ONGLETS.find((o) => o.id === demande)?.id ?? 'carte';
 };
 
-/** Espace du patron (/pro) : se connecter, modifier la carte, les infos du site (accroche, horaires, annonce), les avis et les photos. */
+/** Espace du patron (/pro) : se connecter, modifier la carte, les infos du site (accroche, horaires, annonce), les avis et les photos ; voir ce que coûte le site. */
 export function EspacePro() {
   const [etat, setEtat] = useState<Etat>('chargement');
   const [onglet, setOnglet] = useState<Onglet>(ongletDemande);
@@ -97,6 +99,7 @@ export function EspacePro() {
             {onglet === 'infos' && <MesInfos />}
             {onglet === 'avis' && <MesAvis />}
             {onglet === 'photos' && <MesPhotos />}
+            {onglet === 'couts' && <MesCouts />}
           </section>
           <Installer />
         </>
