@@ -442,3 +442,25 @@
   outline: 3px solid var(--croc-rouge-fonce);
   outline-offset: 3px;
 }
+
+/* « Pourquoi ce prix » : une coche jaune par point. */
+.pointsPourquoi {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pointsPourquoi li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.pointsPourquoi li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--croc-rouge);
+  font-weight: 900;
+}

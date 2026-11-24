@@ -8,6 +8,39 @@ export function MesCouts() {
     <div className={styles.pile}>
       <p className={styles.aide}>{couts.intro}</p>
 
+      <section className={styles.carteBlanche} aria-labelledby="couts-valeur">
+        <h2 id="couts-valeur">{couts.valeur.titre}</h2>
+        <p>{couts.valeur.texte}</p>
+        <table className={styles.tableau}>
+          <thead>
+            <tr><th scope="col">Quoi</th><th scope="col">Prix</th></tr>
+          </thead>
+          <tbody>
+            {couts.valeur.lignes.map((l) => (
+              <tr key={l.poste}>
+                <th scope="row">{l.poste}<span className={styles.detail}>{l.detail}</span></th>
+                <td>{l.cout}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr><th scope="row">{couts.valeur.total.poste}</th><td>{couts.valeur.total.cout}</td></tr>
+          </tfoot>
+        </table>
+        <p className={styles.aide}>Ce que vous payez, vous, c’est ce que vous voulez : voir « Le prix du site » plus bas.</p>
+      </section>
+
+      <section className={styles.carteBlanche} aria-labelledby="couts-pourquoi">
+        <h2 id="couts-pourquoi">{couts.pourquoi.titre}</h2>
+        <p>{couts.pourquoi.intro}</p>
+        <ul className={styles.pointsPourquoi}>
+          {couts.pourquoi.points.map((p) => <li key={p}>{p}</li>)}
+        </ul>
+        <div className={styles.texte}>
+          {couts.pourquoi.marche.map((m) => <p key={m} className={styles.aide}>{m}</p>)}
+        </div>
+      </section>
+
       <section className={styles.carteBlanche} aria-labelledby="couts-aujourdhui">
         <h2 id="couts-aujourdhui">{couts.aujourdhui.titre}</h2>
         <table className={styles.tableau}>
