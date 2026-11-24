@@ -7,7 +7,7 @@ export const createur = {
    * Lien « laisser un avis » de sa fiche Google (Google Business Profile > Demander des avis > copier le lien).
    * Vide : la demande d'avis n'est pas affichée dans l'espace pro.
    */
-  avisGoogle: '',
+  avisGoogle: 'https://g.page/r/CWCbPgtewCBdEBM/review',
   /** Son site et son portfolio (bas de l'onglet « Coûts »). */
   liens: [
     { nom: 'Mon site', adresse: 'bsandoz.fr', url: 'https://bsandoz.fr' },

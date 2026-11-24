@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Modifié (espace du patron de Croc's)
+- Lien de la fiche Google de bsandoz renseigné : la demande d'avis s'affiche maintenant dans l'espace pro.
 ### Ajouté (onglet « Coûts » de Croc's)
 - « Ce que vaut votre site » : 1 189 € d'après les tarifs publics de bsandoz.fr (formule Fonctionnel 989 €, galerie et avis compris, + appli sur le téléphone 200 €), en tableau ; « Pourquoi ce prix » : ce que contient le site, et les prix du marché avec leur source (Plateya, La Fabrique du Net, 2026) ; rappel que le patron paie ce qu'il veut.
 ### Ajouté (espace du patron de Croc's)
