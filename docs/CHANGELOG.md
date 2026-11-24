@@ -1,6 +1,8 @@
 # Journal des modifications
 
 ## [Non publié]
+### Corrigé (Croc's : modifier directement sur le site)
+- Pendant la modification, les liens et boutons du site (Appeler, Itinéraire, Google Maps, Waze, Me localiser, Espace pro du pied de page…) ne s'ouvrent plus : un toucher affiche « Ce bouton ne s'ouvre pas pendant la modification » dans le bandeau, avec un curseur « interdit ». Restent actifs les éléments entourés, les fenêtres de saisie et les liens vers une partie de la page ; les boutons de modification du kit portent `data-modification` ; 2 tests.
 ### Ajouté (Croc's : modifier directement sur le site)
 - Le patron voit son site tel que ses clients le voient, avec ce qu'il peut changer entouré en pointillé : un toucher sur un plat ouvre sa fiche (nom, prix, ancien prix barré ou non, description, rubrique, épuisé, supprimer), « + Ajouter un plat » sous chaque rubrique, titre de rubrique, phrase d'accueil, annonce, horaires ; photos et avis mènent au bon onglet de l'espace pro. Enregistré tout de suite, bandeau en bas (« Terminer »).
 - Accès par le bouton « Modifier directement sur le site » de l'espace pro (adresse `/?modifier`) ; sans session ouverte, retour à la connexion ; déconnexion après 30 minutes sans activité, comme l'espace pro. Les onglets restent pour le reste (plats cachés, ordre).

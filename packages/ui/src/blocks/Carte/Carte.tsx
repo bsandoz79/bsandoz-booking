@@ -64,7 +64,10 @@ export interface CarteProps {
   onToucherArticle?: (id: string) => void;
   /** Mode modification : le titre de chaque rubrique se touche aussi. */
   onToucherRubrique?: (id: string) => void;
-  /** Mode modification : un bouton « ajouter » sous chaque rubrique. */
+  /**
+   * Mode modification : un bouton « ajouter » sous chaque rubrique.
+   * Les boutons du mode modification portent `data-modification` : l'application peut bloquer tous les autres liens et boutons.
+   */
   onAjouterArticle?: (rubriqueId: string) => void;
 }
 
@@ -179,7 +182,7 @@ export function Carte({
               )}
               <h3 id={`rubrique-${r.id}-nom`} className={styles.rubriqueNom}>{r.nom}</h3>
               {onToucherRubrique && (
-                <button type="button" className={styles.toucher} aria-label={`${l.modifier} : ${r.nom}`} onClick={() => onToucherRubrique(r.id)} />
+                <button type="button" data-modification className={styles.toucher} aria-label={`${l.modifier} : ${r.nom}`} onClick={() => onToucherRubrique(r.id)} />
               )}
             </div>
             <ul className={styles.articles}>
@@ -206,13 +209,13 @@ export function Carte({
                   </div>
                   {/* Bouton posé sur tout le plat (le contenu reste lu tel quel par les lecteurs d'écran). */}
                   {onToucherArticle && (
-                    <button type="button" className={styles.toucher} aria-label={`${l.modifier} : ${a.nom}`} onClick={() => onToucherArticle(a.id)} />
+                    <button type="button" data-modification className={styles.toucher} aria-label={`${l.modifier} : ${a.nom}`} onClick={() => onToucherArticle(a.id)} />
                   )}
                 </li>
               ))}
             </ul>
             {onAjouterArticle && (
-              <button type="button" className={styles.ajouter} onClick={() => onAjouterArticle(r.id)} aria-label={`${l.ajouter} : ${r.nom}`}>{l.ajouter}</button>
+              <button type="button" data-modification className={styles.ajouter} onClick={() => onAjouterArticle(r.id)} aria-label={`${l.ajouter} : ${r.nom}`}>{l.ajouter}</button>
             )}
             {r.note && <p className={styles.note}>{r.note}</p>}
           </section>

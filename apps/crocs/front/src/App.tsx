@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState, type SyntheticEvent } from 'react';
 import { Carte, CarteModifiable, Defilant, Visionneuse } from '@bsandoz/ui';
 import { horairesParJour, rangAujourdhui } from './calculs/horaires';
 import { Logo } from './components/Logo';
@@ -8,7 +8,7 @@ import { crocs, itineraires } from './data/crocs';
 import { pictos } from './data/pictos';
 import { useContenu } from './hooks/useContenu';
 import { FenetreTexte, type TexteModifiable } from './modification/FenetresTextes';
-import { BarreModification, Modifiable } from './modification/Modifiable';
+import { BarreModification, bloquerHorsModification, Modifiable } from './modification/Modifiable';
 import modification from './modification/Modification.module.css';
 import { useModeModification } from './modification/useModeModification';
 import styles from './App.module.css';
@@ -33,12 +33,22 @@ export function App({ modifier = false }: { modifier?: boolean }) {
   const { carte, accroche, horaires, horairesAConfirmer, annonce, avis, photos, enAttente, recharger } = useContenu();
   const edition = useModeModification(modifier, recharger);
   const [texte, setTexte] = useState<TexteModifiable>();
+  // Un bouton du site touché pendant la modification : il ne fait rien, le bandeau l'explique quelques secondes.
+  const [avertissement, setAvertissement] = useState(false);
+  const minuteur = useRef<number>(undefined);
+  const bloquer = (e: SyntheticEvent) => {
+    if (!bloquerHorsModification(e)) return;
+    setAvertissement(true);
+    window.clearTimeout(minuteur.current);
+    minuteur.current = window.setTimeout(() => setAvertissement(false), 4000);
+  };
+  useEffect(() => () => window.clearTimeout(minuteur.current), []);
   const photoDe = (id: string) => edition.carte?.flatMap((r) => r.articles).find((a) => a.id === id)?.photo ?? null;
   // Diaporama du haut (photo principale puis celles du patron), photos agrandies au clic.
   const galerie = [{ url: photo('assiette'), description: 'Assiettes kebab, frites et salade' }, ...photos].slice(0, PHOTOS_MAX);
   const [agrandie, setAgrandie] = useState<number | null>(null);
   return (
-    <div className={modifier ? modification.page : undefined}>
+    <div className={modifier ? modification.page : undefined} onClickCapture={modifier ? bloquer : undefined} onSubmitCapture={modifier ? bloquer : undefined}>
       {edition.actif && !annonce
         ? (
           <Modifiable actif label="Ajouter une annonce" onToucher={() => setTexte('annonce')} className={modification.pleineLargeur}>
@@ -185,7 +195,7 @@ export function App({ modifier = false }: { modifier?: boolean }) {
         </a>
       </footer>
 
-      {modifier && <BarreModification verification={edition.verification} />}
+      {modifier && <BarreModification verification={edition.verification} avertissement={avertissement} />}
       {texte && (
         <FenetreTexte texte={texte} annonce={annonce} accroche={accroche} horaires={horaires} onFermer={() => setTexte(undefined)} onEnregistre={recharger} />
       )}
