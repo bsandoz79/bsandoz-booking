@@ -398,3 +398,47 @@
 .texte p {
   margin: 0;
 }
+
+/* Demande d'avis Google pour le créateur du site : jaune, au-dessus de tout, jusqu'à « C'est fait ». */
+.avisCreateur {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem 1.1rem;
+  border: 2px solid var(--croc-jaune);
+  border-radius: 0.9rem;
+  background: var(--croc-jaune-doux, #fff6d6);
+}
+
+.avisCreateur h2 {
+  margin: 0;
+  color: var(--croc-rouge-fonce);
+  font-size: 1.15rem;
+}
+
+.avisCreateur p {
+  margin: 0;
+}
+
+.avisCreateurBoutons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.avisCreateurLien {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  background: var(--croc-rouge);
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.avisCreateurLien:focus-visible {
+  outline: 3px solid var(--croc-rouge-fonce);
+  outline-offset: 3px;
+}

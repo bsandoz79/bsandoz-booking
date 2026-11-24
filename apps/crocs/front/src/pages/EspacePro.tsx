@@ -12,6 +12,7 @@ import styles from './EspacePro.module.css';
 import { inactifTropLongtemps, noterActivite, oublierActivite, useInactivite } from './pro/inactivite';
 import { Installer } from './pro/Installer';
 import { MesAvis } from './pro/MesAvis';
+import { AvisCreateur } from './pro/AvisCreateur';
 import { MesCouts } from './pro/MesCouts';
 import { MesPhotos } from './pro/MesPhotos';
 import { ADRESSE_MODIFICATION } from '../modification/useModeModification';
@@ -83,6 +84,7 @@ export function EspacePro() {
       {etat === 'connexion' && <Connexion onConnecte={() => { noterActivite(); setAvis(''); setEtat('connecte'); }} />}
       {etat === 'connecte' && (
         <>
+          <AvisCreateur />
           <a href={ADRESSE_MODIFICATION} className={styles.surLeSite}>
             <strong>Modifier directement sur le site</strong>
             <span>Votre site tel que vos clients le voient : touchez un plat, un prix, les horaires… pour les changer.</span>
