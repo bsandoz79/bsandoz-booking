@@ -73,30 +73,60 @@
 .boutonSecondaire { background: transparent; color: var(--av-encre); }
 .boutonSecondaire:hover { background: var(--av-blanc); }
 
-.heroIllustration {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 4 / 5;
-  max-height: 30rem;
-  padding: 2.5rem;
+.heroPhoto {
+  margin: 0;
   border: 1px solid var(--av-trait);
   outline: 1px solid var(--av-trait);
   outline-offset: -0.75rem;
-  background: linear-gradient(160deg, var(--av-blanc), var(--av-papier-fonce));
+  padding: 0.75rem;
+  background: var(--av-blanc);
 }
-.balance { width: min(100%, 17rem); color: var(--av-laiton); }
+.heroPhoto img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  max-height: 34rem;
+  object-fit: cover;
+  object-position: center 60%;
+}
 
 @media (min-width: 56rem) {
   .hero {
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
     align-items: center;
     padding: 5rem 1.25rem 6rem;
   }
 }
 @media (max-width: 40rem) {
-  .heroIllustration { aspect-ratio: auto; height: 15rem; padding: 1.5rem; }
-  .balance { width: auto; height: 100%; }
+  .heroPhoto img { aspect-ratio: 4 / 3; }
 }
+
+/* Encadré d'urgence : garde à vue */
+.urgence {
+  background: var(--av-encre);
+  color: var(--av-blanc);
+  padding: 2.25rem 1.25rem;
+}
+.urgenceInterieur {
+  max-width: var(--av-largeur);
+  margin: 0 auto;
+  padding-left: 1.25rem;
+  border-left: 3px solid var(--av-laiton-clair);
+}
+.urgence h2 {
+  margin: 0 0 0.5rem;
+  font-family: var(--av-serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+.urgence p { max-width: 50rem; margin: 0 0 1rem; color: #d8dde3; }
+.urgenceLien {
+  color: var(--av-laiton-clair);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+.urgence .fictif { color: #b9c1ca; }
 
 /* Sections */
 .section {
@@ -107,7 +137,117 @@
 .interieur { max-width: var(--av-largeur); margin: 0 auto; }
 .interieurEtroit { max-width: 46rem; margin: 0 auto; }
 .interieurEtroit > p { color: var(--av-encre-douce); }
-.note { font-size: 0.85rem; font-style: italic; }
+.note { font-size: 0.85rem; font-style: italic; color: var(--av-encre-douce); }
+.sectionSombre { background: var(--av-encre); color: var(--av-blanc); border-top: 0; }
+.sectionSombre .surtitre { color: var(--av-laiton-clair); }
+.noteClaire { margin: 1.5rem 0 0; font-size: 0.85rem; font-style: italic; color: #b9c1ca; }
+
+/* Le cabinet : texte, serment, photo */
+.parcours {
+  display: grid;
+  gap: 2.5rem;
+  max-width: var(--av-largeur);
+  margin: 0 auto;
+}
+.parcours > div > p:not(.surtitre) { color: var(--av-encre-douce); }
+@media (min-width: 56rem) {
+  .parcours { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; }
+}
+.serment {
+  margin: 2rem 0 1.5rem;
+  padding: 1.5rem 1.75rem;
+  border-left: 3px solid var(--av-laiton-clair);
+  background: var(--av-blanc);
+}
+.serment blockquote { margin: 0; }
+.serment blockquote p {
+  margin: 0;
+  font-family: var(--av-serif);
+  font-size: 1.2rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+.serment figcaption { margin-top: 0.6rem; font-size: 0.85rem; color: var(--av-laiton); }
+.photoCadre { margin: 0; }
+.photoCadre img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border: 1px solid var(--av-trait);
+}
+.photoCadre figcaption { margin-top: 0.6rem; font-size: 0.85rem; font-style: italic; color: var(--av-encre-douce); }
+
+/* Étapes de la procédure : frise numérotée */
+.etapes {
+  counter-reset: etape;
+  display: grid;
+  gap: 1rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 64rem) {
+  .etapes { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+.etapes li {
+  counter-increment: etape;
+  padding: 1.5rem 1.25rem;
+  border-top: 2px solid var(--av-laiton-clair);
+  background: var(--av-blanc);
+}
+.etapes li::before {
+  content: counter(etape, upper-roman);
+  display: block;
+  font-family: var(--av-serif);
+  font-size: 1.6rem;
+  color: var(--av-laiton);
+}
+.etapes h3 { margin: 0.4rem 0 0.5rem; font-family: var(--av-serif); font-size: 1.15rem; font-weight: 400; }
+.etapes p { margin: 0; font-size: 0.95rem; color: var(--av-encre-douce); }
+
+/* Juridictions : trois photos légendées */
+.juridictions {
+  display: grid;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 56rem) {
+  .juridictions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.juridictions img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+.lieu {
+  margin: 1rem 0 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--av-laiton-clair);
+}
+.juridictions h3 { margin: 0 0 0.5rem; font-family: var(--av-serif); font-size: 1.3rem; font-weight: 400; }
+.juridictions li > p:last-child { margin: 0; color: #d8dde3; font-size: 0.97rem; }
+
+/* Honoraires : quatre engagements */
+.honoraires {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+}
+@media (min-width: 48rem) {
+  .honoraires { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.honoraires > div { padding: 1.5rem 1.75rem; border: 1px solid var(--av-trait); background: var(--av-papier); }
+.honoraires dt { font-family: var(--av-serif); font-size: 1.2rem; margin-bottom: 0.4rem; }
+.honoraires dd { margin: 0; color: var(--av-encre-douce); }
 
 /* Domaines d'intervention : trois cartes numérotées */
 .domaines {
@@ -117,8 +257,8 @@
   padding: 0;
   list-style: none;
 }
-@media (min-width: 56rem) {
-  .domaines { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (min-width: 48rem) {
+  .domaines { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .domaine {
   padding: 2rem 1.75rem;
@@ -138,6 +278,11 @@
   font-family: var(--av-serif);
   font-size: 1.35rem;
   font-weight: 400;
+}
+.domaineIntro {
+  margin: -0.4rem 0 1rem;
+  font-style: italic;
+  color: var(--av-encre-douce);
 }
 .points {
   display: grid;
@@ -163,7 +308,7 @@
 }
 
 /* Contact : quatre blocs */
-.introContact { max-width: 42rem; color: var(--av-encre-douce); }
+.introSection { max-width: 46rem; color: var(--av-encre-douce); }
 .coordonnees {
   display: grid;
   gap: 1rem;

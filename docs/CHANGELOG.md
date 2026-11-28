@@ -1,6 +1,10 @@
 # Journal des modifications
 
 ## [Non publié]
+### Modifié (site fictif d'avocat)
+- Cabinet de droit pénal clairement identifié : « avocat pénaliste », barreau d'Abbeville (fictif), droit pénal et droit routier ; vocabulaire juridique (garde à vue, comparution immédiate, CRPC, partie civile, CIVI, juge de l'application des peines…).
+- Nouvelles sections : encadré garde à vue, serment de l'avocat et « activité dominante » (le titre de spécialiste exige un certificat du CNB), quatre domaines (défense pénale, victimes, droit routier, exécution des peines), étapes d'une procédure pénale, juridictions de la Somme, honoraires (convention obligatoire, aide juridictionnelle, protection juridique) ; menu à six entrées.
+- Photos du palais de justice d'Abbeville, du palais de justice et de la cour d'appel d'Amiens et de la collégiale Saint-Vulfran (Wikimedia Commons, CC BY-SA 4.0), en WebP 800 / 1600 px, crédits dans les mentions légales ; la balance dessinée est retirée ; 8 tests.
 ### Modifié (onglet « Coûts » de Croc's)
 - Agence web : « à partir de 6 000 € » au lieu de « 6 000 à 45 000 € » (le haut de la fourchette concerne de gros projets et faisait peur).
 ### Ajouté (onglet « Coûts » de Croc's)

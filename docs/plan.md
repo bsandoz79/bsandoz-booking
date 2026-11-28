@@ -93,3 +93,4 @@ Site vitrine avec la carte, que le patron modifie lui-même. Démo privée (adre
 ## Démonstration : site fictif d'avocat
 Site vitrine d'un cabinet d'avocat fictif au nom de Baptiste Sandoz (qui n'est pas avocat, dit partout sur le site), pour montrer un site de profession libérale. Jamais indexé.
 - [x] `feature/avocat-demo` : `apps/avocat/front` : une page (cabinet, parcours, 3 domaines numérotés, contact), mentions légales, confidentialité, coordonnées fictives ; CI et envoi automatique (secret `FTP_SERVER_DIR_AVOCAT_FRONT`)
+- [x] `feature/avocat-penaliste` : cabinet de droit pénal identifiable (vocabulaire juridique, garde à vue, procédure, honoraires), photos des juridictions d'Abbeville et d'Amiens avec crédits
