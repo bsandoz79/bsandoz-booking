@@ -1,4 +1,5 @@
 import { cabinet } from './cabinet';
+import { photos } from './photos';
 
 export interface SectionLegale {
   titre: string;
@@ -23,7 +24,7 @@ export const mentionsLegales: PageLegale = {
       titre: 'Nature du site',
       paragraphes: [
         cabinet.bandeau,
-        'Les domaines d’intervention et le parcours présentés sont imaginés pour montrer à quoi peut ressembler le site d’un cabinet d’avocat.',
+        'Le cabinet, le parcours et l’inscription au barreau sont imaginés pour montrer à quoi peut ressembler le site d’un cabinet d’avocat en droit pénal. Les juridictions citées et les règles de procédure décrites sont réelles, mais présentées de façon générale.',
       ],
     },
     {
@@ -36,7 +37,14 @@ export const mentionsLegales: PageLegale = {
     { titre: 'Hébergeur', paragraphes: [HEBERGEUR] },
     {
       titre: 'Propriété intellectuelle',
-      paragraphes: ['Les textes, l’illustration et la mise en page de ce site appartiennent à Baptiste Sandoz. Leur reproduction sans autorisation est interdite.'],
+      paragraphes: ['Les textes et la mise en page de ce site appartiennent à Baptiste Sandoz. Leur reproduction sans autorisation est interdite. Les photographies restent la propriété de leurs auteurs (voir « Crédits photos »).'],
+    },
+    {
+      titre: 'Crédits photos',
+      paragraphes: [
+        'Photographies de Wikimedia Commons, publiées sous licence libre et redimensionnées pour ce site. Elles montrent des bâtiments réels (palais de justice d’Abbeville et d’Amiens, collégiale Saint-Vulfran), sans aucun lien avec ce cabinet fictif.',
+        ...Object.values(photos).map((p) => `« ${p.credit.titre} », ${p.credit.auteur}, ${p.credit.licence} (${p.credit.licenceUrl}). Source : ${p.credit.source}`),
+      ],
     },
     {
       titre: 'Données personnelles',
